@@ -1,6 +1,6 @@
 //
 //  fokusuhr_testing_platformApp.swift
-//  fokusuhr-testing-platform Watch App
+//  fokusuhr-testing-platform
 //
 //  Created by Elia Salerno on 26.06.2025.
 //
@@ -8,10 +8,10 @@
 import SwiftUI
 
 @main
-struct fokusuhr_testing_platform_Watch_AppApp: App {
+struct CompanionApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            CompanionView()
         }
     }
 }
