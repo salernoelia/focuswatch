@@ -10,12 +10,11 @@ struct ChecklistItem: Identifiable {
 enum ChecklistState {
     case instructions
     case checklist
-    case retry
     case completed
 }
 
 struct ChecklistView: View {
-    @State private var items: [ChecklistItem] = [
+    @State private var allItems: [ChecklistItem] = [
         ChecklistItem(title: "Eine Schere", imageName: "scissors", color: .red),
         ChecklistItem(title: "Ein Lineal", imageName: "ruler", color: .blue),
         ChecklistItem(title: "Ein Bleistift", imageName: "pencil", color: .yellow),
@@ -26,7 +25,8 @@ struct ChecklistView: View {
         ChecklistItem(title: "Locher", imageName: "circle.grid.cross.fill", color: .orange)
     ]
     
-    @State private var skippedItems: [ChecklistItem] = []
+    @State private var remainingItems: [ChecklistItem] = []
+    @State private var collectedItems: [ChecklistItem] = []
     @State private var currentIndex = 0
     @State private var state: ChecklistState = .instructions
     
@@ -35,35 +35,23 @@ struct ChecklistView: View {
         case .instructions:
             InstructionsView {
                 withAnimation(.easeInOut) {
+                    remainingItems = allItems
                     state = .checklist
                 }
             }
         case .checklist:
             ChecklistMainView(
-                items: items,
+                remainingItems: $remainingItems,
+                collectedItems: $collectedItems,
                 currentIndex: $currentIndex,
-                skippedItems: $skippedItems,
                 onComplete: {
                     withAnimation {
-                        state = skippedItems.isEmpty ? .completed : .retry
+                        state = .completed
                     }
                 }
             )
-        case .retry:
-            RetryView {
-                restartWithSkipped()
-            }
         case .completed:
             CompletionView()
-        }
-    }
-    
-    private func restartWithSkipped() {
-        withAnimation {
-            items = skippedItems
-            skippedItems = []
-            currentIndex = 0
-            state = .checklist
         }
     }
 }
@@ -73,13 +61,9 @@ struct InstructionsView: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            
-           
-                
-                Text("Bastelsachen")
-                    .font(.headline)
-                    .fontWeight(.bold)
-            
+            Text("Bastelsachen")
+                .font(.headline)
+                .fontWeight(.bold)
             
             VStack(spacing: 12) {
                 HStack(spacing: 8) {
@@ -100,73 +84,62 @@ struct InstructionsView: View {
             Button("Loslegen") {
                 onStart()
             }
-     
         }
         .padding()
     }
 }
 
 struct ChecklistMainView: View {
-    let items: [ChecklistItem]
+    @Binding var remainingItems: [ChecklistItem]
+    @Binding var collectedItems: [ChecklistItem]
     @Binding var currentIndex: Int
-    @Binding var skippedItems: [ChecklistItem]
     let onComplete: () -> Void
     
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
             
-            if currentIndex < items.count {
+            if currentIndex < remainingItems.count {
                 ChecklistCard(
-                    item: items[currentIndex],
+                    item: remainingItems[currentIndex],
                     onAdd: addCurrentItem,
                     onSkip: skipCurrentItem
                 )
-                .id(items[currentIndex].id)
+                .id(remainingItems[currentIndex].id)
+            } else if !remainingItems.isEmpty {
+                ChecklistCard(
+                    item: remainingItems[0],
+                    onAdd: addCurrentItem,
+                    onSkip: skipCurrentItem
+                )
+                .id(remainingItems[0].id)
+                .onAppear {
+                    currentIndex = 0
+                }
             }
         }
     }
     
     private func addCurrentItem() {
-        advanceToNext()
+        let item = remainingItems[currentIndex]
+        collectedItems.append(item)
+        remainingItems.remove(at: currentIndex)
+        
+        if remainingItems.isEmpty {
+            onComplete()
+        } else {
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                if currentIndex >= remainingItems.count {
+                    currentIndex = 0
+                }
+            }
+        }
     }
     
     private func skipCurrentItem() {
-        skippedItems.append(items[currentIndex])
-        advanceToNext()
-    }
-    
-    private func advanceToNext() {
-        if currentIndex < items.count - 1 {
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
-                currentIndex += 1
-            }
-        } else {
-            onComplete()
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+            currentIndex = (currentIndex + 1) % remainingItems.count
         }
-    }
-}
-
-struct RetryView: View {
-    let onRetry: () -> Void
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "arrow.clockwise.circle.fill")
-                .font(.system(size: 50))
-                .foregroundColor(.orange)
-            
-            Text("Nochmal versuchen?")
-                .font(.headline)
-                .foregroundColor(.white)
-            
-            Button("Ja, nochmal!") {
-                onRetry()
-            }
-           
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black)
     }
 }
 
@@ -183,8 +156,6 @@ struct CompletionView: View {
             
             Text("Alle Sachen gesammelt!")
                 .fontWeight(.bold)
-
-
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
