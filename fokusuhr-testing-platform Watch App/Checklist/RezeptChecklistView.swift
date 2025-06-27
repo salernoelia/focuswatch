@@ -1,46 +1,50 @@
 import SwiftUI
 
-struct ChecklistItem: Identifiable {
+struct RezeptChecklistItem: Identifiable {
     let id = UUID()
     let title: String
     let imageName: String
     let color: Color
 }
 
-enum ChecklistState {
+enum RezeptChecklistState {
     case instructions
-    case checklist
+    case RezeptChecklist
     case completed
 }
 
-struct ChecklistView: View {
-    @State private var allItems: [ChecklistItem] = [
-        ChecklistItem(title: "Eine Schere", imageName: "scissors", color: .red),
-        ChecklistItem(title: "Ein Lineal", imageName: "ruler", color: .blue),
-        ChecklistItem(title: "Ein Bleistift", imageName: "pencil", color: .yellow),
-        ChecklistItem(title: "Ein Leimstift", imageName: "gluestick", color: .purple),
-        ChecklistItem(title: "Buntes Papier", imageName: "doc.fill", color: .green),
-        ChecklistItem(title: "Wolle", imageName: "oval.fill", color: .pink),
-        ChecklistItem(title: "Wackelaugen", imageName: "eye.fill", color: .cyan),
-        ChecklistItem(title: "Locher", imageName: "circle.grid.cross.fill", color: .orange)
+struct RezeptChecklistView: View {
+    @State private var allItems: [RezeptChecklistItem] = [
+        RezeptChecklistItem(title: "100g Zucker", imageName: "cube.fill", color: .gray),
+        RezeptChecklistItem(title: "1 Ei", imageName: "oval.fill", color: .yellow),
+        RezeptChecklistItem(title: "100g Haselnüsse", imageName: "circle.fill", color: .brown),
+        RezeptChecklistItem(title: "75g Schokoladenpulver", imageName: "powdersign", color: .brown),
+        RezeptChecklistItem(title: "1 EL Maizena", imageName: "tablespoon.fill", color: .orange),
+        RezeptChecklistItem(title: "1 Schüssel", imageName: "bowl.fill", color: .blue),
+        RezeptChecklistItem(title: "1 Kelle", imageName: "ladle.fill", color: .gray),
+        RezeptChecklistItem(title: "1 Backblech", imageName: "rectangle.fill", color: .gray),
+        RezeptChecklistItem(title: "1 Backpapier", imageName: "doc.fill", color: .gray),
+        RezeptChecklistItem(title: "1 Waage", imageName: "scale.3d", color: .green),
+        RezeptChecklistItem(title: "1 Messlöffel", imageName: "spoon.fill", color: .purple),
+        RezeptChecklistItem(title: "2 Topflappen", imageName: "hand.raised.fill", color: .red)
     ]
     
-    @State private var remainingItems: [ChecklistItem] = []
-    @State private var collectedItems: [ChecklistItem] = []
+    @State private var remainingItems: [RezeptChecklistItem] = []
+    @State private var collectedItems: [RezeptChecklistItem] = []
     @State private var currentIndex = 0
-    @State private var state: ChecklistState = .instructions
+    @State private var state: RezeptChecklistState = .instructions
     
     var body: some View {
         switch state {
         case .instructions:
-            InstructionsView {
+            RezeptInstructionsView {
                 withAnimation(.easeInOut) {
                     remainingItems = allItems
-                    state = .checklist
+                    state = .RezeptChecklist
                 }
             }
-        case .checklist:
-            ChecklistMainView(
+        case .RezeptChecklist:
+            RezeptChecklistMainView(
                 remainingItems: $remainingItems,
                 collectedItems: $collectedItems,
                 currentIndex: $currentIndex,
@@ -51,12 +55,12 @@ struct ChecklistView: View {
                 }
             )
         case .completed:
-            CompletionView()
+            RezeptCompletionView()
         }
     }
 }
 
-struct InstructionsView: View {
+struct RezeptInstructionsView: View {
     let onStart: () -> Void
     
     var body: some View {
@@ -88,9 +92,9 @@ struct InstructionsView: View {
         .padding()
     }
 }
-struct ChecklistMainView: View {
-    @Binding var remainingItems: [ChecklistItem]
-    @Binding var collectedItems: [ChecklistItem]
+struct RezeptChecklistMainView: View {
+    @Binding var remainingItems: [RezeptChecklistItem]
+    @Binding var collectedItems: [RezeptChecklistItem]
     @Binding var currentIndex: Int
     let onComplete: () -> Void
     
@@ -104,14 +108,14 @@ struct ChecklistMainView: View {
                 Spacer()
                 
                 if currentIndex < remainingItems.count {
-                    ChecklistCard(
+                    RezeptChecklistCard(
                         item: remainingItems[currentIndex],
                         onAdd: addCurrentItem,
                         onSkip: skipCurrentItem
                     )
                     .id(remainingItems[currentIndex].id)
                 } else if !remainingItems.isEmpty {
-                    ChecklistCard(
+                    RezeptChecklistCard(
                         item: remainingItems[0],
                         onAdd: addCurrentItem,
                         onSkip: skipCurrentItem
@@ -124,7 +128,7 @@ struct ChecklistMainView: View {
                 
                 Spacer()
                 
-                ProgressIndicator(
+                RezeptProgressIndicator(
                     totalItems: totalItems,
                     collectedCount: collectedItems.count
                 )
@@ -156,7 +160,7 @@ struct ChecklistMainView: View {
     }
 }
 
-struct ProgressIndicator: View {
+struct RezeptProgressIndicator: View {
     let totalItems: Int
     let collectedCount: Int
     
@@ -173,7 +177,7 @@ struct ProgressIndicator: View {
     }
 }
 
-struct CompletionView: View {
+struct RezeptCompletionView: View {
     var body: some View {
         VStack(spacing: 10) {
             Image(systemName: "checkmark.circle.fill")
@@ -192,8 +196,8 @@ struct CompletionView: View {
     }
 }
 
-struct ChecklistCard: View {
-    let item: ChecklistItem
+struct RezeptChecklistCard: View {
+    let item: RezeptChecklistItem
     let onAdd: () -> Void
     let onSkip: () -> Void
     
@@ -318,5 +322,5 @@ struct ChecklistCard: View {
 }
 
 #Preview {
-    ChecklistView()
+    RezeptChecklistView()
 }

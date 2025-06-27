@@ -7,10 +7,10 @@ struct WatchView: View {
     
     private let prototypeApps: [PrototypeApp] = [
         PrototypeApp(
-            title: "Checkliste",
-            description: "Interaktives task management",
+            title: "Bastelliste",
+            description: "Interaktives Checkliste",
             color: .blue,
-            destination: AnyView(ChecklistView())
+            destination: AnyView(BastelChecklistView())
         ),
         PrototypeApp(
             title: "Farbatmung",
