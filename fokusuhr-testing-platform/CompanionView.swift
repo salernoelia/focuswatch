@@ -5,7 +5,8 @@ struct CompanionView: View {
     @StateObject private var watchConnector = WatchConnector()
     
     private let prototypeApps = [
-        ("Checkliste", "Interaktives task management", Color.blue),
+        ("Bastelliste", "Interaktive Checkliste", Color.blue),
+        ("Rezeptcheckliste", "Interaktive Checkliste", Color.yellow),
         ("Farbatmung", "Beruhigende Atemübungen", Color.green),
         ("Fidget Spinner", "Digitaler Fidget Spinner", Color.orange)
     ]

@@ -30,7 +30,7 @@ struct ColorBreathingView: View {
                 }
                 .frame(width: 120, height: 120)
                 
-                Text(isInhaling ? "Breathe In" : "Breathe Out")
+                Text(isInhaling ? "Einatmen" : "Ausatmen")
                     .font(.caption)
                     .foregroundColor(.white.opacity(0.8))
                     .animation(.easeInOut(duration: 4), value: isInhaling)

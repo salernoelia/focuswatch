@@ -65,7 +65,7 @@ struct RezeptInstructionsView: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            Text("Bastelsachen")
+            Text("Schoggikugeln")
                 .font(.headline)
                 .fontWeight(.bold)
             

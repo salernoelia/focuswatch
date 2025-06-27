@@ -8,9 +8,15 @@ struct WatchView: View {
     private let prototypeApps: [PrototypeApp] = [
         PrototypeApp(
             title: "Bastelliste",
-            description: "Interaktives Checkliste",
+            description: "Interaktive Checkliste",
             color: .blue,
             destination: AnyView(BastelChecklistView())
+        ),
+        PrototypeApp(
+            title: "Rezeptcheckliste",
+            description: "Interaktives Checkliste",
+            color: .yellow,
+            destination: AnyView(RezeptChecklistView())
         ),
         PrototypeApp(
             title: "Farbatmung",
