@@ -6,71 +6,90 @@ struct FidgetSpinnerView: View {
     @State private var velocity: Double = 0
     @State private var lastAngle: Double = 0
     @State private var isDragging = false
+    @State private var centerPoint: CGPoint = .zero
     
     var body: some View {
-        ZStack {
-            Color.black
-                .ignoresSafeArea()
-            
-            SpinnerWheel(rotation: rotation)
+        GeometryReader { geometry in
+            ZStack {
+                Color.black
+                    .ignoresSafeArea()
+                
+                ZStack {
+                    Circle()
+                        .fill(Color.clear)
+                        .frame(width: 120, height: 120)
+                        .contentShape(Circle())
+                    
+                    SpinnerWheel()
+                }
                 .rotationEffect(.degrees(rotation))
-                .animation(.interpolatingSpring(stiffness: 50, damping: 8), value: isDragging ? 0 : rotation)
+                .animation(isDragging ? nil : .easeOut(duration: abs(velocity) / 100), value: rotation)
                 .gesture(
-                    DragGesture()
+                    DragGesture(coordinateSpace: .local)
                         .onChanged { value in
                             if !isDragging {
                                 isDragging = true
-                                lastAngle = atan2(value.location.y - 60, value.location.x - 60) * (180 / Double.pi)
+                                centerPoint = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                                lastAngle = calculateAngle(from: centerPoint, to: value.location)
                             }
                             
-                            let currentAngle = atan2(value.location.y - 60, value.location.x - 60) * (180 / Double.pi)
-                            let angleDelta = currentAngle - lastAngle
+                            let currentAngle = calculateAngle(from: centerPoint, to: value.location)
+                            var angleDelta = currentAngle - lastAngle
                             
-                            if abs(angleDelta) < 180 {
-                                velocity = angleDelta * 0.5
-                                rotation += angleDelta
+                            if angleDelta > 180 {
+                                angleDelta -= 360
+                            } else if angleDelta < -180 {
+                                angleDelta += 360
                             }
                             
+                            velocity = angleDelta * 2
+                            rotation += angleDelta
                             lastAngle = currentAngle
                             
-                            let vibrationIntensity = abs(velocity) / 5
-                            if vibrationIntensity > 0.5 {
+                            if abs(velocity) > 5 {
                                 WKInterfaceDevice.current().play(.click)
-                            } else if vibrationIntensity > 0.2 {
-                                WKInterfaceDevice.current().play(.start)
                             }
                         }
                         .onEnded { _ in
                             isDragging = false
                             
-                            withAnimation(.easeOut(duration: 2)) {
-                                rotation += velocity * 20
-                                velocity = 0
+                            let finalRotation = rotation + velocity * 10
+                            withAnimation(.easeOut(duration: min(abs(velocity) / 50, 3))) {
+                                rotation = finalRotation
+                            }
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                velocity *= 0.95
                             }
                         }
                 )
+            }
         }
+    }
+    
+    private func calculateAngle(from center: CGPoint, to point: CGPoint) -> Double {
+        let deltaX = point.x - center.x
+        let deltaY = point.y - center.y
+        return atan2(deltaY, deltaX) * (180 / Double.pi)
     }
 }
 
 struct SpinnerWheel: View {
-    let rotation: Double
-    
     var body: some View {
         ZStack {
             ForEach(0..<8, id: \.self) { index in
                 Circle()
                     .fill(Color.white)
-                    .frame(width: 7, height: 7)
-                    .offset(y: -50)
+                    .frame(width: 8, height: 8)
+                    .offset(y: -45)
                     .rotationEffect(.degrees(Double(index) * 45))
             }
             
             Circle()
                 .fill(Color.gray)
-                .frame(width: 14, height: 14)
+                .frame(width: 16, height: 16)
         }
-        .frame(width: 170, height: 170)
+        .frame(width: 120, height: 120)
     }
 }
 
