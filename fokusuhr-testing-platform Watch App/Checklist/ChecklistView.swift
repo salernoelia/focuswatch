@@ -88,34 +88,47 @@ struct InstructionsView: View {
         .padding()
     }
 }
-
 struct ChecklistMainView: View {
     @Binding var remainingItems: [ChecklistItem]
     @Binding var collectedItems: [ChecklistItem]
     @Binding var currentIndex: Int
     let onComplete: () -> Void
     
+    private let totalItems = 8
+    
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
             
-            if currentIndex < remainingItems.count {
-                ChecklistCard(
-                    item: remainingItems[currentIndex],
-                    onAdd: addCurrentItem,
-                    onSkip: skipCurrentItem
-                )
-                .id(remainingItems[currentIndex].id)
-            } else if !remainingItems.isEmpty {
-                ChecklistCard(
-                    item: remainingItems[0],
-                    onAdd: addCurrentItem,
-                    onSkip: skipCurrentItem
-                )
-                .id(remainingItems[0].id)
-                .onAppear {
-                    currentIndex = 0
+            VStack {
+                Spacer()
+                
+                if currentIndex < remainingItems.count {
+                    ChecklistCard(
+                        item: remainingItems[currentIndex],
+                        onAdd: addCurrentItem,
+                        onSkip: skipCurrentItem
+                    )
+                    .id(remainingItems[currentIndex].id)
+                } else if !remainingItems.isEmpty {
+                    ChecklistCard(
+                        item: remainingItems[0],
+                        onAdd: addCurrentItem,
+                        onSkip: skipCurrentItem
+                    )
+                    .id(remainingItems[0].id)
+                    .onAppear {
+                        currentIndex = 0
+                    }
                 }
+                
+                Spacer()
+                
+                ProgressIndicator(
+                    totalItems: totalItems,
+                    collectedCount: collectedItems.count
+                )
+                .padding(.bottom, 8)
             }
         }
     }
@@ -143,9 +156,26 @@ struct ChecklistMainView: View {
     }
 }
 
+struct ProgressIndicator: View {
+    let totalItems: Int
+    let collectedCount: Int
+    
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(0..<totalItems, id: \.self) { index in
+                Circle()
+                    .fill(index < collectedCount ? Color.green : Color.white.opacity(0.3))
+                    .frame(width: 6, height: 6)
+                    .scaleEffect(index < collectedCount ? 1.2 : 1.0)
+                    .animation(.spring(response: 0.3), value: collectedCount)
+            }
+        }
+    }
+}
+
 struct CompletionView: View {
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 10) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 60))
                 .foregroundColor(.green)
@@ -154,17 +184,11 @@ struct CompletionView: View {
                 .foregroundColor(.white)
                 .fontWeight(.bold)
             
-            Text("Alle Sachen gesammelt!")
-                .fontWeight(.bold)
+            Text("Alles gesammelt.")
+
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(
-            LinearGradient(
-                gradient: Gradient(colors: [.green, .blue]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
+
+        
     }
 }
 
