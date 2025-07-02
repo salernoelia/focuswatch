@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 struct EditableChecklistItem: Identifiable, Codable {
-    let id = UUID()
+    var id = UUID()
     var title: String
     var imageName: String
     var colorName: String
