@@ -30,7 +30,20 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
                     if let appIndex = message["appIndex"] as? Int {
                         self.currentView = .app(appIndex)
                     }
-                case "returnToMainMenu":
+                case "returnToMainMenu", "wakeUp":
+                    self.currentView = .mainMenu
+                default:
+                    break
+                }
+            }
+        }
+    }
+    
+    func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
+        DispatchQueue.main.async {
+            if let action = applicationContext["action"] as? String {
+                switch action {
+                case "wakeUp":
                     self.currentView = .mainMenu
                 default:
                     break

@@ -53,7 +53,7 @@ class VibrationManager: ObservableObject {
     }
     
     func updateProgressiveVibration(velocity: Double) {
-        guard velocity > 1 else { 
+        guard velocity > 0.5 else { 
             stopProgressiveVibration()
             return
         }

@@ -13,15 +13,13 @@ struct CompanionView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 20) {
-                Text("Watch Remote Control")
-                    .font(.title)
-                    .fontWeight(.bold)
+            VStack(spacing: 12) {
                 
                 Text("Connection: \(watchConnector.isConnected ? "Connected" : "Disconnected")")
                     .foregroundColor(watchConnector.isConnected ? .green : .red)
                 
                 VStack(spacing: 12) {
+                
                     ForEach(Array(prototypeApps.enumerated()), id: \.offset) { index, app in
                         Button(action: {
                             watchConnector.switchToApp(index: index)

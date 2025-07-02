@@ -1,9 +1,15 @@
 import SwiftUI
 import WatchConnectivity
 
+enum WatchViewState {
+    case mainMenu
+    case app(Int)
+}
+
 struct WatchView: View {
     @StateObject private var watchConnector = WatchConnector()
     @State private var currentView: WatchViewState = .mainMenu
+    @State private var selectedAppIndex: Int? = nil
     
     private let prototypeApps: [PrototypeApp] = [
         PrototypeApp(
@@ -33,41 +39,45 @@ struct WatchView: View {
     ]
     
     var body: some View {
-        TabView {
-            switch currentView {
-            case .mainMenu:
-                ScrollView {
-                    LazyVStack(spacing: 12) {
-                        ForEach(prototypeApps, id: \.id) { app in
-                            NavigationLink(destination: app.destination) {
-                                AppCard(app: app)
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                        }
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.top, 8)
-                }
-                .navigationTitle("Apps")
-                .navigationBarTitleDisplayMode(.inline)
-
-            case .app(let index):
-                if index < prototypeApps.count {
-                    prototypeApps[index].destination
+        NavigationView {
+            Group {
+                if let selectedIndex = selectedAppIndex, selectedIndex < prototypeApps.count {
+                    prototypeApps[selectedIndex].destination
                         .navigationBarHidden(true)
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(Array(prototypeApps.enumerated()), id: \.offset) { index, app in
+                                NavigationLink(
+                                    destination: app.destination,
+                                    tag: index,
+                                    selection: $selectedAppIndex
+                                ) {
+                                    AppCard(app: app)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.top, 8)
+                    }
+                    .navigationTitle("Apps")
+                    .navigationBarTitleDisplayMode(.inline)
                 }
             }
         }
-        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
         .onReceive(watchConnector.$currentView) { newView in
             currentView = newView
+            switch newView {
+            case .mainMenu:
+                selectedAppIndex = nil
+            case .app(let index):
+                if index < prototypeApps.count {
+                    selectedAppIndex = index
+                }
+            }
         }
     }
-}
-
-enum WatchViewState {
-    case mainMenu
-    case app(Int)
 }
 
 #Preview {

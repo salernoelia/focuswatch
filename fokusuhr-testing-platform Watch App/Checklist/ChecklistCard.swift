@@ -1,3 +1,11 @@
+//
+//  ChecklistCard.swift
+//  fokusuhr-testing-platform
+//
+//  Created by Elia Salerno on 02.07.2025.
+//
+
+
 import SwiftUI
 
 struct ChecklistCard<Item: ChecklistItem>: View {
@@ -37,7 +45,7 @@ struct ChecklistCard<Item: ChecklistItem>: View {
                     .fill(Color.black.opacity(0.3))
                 
                 Rectangle()
-                    .fill(item.color.opacity(0.4))
+                    .fill(item.color.opacity(0.2))
             }
         )
         .clipShape(RoundedRectangle(cornerRadius: 16))

@@ -60,4 +60,6 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             print("Error sending message: \(error.localizedDescription)")
         }
     }
+    
+   
 }
