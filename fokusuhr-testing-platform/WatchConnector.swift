@@ -3,7 +3,7 @@
 //  fokusuhr-testing-platform
 //
 //  Created by Elia Salerno on 26.06.2025.
-//
+// 
 
 import Foundation
 import WatchConnectivity

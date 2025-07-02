@@ -8,6 +8,8 @@ struct FidgetSpinnerView: View {
     @State private var isDragging = false
     @State private var centerPoint: CGPoint = .zero
     
+    private let vibrationManager = VibrationManager.shared
+    
     var body: some View {
         GeometryReader { geometry in
             ZStack {
@@ -42,13 +44,11 @@ struct FidgetSpinnerView: View {
                                 angleDelta += 360
                             }
                             
-                            velocity = angleDelta * 2
+                            velocity = angleDelta * 4 
                             rotation += angleDelta
                             lastAngle = currentAngle
                             
-                            if abs(velocity) > 5 {
-                                WKInterfaceDevice.current().play(.click)
-                            }
+                            vibrationManager.updateProgressiveVibration(velocity: abs(velocity))
                         }
                         .onEnded { _ in
                             isDragging = false
@@ -58,12 +58,28 @@ struct FidgetSpinnerView: View {
                                 rotation = finalRotation
                             }
                             
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                velocity *= 0.95
+                            if abs(velocity) > 1 {
+                                vibrationManager.startProgressiveVibration(velocity: abs(velocity))
+                                
+                                Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true) { timer in
+                                    velocity *= 0.98
+                                    
+                                    if abs(velocity) < 1 {
+                                        vibrationManager.stopProgressiveVibration()
+                                        timer.invalidate()
+                                    } else {
+                                        vibrationManager.updateProgressiveVibration(velocity: abs(velocity))
+                                    }
+                                }
                             }
                         }
                 )
+                .allowsHitTesting(true)
+                .focusable(false)
             }
+        }
+        .onDisappear {
+            vibrationManager.stopProgressiveVibration()
         }
     }
     

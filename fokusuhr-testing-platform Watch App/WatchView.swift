@@ -33,30 +33,32 @@ struct WatchView: View {
     ]
     
     var body: some View {
-        Group {
+        TabView {
             switch currentView {
             case .mainMenu:
-                NavigationStack {
-                    ScrollView {
-                        LazyVStack(spacing: 12) {
-                            ForEach(prototypeApps, id: \.id) { app in
-                                NavigationLink(destination: app.destination) {
-                                    AppCard(app: app)
-                                }
-                                .buttonStyle(PlainButtonStyle())
+                ScrollView {
+                    LazyVStack(spacing: 12) {
+                        ForEach(prototypeApps, id: \.id) { app in
+                            NavigationLink(destination: app.destination) {
+                                AppCard(app: app)
                             }
+                            .buttonStyle(PlainButtonStyle())
                         }
-                        .padding(.horizontal)
                     }
-                    .navigationTitle("Apps")
-                    .navigationBarTitleDisplayMode(.inline)
+                    .padding(.horizontal, 8)
+                    .padding(.top, 8)
                 }
+                .navigationTitle("Apps")
+                .navigationBarTitleDisplayMode(.inline)
+
             case .app(let index):
                 if index < prototypeApps.count {
                     prototypeApps[index].destination
+                        .navigationBarHidden(true)
                 }
             }
         }
+        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
         .onReceive(watchConnector.$currentView) { newView in
             currentView = newView
         }
