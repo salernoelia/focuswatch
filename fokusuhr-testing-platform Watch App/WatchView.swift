@@ -7,7 +7,7 @@ enum WatchViewState {
 }
 
 struct WatchView: View {
-    @StateObject private var watchConnector = WatchConnector()
+    @EnvironmentObject var watchConnector: WatchConnector
     @State private var currentView: WatchViewState = .mainMenu
     @State private var selectedAppIndex: Int? = nil
     
@@ -82,4 +82,5 @@ struct WatchView: View {
 
 #Preview {
     WatchView()
+        .environmentObject(WatchConnector())
 }

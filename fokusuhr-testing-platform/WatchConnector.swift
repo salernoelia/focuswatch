@@ -10,9 +10,11 @@ import WatchConnectivity
 
 class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     @Published var isConnected = false
+    @Published var checklistConfiguration = ChecklistConfiguration.default
     
     override init() {
         super.init()
+        loadChecklistConfiguration()
         if WCSession.isSupported() {
             WCSession.default.delegate = self
             WCSession.default.activate()
@@ -22,6 +24,9 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         DispatchQueue.main.async {
             self.isConnected = activationState == .activated && session.isReachable
+            if self.isConnected {
+                self.syncChecklistToWatch()
+            }
         }
     }
     
@@ -40,6 +45,9 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     func sessionReachabilityDidChange(_ session: WCSession) {
         DispatchQueue.main.async {
             self.isConnected = session.isReachable
+            if self.isConnected {
+                self.syncChecklistToWatch()
+            }
         }
     }
     
@@ -58,6 +66,47 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
         let message = ["action": "returnToMainMenu"]
         WCSession.default.sendMessage(message, replyHandler: nil) { error in
             print("Error sending message: \(error.localizedDescription)")
+        }
+    }
+    
+    func updateChecklistConfiguration(_ configuration: ChecklistConfiguration) {
+        self.checklistConfiguration = configuration
+        saveChecklistConfiguration()
+        syncChecklistToWatch()
+    }
+    
+    private func syncChecklistToWatch() {
+        guard WCSession.default.isReachable else { return }
+        
+        do {
+            let data = try JSONEncoder().encode(checklistConfiguration)
+            let message = ["action": "updateChecklist", "data": data] as [String : Any]
+            WCSession.default.sendMessage(message, replyHandler: nil) { error in
+                print("Error syncing checklist: \(error.localizedDescription)")
+            }
+        } catch {
+            print("Error encoding checklist: \(error.localizedDescription)")
+        }
+    }
+    
+    private func saveChecklistConfiguration() {
+        do {
+            let data = try JSONEncoder().encode(checklistConfiguration)
+            UserDefaults.standard.set(data, forKey: "checklistConfiguration")
+        } catch {
+            print("Error saving checklist configuration: \(error.localizedDescription)")
+        }
+    }
+    
+    private func loadChecklistConfiguration() {
+        guard let data = UserDefaults.standard.data(forKey: "checklistConfiguration") else {
+            return
+        }
+        
+        do {
+            checklistConfiguration = try JSONDecoder().decode(ChecklistConfiguration.self, from: data)
+        } catch {
+            print("Error loading checklist configuration: \(error.localizedDescription)")
         }
     }
     

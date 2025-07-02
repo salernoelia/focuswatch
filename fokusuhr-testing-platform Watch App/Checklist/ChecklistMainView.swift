@@ -56,8 +56,10 @@ struct ChecklistMainView<Item: ChecklistItem>: View {
         let item = remainingItems[currentIndex]
         collectedItems.append(item)
         remainingItems.remove(at: currentIndex)
+        VibrationManager.shared.mediumVibration()
         
         if remainingItems.isEmpty {
+            VibrationManager.shared.strongVibration()
             onComplete()
         } else {
             withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {

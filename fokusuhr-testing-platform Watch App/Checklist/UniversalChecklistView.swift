@@ -7,6 +7,8 @@ protocol ChecklistItem: Identifiable {
     var color: Color { get }
 }
 
+extension EditableChecklistItem: ChecklistItem {}
+
 enum ChecklistState {
     case instructions
     case checklist

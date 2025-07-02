@@ -3,6 +3,7 @@ import WatchConnectivity
 
 struct CompanionView: View {
     @StateObject private var watchConnector = WatchConnector()
+    @State private var showingEditor = false
     
     private let prototypeApps = [
         ("Bastelliste", "Interaktive Checkliste", Color.blue),
@@ -50,10 +51,20 @@ struct CompanionView: View {
                     .padding()
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(8)
+                    
+                    Button("Edit Checklists") {
+                        showingEditor = true
+                    }
+                    .padding()
+                    .background(Color.blue.opacity(0.2))
+                    .cornerRadius(8)
                 }
             }
             .padding()
             .navigationTitle("Companion")
+        }
+        .sheet(isPresented: $showingEditor) {
+            ChecklistEditorView(watchConnector: watchConnector)
         }
     }
 }

@@ -10,9 +10,11 @@ import WatchConnectivity
 
 class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     @Published var currentView: WatchViewState = .mainMenu
+    @Published var checklistConfiguration = ChecklistConfiguration.default
     
     override init() {
         super.init()
+        loadChecklistConfiguration()
         if WCSession.isSupported() {
             WCSession.default.delegate = self
             WCSession.default.activate()
@@ -32,6 +34,10 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
                     }
                 case "returnToMainMenu", "wakeUp":
                     self.currentView = .mainMenu
+                case "updateChecklist":
+                    if let data = message["data"] as? Data {
+                        self.updateChecklistConfiguration(from: data)
+                    }
                 default:
                     break
                 }
@@ -49,6 +55,36 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
                     break
                 }
             }
+        }
+    }
+    
+    private func updateChecklistConfiguration(from data: Data) {
+        do {
+            checklistConfiguration = try JSONDecoder().decode(ChecklistConfiguration.self, from: data)
+            saveChecklistConfiguration()
+        } catch {
+            print("Error decoding checklist configuration: \(error.localizedDescription)")
+        }
+    }
+    
+    private func saveChecklistConfiguration() {
+        do {
+            let data = try JSONEncoder().encode(checklistConfiguration)
+            UserDefaults.standard.set(data, forKey: "checklistConfiguration")
+        } catch {
+            print("Error saving checklist configuration: \(error.localizedDescription)")
+        }
+    }
+    
+    private func loadChecklistConfiguration() {
+        guard let data = UserDefaults.standard.data(forKey: "checklistConfiguration") else {
+            return
+        }
+        
+        do {
+            checklistConfiguration = try JSONDecoder().decode(ChecklistConfiguration.self, from: data)
+        } catch {
+            print("Error loading checklist configuration: \(error.localizedDescription)")
         }
     }
 }
