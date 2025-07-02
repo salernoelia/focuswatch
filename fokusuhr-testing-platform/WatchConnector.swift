@@ -84,8 +84,27 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             WCSession.default.sendMessage(message, replyHandler: nil) { error in
                 print("Error syncing checklist: \(error.localizedDescription)")
             }
+            
+            syncCustomImagesToWatch()
         } catch {
             print("Error encoding checklist: \(error.localizedDescription)")
+        }
+    }
+    
+    private func syncCustomImagesToWatch() {
+        for imageName in checklistConfiguration.customImages {
+            if let image = ImageManager.shared.loadImage(named: imageName),
+               let imageData = image.pngData() {
+                let message = [
+                    "action": "syncImage",
+                    "imageName": imageName,
+                    "imageData": imageData
+                ] as [String : Any]
+                
+                WCSession.default.sendMessage(message, replyHandler: nil) { error in
+                    print("Error syncing image \(imageName): \(error.localizedDescription)")
+                }
+            }
         }
     }
     

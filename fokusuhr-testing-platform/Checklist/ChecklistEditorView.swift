@@ -4,6 +4,7 @@ struct ChecklistEditorView: View {
     @ObservedObject var watchConnector: WatchConnector
     @State private var editingConfiguration: ChecklistConfiguration
     @State private var selectedTab = 0
+    @State private var showingGallery = false
     @Environment(\.presentationMode) var presentationMode
     
     init(watchConnector: WatchConnector) {
@@ -27,7 +28,8 @@ struct ChecklistEditorView: View {
                             item: binding(for: item, in: selectedTab == 0 ? \.bastelItems : \.rezeptItems),
                             onDelete: {
                                 deleteItem(item, from: selectedTab == 0 ? \.bastelItems : \.rezeptItems)
-                            }
+                            },
+                            watchConnector: watchConnector
                         )
                     }
                     .onDelete { indexSet in
@@ -54,11 +56,19 @@ struct ChecklistEditorView: View {
                 leading: Button("Cancel") {
                     presentationMode.wrappedValue.dismiss()
                 },
-                trailing: Button("Save") {
-                    watchConnector.updateChecklistConfiguration(editingConfiguration)
-                    presentationMode.wrappedValue.dismiss()
+                trailing: HStack {
+                    Button("Gallery") {
+                        showingGallery = true
+                    }
+                    Button("Save") {
+                        watchConnector.updateChecklistConfiguration(editingConfiguration)
+                        presentationMode.wrappedValue.dismiss()
+                    }
                 }
             )
+        }
+        .sheet(isPresented: $showingGallery) {
+            ImageGalleryView(watchConnector: watchConnector)
         }
     }
     
@@ -81,13 +91,18 @@ struct ChecklistEditorView: View {
 struct ChecklistItemRow: View {
     @Binding var item: EditableChecklistItem
     let onDelete: () -> Void
+    @ObservedObject var watchConnector: WatchConnector
     
-    private let availableImages = [
+    private let builtInImages = [
         "Schere", "Lineal", "Bleistift", "Leimstift", "Buntes Papier", "Wolle", 
         "Wackelaugen", "Locher", "Zucker", "Ei", "Haselnüsse", "Schokoladenpulver",
         "Maizena", "Schüssel", "Kelle", "Backblech", "Backpapier", "Waage",
         "Messlöffel", "Topflappen"
     ]
+    
+    private var allAvailableImages: [String] {
+        return builtInImages + watchConnector.checklistConfiguration.customImages
+    }
     
     private let availableColors: [(String, Color)] = [
         ("red", .red), ("blue", .blue), ("yellow", .yellow), ("purple", .purple),
@@ -111,7 +126,7 @@ struct ChecklistItemRow: View {
             HStack {
                 Text("Image:")
                 Menu(item.imageName) {
-                    ForEach(availableImages, id: \.self) { imageName in
+                    ForEach(allAvailableImages, id: \.self) { imageName in
                         Button(imageName) {
                             item.imageName = imageName
                         }

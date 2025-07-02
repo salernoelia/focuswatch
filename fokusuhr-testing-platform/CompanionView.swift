@@ -4,6 +4,7 @@ import WatchConnectivity
 struct CompanionView: View {
     @StateObject private var watchConnector = WatchConnector()
     @State private var showingEditor = false
+    @State private var showingGallery = false
     
     private let prototypeApps = [
         ("Bastelliste", "Interaktive Checkliste", Color.blue),
@@ -58,6 +59,13 @@ struct CompanionView: View {
                     .padding()
                     .background(Color.blue.opacity(0.2))
                     .cornerRadius(8)
+                    
+                    Button("Image Gallery") {
+                        showingGallery = true
+                    }
+                    .padding()
+                    .background(Color.purple.opacity(0.2))
+                    .cornerRadius(8)
                 }
             }
             .padding()
@@ -65,6 +73,9 @@ struct CompanionView: View {
         }
         .sheet(isPresented: $showingEditor) {
             ChecklistEditorView(watchConnector: watchConnector)
+        }
+        .sheet(isPresented: $showingGallery) {
+            ImageGalleryView(watchConnector: watchConnector)
         }
     }
 }

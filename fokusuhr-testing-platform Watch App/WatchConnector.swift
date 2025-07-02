@@ -7,6 +7,7 @@
 
 import Foundation
 import WatchConnectivity
+import UIKit
 
 class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     @Published var currentView: WatchViewState = .mainMenu
@@ -38,6 +39,15 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
                     if let data = message["data"] as? Data {
                         self.updateChecklistConfiguration(from: data)
                     }
+                case "syncImage":
+                   if let imageName = message["imageName"] as? String,
+                      let imageData = message["imageData"] as? Data,
+                      let image = UIImage(data: imageData) {
+                       let success = ImageManager.shared.saveImage(image, withName: imageName)
+                       if !success {
+                           print("Failed to save image: \(imageName)")
+                       }
+                   }
                 default:
                     break
                 }

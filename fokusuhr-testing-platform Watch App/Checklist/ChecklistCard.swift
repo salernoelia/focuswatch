@@ -35,8 +35,7 @@ struct ChecklistCard<Item: ChecklistItem>: View {
         .frame(height: 130)
         .background(
             ZStack {
-                Image(item.imageName)
-                    .resizable()
+                DynamicImage(imageName: item.imageName)
                     .aspectRatio(contentMode: .fill)
                     .frame(height: 130)
                     .clipped()

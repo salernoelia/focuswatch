@@ -49,6 +49,8 @@ private func colorNameFromColor(_ color: Color) -> String {
 struct ChecklistConfiguration: Codable {
     var bastelItems: [EditableChecklistItem]
     var rezeptItems: [EditableChecklistItem]
+    var customImages: [String]
+    var imageDisplayNames: [String: String]
     
     static let `default` = ChecklistConfiguration(
         bastelItems: [
@@ -74,6 +76,8 @@ struct ChecklistConfiguration: Codable {
             EditableChecklistItem(title: "1 Waage", imageName: "Waage", color: .green),
             EditableChecklistItem(title: "1 Messlöffel", imageName: "Messlöffel", color: .purple),
             EditableChecklistItem(title: "2 Topflappen", imageName: "Topflappen", color: .red)
-        ]
+        ],
+        customImages: [],
+        imageDisplayNames: [:]
     )
 }
