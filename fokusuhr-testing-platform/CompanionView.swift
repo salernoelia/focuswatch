@@ -3,14 +3,27 @@ import WatchConnectivity
 
 struct CompanionView: View {
     @StateObject private var watchConnector = WatchConnector()
+    @StateObject private var checklistManager: ChecklistManager
     @State private var showingEditor = false
     
-    private let prototypeApps = [
-        ("Bastelliste", "Interaktive Checkliste", Color.blue),
-        ("Rezeptcheckliste", "Interaktive Checkliste", Color.yellow),
-        ("Farbatmung", "Beruhigende Atemübungen", Color.green),
-        ("Fidget Spinner", "Digitaler Fidget Spinner", Color.orange)
-    ]
+    init() {
+        let connector = WatchConnector()
+        self._watchConnector = StateObject(wrappedValue: connector)
+        self._checklistManager = StateObject(wrappedValue: ChecklistManager(watchConnector: connector))
+    }
+    
+    private var prototypeApps: [(String, String, Color)] {
+        var apps = checklistManager.configuration.checklistTypes.map { type in
+            (type.displayName, "Interaktive Checkliste", type.color)
+        }
+        
+        apps.append(contentsOf: [
+            ("Farbatmung", "Beruhigende Atemübungen", Color.green),
+            ("Fidget Spinner", "Digitaler Fidget Spinner", Color.orange)
+        ])
+        
+        return apps
+    }
     
     var body: some View {
         NavigationView {
@@ -64,7 +77,7 @@ struct CompanionView: View {
             .navigationTitle("Companion")
         }
         .sheet(isPresented: $showingEditor) {
-            ChecklistEditorView(watchConnector: watchConnector)
+            ChecklistEditorView(checklistManager: checklistManager)
         }
     }
 }
