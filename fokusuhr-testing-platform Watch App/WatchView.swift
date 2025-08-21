@@ -61,24 +61,7 @@ struct WatchView: View {
                     prototypeApps[selectedIndex].destination
                         .navigationBarHidden(true)
                 } else {
-                    ScrollView {
-                        LazyVStack(spacing: 12) {
-                            ForEach(Array(prototypeApps.enumerated()), id: \.offset) { index, app in
-                                NavigationLink(
-                                    destination: app.destination,
-                                    tag: index,
-                                    selection: $selectedAppIndex
-                                ) {
-                                    AppCard(app: app)
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                            }
-                        }
-                        .padding(.horizontal, 8)
-                        .padding(.top, 8)
-                    }
-                    .navigationTitle("Apps")
-                    .navigationBarTitleDisplayMode(.inline)
+                    mainMenuView
                 }
             }
         }
@@ -93,6 +76,35 @@ struct WatchView: View {
                 }
             }
         }
+    }
+
+    private var mainMenuView: some View {
+        ScrollView {
+            LazyVStack(spacing: 12) {
+                ForEach(Array(prototypeApps.enumerated()), id: \.offset) { index, app in
+                    appNavigationLink(for: app, at: index)
+                }
+            }
+            .padding(.horizontal, 8)
+            .padding(.top, 8)
+        }
+        .navigationTitle("Apps")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func appNavigationLink(for app: PrototypeApp, at index: Int) -> some View {
+        NavigationLink(
+            destination: app.destination,
+            tag: index,
+            selection: $selectedAppIndex
+        ) {
+            AppCard(app: AppInfo(
+                title: app.title,
+                description: app.description,
+                color: app.color
+            ))
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
