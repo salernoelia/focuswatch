@@ -8,11 +8,145 @@
 import SwiftUI
 
 struct CalendarView: View {
+    @StateObject private var vm = CalendarViewModel()
+    @State private var showingForm = false
+    @State private var selectedDate: Date = Date()
+    @State private var editingEvent: Event?
+    @State private var isCalendarCollapsed = false
+
+    private var eventsForSelectedDate: [Event] {
+        vm.events(on: selectedDate)
+          .sorted { $0.startTime < $1.startTime }
+    }
+    
+    private var selectedDateString: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE, MMMM d"
+        return formatter.string(from: selectedDate)
+    }
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationView {
+            VStack(spacing: 0) {
+                // Collapsible calendar section
+                VStack(spacing: 0) {
+                    // Calendar toggle header
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            isCalendarCollapsed.toggle()
+                        }
+                    } label: {
+                        HStack {
+                            Text("Calendar")
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: isCalendarCollapsed ? "chevron.down" : "chevron.up")
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 12)
+                        .background(Color(.systemGray6))
+                    }
+                    
+                    if !isCalendarCollapsed {
+                        // Native calendar
+                        DatePicker(
+                            "",
+                            selection: $selectedDate,
+                            displayedComponents: [.date]
+                        )
+                        .datePickerStyle(GraphicalDatePickerStyle())
+                        .padding(.horizontal)
+                        .padding(.bottom)
+                    }
+                }
+                
+                // Selected date header - outside calendar
+                HStack {
+                    Text(selectedDateString)
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .padding(.horizontal)
+                        .padding(.vertical, 12)
+                    Spacer()
+                }
+                .background(Color(.systemBackground))
+                
+                // Events list
+                List {
+                    if eventsForSelectedDate.isEmpty {
+                        Text("No events scheduled")
+                            .foregroundColor(.secondary)
+                            .font(.subheadline)
+                    } else {
+                        ForEach(eventsForSelectedDate) { event in
+                            EventRowView(event: event)
+                                .contextMenu {
+                                    Button {
+                                        editingEvent = event
+                                        showingForm = true
+                                    } label: {
+                                        Label("Edit", systemImage: "pencil")
+                                    }
+                                    
+                                    Button(role: .destructive) {
+                                        withAnimation {
+                                            vm.delete(event)
+                                        }
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                                .swipeActions(edge: .trailing) {
+                                    Button(role: .destructive) {
+                                        withAnimation {
+                                            vm.delete(event)
+                                        }
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                    
+                                    Button {
+                                        editingEvent = event
+                                        showingForm = true
+                                    } label: {
+                                        Label("Edit", systemImage: "pencil")
+                                    }
+                                    .tint(.blue)
+                                }
+                        }
+                    }
+                }
+                .listStyle(.insetGrouped)
+            }
+            .navigationTitle("Calendar")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        editingEvent = nil
+                        showingForm = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+            .sheet(isPresented: $showingForm, onDismiss: {
+                editingEvent = nil
+            }) {
+                EventFormView(vm: vm, defaultDate: selectedDate, editingEvent: editingEvent)
+            }
+        }
     }
 }
 
+struct CalendarView_Previews: PreviewProvider {
+    static var previews: some View {
+        CalendarView()
+    }
+}
 #Preview {
     CalendarView()
 }
