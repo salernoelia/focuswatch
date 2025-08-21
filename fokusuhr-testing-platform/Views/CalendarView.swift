@@ -28,9 +28,9 @@ struct CalendarView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // Collapsible calendar section
+
                 VStack(spacing: 0) {
-                    // Calendar toggle header
+                
                     Button {
                         withAnimation(.easeInOut(duration: 0.3)) {
                             isCalendarCollapsed.toggle()
@@ -51,7 +51,7 @@ struct CalendarView: View {
                     }
                     
                     if !isCalendarCollapsed {
-                        // Native calendar
+
                         DatePicker(
                             "",
                             selection: $selectedDate,
@@ -59,23 +59,14 @@ struct CalendarView: View {
                         )
                         .datePickerStyle(GraphicalDatePickerStyle())
                         .padding(.horizontal)
-                        .padding(.bottom)
+
                     }
                 }
                 
-                // Selected date header - outside calendar
-                HStack {
-                    Text(selectedDateString)
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .padding(.horizontal)
-                        .padding(.vertical, 12)
-                    Spacer()
-                }
-                .background(Color(.systemBackground))
+
                 
-                // Events list
                 List {
+        
                     if eventsForSelectedDate.isEmpty {
                         Text("No events scheduled")
                             .foregroundColor(.secondary)
@@ -121,7 +112,7 @@ struct CalendarView: View {
                 }
                 .listStyle(.insetGrouped)
             }
-            .navigationTitle("Calendar")
+            .navigationTitle(selectedDateString)
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
