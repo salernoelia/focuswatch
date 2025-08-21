@@ -7,13 +7,6 @@
 
 import SwiftUI
 
-struct PrototypeApp {
-    let id = UUID()
-    let title: String
-    let description: String
-    let color: Color
-    let destination: AnyView
-}
 
 
 @main

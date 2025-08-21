@@ -43,7 +43,7 @@
 		0E90AC812E4C263900A7E590 /* Exceptions for "Shared" folder in "fokusuhr-testing-platform" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				ChecklistData.swift,
+				Data/ChecklistData.swift,
 			);
 			target = 0E9D8CBE2E0D6C23002B7989 /* fokusuhr-testing-platform */;
 		};

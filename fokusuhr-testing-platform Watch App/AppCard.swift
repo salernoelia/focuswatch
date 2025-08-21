@@ -1,7 +1,15 @@
 import SwiftUI
+import SwiftUICore
+
+struct AppInfo {
+    let title: String;
+    let description: String;
+    let color: Color;
+}
+
 
 struct AppCard: View {
-    let app: PrototypeApp
+    let app: AppInfo
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {

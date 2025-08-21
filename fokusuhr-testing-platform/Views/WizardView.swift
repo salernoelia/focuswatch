@@ -62,16 +62,16 @@ struct WizardView: View {
                         Button("Put Watch into Menu State") {
                             watchConnector.returnToMainMenu()
                         }
-                        Button("Edit Checklists") {
+                        /*Button("Edit Checklists") {
                             showingEditor = true
-                        }
+                        }*/
                     }
                 }
                 .listStyle(.insetGrouped)
                 .navigationTitle("Wizard of Oz")
-                .sheet(isPresented: $showingEditor) {
+                /*.sheet(isPresented: $showingEditor) {
                     ChecklistEditorView(checklistManager: checklistManager)
-                }
+                }*/
             }
     }
 }

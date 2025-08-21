@@ -6,6 +6,13 @@ enum WatchViewState {
     case app(Int)
 }
 
+struct PrototypeApp {
+    let title: String;
+    let description: String;
+    let color: Color;
+    let destination: AnyView;
+}
+
 struct WatchView: View {
     @EnvironmentObject var watchConnector: WatchConnector
     @State private var currentView: WatchViewState = .mainMenu
