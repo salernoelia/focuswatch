@@ -11,7 +11,31 @@ import SwiftUI
 struct CompanionApp: App {
     var body: some Scene {
         WindowGroup {
-            CompanionView()
+            TabView {
+                WizardView()
+                    .tabItem {
+                        Image(systemName: "wand.and.rays")
+                        Text("Wizard")
+                    }
+
+                CalendarView()
+                    .tabItem {
+                        Image(systemName: "calendar")
+                        Text("Calendar")
+                    }
+
+                SettingsView()
+                    .tabItem {
+                        Image(systemName: "gearshape")
+                        Text("Settings")
+                    }
+
+                GalleryView()
+                    .tabItem {
+                        Image(systemName: "photo.on.rectangle.angled")
+                        Text("Gallery")
+                    }
+            }
         }
     }
 }
