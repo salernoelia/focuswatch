@@ -81,3 +81,8 @@ struct CompanionView: View {
         }
     }
 }
+
+#Preview {
+    CompanionView()
+}
+
