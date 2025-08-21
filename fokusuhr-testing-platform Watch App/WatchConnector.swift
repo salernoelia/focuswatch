@@ -85,6 +85,8 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             checklistConfiguration = try JSONDecoder().decode(ChecklistConfiguration.self, from: data)
         } catch {
             print("Error loading checklist configuration: \(error.localizedDescription)")
+            checklistConfiguration = ChecklistConfiguration.default
+            saveChecklistConfiguration()
         }
     }
 }

@@ -11,32 +11,41 @@ struct WatchView: View {
     @State private var currentView: WatchViewState = .mainMenu
     @State private var selectedAppIndex: Int? = nil
     
-    private let prototypeApps: [PrototypeApp] = [
-        PrototypeApp(
-            title: "Bastelliste",
-            description: "Interaktive Checkliste",
-            color: .blue,
-            destination: AnyView(BastelChecklistView())
-        ),
-        PrototypeApp(
-            title: "Rezeptcheckliste",
-            description: "Interaktives Checkliste",
-            color: .yellow,
-            destination: AnyView(RezeptChecklistView())
-        ),
-        PrototypeApp(
-            title: "Farbatmung",
-            description: "Beruhigende Atemübungen",
-            color: .green,
-            destination: AnyView(ColorBreathingView())
-        ),
-        PrototypeApp(
-            title: "Fidget Spinner",
-            description: "Digitaler Fidget Spinner",
-            color: .orange,
-            destination: AnyView(FidgetSpinnerView())
-        )
-    ]
+    private var prototypeApps: [PrototypeApp] {
+        var apps: [PrototypeApp] = []
+        
+        for checklistType in watchConnector.checklistConfiguration.checklistTypes {
+            apps.append(PrototypeApp(
+                title: checklistType.displayName,
+                description: "Interaktive Checkliste",
+                color: checklistType.color,
+                destination: AnyView(
+                    UniversalChecklistView(
+                        title: checklistType.displayName,
+                        instructionTitle: checklistType.displayName,
+                        items: checklistType.items
+                    )
+                )
+            ))
+        }
+        
+        apps.append(contentsOf: [
+            PrototypeApp(
+                title: "Farbatmung",
+                description: "Beruhigende Atemübungen",
+                color: .green,
+                destination: AnyView(ColorBreathingView())
+            ),
+            PrototypeApp(
+                title: "Fidget Spinner",
+                description: "Digitaler Fidget Spinner",
+                color: .orange,
+                destination: AnyView(FidgetSpinnerView())
+            )
+        ])
+        
+        return apps
+    }
     
     var body: some View {
         NavigationView {
