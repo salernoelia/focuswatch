@@ -11,7 +11,7 @@ struct ChecklistEditorView: View {
                 ForEach(checklistManager.data.checklists) { checklist in
                     NavigationLink(destination: ChecklistDetailView(checklist: checklist, checklistManager: checklistManager, galleryStorage: galleryStorage)) {
                         Text(checklist.name)
-                    }
+                    }   
                 }
                 .onDelete(perform: deleteChecklists)
                 
