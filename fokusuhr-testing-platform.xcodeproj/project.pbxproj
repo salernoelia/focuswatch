@@ -39,25 +39,7 @@
 		0E9D8CCF2E0D6C24002B7989 /* fokusuhr-testing-platform Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fokusuhr-testing-platform Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		0E90AC812E4C263900A7E590 /* Exceptions for "Shared" folder in "fokusuhr-testing-platform" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Data/ChecklistData.swift,
-			);
-			target = 0E9D8CBE2E0D6C23002B7989 /* fokusuhr-testing-platform */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		0E90AC802E4C263200A7E590 /* Shared */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				0E90AC812E4C263900A7E590 /* Exceptions for "Shared" folder in "fokusuhr-testing-platform" target */,
-			);
-			path = Shared;
-			sourceTree = "<group>";
-		};
 		0E9D8CC12E0D6C23002B7989 /* fokusuhr-testing-platform */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "fokusuhr-testing-platform";
@@ -94,7 +76,6 @@
 				0E9D8CC12E0D6C23002B7989 /* fokusuhr-testing-platform */,
 				0E9D8CD32E0D6C24002B7989 /* fokusuhr-testing-platform Watch App */,
 				0E9D8CC02E0D6C23002B7989 /* Products */,
-				0E90AC802E4C263200A7E590 /* Shared */,
 			);
 			sourceTree = "<group>";
 		};
@@ -147,7 +128,6 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				0E90AC802E4C263200A7E590 /* Shared */,
 				0E9D8CD32E0D6C24002B7989 /* fokusuhr-testing-platform Watch App */,
 			);
 			name = "fokusuhr-testing-platform Watch App";

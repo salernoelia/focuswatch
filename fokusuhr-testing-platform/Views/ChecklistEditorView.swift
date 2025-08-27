@@ -2,326 +2,181 @@ import SwiftUI
 
 struct ChecklistEditorView: View {
     @ObservedObject var checklistManager: ChecklistManager
-    @State private var selectedTypeIndex = 0
-    @State private var showingNewTypeForm = false
-    @State private var showingImageManager = false
+    @StateObject private var galleryStorage = GalleryStorage()
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         NavigationView {
-            VStack {
-                if !checklistManager.configuration.checklistTypes.isEmpty {
-                    Picker("Checklist Type", selection: $selectedTypeIndex) {
-                        ForEach(Array(checklistManager.configuration.checklistTypes.enumerated()), id: \.offset) { index, type in
-                            Text(type.displayName).tag(index)
-                        }
+            List {
+                ForEach(checklistManager.data.checklists) { checklist in
+                    NavigationLink(destination: ChecklistDetailView(checklist: checklist, checklistManager: checklistManager, galleryStorage: galleryStorage)) {
+                        Text(checklist.name)
                     }
-                    .pickerStyle(SegmentedPickerStyle())
-                    .padding()
-                    
-                    if selectedTypeIndex < checklistManager.configuration.checklistTypes.count {
-                        ChecklistTypeEditor(
-                            checklistType: binding(for: selectedTypeIndex),
-                            availableImages: checklistManager.configuration.availableImages,
-                            onDelete: {
-                                checklistManager.deleteChecklistType(checklistManager.configuration.checklistTypes[selectedTypeIndex])
-                                if selectedTypeIndex >= checklistManager.configuration.checklistTypes.count {
-                                    selectedTypeIndex = max(0, checklistManager.configuration.checklistTypes.count - 1)
-                                }
-                            }
-                        )
-                    }
-                } else {
-                    VStack {
-                        Text("No checklist types available")
-                            .font(.title2)
-                            .foregroundColor(.secondary)
-                        Button("Add First Checklist Type") {
-                            showingNewTypeForm = true
-                        }
-                        .foregroundColor(.blue)
-                    }
+                }
+                .onDelete(perform: deleteChecklists)
+                
+                Button("Add Checklist") {
+                    checklistManager.addChecklist(name: "New Checklist")
                 }
             }
-            .navigationTitle("Edit Checklists")
-            .navigationBarItems(
-                leading: Button("Done") {
-                    presentationMode.wrappedValue.dismiss()
-                },
-                trailing: HStack {
-                    Button("Images") {
-                        showingImageManager = true
-                    }
-                    Button("Add Type") {
-                        showingNewTypeForm = true
-                    }
-                }
-            )
-        }
-        .sheet(isPresented: $showingNewTypeForm) {
-            NewChecklistTypeView(checklistManager: checklistManager)
-        }
-        .sheet(isPresented: $showingImageManager) {
-            ImageManagerView(checklistManager: checklistManager)
+            .navigationTitle("Checklists")
+            .navigationBarItems(trailing: Button("Done") {
+                presentationMode.wrappedValue.dismiss()
+            })
         }
     }
     
-    private func binding(for index: Int) -> Binding<ChecklistType> {
-        return Binding(
-            get: { checklistManager.configuration.checklistTypes[index] },
-            set: { checklistManager.updateChecklistType($0) }
-        )
+    private func deleteChecklists(offsets: IndexSet) {
+        for index in offsets {
+            checklistManager.deleteChecklist(checklistManager.data.checklists[index])
+        }
     }
 }
 
-struct ChecklistTypeEditor: View {
-    @Binding var checklistType: ChecklistType
-    let availableImages: [String]
-    let onDelete: () -> Void
-    
-    private let availableColors: [(String, Color)] = [
-        ("red", .red), ("blue", .blue), ("yellow", .yellow), ("purple", .purple),
-        ("green", .green), ("pink", .pink), ("cyan", .cyan), ("orange", .orange),
-        ("gray", .gray), ("brown", .brown)
-    ]
+struct ChecklistDetailView: View {
+    @State var checklist: Checklist
+    @ObservedObject var checklistManager: ChecklistManager
+    @ObservedObject var galleryStorage: GalleryStorage
+    @State private var showingAddItem = false
     
     var body: some View {
-        VStack {
-            HStack {
-                VStack(alignment: .leading) {
-                    Text("Name:")
-                    TextField("Display Name", text: $checklistType.displayName)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-                
-                VStack(alignment: .leading) {
-                    Text("Color:")
-                    Menu {
-                        ForEach(availableColors, id: \.0) { colorName, color in
-                            Button(colorName.capitalized) {
-                                checklistType.colorName = colorName
-                            }
-                        }
-                    } label: {
-                        HStack {
-                            Circle()
-                                .fill(checklistType.color)
-                                .frame(width: 20, height: 20)
-                            Text(checklistType.colorName.capitalized)
-                        }
-                        .foregroundColor(.blue)
+        List {
+            Section {
+                TextField("Checklist Name", text: $checklist.name)
+                    .onSubmit {
+                        checklistManager.updateChecklist(checklist)
                     }
-                }
-                
-                Button("Delete Type") {
-                    onDelete()
-                }
-                .foregroundColor(.red)
-                .font(.caption)
             }
-            .padding()
             
-            List {
-                ForEach(checklistType.items) { item in
-                    ChecklistItemRow(
-                        item: binding(for: item),
-                        availableImages: availableImages,
-                        onDelete: {
-                            checklistType.items.removeAll { $0.id == item.id }
-                        }
-                    )
+            Section("Items") {
+                ForEach(checklist.items) { item in
+                    ChecklistItemEditRow(item: item, checklist: $checklist, checklistManager: checklistManager, galleryStorage: galleryStorage)
                 }
-                .onDelete { indexSet in
-                    checklistType.items.remove(atOffsets: indexSet)
-                }
+                .onDelete(perform: deleteItems)
                 
                 Button("Add Item") {
-                    let newItem = EditableChecklistItem(
-                        title: "New Item",
-                        imageName: availableImages.first ?? "Schere",
-                        color: .blue
-                    )
-                    checklistType.items.append(newItem)
+                    showingAddItem = true
                 }
-                .foregroundColor(.blue)
             }
+        }
+        .navigationTitle(checklist.name)
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showingAddItem) {
+            AddItemView(checklist: $checklist, checklistManager: checklistManager, galleryStorage: galleryStorage)
         }
     }
     
-    private func binding(for item: EditableChecklistItem) -> Binding<EditableChecklistItem> {
-        guard let index = checklistType.items.firstIndex(where: { $0.id == item.id }) else {
-            fatalError("Item not found")
+    private func deleteItems(offsets: IndexSet) {
+        for index in offsets {
+            let item = checklist.items[index]
+            checklistManager.deleteItem(from: checklist, item: item)
+            checklist.items.remove(at: index)
         }
-        
-        return Binding(
-            get: { checklistType.items[index] },
-            set: { checklistType.items[index] = $0 }
-        )
     }
 }
 
-struct ChecklistItemRow: View {
-    @Binding var item: EditableChecklistItem
-    let availableImages: [String]
-    let onDelete: () -> Void
-    
-    private let availableColors: [(String, Color)] = [
-        ("red", .red), ("blue", .blue), ("yellow", .yellow), ("purple", .purple),
-        ("green", .green), ("pink", .pink), ("cyan", .cyan), ("orange", .orange),
-        ("gray", .gray), ("brown", .brown)
-    ]
+struct ChecklistItemEditRow: View {
+    @State var item: ChecklistItem
+    @Binding var checklist: Checklist
+    @ObservedObject var checklistManager: ChecklistManager
+    @ObservedObject var galleryStorage: GalleryStorage
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                TextField("Title", text: $item.title)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+        HStack {
+            VStack(alignment: .leading) {
+                TextField("Item title", text: $item.title)
+                    .onSubmit {
+                        updateItem()
+                    }
                 
-                Button("Delete") {
-                    onDelete()
-                }
-                .foregroundColor(.red)
-                .font(.caption)
-            }
-            
-            HStack {
-                Text("Image:")
-                Menu(item.imageName) {
+                Menu("Image: \(item.imageName.isEmpty ? "None" : item.imageName)") {
+                    Button("None") {
+                        item.imageName = ""
+                        updateItem()
+                    }
+                    
                     ForEach(availableImages, id: \.self) { imageName in
                         Button(imageName) {
                             item.imageName = imageName
+                            updateItem()
                         }
                     }
                 }
-                .foregroundColor(.blue)
-                
-                Spacer()
-                
-                Text("Color:")
-                Menu {
-                    ForEach(availableColors, id: \.0) { colorName, color in
-                        Button(colorName.capitalized) {
-                            item.colorName = colorName
-                        }
-                    }
-                } label: {
-                    HStack {
-                        Circle()
-                            .fill(item.color)
-                            .frame(width: 20, height: 20)
-                        Text(item.colorName.capitalized)
-                    }
-                    .foregroundColor(.blue)
+                .font(.caption)
+            }
+            
+            if !item.imageName.isEmpty {
+                if UIImage(named: item.imageName) != nil {
+                    Image(item.imageName)
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(4)
+                } else {
+                    Image(systemName: "photo")
+                        .frame(width: 30, height: 30)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(4)
+                        .foregroundColor(.gray)
                 }
             }
-            .font(.caption)
         }
-        .padding(.vertical, 4)
+    }
+    
+    private var availableImages: [String] {
+        let watchImages = ["Schere", "Lineal", "Bleistift", "Leimstift", "Buntes Papier", "Wolle", "Wackelaugen", "Locher", "Zucker", "Ei", "Haselnüsse", "Schokoladenpulver", "Maizena", "Schüssel", "Kelle", "Backblech", "Backpapier", "Waage", "Messlöffel", "Topflappen"]
+        let galleryImages = galleryStorage.items.map { $0.label }
+        return galleryImages + watchImages.filter { UIImage(named: $0) != nil }
+    }
+    
+    private func updateItem() {
+        if let index = checklist.items.firstIndex(where: { $0.id == item.id }) {
+            checklist.items[index] = item
+            checklistManager.updateChecklist(checklist)
+        }
     }
 }
 
-struct NewChecklistTypeView: View {
+struct AddItemView: View {
+    @Binding var checklist: Checklist
     @ObservedObject var checklistManager: ChecklistManager
-    @State private var name = ""
-    @State private var displayName = ""
-    @State private var selectedColor = Color.blue
+    @ObservedObject var galleryStorage: GalleryStorage
+    @State private var title = ""
+    @State private var selectedImage = ""
     @Environment(\.presentationMode) var presentationMode
-    
-    private let availableColors: [(String, Color)] = [
-        ("red", .red), ("blue", .blue), ("yellow", .yellow), ("purple", .purple),
-        ("green", .green), ("pink", .pink), ("cyan", .cyan), ("orange", .orange),
-        ("gray", .gray), ("brown", .brown)
-    ]
     
     var body: some View {
         NavigationView {
             Form {
-                Section("Checklist Type Details") {
-                    TextField("Internal Name", text: $name)
-                    TextField("Display Name", text: $displayName)
-                    
-                    HStack {
-                        Text("Color:")
-                        Spacer()
-                        Menu {
-                            ForEach(availableColors, id: \.0) { colorName, color in
-                                Button(colorName.capitalized) {
-                                    selectedColor = color
-                                }
-                            }
-                        } label: {
-                            HStack {
-                                Circle()
-                                    .fill(selectedColor)
-                                    .frame(width: 20, height: 20)
-                                Text("Select Color")
-                            }
+                TextField("Item title", text: $title)
+                
+                Section("Image") {
+                    Picker("Select Image", selection: $selectedImage) {
+                        Text("None").tag("")
+                        ForEach(availableImages, id: \.self) { imageName in
+                            Text(imageName).tag(imageName)
                         }
                     }
                 }
             }
-            .navigationTitle("New Checklist Type")
+            .navigationTitle("Add Item")
             .navigationBarItems(
                 leading: Button("Cancel") {
                     presentationMode.wrappedValue.dismiss()
                 },
-                trailing: Button("Add") {
-                    let sanitizedName = name.lowercased().replacingOccurrences(of: " ", with: "_")
-                    checklistManager.addChecklistType(
-                        name: sanitizedName.isEmpty ? displayName.lowercased().replacingOccurrences(of: " ", with: "_") : sanitizedName,
-                        displayName: displayName,
-                        color: selectedColor
-                    )
+                trailing: Button("Save") {
+                    checklistManager.addItem(to: checklist, title: title, imageName: selectedImage)
+                    checklist.items.append(ChecklistItem(title: title, imageName: selectedImage))
                     presentationMode.wrappedValue.dismiss()
                 }
-                .disabled(displayName.isEmpty)
+                .disabled(title.isEmpty)
             )
         }
     }
-}
-
-struct ImageManagerView: View {
-    @ObservedObject var checklistManager: ChecklistManager
-    @State private var newImageName = ""
-    @Environment(\.presentationMode) var presentationMode
     
-    var body: some View {
-        NavigationView {
-            VStack {
-                Form {
-                    Section("Add New Image") {
-                        HStack {
-                            TextField("Image Name", text: $newImageName)
-                            Button("Add") {
-                                if !newImageName.isEmpty {
-                                    checklistManager.addImageName(newImageName)
-                                    newImageName = ""
-                                }
-                            }
-                            .disabled(newImageName.isEmpty)
-                        }
-                    }
-                    
-                    Section("Available Images") {
-                        ForEach(checklistManager.configuration.availableImages, id: \.self) { imageName in
-                            HStack {
-                                Text(imageName)
-                                Spacer()
-                                Button("Remove") {
-                                    checklistManager.removeImageName(imageName)
-                                }
-                                .foregroundColor(.red)
-                            }
-                        }
-                    }
-                }
-            }
-            .navigationTitle("Manage Images")
-            .navigationBarItems(
-                trailing: Button("Done") {
-                    presentationMode.wrappedValue.dismiss()
-                }
-            )
-        }
+    private var availableImages: [String] {
+        let watchImages = ["Schere", "Lineal", "Bleistift", "Leimstift", "Buntes Papier", "Wolle", "Wackelaugen", "Locher", "Zucker", "Ei", "Haselnüsse", "Schokoladenpulver", "Maizena", "Schüssel", "Kelle", "Backblech", "Backpapier", "Waage", "Messlöffel", "Topflappen"]
+        let galleryImages = galleryStorage.items.map { $0.label }
+        return galleryImages + watchImages.filter { UIImage(named: $0) != nil }
     }
 }

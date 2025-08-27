@@ -21,16 +21,16 @@ struct WatchView: View {
     private var prototypeApps: [PrototypeApp] {
         var apps: [PrototypeApp] = []
         
-        for checklistType in watchConnector.checklistConfiguration.checklistTypes {
+        for checklist in watchConnector.checklistData.checklists {
             apps.append(PrototypeApp(
-                title: checklistType.displayName,
+                title: checklist.name,
                 description: "Interaktive Checkliste",
-                color: checklistType.color,
+                color: .blue,
                 destination: AnyView(
                     UniversalChecklistView(
-                        title: checklistType.displayName,
-                        instructionTitle: checklistType.displayName,
-                        items: checklistType.items
+                        title: checklist.name,
+                        instructionTitle: checklist.name,
+                        items: checklist.items
                     )
                 )
             ))

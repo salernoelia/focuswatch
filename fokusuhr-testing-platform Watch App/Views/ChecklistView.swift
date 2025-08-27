@@ -1,13 +1,12 @@
 import SwiftUI
 
-protocol ChecklistItem: Identifiable {
+protocol ChecklistItemProtocol: Identifiable {
     var id: UUID { get }
     var title: String { get }
     var imageName: String { get }
-    var color: Color { get }
 }
 
-extension EditableChecklistItem: ChecklistItem {}
+extension ChecklistItem: ChecklistItemProtocol {}
 
 enum ChecklistState {
     case instructions
@@ -15,7 +14,7 @@ enum ChecklistState {
     case completed
 }
 
-struct UniversalChecklistView<Item: ChecklistItem>: View {
+struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
     let title: String
     let instructionTitle: String
     let items: [Item]

@@ -21,12 +21,34 @@ class GalleryStorage: ObservableObject {
         let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent(imageName)
         
-        if let data = image.jpegData(compressionQuality: 0.8) {
+        let resizedImage = resizeImage(image, targetSize: CGSize(width: 150, height: 150))
+        
+        if let data = resizedImage.jpegData(compressionQuality: 0.2) {
             try? data.write(to: url)
             let item = GalleryItem(imagePath: imageName, label: label)
             items.append(item)
             saveItems()
         }
+    }
+    
+    private func resizeImage(_ image: UIImage, targetSize: CGSize) -> UIImage {
+        let size = image.size
+        
+        let widthRatio  = targetSize.width  / size.width
+        let heightRatio = targetSize.height / size.height
+        
+        let newSize = widthRatio > heightRatio ?
+            CGSize(width: size.width * heightRatio, height: size.height * heightRatio) :
+            CGSize(width: size.width * widthRatio, height: size.height * widthRatio)
+        
+        let rect = CGRect(origin: .zero, size: newSize)
+        
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+        image.draw(in: rect)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage ?? image
     }
     
     private func saveItems() {

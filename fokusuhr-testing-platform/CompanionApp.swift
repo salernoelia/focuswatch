@@ -23,21 +23,12 @@ struct CompanionApp: App {
                         Image(systemName: "calendar")
                         Text("Calendar")
                     }
-                
-                ChecklistEditorView()
-                    .tabItem {
-                        Image(systemName: "checklist")
-                        Text("Checklists")
-                    }
-
-
 
                 JournalView()
                     .tabItem {
                         Image(systemName: "book.pages")
                         Text("Journal")
                     }
-
 
                 GalleryView()
                     .tabItem {

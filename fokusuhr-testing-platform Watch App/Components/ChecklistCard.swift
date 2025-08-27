@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct ChecklistCard<Item: ChecklistItem>: View {
+struct ChecklistCard<Item: ChecklistItemProtocol>: View {
     let item: Item
     let onAdd: () -> Void
     let onSkip: () -> Void
@@ -35,17 +35,30 @@ struct ChecklistCard<Item: ChecklistItem>: View {
         .frame(height: 130)
         .background(
             ZStack {
-                Image(item.imageName)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(height: 130)
-                    .clipped()
+                if let uiImage = loadImage(named: item.imageName) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(height: 130)
+                        .clipped()
+                } else {
+                    // Fallback to bundled image or default
+                    if UIImage(named: item.imageName) != nil {
+                        Image(item.imageName)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(height: 130)
+                            .clipped()
+                    } else {
+                        Image(systemName: "photo")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 40))
+                    }
+                }
                 
                 Rectangle()
                     .fill(Color.black.opacity(0.3))
-                
-                Rectangle()
-                    .fill(item.color.opacity(0.2))
+               
             }
         )
         .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -140,4 +153,24 @@ struct ChecklistCard<Item: ChecklistItem>: View {
         opacity = 1.0
         isProcessing = false
     }
+    
+   private func loadImage(named imageName: String) -> UIImage? {
+
+    let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    let imageURL = documentsPath.appendingPathComponent("\(imageName).jpg")
+    
+    if let data = try? Data(contentsOf: imageURL) {
+        return UIImage(data: data)
+    }
+    
+    if let contents = try? FileManager.default.contentsOfDirectory(at: documentsPath, includingPropertiesForKeys: nil) {
+        print("Files in documents directory:")
+        for url in contents {
+            print("- \(url.lastPathComponent)")
+        }
+        print("Looking for: \(imageName).jpg")
+    }
+    
+    return nil
+}
 }

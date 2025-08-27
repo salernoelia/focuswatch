@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct ChecklistMainView<Item: ChecklistItem>: View {
+struct ChecklistMainView<Item: ChecklistItemProtocol>: View {
     @Binding var remainingItems: [Item]
     @Binding var collectedItems: [Item]
     @Binding var currentIndex: Int
