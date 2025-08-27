@@ -20,11 +20,11 @@ enum ActivityType: String, CaseIterable, Identifiable, Codable {
 struct Event: Identifiable, Codable {
     let id: UUID
     var title: String
-    var date: Date           // the day
+    var date: Date          
     var startTime: Date
     var endTime: Date
     var repeatRule: RepeatRule
-    var customWeekdays: [Int] = []  // 1...7 for Sun…Sat
+    var customWeekdays: [Int] = []
     var type: ActivityType
     
     init(id: UUID = UUID(), title: String, date: Date, startTime: Date, endTime: Date, repeatRule: RepeatRule, customWeekdays: [Int] = [], type: ActivityType) {

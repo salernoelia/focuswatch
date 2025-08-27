@@ -24,16 +24,23 @@ struct CompanionApp: App {
                         Text("Calendar")
                     }
 
-                SettingsView()
+                JournalView()
                     .tabItem {
-                        Image(systemName: "gearshape")
-                        Text("Settings")
+                        Image(systemName: "book.pages")
+                        Text("Journal")
                     }
+
 
                 GalleryView()
                     .tabItem {
                         Image(systemName: "photo.on.rectangle.angled")
                         Text("Gallery")
+                    }
+
+                SettingsView()
+                    .tabItem {
+                        Image(systemName: "gearshape")
+                        Text("Settings")
                     }
             }
         }

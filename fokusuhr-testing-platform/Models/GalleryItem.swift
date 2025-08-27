@@ -11,7 +11,7 @@ import PhotosUI
 
 struct GalleryItem: Identifiable, Codable {
     var id = UUID()
-    let imagePath: String  // Changed from UIImage to file path
+    let imagePath: String 
     let label: String
     
     var image: UIImage? {

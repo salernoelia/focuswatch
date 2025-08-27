@@ -23,16 +23,13 @@ class CalendarViewModel: ObservableObject {
         var matchingEvents: [Event] = []
         
         for event in events {
-            // Check if the event is on this specific day
             if cal.isDate(event.date, inSameDayAs: day) {
                 matchingEvents.append(event)
             }
             // Check for repeating events
             else if event.repeatRule != .none && shouldRepeatOn(event: event, date: day) {
-                // Create a copy of the event for this date
                 var repeatedEvent = event
                 repeatedEvent.date = day
-                // Maintain the same time components but on the new date
                 repeatedEvent.startTime = combineDateTime(date: day, time: event.startTime)
                 repeatedEvent.endTime = combineDateTime(date: day, time: event.endTime)
                 matchingEvents.append(repeatedEvent)
@@ -47,7 +44,6 @@ class CalendarViewModel: ObservableObject {
         let eventDate = event.date
         let targetDate = date
         
-        // Don't show events from the future on past dates
         if targetDate < eventDate {
             return false
         }
@@ -63,7 +59,7 @@ class CalendarViewModel: ObservableObject {
             return eventWeekday == targetWeekday
         case .weekdays:
             let targetWeekday = cal.component(.weekday, from: targetDate)
-            return targetWeekday >= 2 && targetWeekday <= 6 // Monday to Friday
+            return targetWeekday >= 2 && targetWeekday <= 6 
         case .custom:
             let targetWeekday = cal.component(.weekday, from: targetDate)
             return event.customWeekdays.contains(targetWeekday)

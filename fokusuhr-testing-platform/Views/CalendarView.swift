@@ -24,7 +24,7 @@ struct CalendarView: View {
         formatter.dateFormat = "EEEE, MMMM d"
         return formatter.string(from: selectedDate)
     }
-
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
