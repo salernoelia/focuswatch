@@ -1,11 +1,3 @@
-//
-//  GalleryStorage.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 21.08.2025.
-//
-
-
 import SwiftUI
 import PhotosUI
 
@@ -21,14 +13,36 @@ class GalleryStorage: ObservableObject {
         let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent(imageName)
         
-        let resizedImage = resizeImage(image, targetSize: CGSize(width: 150, height: 150))
+        let resizedImage = resizeImage(image, targetSize: CGSize(width: 300, height: 300))
         
-        if let data = resizedImage.jpegData(compressionQuality: 0.2) {
+        if let data = resizedImage.jpegData(compressionQuality: 0.3) {
             try? data.write(to: url)
             let item = GalleryItem(imagePath: imageName, label: label)
             items.append(item)
             saveItems()
         }
+    }
+    
+    func deleteItem(_ item: GalleryItem) {
+    
+        let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent(item.imagePath)
+        try? FileManager.default.removeItem(at: url)
+        
+        // Remove from array
+        items.removeAll { $0.id == item.id }
+        saveItems()
+    }
+    
+    func deleteItems(at offsets: IndexSet) {
+        for index in offsets {
+            let item = items[index]
+            let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+                .appendingPathComponent(item.imagePath)
+            try? FileManager.default.removeItem(at: url)
+        }
+        items.remove(atOffsets: offsets)
+        saveItems()
     }
     
     private func resizeImage(_ image: UIImage, targetSize: CGSize) -> UIImage {

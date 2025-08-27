@@ -9,22 +9,18 @@ import SwiftUI
 import PhotosUI
 
 struct GalleryView: View {
-    @StateObject private var storage = GalleryStorage()
-    @State private var showingPicker = false
-    @State private var pickedImage: UIImage?
-    @State private var newLabel = ""
-    @State private var showingLabelSheet = false
-
-    private let columns = [
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
-
+    @StateObject private var galleryStorage = GalleryStorage()
+    @State private var showingPhotoPicker = false
+    @State private var showingCameraPicker = false
+    @State private var showingActionSheet = false
+    @State private var newImageLabel = ""
+    @State private var selectedImages: [UIImage] = []
+    @State private var showingLabelInput = false
+    
     var body: some View {
         NavigationView {
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 16) {
-                    ForEach(storage.items) { item in
+            List {
+                ForEach(galleryStorage.items) { item in
                         VStack {
                             if let image = item.image {
                                 Image(uiImage: image)
@@ -37,74 +33,58 @@ struct GalleryView: View {
                             Text(item.label)
                                 .font(.caption)
                                 .lineLimit(1)
-                        }
                     }
                 }
-                .padding()
+                .onDelete(perform: galleryStorage.deleteItems)
             }
             .navigationTitle("Gallery")
             .toolbar {
-                Button(action: { showingPicker = true }) {
-                    Image(systemName: "plus")
-                }
-            }
-            .sheet(isPresented: $showingPicker) {
-                PhotoPicker { images in
-                    if let first = images.first {
-                        pickedImage = first
-                        newLabel = ""
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            showingLabelSheet = true
-                        }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showingActionSheet = true }) {
+                        Image(systemName: "plus")
                     }
                 }
             }
-            .sheet(isPresented: Binding(
-                get: { showingLabelSheet && pickedImage != nil },
-                set: { showingLabelSheet = $0 }
-            )) {
-                if let uiImage = pickedImage {
-                    let content = VStack(spacing: 16) {
-                        Image(uiImage: uiImage)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxHeight: 200)
-                            .cornerRadius(8)
-
-                        TextField("Enter label", text: $newLabel)
-                            .textFieldStyle(.roundedBorder)
-                            .padding(.horizontal)
-
-                        HStack {
-                            Button("Cancel") {
-                                showingLabelSheet = false
+            .actionSheet(isPresented: $showingActionSheet) {
+                ActionSheet(
+                    title: Text("Add Photo"),
+                    buttons: [
+                        .default(Text("Camera")) {
+                            if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                                showingCameraPicker = true
                             }
-                            Spacer()
-                            Button("Save") {
-                                storage.addItem(image: uiImage, label: newLabel)
-                                showingLabelSheet = false
-                            }
-                        }
-                        .padding(.horizontal)
-                        .padding(.bottom)
-                    }.padding(.top)
-                    
-                    if #available(iOS 16.0, *) {
-                        content
-                            .presentationDetents([.fraction(0.4)])
-                    } else {
-                        content
+                        },
+                        .default(Text("Photo Library")) {
+                            showingPhotoPicker = true
+                        },
+                        .cancel()
+                    ]
+                )
+            }
+            .sheet(isPresented: $showingPhotoPicker) {
+                PhotoPicker(source: .photoLibrary) { images in
+                    selectedImages = images
+                    showingLabelInput = true
+                }
+            }
+            .sheet(isPresented: $showingCameraPicker) {
+                PhotoPicker(source: .camera) { images in
+                    selectedImages = images
+                    showingLabelInput = true
+                }
+            }
+            .alert("Add Label", isPresented: $showingLabelInput) {
+                TextField("Enter label", text: $newImageLabel)
+                Button("Add") {
+                    if let image = selectedImages.first, !newImageLabel.isEmpty {
+                        galleryStorage.addItem(image: image, label: newImageLabel)
+                        newImageLabel = ""
                     }
                 }
-                    
+                Button("Cancel", role: .cancel) {
+                    newImageLabel = ""
+                }
             }
         }
-    }
-}
-
-
-struct GalleryView_Previews: PreviewProvider {
-    static var previews: some View {
-        GalleryView()
     }
 }
