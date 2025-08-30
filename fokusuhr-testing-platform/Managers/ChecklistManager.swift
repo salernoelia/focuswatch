@@ -7,12 +7,21 @@ class ChecklistManager: ObservableObject {
     
     init(watchConnector: WatchConnector) {
         self.watchConnector = watchConnector
+        self.data = Self.loadSharedData()
+        watchConnector.checklistData = self.data
+    }
+    
+    static func loadSharedData() -> ChecklistData {
         let loadedData = UserDefaults.standard.data(forKey: "checklistData")
         if let loadedData = loadedData,
            let decoded = try? JSONDecoder().decode(ChecklistData.self, from: loadedData) {
-            self.data = decoded
+            return decoded
         } else {
-            self.data = ChecklistData.default
+            let defaultData = ChecklistData.default
+            if let encoded = try? JSONEncoder().encode(defaultData) {
+                UserDefaults.standard.set(encoded, forKey: "checklistData")
+            }
+            return defaultData
         }
     }
     
@@ -51,7 +60,8 @@ class ChecklistManager: ObservableObject {
         if let encoded = try? JSONEncoder().encode(data) {
             UserDefaults.standard.set(encoded, forKey: "checklistData")
         }
-        watchConnector.updateChecklistData(data)
+        watchConnector.checklistData = data
+        watchConnector.forceSyncToWatch()
     }
     
     private func loadData() -> ChecklistData {

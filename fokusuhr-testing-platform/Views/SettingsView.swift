@@ -89,28 +89,16 @@ struct SettingsView: View {
             List {
                 
                 Section("API Configuration") {
-                    HStack {
-                        Image(systemName: "key.fill")
-                            .foregroundColor(.blue)
-                            .frame(width: 20)
-                        SecureField("Enter API Key", text: $vm.apiKey)
-                    }
+                    SecureField("Enter API Key", text: $vm.apiKey)
                     
                     if !vm.apiKey.isEmpty {
-                        HStack {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.green)
-                            Text("API Key Configured")
-                                .foregroundColor(.green)
-                        }
+                        Text("API Key Configured")
+                            .foregroundColor(.green)
                     }
                 }
                 
                 Section {
                     HStack {
-                        Image(systemName: "person.badge.key.fill")
-                            .foregroundColor(.orange)
-                            .frame(width: 20)
                         Text("Supervisors")
                             .font(.headline)
                         Spacer()
@@ -133,16 +121,12 @@ struct SettingsView: View {
                     Button {
                         vm.showingAddSupervisor = true
                     } label: {
-                        Label("Add Supervisor", systemImage: "plus.circle.fill")
-                            .foregroundColor(.blue)
+                        Text("Add Supervisor")
                     }
                 }
                 
                 Section {
                     HStack {
-                        Image(systemName: "person.2.fill")
-                            .foregroundColor(.green)
-                            .frame(width: 20)
                         Text("Users")
                             .font(.headline)
                         Spacer()
@@ -178,8 +162,7 @@ struct SettingsView: View {
                     Button {
                         vm.showingAddUser = true
                     } label: {
-                        Label("Add User", systemImage: "plus.circle.fill")
-                            .foregroundColor(.blue)
+                        Text("Add User")
                     }
                     .disabled(vm.supervisors.isEmpty)
                 }
@@ -227,9 +210,6 @@ struct SupervisorRow: View {
     
     var body: some View {
         HStack {
-            Image(systemName: "person.circle.fill")
-                .foregroundColor(.orange)
-            
             VStack(alignment: .leading, spacing: 2) {
                 Text(supervisor.fullName)
                     .font(.body)
@@ -237,14 +217,13 @@ struct SupervisorRow: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            
             Spacer()
         }
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) {
                 onDelete()
             } label: {
-                Label("Delete", systemImage: "trash")
+                Text("Delete")
             }
         }
     }
@@ -258,9 +237,6 @@ struct UserRow: View {
     
     var body: some View {
         HStack {
-            Image(systemName: isSelected ? "person.circle.fill" : "person.circle")
-                .foregroundColor(isSelected ? .green : .secondary)
-            
             VStack(alignment: .leading, spacing: 2) {
                 Text(user.fullName)
                     .font(.body)
@@ -273,11 +249,9 @@ struct UserRow: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
             }
-            
             Spacer()
-            
             if isSelected {
-                Image(systemName: "checkmark.circle.fill")
+                Text("✓")
                     .foregroundColor(.green)
             }
         }
@@ -285,7 +259,7 @@ struct UserRow: View {
             Button(role: .destructive) {
                 onDelete()
             } label: {
-                Label("Delete", systemImage: "trash")
+                Text("Delete")
             }
         }
     }

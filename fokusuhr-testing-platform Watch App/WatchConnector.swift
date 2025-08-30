@@ -24,6 +24,38 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
     }
     
+    func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
+        DispatchQueue.main.async {
+            if let action = message["action"] as? String {
+                switch action {
+                case "switchToApp":
+                    self.currentView = .mainMenu
+                    if let appIndex = message["appIndex"] as? Int {
+                        self.currentView = .app(appIndex)
+                    }
+                    replyHandler(["status": "success"])
+                case "returnToMainMenu", "wakeUp":
+                    self.currentView = .mainMenu
+                    replyHandler(["status": "success"])
+                case "updateChecklist":
+                    if let dataString = message["data"] as? String,
+                       let data = Data(base64Encoded: dataString) {
+                        let forceOverwrite = message["forceOverwrite"] as? Bool ?? false
+                        self.updateChecklistData(from: data, forceOverwrite: forceOverwrite)
+                    }
+                    if let imageData = message["imageData"] as? [String: String] {
+                        self.saveGalleryImages(imageData)
+                    }
+                    replyHandler(["status": "success"])
+                default:
+                    replyHandler(["status": "unknown_action"])
+                }
+            } else {
+                replyHandler(["status": "no_action"])
+            }
+        }
+    }
+    
     func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
         DispatchQueue.main.async {
             if let action = message["action"] as? String {
@@ -38,9 +70,9 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
                 case "updateChecklist":
                     if let dataString = message["data"] as? String,
                        let data = Data(base64Encoded: dataString) {
-                        self.updateChecklistData(from: data)
+                        let forceOverwrite = message["forceOverwrite"] as? Bool ?? false
+                        self.updateChecklistData(from: data, forceOverwrite: forceOverwrite)
                     }
-                    // Handle image data transfer
                     if let imageData = message["imageData"] as? [String: String] {
                         self.saveGalleryImages(imageData)
                     }
@@ -64,12 +96,46 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
         }
     }
     
-    private func updateChecklistData(from data: Data) {
+    private func updateChecklistData(from data: Data, forceOverwrite: Bool = false) {
         do {
-            checklistData = try JSONDecoder().decode(ChecklistData.self, from: data)
+            let newData = try JSONDecoder().decode(ChecklistData.self, from: data)
+            
+            if forceOverwrite {
+
+                print("Force overwrite: Clearing old data and replacing with new data")
+                
+
+                clearOldGalleryImages()
+                
+
+                checklistData = newData
+                print("Replaced with \(newData.checklists.count) checklists")
+            } else {
+
+                checklistData = newData
+                print("Updated with \(newData.checklists.count) checklists")
+            }
+            
             saveChecklistData()
         } catch {
             print("Error decoding checklist data: \(error.localizedDescription)")
+        }
+    }
+    
+    private func clearOldGalleryImages() {
+        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        
+        do {
+            let contents = try FileManager.default.contentsOfDirectory(at: documentsPath, includingPropertiesForKeys: nil)
+            
+            for fileURL in contents {
+                if fileURL.pathExtension == "jpg" {
+                    try? FileManager.default.removeItem(at: fileURL)
+                    print("Removed old image: \(fileURL.lastPathComponent)")
+                }
+            }
+        } catch {
+            print("Error clearing old gallery images: \(error.localizedDescription)")
         }
     }
     

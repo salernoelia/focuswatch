@@ -19,20 +19,26 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
     let instructionTitle: String
     let items: [Item]
     
+    @EnvironmentObject var watchConnector: WatchConnector
     @State private var remainingItems: [Item] = []
     @State private var collectedItems: [Item] = []
     @State private var currentIndex = 0
     @State private var state: ChecklistState = .instructions
+    @State private var animationID = UUID()
     
     var body: some View {
         switch state {
         case .instructions:
-            ChecklistInstructionsView(title: instructionTitle) {
-                withAnimation(.easeInOut) {
-                    remainingItems = items
-                    state = .checklist
+            ChecklistInstructionsView(
+                title: instructionTitle,
+                onStart: {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        remainingItems = items
+                        state = .checklist
+                        animationID = UUID()
+                    }
                 }
-            }
+            )
         case .checklist:
             ChecklistMainView(
                 remainingItems: $remainingItems,
@@ -40,13 +46,16 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
                 currentIndex: $currentIndex,
                 totalItems: items.count,
                 onComplete: {
-                    withAnimation {
+                    withAnimation(.easeInOut(duration: 0.3)) {
                         state = .completed
+                        animationID = UUID()
                     }
                 }
             )
+            .id(animationID)
         case .completed:
             ChecklistCompletionView()
+                .id(animationID)
         }
     }
 }

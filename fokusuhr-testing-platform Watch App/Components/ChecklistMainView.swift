@@ -22,7 +22,7 @@ struct ChecklistMainView<Item: ChecklistItemProtocol>: View {
             VStack {
                 Spacer()
                 
-                if currentIndex < remainingItems.count {
+                if !remainingItems.isEmpty && currentIndex < remainingItems.count {
                     ChecklistCard(
                         item: remainingItems[currentIndex],
                         onAdd: addCurrentItem,
@@ -53,6 +53,7 @@ struct ChecklistMainView<Item: ChecklistItemProtocol>: View {
     }
     
     private func addCurrentItem() {
+        guard !remainingItems.isEmpty, currentIndex < remainingItems.count else { return }
         let item = remainingItems[currentIndex]
         collectedItems.append(item)
         remainingItems.remove(at: currentIndex)
@@ -71,6 +72,7 @@ struct ChecklistMainView<Item: ChecklistItemProtocol>: View {
     }
     
     private func skipCurrentItem() {
+        guard !remainingItems.isEmpty else { return }
         withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
             currentIndex = (currentIndex + 1) % remainingItems.count
         }

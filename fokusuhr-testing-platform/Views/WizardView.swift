@@ -6,11 +6,14 @@ struct WizardView: View {
     @StateObject private var checklistManager: ChecklistManager
     @State private var showingEditor = false
     @State private var isReconnecting = false
+    @State private var isSyncing = false
     
     init() {
         let connector = WatchConnector()
         self._watchConnector = StateObject(wrappedValue: connector)
         self._checklistManager = StateObject(wrappedValue: ChecklistManager(watchConnector: connector))
+        
+        connector.checklistData = ChecklistManager.loadSharedData()
     }
     
     private var prototypeApps: [(String, String, Color)] {
@@ -85,13 +88,31 @@ struct WizardView: View {
                      Button("Edit Checklists") {
                         showingEditor = true
                     }
+                    
                 }
+                 Button(action: forceSyncToWatch) {
+                HStack {
+                    if isSyncing {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                    } else {
+                        Image(systemName: "arrow.triangle.2.circlepath")
+                                 .foregroundColor(.red)
+                    }
+                    Text(isSyncing ? "Force Syncing..." : "Force Sync All Data")
+                        .foregroundColor(.red)
+                }
+            }
+            .disabled(!watchConnector.isConnected || isSyncing)
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Wizard of Oz")
             .sheet(isPresented: $showingEditor) {
                 ChecklistEditorView(checklistManager: checklistManager)
             }
+            
+           
+
         }
     }
     
@@ -104,6 +125,16 @@ struct WizardView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                 isReconnecting = false
             }
+        }
+    }
+    
+    private func forceSyncToWatch() {
+        isSyncing = true
+        
+        watchConnector.updateChecklistData(checklistManager.data)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            isSyncing = false
         }
     }
 }

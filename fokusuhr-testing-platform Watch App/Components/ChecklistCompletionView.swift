@@ -21,6 +21,13 @@ struct ChecklistCompletionView: View {
             
             Text("Alles gesammelt.")
                 .foregroundColor(.white)
+
+            NavigationLink(destination: WatchView()) {
+                Text("Zurück")
+                    .padding(.horizontal)
+                    .padding(.vertical, 6)
+                    .cornerRadius(8)
+            }
         }
     }
 }

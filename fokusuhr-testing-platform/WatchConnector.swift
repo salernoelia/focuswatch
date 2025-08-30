@@ -123,6 +123,14 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     func updateChecklistData(_ data: ChecklistData) {
         self.checklistData = data
         saveChecklistData()
+        forceSyncToWatch()
+    }
+    
+    func forceSyncToWatch() {
+        guard WCSession.default.isReachable else {
+            print("Watch not reachable for force sync")
+            return
+        }
         syncChecklistToWatch()
     }
     
@@ -134,7 +142,12 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
         
         do {
             let data = try JSONEncoder().encode(checklistData)
-            var message: [String: Any] = ["action": "updateChecklist", "data": data.base64EncodedString()]
+            var message: [String: Any] = [
+                "action": "updateChecklist", 
+                "data": data.base64EncodedString(),
+                "forceOverwrite": true,
+                "timestamp": Date().timeIntervalSince1970
+            ]
             
             let galleryStorage = GalleryStorage()
             var imageData: [String: String] = [:]
@@ -171,10 +184,12 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
                 }
             }
             
-            WCSession.default.sendMessage(message, replyHandler: { _ in
-                print("Checklist sync successful")
+            print("Sending force sync with \(checklistData.checklists.count) checklists")
+            
+            WCSession.default.sendMessage(message, replyHandler: { response in
+                print("Checklist force sync successful: \(response)")
             }) { error in
-                print("Error syncing checklist: \(error.localizedDescription)")
+                print("Error force syncing checklist: \(error.localizedDescription)")
             }
         } catch {
             print("Error encoding checklist: \(error.localizedDescription)")
@@ -192,6 +207,8 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     
     private func loadChecklistData() {
         guard let data = UserDefaults.standard.data(forKey: "checklistData") else {
+            checklistData = ChecklistData.default
+            saveChecklistData()
             return
         }
         

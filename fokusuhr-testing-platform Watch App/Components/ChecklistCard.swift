@@ -42,7 +42,6 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
                         .frame(height: 130)
                         .clipped()
                 } else {
-                    // Fallback to bundled image or default
                     if UIImage(named: item.imageName) != nil {
                         Image(item.imageName)
                             .resizable()
