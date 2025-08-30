@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct JournalEntry: Identifiable {
+struct JournalEntry: Identifiable, Codable {
     let id = UUID()
     let date = Date()
     var appName: String
@@ -18,6 +18,7 @@ struct JournalView: View {
     @State private var audioAttached = false
     @State private var entries: [JournalEntry] = []
     @State private var showingHistory = false
+    @State private var showingSuccessAlert = false
     @FocusState private var focusedField: Field?
     
     enum Field {
@@ -26,13 +27,104 @@ struct JournalView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: 24) {
-                    inputSection
-                    actionSection
+            List {
+
+                Section("Entry Details") {
+                    HStack {
+                        Image(systemName: "app.badge")
+                            .foregroundColor(.blue)
+                            .frame(width: 20)
+                        TextField("App Name", text: $appName)
+                            .focused($focusedField, equals: .appName)
+                            .submitLabel(.next)
+                            .onSubmit { focusedField = .userName }
+                    }
+                    
+                    HStack {
+                        Image(systemName: "person.circle")
+                            .foregroundColor(.green)
+                            .frame(width: 20)
+                        TextField("Testuser Name", text: $userName)
+                            .focused($focusedField, equals: .userName)
+                            .submitLabel(.next)
+                            .onSubmit { focusedField = .entryText }
+                    }
                 }
-                .padding()
+                
+                Section("Your Thoughts") {
+                    VStack(alignment: .leading, spacing: 8) {
+                        TextEditor(text: $entryText)
+                            .frame(minHeight: 100)
+                            .focused($focusedField, equals: .entryText)
+                            .overlay(
+                                Group {
+                                    if entryText.isEmpty {
+                                        Text("Share your experience, thoughts, or feedback...")
+                                            .foregroundColor(.secondary)
+                                            .padding(.horizontal, 5)
+                                            .padding(.vertical, 8)
+                                            .allowsHitTesting(false)
+                                    }
+                                }, alignment: .topLeading
+                            )
+                        
+                        if audioAttached {
+                            Label("Audio note attached", systemImage: "mic.fill")
+                                .font(.caption)
+                                .foregroundColor(.blue)
+                        }
+                    }
+                }
+                
+                Section {
+                    VStack(spacing: 12) {
+                        Button(action: toggleRecording) {
+                            HStack {
+                                Image(systemName: isRecording ? "stop.circle.fill" : "mic.circle.fill")
+                                Text(isRecording ? "Stop Recording" : "Add Voice Note")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(isRecording ? Color.red : Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                        }
+                        .disabled(isSubmitting)
+                        
+                        Button(action: submitJournalEntry) {
+                            HStack {
+                                if isSubmitting {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                        .scaleEffect(0.8)
+                                } else {
+                                    Image(systemName: "paperplane.fill")
+                                }
+                                Text(isSubmitting ? "Saving..." : "Save Entry")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(canSubmit ? Color.accentColor : Color.gray)
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                        }
+                        .disabled(!canSubmit || isSubmitting)
+                    }
+                }
+                .listRowBackground(Color.clear)
+                
+                if !entries.isEmpty {
+                    Section {
+                        Button("View All Entries (\(entries.count))") {
+                            showingHistory = true
+                        }
+                        .frame(maxWidth: .infinity)
+                        .foregroundColor(.blue)
+                    }
+                    .listRowBackground(Color.clear)
+                }
             }
+            .listStyle(.insetGrouped)
             .navigationTitle("Journal")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
@@ -46,92 +138,11 @@ struct JournalView: View {
             .sheet(isPresented: $showingHistory) {
                 JournalHistoryView(entries: entries)
             }
-        }
-    }
-    
-
-    
-    private var inputSection: some View {
-        VStack(spacing: 16) {
-            VStack(spacing: 12) {
-                TextField("App Name", text: $appName)
-                    .textFieldStyle(.roundedBorder)
-                    .focused($focusedField, equals: .appName)
-                    .submitLabel(.next)
-                    .onSubmit {
-                        focusedField = .userName
-                    }
-                    .accessibilityLabel("App Name")
-                
-                TextField("User Name", text: $userName)
-                    .textFieldStyle(.roundedBorder)
-                    .focused($focusedField, equals: .userName)
-                    .submitLabel(.next)
-                    .onSubmit {
-                        focusedField = .entryText
-                    }
-                    .accessibilityLabel("User Name")
+            .alert("Entry Saved!", isPresented: $showingSuccessAlert) {
+                Button("OK") { }
+            } message: {
+                Text("Your journal entry has been saved successfully.")
             }
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Entry")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                
-                TextEditor(text: $entryText)
-                    .frame(minHeight: 120, maxHeight: 200)
-                    .focused($focusedField, equals: .entryText)
-                    .accessibilityLabel("Journal Entry Text")
-                    .border(.gray)
-                
-                if audioAttached {
-                    Label("Audio attached", systemImage: "mic.fill")
-                        .font(.caption)
-                        .foregroundColor(.blue)
-                        .padding(.top, 4)
-                }
-            }
-        }
-    }
-    
-    private var actionSection: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 12) {
-                Button(action: toggleRecording) {
-                    HStack {
-                        Text(isRecording ? "Stop" : "Transcribe Voice")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(isRecording ? Color.red : Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-                }
-                .disabled(isSubmitting)
-                .accessibilityLabel(isRecording ? "Stop recording audio" : "Start recording audio")
-                
-                Button(action: submitJournalEntry) {
-                    HStack {
-                        if isSubmitting {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                .scaleEffect(0.8)
-                        } else {
-                            Image(systemName: "paperplane.fill")
-                        }
-                        Text(isSubmitting ? "Submitting" : "Submit")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(canSubmit ? Color.accentColor : Color.gray)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-                }
-                .disabled(!canSubmit || isSubmitting)
-                .accessibilityLabel("Submit journal entry")
-            }
-            
-           
         }
     }
     
@@ -182,6 +193,7 @@ struct JournalView: View {
             withAnimation(.spring()) {
                 entries.insert(newEntry, at: 0)
                 resetForm()
+                showingSuccessAlert = true
             }
         }
     }
@@ -198,6 +210,18 @@ struct JournalView: View {
 struct JournalHistoryView: View {
     let entries: [JournalEntry]
     @Environment(\.dismiss) private var dismiss
+    @State private var searchText = ""
+    
+    private var filteredEntries: [JournalEntry] {
+        if searchText.isEmpty {
+            return entries
+        }
+        return entries.filter { entry in
+            entry.appName.localizedCaseInsensitiveContains(searchText) ||
+            entry.userName.localizedCaseInsensitiveContains(searchText) ||
+            entry.entryText.localizedCaseInsensitiveContains(searchText)
+        }
+    }
     
     var body: some View {
         NavigationView {
@@ -222,11 +246,12 @@ struct JournalHistoryView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     List {
-                        ForEach(entries) { entry in
+                        ForEach(filteredEntries) { entry in
                             JournalEntryRow(entry: entry)
                         }
                     }
                     .listStyle(.insetGrouped)
+                    .searchable(text: $searchText, prompt: "Search entries...")
                 }
             }
             .navigationTitle("Journal History")
@@ -246,11 +271,15 @@ struct JournalEntryRow: View {
     let entry: JournalEntry
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text(entry.appName)
-                    .font(.headline)
-                    .foregroundColor(.primary)
+                HStack(spacing: 8) {
+                    Image(systemName: "app.badge")
+                        .foregroundColor(.blue)
+                    Text(entry.appName)
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                }
                 
                 Spacer()
                 
@@ -259,26 +288,29 @@ struct JournalEntryRow: View {
                     .foregroundColor(.secondary)
             }
             
-            Text("by \(entry.userName)")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+            HStack(spacing: 8) {
+                Image(systemName: "person.circle")
+                    .foregroundColor(.green)
+                Text("by \(entry.userName)")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
             
             Text(entry.entryText)
                 .font(.body)
-                .lineLimit(3)
+                .lineLimit(4)
+                .padding(.vertical, 4)
             
             if entry.hasAudio {
-                Label("Audio attached", systemImage: "waveform")
+                Label("Audio note attached", systemImage: "waveform")
                     .font(.caption)
                     .foregroundColor(.blue)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(6)
             }
         }
         .padding(.vertical, 4)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("Journal entry for \(entry.appName) by \(entry.userName)")
     }
-}
-
-#Preview {
-    JournalView()
 }

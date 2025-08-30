@@ -1,10 +1,3 @@
-//
-//  GalleryView.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 21.08.2025.
-//
-
 import SwiftUI
 import PhotosUI
 
@@ -16,30 +9,74 @@ struct GalleryView: View {
     @State private var newImageLabel = ""
     @State private var selectedImages: [UIImage] = []
     @State private var showingLabelInput = false
+    @State private var searchText = ""
+    @State private var selectedGridSize: GridSize = .medium
+    
+    enum GridSize: String, CaseIterable {
+        case small = "Small"
+        case medium = "Medium"
+        case large = "Large"
+        
+        var columns: [GridItem] {
+            switch self {
+            case .small:
+                return Array(repeating: GridItem(.flexible(), spacing: 8), count: 4)
+            case .medium:
+                return Array(repeating: GridItem(.flexible(), spacing: 8), count: 3)
+            case .large:
+                return Array(repeating: GridItem(.flexible(), spacing: 8), count: 2)
+            }
+        }
+        
+        var itemSize: CGFloat {
+            switch self {
+            case .small: return 80
+            case .medium: return 120
+            case .large: return 160
+            }
+        }
+    }
+    
+    private var filteredItems: [GalleryItem] {
+        if searchText.isEmpty {
+            return galleryStorage.items
+        }
+        return galleryStorage.items.filter { item in
+            item.label.localizedCaseInsensitiveContains(searchText)
+        }
+    }
     
     var body: some View {
         NavigationView {
-            List {
-                ForEach(galleryStorage.items) { item in
-                        VStack {
-                            if let image = item.image {
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(height: 120)
-                                    .clipped()
-                                    .cornerRadius(8)
+            Group {
+                if galleryStorage.items.isEmpty {
+                    emptyStateView
+                } else {
+                    ScrollView {
+                        LazyVGrid(columns: selectedGridSize.columns, spacing: 8) {
+                            ForEach(filteredItems) { item in
+                                GalleryItemCard(item: item, size: selectedGridSize.itemSize)
                             }
-                            Text(item.label)
-                                .font(.caption)
-                                .lineLimit(1)
+                        }
+                        .padding()
                     }
+                    .searchable(text: $searchText, prompt: "Search images...")
                 }
-                .onDelete(perform: galleryStorage.deleteItems)
             }
             .navigationTitle("Gallery")
+            .navigationBarTitleDisplayMode(.large)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Menu {
+                        Picker("Grid Size", selection: $selectedGridSize) {
+                            ForEach(GridSize.allCases, id: \.self) { size in
+                                Text(size.rawValue).tag(size)
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "square.grid.3x3")
+                    }
+                    
                     Button(action: { showingActionSheet = true }) {
                         Image(systemName: "plus")
                     }
@@ -85,6 +122,91 @@ struct GalleryView: View {
                     newImageLabel = ""
                 }
             }
+        }
+    }
+    
+    private var emptyStateView: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "photo.on.rectangle.angled")
+                .font(.system(size: 64))
+                .foregroundColor(.secondary)
+            
+            Text("No Photos")
+                .font(.title2)
+                .fontWeight(.semibold)
+            
+            Text("Add photos to your gallery to use them in checklists and other apps")
+                .font(.body)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+            
+            Button(action: { showingActionSheet = true }) {
+                HStack {
+                    Image(systemName: "plus")
+                    Text("Add First Photo")
+                }
+                .padding()
+                .background(Color.accentColor)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+            }
+        }
+        .padding()
+    }
+}
+
+struct GalleryItemCard: View {
+    let item: GalleryItem
+    let size: CGFloat
+    @State private var showingDeleteAlert = false
+    @StateObject private var galleryStorage = GalleryStorage()
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            if let image = item.image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: size, height: size)
+                    .clipped()
+                    .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                    )
+            } else {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: size, height: size)
+                    .overlay(
+                        Image(systemName: "photo")
+                            .foregroundColor(.gray)
+                    )
+            }
+            
+            Text(item.label)
+                .font(.caption)
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
+                .frame(width: size)
+        }
+        .contextMenu {
+            Button(role: .destructive) {
+                showingDeleteAlert = true
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
+        .alert("Delete Photo", isPresented: $showingDeleteAlert) {
+            Button("Delete", role: .destructive) {
+                if let index = galleryStorage.items.firstIndex(where: { $0.id == item.id }) {
+                    galleryStorage.deleteItems(at: IndexSet([index]))
+                }
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Are you sure you want to delete '\(item.label)'?")
         }
     }
 }
