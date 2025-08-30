@@ -29,6 +29,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             if let action = message["action"] as? String {
                 switch action {
                 case "switchToApp":
+                    self.currentView = .mainMenu
                     if let appIndex = message["appIndex"] as? Int {
                         self.currentView = .app(appIndex)
                     }

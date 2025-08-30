@@ -1,10 +1,3 @@
-//
-//  WatchConnector.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 26.06.2025.
-// 
-
 import Foundation
 import WatchConnectivity
 
@@ -15,15 +8,60 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     override init() {
         super.init()
         loadChecklistData()
-        if WCSession.isSupported() {
-            WCSession.default.delegate = self
+        setupWatchConnectivity()
+    }
+    
+    private func setupWatchConnectivity() {
+        guard WCSession.isSupported() else {
+            print("WatchConnectivity not supported")
+            return
+        }
+        
+        WCSession.default.delegate = self
+        WCSession.default.activate()
+    }
+    
+    func forceReconnect() {
+        guard WCSession.isSupported() else { return }
+        
+
+        if WCSession.default.activationState != .activated {
             WCSession.default.activate()
+        }
+        
+
+        DispatchQueue.main.async {
+            self.isConnected = WCSession.default.activationState == .activated && WCSession.default.isReachable
+            
+            if self.isConnected {
+                self.syncChecklistToWatch()
+
+                self.sendWakeUpMessage()
+            }
+        }
+    }
+    
+    private func sendWakeUpMessage() {
+        guard WCSession.default.isReachable else { return }
+        
+        let message = ["action": "wakeUp"]
+        WCSession.default.sendMessage(message, replyHandler: { _ in
+            print("Wake up message sent successfully")
+        }) { error in
+            print("Error sending wake up message: \(error.localizedDescription)")
         }
     }
     
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         DispatchQueue.main.async {
             self.isConnected = activationState == .activated && session.isReachable
+            
+            if let error = error {
+                print("WCSession activation error: \(error.localizedDescription)")
+            } else {
+                print("WCSession activated with state: \(activationState.rawValue)")
+            }
+            
             if self.isConnected {
                 self.syncChecklistToWatch()
             }
@@ -33,18 +71,25 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     func sessionDidBecomeInactive(_ session: WCSession) {
         DispatchQueue.main.async {
             self.isConnected = false
+            print("WCSession became inactive")
         }
     }
     
     func sessionDidDeactivate(_ session: WCSession) {
         DispatchQueue.main.async {
             self.isConnected = false
+            print("WCSession deactivated")
         }
+        
+        // Try to reactivate
+        session.activate()
     }
     
     func sessionReachabilityDidChange(_ session: WCSession) {
         DispatchQueue.main.async {
             self.isConnected = session.isReachable
+            print("WCSession reachability changed: \(session.isReachable)")
+            
             if self.isConnected {
                 self.syncChecklistToWatch()
             }
@@ -52,20 +97,26 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     }
     
     func switchToApp(index: Int) {
-        guard WCSession.default.isReachable else { return }
+        guard WCSession.default.isReachable else {
+            print("Watch not reachable for switchToApp")
+            return
+        }
         
         let message = ["action": "switchToApp", "appIndex": index] as [String : Any]
         WCSession.default.sendMessage(message, replyHandler: nil) { error in
-            print("Error sending message: \(error.localizedDescription)")
+            print("Error sending switchToApp message: \(error.localizedDescription)")
         }
     }
     
     func returnToMainMenu() {
-        guard WCSession.default.isReachable else { return }
+        guard WCSession.default.isReachable else {
+            print("Watch not reachable for returnToMainMenu")
+            return
+        }
         
         let message = ["action": "returnToMainMenu"]
         WCSession.default.sendMessage(message, replyHandler: nil) { error in
-            print("Error sending message: \(error.localizedDescription)")
+            print("Error sending returnToMainMenu message: \(error.localizedDescription)")
         }
     }
     
@@ -76,28 +127,27 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     }
     
     private func syncChecklistToWatch() {
-        guard WCSession.default.isReachable else { return }
+        guard WCSession.default.isReachable else {
+            print("Watch not reachable for sync")
+            return
+        }
         
         do {
             let data = try JSONEncoder().encode(checklistData)
             var message: [String: Any] = ["action": "updateChecklist", "data": data.base64EncodedString()]
             
-            // Only collect images that are actually used in checklists
             let galleryStorage = GalleryStorage()
-            var imageData: [String: String] = [:] // Changed to String for Base64
+            var imageData: [String: String] = [:]
             
-            // Get all image names used in checklists
             let usedImageNames = Set(checklistData.checklists.flatMap { checklist in
                 checklist.items.map { $0.imageName }
             }.filter { !$0.isEmpty })
             
-            // Only send images that are actually used
             for item in galleryStorage.items {
                 if usedImageNames.contains(item.label) {
                     let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
                         .appendingPathComponent(item.imagePath)
                     if let data = try? Data(contentsOf: url) {
-                        // Convert Data to Base64 string for JSON serialization
                         imageData[item.label] = data.base64EncodedString()
                     }
                 }
@@ -106,25 +156,24 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             if !imageData.isEmpty {
                 message["imageData"] = imageData
                 
-                // Debug: Log payload size
                 do {
                     let jsonData = try JSONSerialization.data(withJSONObject: message, options: [])
                     let sizeInKB = Double(jsonData.count) / 1024.0
                     print("Payload size: \(String(format: "%.1f", sizeInKB)) KB")
                     
-                    // If still too large, skip images
-                    if sizeInKB > 60 { // Leave some margin under 65KB limit
+                    if sizeInKB > 60 {
                         print("Payload too large, sending without images")
                         message.removeValue(forKey: "imageData")
                     }
                 } catch {
                     print("Error serializing message for size check: \(error.localizedDescription)")
-                    // If we can't serialize, definitely remove images
                     message.removeValue(forKey: "imageData")
                 }
             }
             
-            WCSession.default.sendMessage(message, replyHandler: nil) { error in
+            WCSession.default.sendMessage(message, replyHandler: { _ in
+                print("Checklist sync successful")
+            }) { error in
                 print("Error syncing checklist: \(error.localizedDescription)")
             }
         } catch {
@@ -154,6 +203,4 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             saveChecklistData()
         }
     }
-    
-   
 }

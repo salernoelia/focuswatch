@@ -1,10 +1,3 @@
-//
-//  WizardView.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 21.08.2025.
-//
-
 import SwiftUI
 import WatchConnectivity
 
@@ -12,6 +5,7 @@ struct WizardView: View {
     @StateObject private var watchConnector = WatchConnector()
     @StateObject private var checklistManager: ChecklistManager
     @State private var showingEditor = false
+    @State private var isReconnecting = false
     
     init() {
         let connector = WatchConnector()
@@ -39,8 +33,28 @@ struct WizardView: View {
                     HStack {
                         Text("Watch Status")
                         Spacer()
-                        Text(watchConnector.isConnected ? "Connected" : "Disconnected")
-                            .foregroundColor(watchConnector.isConnected ? .green : .red)
+                        HStack(spacing: 8) {
+                            Circle()
+                                .fill(watchConnector.isConnected ? .green : .red)
+                                .frame(width: 8, height: 8)
+                            Text(watchConnector.isConnected ? "Connected" : "Disconnected")
+                                .foregroundColor(watchConnector.isConnected ? .green : .red)
+                        }
+                    }
+                    
+                    if !watchConnector.isConnected {
+                        Button(action: reconnectToWatch) {
+                            HStack {
+                                if isReconnecting {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                } else {
+                                    Image(systemName: "arrow.clockwise")
+                                }
+                                Text(isReconnecting ? "Reconnecting..." : "Try Reconnecting")
+                            }
+                        }
+                        .disabled(isReconnecting)
                     }
                 }
 
@@ -62,13 +76,16 @@ struct WizardView: View {
                                     .frame(width: 12, height: 12)
                             }
                         }
+                        .disabled(!watchConnector.isConnected)
                     }
                 }
 
-                Section {
+                Section("Controls") {
                     Button("Put Watch into Menu State") {
                         watchConnector.returnToMainMenu()
                     }
+                    .disabled(!watchConnector.isConnected)
+                    
                     Button("Edit Checklists") {
                         showingEditor = true
                     }
@@ -81,9 +98,20 @@ struct WizardView: View {
             }
         }
     }
+    
+    private func reconnectToWatch() {
+        isReconnecting = true
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            watchConnector.forceReconnect()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                isReconnecting = false
+            }
+        }
+    }
 }
 
 #Preview {
     WizardView()
 }
-
