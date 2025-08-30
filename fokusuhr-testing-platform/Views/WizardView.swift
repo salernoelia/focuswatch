@@ -78,15 +78,11 @@ struct WizardView: View {
                         }
                         .disabled(!watchConnector.isConnected)
                     }
-                }
-
-                Section("Controls") {
-                    Button("Put Watch into Menu State") {
+                     Button("Put Watch into Menu State") {
                         watchConnector.returnToMainMenu()
                     }
                     .disabled(!watchConnector.isConnected)
-                    
-                    Button("Edit Checklists") {
+                     Button("Edit Checklists") {
                         showingEditor = true
                     }
                 }
