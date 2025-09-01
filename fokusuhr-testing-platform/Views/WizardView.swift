@@ -2,18 +2,16 @@ import SwiftUI
 import WatchConnectivity
 
 struct WizardView: View {
-    @StateObject private var watchConnector = WatchConnector()
+    @EnvironmentObject private var watchConnector: WatchConnector
     @StateObject private var checklistManager: ChecklistManager
     @State private var showingEditor = false
     @State private var isReconnecting = false
     @State private var isSyncing = false
     
     init() {
-        let connector = WatchConnector()
-        self._watchConnector = StateObject(wrappedValue: connector)
-        self._checklistManager = StateObject(wrappedValue: ChecklistManager(watchConnector: connector))
-        
-        connector.checklistData = ChecklistManager.loadSharedData()
+        // Create a temporary connector for initialization
+        let tempConnector = WatchConnector()
+        self._checklistManager = StateObject(wrappedValue: ChecklistManager(watchConnector: tempConnector))
     }
     
     private var prototypeApps: [(String, String, Color)] {
@@ -45,6 +43,21 @@ struct WizardView: View {
                         }
                     }
                     
+                    // Add debug info
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Debug Info:")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text("Activation: \(WCSession.default.activationState.rawValue)")
+                            .font(.caption2)
+                        Text("Reachable: \(WCSession.default.isReachable)")
+                            .font(.caption2)
+                        Text("Paired: \(WCSession.default.isPaired)")
+                            .font(.caption2)
+                        Text("App Installed: \(WCSession.default.isWatchAppInstalled)")
+                            .font(.caption2)
+                    }
+                    
                     if !watchConnector.isConnected {
                         Button(action: reconnectToWatch) {
                             HStack {
@@ -58,6 +71,15 @@ struct WizardView: View {
                             }
                         }
                         .disabled(isReconnecting)
+                        
+                        Button(action: resetConnection) {
+                            HStack {
+                                Image(systemName: "wifi.slash")
+                                Text("Reset Connection")
+                            }
+                        }
+                        .disabled(isReconnecting)
+                        .foregroundColor(.orange)
                     }
                 }
 
@@ -110,6 +132,11 @@ struct WizardView: View {
             .sheet(isPresented: $showingEditor) {
                 ChecklistEditorView(checklistManager: checklistManager)
             }
+            .onAppear {
+                // Sync the watchConnector with checklistManager when view appears
+                checklistManager.watchConnector = watchConnector
+                watchConnector.checklistData = ChecklistManager.loadSharedData()
+            }
             
            
 
@@ -125,6 +152,17 @@ struct WizardView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                 isReconnecting = false
             }
+        }
+    }
+    
+    private func resetConnection() {
+        isReconnecting = true
+        
+        // Use the new reset method
+        watchConnector.resetWatchConnectivity()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+            isReconnecting = false
         }
     }
     

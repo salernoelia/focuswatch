@@ -3,7 +3,7 @@ import SwiftUI
 
 class ChecklistManager: ObservableObject {
     @Published var data: ChecklistData
-    private let watchConnector: WatchConnector
+    var watchConnector: WatchConnector
     
     init(watchConnector: WatchConnector) {
         self.watchConnector = watchConnector

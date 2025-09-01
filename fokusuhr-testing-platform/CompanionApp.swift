@@ -9,10 +9,13 @@ import SwiftUI
 
 @main
 struct CompanionApp: App {
+    @StateObject private var watchConnector = WatchConnector()
+    
     var body: some Scene {
         WindowGroup {
             TabView {
                 WizardView()
+                    .environmentObject(watchConnector)
                     .tabItem {
                         Image(systemName: "wand.and.rays")
                         Text("Wizard")

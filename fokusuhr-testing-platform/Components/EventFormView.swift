@@ -27,7 +27,7 @@ struct EventFormView: View {
         self.editingEvent = editingEvent
         
         if let event = editingEvent {
-            let base = event.date
+            _ = event.date
             _title = State(initialValue: event.title)
             _date = State(initialValue: event.date)
             _startTime = State(initialValue: event.startTime)

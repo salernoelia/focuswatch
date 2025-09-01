@@ -41,6 +41,28 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
         }
     }
     
+    func resetWatchConnectivity() {
+        print("Resetting Watch Connectivity...")
+        
+        if WCSession.default.activationState == .activated {
+            WCSession.default.delegate = nil
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            WCSession.default.delegate = self
+            WCSession.default.activate()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                self.isConnected = WCSession.default.activationState == .activated && WCSession.default.isReachable
+                print("Reset complete - Connected: \(self.isConnected)")
+                print("Activation State: \(WCSession.default.activationState.rawValue)")
+                print("Is Reachable: \(WCSession.default.isReachable)")
+                print("Is Paired: \(WCSession.default.isPaired)")
+                print("Is Watch App Installed: \(WCSession.default.isWatchAppInstalled)")
+            }
+        }
+    }
+    
     private func sendWakeUpMessage() {
         guard WCSession.default.isReachable else { return }
         

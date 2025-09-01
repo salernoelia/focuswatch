@@ -22,6 +22,15 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     }
     
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+        DispatchQueue.main.async {
+            if let error = error {
+                print("Watch WCSession activation error: \(error.localizedDescription)")
+            } else {
+                print("Watch WCSession activated with state: \(activationState.rawValue)")
+                print("Watch session reachable: \(session.isReachable)")
+
+            }
+        }
     }
     
     func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
