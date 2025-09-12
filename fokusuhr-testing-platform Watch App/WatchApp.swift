@@ -16,20 +16,11 @@ struct WatchApp: App {
 
     var body: some Scene {
         WindowGroup {
-            VStack {
-                List(testUsers, id: \.id) { user in
-                    Text(String(user.id))
-                    Text(user.first_name)
-                    Text(user.last_name)
-                    Text(String(user.age))
-
-                }
+         
                 WatchView()
                     .environmentObject(watchConnector)
-            }
-            .task {
-                testUsers = await fetchTestUsers()
-            }
+            
+            
         }
     }   
 }
