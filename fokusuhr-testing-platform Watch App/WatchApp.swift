@@ -13,6 +13,12 @@ import SwiftUI
 struct WatchApp: App {
     @StateObject private var watchConnector = WatchConnector()
     
+    init() {
+        Task {
+            await fetchTestUsers()
+        }
+    }
+    
     var body: some Scene {
         WindowGroup {
             WatchView()
