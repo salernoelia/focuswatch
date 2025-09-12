@@ -1,42 +1,44 @@
 import SwiftUI
 
-struct Supervisor: Identifiable, Codable {
-    let id: Int
-    var first_name: String
-    var last_name: String
-    
-    var fullName: String {
-        "\(first_name) \(last_name)"
-    }
-}
-
-struct User: Identifiable, Codable {
-    let id: Int
-    var first_name: String
-    var last_name: String
-    var age: Int
-    var supervisor_id: Int
-    
-    var fullName: String {
-        "\(first_name) \(last_name)"
-    }
-}
-
 class SettingsViewModel: ObservableObject {
     @Published var apiKey: String = ""
     @Published var supervisors: [Supervisor] = []
-    @Published var users: [User] = []
+    @Published var users: [TestUser] = []
     @Published var selectedUserId: Int?
     @Published var isLoading = false
     @Published var showingAddSupervisor = false
     @Published var showingAddUser = false
+    @Published var showingLogin = false
+    @Published var isLoggedIn = false
+    @Published var currentUserEmail: String = ""
+    
+    init() {
+        checkAuthStatus()
+    }
+    
+    func checkAuthStatus() {
+        if let session = supabase.auth.currentSession {
+            isLoggedIn = true
+            currentUserEmail = session.user.email ?? ""
+        }
+    }
+    
+    func signOut() {
+        Task {
+            try? await supabase.auth.signOut()
+            await MainActor.run {
+                isLoggedIn = false
+                currentUserEmail = ""
+            }
+        }
+    }
     
     func fetchSupervisors() {
         isLoading = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             let sample = [
-                Supervisor(id: 1, first_name: "Ari", last_name: "Kato"),
-                Supervisor(id: 2, first_name: "Maya", last_name: "Perez")
+                Supervisor(uid: "1", first_name: "Ari", last_name: "Kato"),
+                Supervisor(uid: "2", first_name: "Maya", last_name: "Perez")
             ]
             self.supervisors = sample
             self.isLoading = false
@@ -47,8 +49,8 @@ class SettingsViewModel: ObservableObject {
         isLoading = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             let sample = [
-                User(id: 1, first_name: "Jon", last_name: "Doe", age: 29, supervisor_id: 1),
-                User(id: 2, first_name: "Lina", last_name: "Wong", age: 34, supervisor_id: 2)
+                TestUser(id: 1, first_name: "Jon", last_name: "Doe", age: 29, supervisor_uid: "1"),
+                TestUser(id: 2, first_name: "Lina", last_name: "Wong", age: 34, supervisor_uid: "2")
             ]
             self.users = sample
             if self.selectedUserId == nil {
@@ -62,7 +64,7 @@ class SettingsViewModel: ObservableObject {
         supervisors.append(supervisor)
     }
     
-    func addUser(_ user: User) {
+    func addUser(_ user: TestUser) {
         users.append(user)
         if selectedUserId == nil {
             selectedUserId = user.id
@@ -70,10 +72,10 @@ class SettingsViewModel: ObservableObject {
     }
     
     func deleteSupervisor(_ supervisor: Supervisor) {
-        supervisors.removeAll { $0.id == supervisor.id }
+        supervisors.removeAll { $0.uid == supervisor.uid }
     }
     
-    func deleteUser(_ user: User) {
+    func deleteUser(_ user: TestUser) {
         users.removeAll { $0.id == user.id }
         if selectedUserId == user.id {
             selectedUserId = users.first?.id
@@ -87,6 +89,27 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             List {
+                
+                Section("Authentication") {
+                    if vm.isLoggedIn {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Logged in as:")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Text(vm.currentUserEmail)
+                                .font(.body)
+                        }
+                        
+                        Button("Sign Out") {
+                            vm.signOut()
+                        }
+                        .foregroundColor(.red)
+                    } else {
+                        Button("Login") {
+                            vm.showingLogin = true
+                        }
+                    }
+                }
                 
                 Section("API Configuration") {
                     SecureField("Enter API Key", text: $vm.apiKey)
@@ -135,7 +158,7 @@ struct SettingsView: View {
                     }
                     
                     if !vm.users.isEmpty {
-                        Picker("Active User", selection: $vm.selectedUserId) {
+                        Picker("Active TestUser", selection: $vm.selectedUserId) {
                             ForEach(vm.users) { user in
                                 Text(user.fullName).tag(user.id as Int?)
                             }
@@ -151,7 +174,7 @@ struct SettingsView: View {
                         ForEach(vm.users) { user in
                             UserRow(
                                 user: user,
-                                supervisor: vm.supervisors.first { $0.id == user.supervisor_id },
+                                supervisor: vm.supervisors.first { $0.uid == user.supervisor_uid },
                                 isSelected: vm.selectedUserId == user.id
                             ) {
                                 vm.deleteUser(user)
@@ -162,7 +185,7 @@ struct SettingsView: View {
                     Button {
                         vm.showingAddUser = true
                     } label: {
-                        Text("Add User")
+                        Text("Add TestUser")
                     }
                     .disabled(vm.supervisors.isEmpty)
                 }
@@ -182,6 +205,12 @@ struct SettingsView: View {
             .task {
                 vm.fetchSupervisors()
                 vm.fetchUsers()
+            }
+            .sheet(isPresented: $vm.showingLogin) {
+                LoginView()
+                    .onDisappear {
+                        vm.checkAuthStatus()
+                    }
             }
             .sheet(isPresented: $vm.showingAddSupervisor) {
                 AddSupervisorView { supervisor in
@@ -213,7 +242,7 @@ struct SupervisorRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(supervisor.fullName)
                     .font(.body)
-                Text("ID: \(supervisor.id)")
+                Text("UID: \(supervisor.uid)")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -230,7 +259,7 @@ struct SupervisorRow: View {
 }
 
 struct UserRow: View {
-    let user: User
+    let user: TestUser
     let supervisor: Supervisor?
     let isSelected: Bool
     let onDelete: () -> Void
@@ -291,7 +320,7 @@ struct AddSupervisorView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Add") {
                         let supervisor = Supervisor(
-                            id: Int.random(in: 1000...9999),
+                            uid: UUID().uuidString,
                             first_name: firstName.trimmingCharacters(in: .whitespacesAndNewlines),
                             last_name: lastName.trimmingCharacters(in: .whitespacesAndNewlines)
                         )
@@ -310,21 +339,21 @@ struct AddUserView: View {
     @State private var firstName = ""
     @State private var lastName = ""
     @State private var age = ""
-    @State private var selectedSupervisorId: Int
+    @State private var selectedSupervisorUid: String
     let supervisors: [Supervisor]
     @Environment(\.dismiss) private var dismiss
-    let onAdd: (User) -> Void
+    let onAdd: (TestUser) -> Void
     
-    init(supervisors: [Supervisor], onAdd: @escaping (User) -> Void) {
+    init(supervisors: [Supervisor], onAdd: @escaping (TestUser) -> Void) {
         self.supervisors = supervisors
         self.onAdd = onAdd
-        self._selectedSupervisorId = State(initialValue: supervisors.first?.id ?? 0)
+        self._selectedSupervisorUid = State(initialValue: supervisors.first?.uid ?? "")
     }
     
     var body: some View {
         NavigationView {
             Form {
-                Section("User Details") {
+                Section("TestUser Details") {
                     TextField("First Name", text: $firstName)
                     TextField("Last Name", text: $lastName)
                     TextField("Age", text: $age)
@@ -332,14 +361,14 @@ struct AddUserView: View {
                 }
                 
                 Section("Supervisor") {
-                    Picker("Select Supervisor", selection: $selectedSupervisorId) {
+                    Picker("Select Supervisor", selection: $selectedSupervisorUid) {
                         ForEach(supervisors) { supervisor in
-                            Text(supervisor.fullName).tag(supervisor.id)
+                            Text(supervisor.fullName).tag(supervisor.uid)
                         }
                     }
                 }
             }
-            .navigationTitle("Add User")
+            .navigationTitle("Add TestUser")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -350,12 +379,12 @@ struct AddUserView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Add") {
-                        let user = User(
+                        let user = TestUser(
                             id: Int.random(in: 1000...9999),
                             first_name: firstName.trimmingCharacters(in: .whitespacesAndNewlines),
                             last_name: lastName.trimmingCharacters(in: .whitespacesAndNewlines),
                             age: Int(age) ?? 0,
-                            supervisor_id: selectedSupervisorId
+                            supervisor_uid: selectedSupervisorUid
                         )
                         onAdd(user)
                         dismiss()

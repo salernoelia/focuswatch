@@ -6,3 +6,16 @@
 //
 
 import Foundation
+
+
+struct Supervisor: Codable, Identifiable {
+    let uid: String
+    let first_name: String
+    let last_name: String
+
+    var id: String { uid }
+
+    var fullName: String {
+        "\(first_name) \(last_name)"
+    }
+}

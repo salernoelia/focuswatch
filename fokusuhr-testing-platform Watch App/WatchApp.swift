@@ -18,5 +18,5 @@ struct WatchApp: App {
             WatchView()
                 .environmentObject(watchConnector)
         }
-    }
+    }   
 }

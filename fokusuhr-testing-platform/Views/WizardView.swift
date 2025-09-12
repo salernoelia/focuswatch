@@ -9,7 +9,6 @@ struct WizardView: View {
     @State private var isSyncing = false
     
     init() {
-        // Create a temporary connector for initialization
         let tempConnector = WatchConnector()
         self._checklistManager = StateObject(wrappedValue: ChecklistManager(watchConnector: tempConnector))
     }
@@ -30,6 +29,37 @@ struct WizardView: View {
     var body: some View {
         NavigationView {
             List {
+
+                Section("Applications") {
+                    ForEach(Array(prototypeApps.enumerated()), id: \.offset) { idx, app in
+                        Button {
+                            watchConnector.switchToApp(index: idx)
+                        } label: {
+                            Label {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(app.0)
+                                    Text(app.1)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            } icon: {
+                                Circle()
+                                    .fill(app.2)
+                                    .frame(width: 12, height: 12)
+                            }
+                        }
+                        .disabled(!watchConnector.isConnected)
+                    }
+                     Button("Put Watch into Menu State") {
+                        watchConnector.returnToMainMenu()
+                    }
+                    .disabled(!watchConnector.isConnected)
+                     Button("Edit Checklists") {
+                        showingEditor = true
+                    }
+                    
+                }
+                
                 Section("Connection") {
                     HStack {
                         Text("Watch Status")
@@ -43,7 +73,7 @@ struct WizardView: View {
                         }
                     }
                     
-                    // Add debug info
+
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Debug Info:")
                             .font(.caption)
@@ -82,36 +112,7 @@ struct WizardView: View {
                         .foregroundColor(.orange)
                     }
                 }
-
-                Section("Applications") {
-                    ForEach(Array(prototypeApps.enumerated()), id: \.offset) { idx, app in
-                        Button {
-                            watchConnector.switchToApp(index: idx)
-                        } label: {
-                            Label {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(app.0)
-                                    Text(app.1)
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                            } icon: {
-                                Circle()
-                                    .fill(app.2)
-                                    .frame(width: 12, height: 12)
-                            }
-                        }
-                        .disabled(!watchConnector.isConnected)
-                    }
-                     Button("Put Watch into Menu State") {
-                        watchConnector.returnToMainMenu()
-                    }
-                    .disabled(!watchConnector.isConnected)
-                     Button("Edit Checklists") {
-                        showingEditor = true
-                    }
-                    
-                }
+                
                  Button(action: forceSyncToWatch) {
                 HStack {
                     if isSyncing {
@@ -137,6 +138,7 @@ struct WizardView: View {
                 checklistManager.watchConnector = watchConnector
                 watchConnector.checklistData = ChecklistManager.loadSharedData()
             }
+            
             
            
 

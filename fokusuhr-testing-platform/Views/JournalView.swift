@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct JournalEntry: Identifiable, Codable {
-    let id = UUID()
-    let date = Date()
+    var id = UUID()
+    var date = Date()
     var appName: String
     var userName: String
     var entryText: String
