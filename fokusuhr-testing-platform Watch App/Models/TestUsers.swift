@@ -17,7 +17,7 @@ struct TestUser: Identifiable, Codable {
     }
 }
 
-func fetchTestUsers() async {
+func fetchTestUsers() async -> [TestUser] {
     do {
         let testUsers: [TestUser] = try await supabase
             .from("test_users")
@@ -25,7 +25,9 @@ func fetchTestUsers() async {
             .execute()
             .value
         print(testUsers)
+        return testUsers
     } catch {
         print("Error fetching test users: \(error)")
+        return []
     }
 }
