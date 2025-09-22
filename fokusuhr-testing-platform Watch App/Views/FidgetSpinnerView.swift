@@ -7,6 +7,9 @@ struct FidgetSpinnerView: View {
     @State private var lastAngle: Double = 0
     @State private var isDragging = false
     @State private var centerPoint: CGPoint = .zero
+    @State private var crownAccumulator: Double = 0
+    @State private var lastCrownValue: Double = 0
+    @State private var decelerationTimer: Timer?
     
     private let vibrationManager = VibrationManager.shared
     
@@ -33,6 +36,8 @@ struct FidgetSpinnerView: View {
                                 isDragging = true
                                 centerPoint = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
                                 lastAngle = calculateAngle(from: centerPoint, to: value.location)
+                                vibrationManager.resetVibrationTiming()
+                                stopDeceleration()
                             }
                             
                             let currentAngle = calculateAngle(from: centerPoint, to: value.location)
@@ -48,39 +53,71 @@ struct FidgetSpinnerView: View {
                             rotation += angleDelta
                             lastAngle = currentAngle
                             
-                            vibrationManager.updateProgressiveVibration(velocity: abs(velocity))
+                            // Trigger vibration directly based on velocity
+                            if abs(velocity) > 0.5 {
+                                vibrationManager.triggerVelocityVibration(velocity: abs(velocity))
+                            }
                         }
                         .onEnded { _ in
                             isDragging = false
-                            
-                            let finalRotation = rotation + velocity * 10
-                            withAnimation(.easeOut(duration: min(abs(velocity) / 50, 3))) {
-                                rotation = finalRotation
-                            }
-                            
-                            if abs(velocity) > 1 {
-                                vibrationManager.startProgressiveVibration(velocity: abs(velocity))
-                                
-                                Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true) { timer in
-                                    velocity *= 0.98
-                                    
-                                    if abs(velocity) < 1 {
-                                        vibrationManager.stopProgressiveVibration()
-                                        timer.invalidate()
-                                    } else {
-                                        vibrationManager.updateProgressiveVibration(velocity: abs(velocity))
-                                    }
-                                }
-                            }
+                            startDeceleration()
                         }
                 )
+                .focusable(true)
+                .digitalCrownRotation(
+                    $crownAccumulator,
+                    from: -Double.infinity,
+                    through: Double.infinity,
+                    by: 1.0,
+                    sensitivity: .medium,
+                    isContinuous: true,
+                    isHapticFeedbackEnabled: false
+                )
+                .onChange(of: crownAccumulator) { newValue in
+                    if !isDragging {
+                        let crownDelta = newValue - lastCrownValue
+                        let crownVelocity = crownDelta * 180 // Convert to degrees
+                        
+                        velocity = crownVelocity * 2
+                        rotation += crownVelocity
+                        
+                        if abs(velocity) > 0.5 {
+                            vibrationManager.triggerVelocityVibration(velocity: abs(velocity))
+                            stopDeceleration()
+                            startDeceleration()
+                        }
+                    }
+                    lastCrownValue = newValue
+                }
                 .allowsHitTesting(true)
-                .focusable(false)
             }
         }
         .onDisappear {
-            vibrationManager.stopProgressiveVibration()
+            stopDeceleration()
         }
+    }
+    
+    private func startDeceleration() {
+        stopDeceleration()
+        
+        if abs(velocity) > 1 {
+            decelerationTimer = Timer.scheduledTimer(withTimeInterval: 0.016, repeats: true) { timer in // 60 FPS
+                velocity *= 0.98
+                rotation += velocity * 0.5
+                
+                if abs(velocity) < 0.5 {
+                    timer.invalidate()
+                    decelerationTimer = nil
+                } else {
+                    vibrationManager.triggerVelocityVibration(velocity: abs(velocity))
+                }
+            }
+        }
+    }
+    
+    private func stopDeceleration() {
+        decelerationTimer?.invalidate()
+        decelerationTimer = nil
     }
     
     private func calculateAngle(from center: CGPoint, to point: CGPoint) -> Double {

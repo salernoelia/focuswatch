@@ -4,11 +4,10 @@ import Foundation
 class VibrationManager: ObservableObject {
     static let shared = VibrationManager()
     
-    private var vibrationTimer: Timer?
-    private var currentIntensity: Double = 0
+    private var lastVibrationTime: TimeInterval = 0
+    private var vibrationFrameCounter: Int = 0
     
     private init() {}
-    
     
     func lightVibration() {
         WKInterfaceDevice.current().play(.click)
@@ -26,55 +25,43 @@ class VibrationManager: ObservableObject {
         WKInterfaceDevice.current().play(type)
     }
     
-    
-    func startProgressiveVibration(velocity: Double) {
-        guard velocity > 1 else { 
-            stopProgressiveVibration()
-            return 
-        }
-        
+    func triggerVelocityVibration(velocity: Double) {
+        let currentTime = Date().timeIntervalSince1970
         let normalizedVelocity = min(abs(velocity), 100)
-        currentIntensity = normalizedVelocity
         
-        if vibrationTimer == nil {
-            let baseInterval = 0.015 
-            let interval = max(0.008, baseInterval - (normalizedVelocity / 100) * 0.007) 
-            
-            vibrationTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
-                self?.triggerVelocityBasedVibration()
-            }
-        }
-    }
-    
-    func stopProgressiveVibration() {
-        vibrationTimer?.invalidate()
-        vibrationTimer = nil
-        currentIntensity = 0
-    }
-    
-    func updateProgressiveVibration(velocity: Double) {
-        guard velocity > 0.5 else { 
-            stopProgressiveVibration()
-            return
-        }
+
+        let minInterval: TimeInterval = 0.02
+        let maxInterval: TimeInterval = 0.1
+        let velocityFactor = normalizedVelocity / 100
+        let targetInterval = maxInterval - (velocityFactor * (maxInterval - minInterval))
         
-        let normalizedVelocity = min(abs(velocity), 100)
-        currentIntensity = normalizedVelocity
-    }
-    
-    
-    private func triggerVelocityBasedVibration() {
-        let intensity = currentIntensity / 100
+        guard currentTime - lastVibrationTime >= targetInterval else { return }
+        
+        lastVibrationTime = currentTime
+        
+
+        vibrationFrameCounter += 1
+        let frameSkip = max(1, Int(4 - (velocityFactor * 3)))
+        
+        guard vibrationFrameCounter % frameSkip == 0 else { return }
+        
+        let intensity = normalizedVelocity / 100
         
         switch intensity {
-        case 0.0..<0.3:
+        case 0.0..<0.2:
+            WKInterfaceDevice.current().play(.click)
+        case 0.2..<0.5:
             WKInterfaceDevice.current().play(.start)
-        case 0.3..<0.6:
+        case 0.5..<0.8:
             WKInterfaceDevice.current().play(.stop)
-        case 0.6..<0.8:
-            WKInterfaceDevice.current().play(.retry)
         default:
             WKInterfaceDevice.current().play(.retry)
         }
     }
+    
+    func resetVibrationTiming() {
+        lastVibrationTime = 0
+        vibrationFrameCounter = 0
+    }
 }
+
