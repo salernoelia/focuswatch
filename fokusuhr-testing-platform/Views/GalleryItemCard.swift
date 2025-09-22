@@ -13,9 +13,11 @@ struct GalleryItemCard: View {
     let item: GalleryItem
     let size: CGFloat
     @State private var showingDeleteAlert = false
-    @StateObject private var galleryStorage = GalleryStorage()
+    @State private var showingEditSheet = false
+    @State private var editedLabel = ""
+    @ObservedObject var galleryStorage: GalleryStorage
     
-    var body: some View {
+   var body: some View {
         VStack(spacing: 8) {
             if let image = item.image {
                 Image(uiImage: image)
@@ -44,22 +46,89 @@ struct GalleryItemCard: View {
                 .multilineTextAlignment(.center)
                 .frame(width: size)
         }
-        .contextMenu {
+       .contextMenu {
+            Button {
+                editedLabel = item.label
+                showingEditSheet = true
+            } label: {
+                Label("Edit Label", systemImage: "pencil")
+            }
+            
             Button(role: .destructive) {
                 showingDeleteAlert = true
             } label: {
                 Label("Delete", systemImage: "trash")
             }
         }
+        .sheet(isPresented: $showingEditSheet) {
+            NavigationView {
+                VStack(spacing: 24) {
+                    if let image = item.image {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxHeight: 200)
+                            .cornerRadius(12)
+                            .shadow(radius: 4)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Edit photo label:")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                        
+                        TextField("Enter new label", text: $editedLabel)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .font(.body)
+                            .submitLabel(.done)
+                            .onSubmit {
+                                if !editedLabel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                    galleryStorage.updateItemLabel(item, newLabel: editedLabel)
+                                    showingEditSheet = false
+                                }
+                            }
+                        
+                        Text("Current: \(item.label)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                }
+                .padding(20)
+                .navigationTitle("Edit Label")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button("Cancel") {
+                            editedLabel = item.label
+                            showingEditSheet = false
+                        }
+                    }
+                    
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Save") {
+                            if !editedLabel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                galleryStorage.updateItemLabel(item, newLabel: editedLabel)
+                                showingEditSheet = false
+                            }
+                        }
+               
+                        .disabled(editedLabel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }
+                }
+            }
+            .onAppear {
+                editedLabel = item.label
+            }
+        }
         .alert("Delete Photo", isPresented: $showingDeleteAlert) {
             Button("Delete", role: .destructive) {
-                if let index = galleryStorage.items.firstIndex(where: { $0.id == item.id }) {
-                    galleryStorage.deleteItems(at: IndexSet([index]))
-                }
+                galleryStorage.deleteItem(item)
             }
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text("Are you sure you want to delete '\(item.label)'?")
+            Text("Are you sure you want to delete '\(item.label)'? This action cannot be undone.")
         }
     }
 }

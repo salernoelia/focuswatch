@@ -55,7 +55,7 @@ struct GalleryView: View {
                     ScrollView {
                         LazyVGrid(columns: selectedGridSize.columns, spacing: 8) {
                             ForEach(filteredItems) { item in
-                                GalleryItemCard(item: item, size: selectedGridSize.itemSize)
+                                GalleryItemCard(item: item, size: selectedGridSize.itemSize, galleryStorage: galleryStorage)
                             }
                         }
                         .padding()
@@ -98,28 +98,82 @@ struct GalleryView: View {
                     ]
                 )
             }
-            .sheet(isPresented: $showingPhotoPicker) {
+          .sheet(isPresented: $showingPhotoPicker) {
                 PhotoPicker(source: .photoLibrary) { images in
                     selectedImages = images
-                    showingLabelInput = true
+                    if !images.isEmpty {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            showingLabelInput = true
+                        }
+                    }
                 }
             }
             .sheet(isPresented: $showingCameraPicker) {
                 PhotoPicker(source: .camera) { images in
                     selectedImages = images
-                    showingLabelInput = true
-                }
-            }
-            .alert("Add Label", isPresented: $showingLabelInput) {
-                TextField("Enter label", text: $newImageLabel)
-                Button("Add") {
-                    if let image = selectedImages.first, !newImageLabel.isEmpty {
-                        galleryStorage.addItem(image: image, label: newImageLabel)
-                        newImageLabel = ""
+                    if !images.isEmpty {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            showingLabelInput = true
+                        }
                     }
                 }
-                Button("Cancel", role: .cancel) {
-                    newImageLabel = ""
+            }
+            .sheet(isPresented: $showingLabelInput) {
+                NavigationView {
+                    VStack(spacing: 20) {
+                        if let image = selectedImages.first {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxHeight: 200)
+                                .cornerRadius(12)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Enter a label for your photo:")
+                                .font(.headline)
+                            
+                            TextField("Photo label", text: $newImageLabel)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .submitLabel(.done)
+                                .onSubmit {
+                                    if let image = selectedImages.first {
+                                        let label = newImageLabel.isEmpty ? "Untitled" : newImageLabel
+                                        galleryStorage.addItem(image: image, label: label)
+                                        newImageLabel = ""
+                                        selectedImages = []
+                                        showingLabelInput = false
+                                    }
+                                }
+                        }
+                        
+                        Spacer()
+                    }
+                    .padding()
+                    .navigationTitle("Add Photo")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button("Cancel") {
+                                newImageLabel = ""
+                                selectedImages = []
+                                showingLabelInput = false
+                            }
+                        }
+                        
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Add") {
+                                if let image = selectedImages.first {
+                                    let label = newImageLabel.isEmpty ? "Untitled" : newImageLabel
+                                    galleryStorage.addItem(image: image, label: label)
+                                    newImageLabel = ""
+                                    selectedImages = []
+                                    showingLabelInput = false
+                                }
+                            }
+                        
+                        }
+                    }
                 }
             }
         }

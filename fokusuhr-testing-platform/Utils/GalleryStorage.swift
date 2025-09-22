@@ -76,4 +76,11 @@ class GalleryStorage: ObservableObject {
               let decoded = try? JSONDecoder().decode([GalleryItem].self, from: data) else { return }
         items = decoded
     }
+
+    func updateItemLabel(_ item: GalleryItem, newLabel: String) {
+    if let index = items.firstIndex(where: { $0.id == item.id }) {
+        items[index].label = newLabel
+        saveItems()
+    }
+}
 }

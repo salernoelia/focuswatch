@@ -12,7 +12,7 @@ import PhotosUI
 struct GalleryItem: Identifiable, Codable {
     var id = UUID()
     let imagePath: String 
-    let label: String
+    var label: String
     
     var image: UIImage? {
         let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
