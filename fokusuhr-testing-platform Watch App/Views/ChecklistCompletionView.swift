@@ -9,6 +9,9 @@
 import SwiftUI
 
 struct ChecklistCompletionView: View {
+    @Environment(\.presentationMode) private var presentationMode
+    @Binding var selectedAppIndex: Int?
+
     var body: some View {
         VStack(spacing: 10) {
             Image(systemName: "checkmark.circle.fill")
@@ -22,7 +25,10 @@ struct ChecklistCompletionView: View {
             Text("Alles gesammelt.")
                 .foregroundColor(.white)
 
-            NavigationLink(destination: WatchView()) {
+            Button(action: {
+                selectedAppIndex = nil
+                presentationMode.wrappedValue.dismiss()
+            }) {
                 Text("Zurück")
                     .padding(.horizontal)
                     .padding(.vertical, 6)

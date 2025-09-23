@@ -18,6 +18,7 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
     let title: String
     let instructionTitle: String
     let items: [Item]
+    @Binding var selectedAppIndex: Int?
     
     @EnvironmentObject var watchConnector: WatchConnector
     @State private var remainingItems: [Item] = []
@@ -54,7 +55,7 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
             )
             .id(animationID)
         case .completed:
-            ChecklistCompletionView()
+            ChecklistCompletionView(selectedAppIndex: $selectedAppIndex)
                 .id(animationID)
         }
     }

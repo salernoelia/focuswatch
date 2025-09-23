@@ -30,7 +30,8 @@ struct WatchView: View {
                     UniversalChecklistView(
                         title: checklist.name,
                         instructionTitle: checklist.name,
-                        items: checklist.items
+                        items: checklist.items,
+                        selectedAppIndex: $selectedAppIndex
                     )
                 )
             ))

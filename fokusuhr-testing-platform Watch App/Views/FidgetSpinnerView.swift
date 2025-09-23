@@ -53,7 +53,7 @@ struct FidgetSpinnerView: View {
                             rotation += angleDelta
                             lastAngle = currentAngle
                             
-                            // Trigger vibration directly based on velocity
+
                             if abs(velocity) > 0.5 {
                                 vibrationManager.triggerVelocityVibration(velocity: abs(velocity))
                             }
