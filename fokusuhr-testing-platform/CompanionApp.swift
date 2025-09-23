@@ -9,42 +9,10 @@ import SwiftUI
 
 @main
 struct CompanionApp: App {
-    @StateObject private var watchConnector = WatchConnector()
     
     var body: some Scene {
         WindowGroup {
-            TabView {
-                WizardView()
-                    .environmentObject(watchConnector)
-                    .tabItem {
-                        Image(systemName: "wand.and.rays")
-                        Text("Wizard")
-                    }
-
-                CalendarView()
-                    .tabItem {
-                        Image(systemName: "calendar")
-                        Text("Calendar")
-                    }
-
-                JournalView()
-                    .tabItem {
-                        Image(systemName: "book.pages")
-                        Text("Journal")
-                    }
-
-                GalleryView()
-                    .tabItem {
-                        Image(systemName: "photo.on.rectangle.angled")
-                        Text("Gallery")
-                    }
-
-                SettingsView()
-                    .tabItem {
-                        Image(systemName: "gearshape")
-                        Text("Settings")
-                    }
-            }
+            CompanionView()
         }
     }
 }
