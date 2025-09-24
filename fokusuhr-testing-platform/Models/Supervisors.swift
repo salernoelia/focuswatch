@@ -12,6 +12,8 @@ struct Supervisor: Codable, Identifiable {
     let uid: String
     let first_name: String
     let last_name: String
+    let email: String?
+    let status: String
 
     var id: String { uid }
 

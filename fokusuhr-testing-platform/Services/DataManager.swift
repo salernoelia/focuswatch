@@ -2,6 +2,7 @@ import Foundation
 import Combine
 import SwiftUI
 
+// TODO: Refactor out all the building block inside this Data Manager into their self-contained models
 class DataManager: ObservableObject {
     @Published var apps: [AppInfo] = []
     @Published var testUsers: [TestUser] = []
