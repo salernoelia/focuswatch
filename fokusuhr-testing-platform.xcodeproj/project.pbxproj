@@ -50,14 +50,37 @@
 		0E9D8CCF2E0D6C24002B7989 /* fokusuhr-testing-platform Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fokusuhr-testing-platform Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0E12535B2E840AEB005F5FB4 /* Exceptions for "fokusuhr-testing-platform" folder in "fokusuhr-testing-platform" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 0E9D8CBE2E0D6C23002B7989 /* fokusuhr-testing-platform */;
+		};
+		0E12535D2E840AF3005F5FB4 /* Exceptions for "fokusuhr-testing-platform Watch App" folder in "fokusuhr-testing-platform Watch App" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"fokusuhr-testing-platform-Watch-App-Info.plist",
+			);
+			target = 0E9D8CCE2E0D6C24002B7989 /* fokusuhr-testing-platform Watch App */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0E9D8CC12E0D6C23002B7989 /* fokusuhr-testing-platform */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0E12535B2E840AEB005F5FB4 /* Exceptions for "fokusuhr-testing-platform" folder in "fokusuhr-testing-platform" target */,
+			);
 			path = "fokusuhr-testing-platform";
 			sourceTree = "<group>";
 		};
 		0E9D8CD32E0D6C24002B7989 /* fokusuhr-testing-platform Watch App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0E12535D2E840AF3005F5FB4 /* Exceptions for "fokusuhr-testing-platform Watch App" folder in "fokusuhr-testing-platform Watch App" target */,
+			);
 			path = "fokusuhr-testing-platform Watch App";
 			sourceTree = "<group>";
 		};
@@ -380,6 +403,7 @@
 				DEVELOPMENT_TEAM = TA2AJAJUME;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "fokusuhr-testing-platform-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "fokusuhr-testing-platform";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = net.fokusapp.FokusWatch.TestingPlattform;
@@ -387,7 +411,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.4;
+				MARKETING_VERSION = 1.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = net.fokusapp.FokusWatch.TestingPlattform.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -412,6 +436,7 @@
 				DEVELOPMENT_TEAM = TA2AJAJUME;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "fokusuhr-testing-platform-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "fokusuhr-testing-platform";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = net.fokusapp.FokusWatch.TestingPlattform;
@@ -419,7 +444,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.4;
+				MARKETING_VERSION = 1.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = net.fokusapp.FokusWatch.TestingPlattform.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -445,6 +470,7 @@
 				DEVELOPMENT_TEAM = TA2AJAJUME;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "fokusuhr-testing-platform/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "fokusuhr-testing-platform";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to take photos.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -457,7 +483,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.4;
+				MARKETING_VERSION = 1.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = net.fokusapp.FokusWatch.TestingPlattform;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -480,6 +506,7 @@
 				DEVELOPMENT_TEAM = TA2AJAJUME;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "fokusuhr-testing-platform/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "fokusuhr-testing-platform";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to take photos.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -492,7 +519,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.4;
+				MARKETING_VERSION = 1.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = net.fokusapp.FokusWatch.TestingPlattform;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
