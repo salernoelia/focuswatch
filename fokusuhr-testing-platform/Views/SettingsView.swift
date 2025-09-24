@@ -1,10 +1,9 @@
 import SwiftUI
 
 class SettingsViewModel: ObservableObject {
-    @Published var apiKey: String = ""
     @Published var supervisors: [Supervisor] = []
     @Published var users: [TestUser] = []
-    @Published var selectedUserId: Int?
+    @Published var selectedUserId: Int32?
     @Published var isLoading = false
     @Published var showingAddSupervisor = false
     @Published var showingAddUser = false
@@ -12,15 +11,15 @@ class SettingsViewModel: ObservableObject {
     @Published var isLoggedIn = false
     @Published var currentUserEmail: String = ""
     
+    private let authService = AuthService.shared
+    
     init() {
         checkAuthStatus()
     }
     
-    func checkAuthStatus() {
-        if let session = supabase.auth.currentSession {
-            isLoggedIn = true
-            currentUserEmail = session.user.email ?? ""
-        }
+    private func checkAuthStatus() {
+        isLoggedIn = supabase.auth.currentSession != nil
+        currentUserEmail = supabase.auth.currentUser?.email ?? ""
     }
     
     func signOut() {
@@ -29,34 +28,53 @@ class SettingsViewModel: ObservableObject {
             await MainActor.run {
                 isLoggedIn = false
                 currentUserEmail = ""
+                supervisors = []
+                users = []
+                selectedUserId = nil
             }
         }
     }
     
     func fetchSupervisors() {
         isLoading = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            let sample = [
-                Supervisor(uid: "1", first_name: "Ari", last_name: "Kato"),
-                Supervisor(uid: "2", first_name: "Maya", last_name: "Perez")
-            ]
-            self.supervisors = sample
-            self.isLoading = false
+        
+        Task {
+            do {
+                let fetchedSupervisors = try await SupervisorService.shared.fetchSupervisors()
+                await MainActor.run {
+                    self.supervisors = fetchedSupervisors
+                    self.isLoading = false
+                }
+            } catch {
+                print("Failed to fetch supervisors: \(error)")
+                await MainActor.run {
+                    self.supervisors = []
+                    self.isLoading = false
+                }
+            }
         }
     }
     
     func fetchUsers() {
         isLoading = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            let sample = [
-                TestUser(id: 1, first_name: "Jon", last_name: "Doe", age: 29, supervisor_uid: "1"),
-                TestUser(id: 2, first_name: "Lina", last_name: "Wong", age: 34, supervisor_uid: "2")
-            ]
-            self.users = sample
-            if self.selectedUserId == nil {
-                self.selectedUserId = sample.first?.id
+        
+        Task {
+            do {
+                let fetchedUsers = try await TestUserService.shared.fetchTestUsers()
+                await MainActor.run {
+                    self.users = fetchedUsers
+                    if self.selectedUserId == nil {
+                        self.selectedUserId = fetchedUsers.first?.id
+                    }
+                    self.isLoading = false
+                }
+            } catch {
+                print("Failed to fetch users: \(error)")
+                await MainActor.run {
+                    self.users = []
+                    self.isLoading = false
+                }
             }
-            self.isLoading = false
         }
     }
     
@@ -72,16 +90,33 @@ class SettingsViewModel: ObservableObject {
     }
     
     func deleteSupervisor(_ supervisor: Supervisor) {
-        supervisors.removeAll { $0.uid == supervisor.uid }
+        Task {
+            do {
+                try await SupervisorService.shared.deleteSupervisor(uid: supervisor.uid)
+                await MainActor.run {
+                    self.supervisors.removeAll { $0.uid == supervisor.uid }
+                }
+            } catch {
+                print("Failed to delete supervisor: \(error)")
+            }
+        }
     }
     
     func deleteUser(_ user: TestUser) {
-        users.removeAll { $0.id == user.id }
-        if selectedUserId == user.id {
-            selectedUserId = users.first?.id
+        Task {
+            do {
+                try await TestUserService.shared.deleteTestUser(id: user.id)
+                await MainActor.run {
+                    self.users.removeAll { $0.id == user.id }
+                    if self.selectedUserId == user.id {
+                        self.selectedUserId = self.users.first?.id
+                    }
+                }
+            } catch {
+                print("Failed to delete user: \(error)")
+            }
         }
     }
-}
 
 struct SettingsView: View {
     @StateObject private var vm = SettingsViewModel()
@@ -111,15 +146,6 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section("API Configuration") {
-                    SecureField("Enter API Key", text: $vm.apiKey)
-                    
-                    if !vm.apiKey.isEmpty {
-                        Text("API Key Configured")
-                            .foregroundColor(.green)
-                    }
-                }
-                
                 Section {
                     HStack {
                         Text("Supervisors")
@@ -146,6 +172,7 @@ struct SettingsView: View {
                     } label: {
                         Text("Add Supervisor")
                     }
+                    .disabled(!vm.isLoggedIn)
                 }
                 
                 Section {
@@ -160,7 +187,7 @@ struct SettingsView: View {
                     if !vm.users.isEmpty {
                         Picker("Active TestUser", selection: $vm.selectedUserId) {
                             ForEach(vm.users) { user in
-                                Text(user.fullName).tag(user.id as Int?)
+                                Text(user.fullName).tag(user.id as Int32?)
                             }
                         }
                         .pickerStyle(.menu)
@@ -174,7 +201,7 @@ struct SettingsView: View {
                         ForEach(vm.users) { user in
                             UserRow(
                                 user: user,
-                                supervisor: vm.supervisors.first { $0.uid == user.supervisor_uid },
+                                supervisor: vm.supervisors.first { $0.uid == user.supervisorUid },
                                 isSelected: vm.selectedUserId == user.id
                             ) {
                                 vm.deleteUser(user)
@@ -187,7 +214,7 @@ struct SettingsView: View {
                     } label: {
                         Text("Add TestUser")
                     }
-                    .disabled(vm.supervisors.isEmpty)
+                    .disabled(vm.supervisors.isEmpty || !vm.isLoggedIn)
                 }
             }
             .listStyle(.insetGrouped)
@@ -196,21 +223,28 @@ struct SettingsView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Refresh") {
-                        vm.fetchSupervisors()
-                        vm.fetchUsers()
+                        if vm.isLoggedIn {
+                            vm.fetchSupervisors()
+                            vm.fetchUsers()
+                        }
                     }
-                    .disabled(vm.isLoading)
+                    .disabled(vm.isLoading || !vm.isLoggedIn)
                 }
             }
             .task {
-                vm.fetchSupervisors()
-                vm.fetchUsers()
+                if vm.isLoggedIn {
+                    vm.fetchSupervisors()
+                    vm.fetchUsers()
+                }
+            }
+            .onChange(of: vm.isLoggedIn) { isLoggedIn in
+                if isLoggedIn {
+                    vm.fetchSupervisors()
+                    vm.fetchUsers()
+                }
             }
             .sheet(isPresented: $vm.showingLogin) {
                 LoginView()
-                    .onDisappear {
-                        vm.checkAuthStatus()
-                    }
             }
             .sheet(isPresented: $vm.showingAddSupervisor) {
                 AddSupervisorView { supervisor in
@@ -232,6 +266,7 @@ struct SettingsView: View {
         }
     }
 }
+
 
 struct SupervisorRow: View {
     let supervisor: Supervisor
@@ -297,6 +332,8 @@ struct UserRow: View {
 struct AddSupervisorView: View {
     @State private var firstName = ""
     @State private var lastName = ""
+    @State private var email = ""
+    @State private var isLoading = false
     @Environment(\.dismiss) private var dismiss
     let onAdd: (Supervisor) -> Void
     
@@ -306,6 +343,9 @@ struct AddSupervisorView: View {
                 Section("Supervisor Details") {
                     TextField("First Name", text: $firstName)
                     TextField("Last Name", text: $lastName)
+                    TextField("Email", text: $email)
+                        .keyboardType(.emailAddress)
+                        .autocapitalization(.none)
                 }
             }
             .navigationTitle("Add Supervisor")
@@ -319,16 +359,36 @@ struct AddSupervisorView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Add") {
-                        let supervisor = Supervisor(
-                            uid: UUID().uuidString,
-                            first_name: firstName.trimmingCharacters(in: .whitespacesAndNewlines),
-                            last_name: lastName.trimmingCharacters(in: .whitespacesAndNewlines)
-                        )
-                        onAdd(supervisor)
-                        dismiss()
+                        addSupervisor()
                     }
                     .disabled(firstName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
-                             lastName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                             lastName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+                             email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+                             isLoading)
+                }
+            }
+        }
+    }
+    
+    private func addSupervisor() {
+        isLoading = true
+        
+        Task {
+            do {
+                let supervisor = try await SupervisorService.shared.createSupervisor(
+                    firstName: firstName.trimmingCharacters(in: .whitespacesAndNewlines),
+                    lastName: lastName.trimmingCharacters(in: .whitespacesAndNewlines),
+                    email: email.trimmingCharacters(in: .whitespacesAndNewlines)
+                )
+                
+                await MainActor.run {
+                    onAdd(supervisor)
+                    dismiss()
+                }
+            } catch {
+                print("Failed to create supervisor: \(error)")
+                await MainActor.run {
+                    isLoading = false
                 }
             }
         }
@@ -339,7 +399,9 @@ struct AddUserView: View {
     @State private var firstName = ""
     @State private var lastName = ""
     @State private var age = ""
-    @State private var selectedSupervisorUid: String
+    @State private var selectedGender: PublicSchema.Genders = .hidden
+    @State private var selectedSupervisorUid: UUID
+    @State private var isLoading = false
     let supervisors: [Supervisor]
     @Environment(\.dismiss) private var dismiss
     let onAdd: (TestUser) -> Void
@@ -347,7 +409,7 @@ struct AddUserView: View {
     init(supervisors: [Supervisor], onAdd: @escaping (TestUser) -> Void) {
         self.supervisors = supervisors
         self.onAdd = onAdd
-        self._selectedSupervisorUid = State(initialValue: supervisors.first?.uid ?? "")
+        self._selectedSupervisorUid = State(initialValue: supervisors.first?.uid ?? UUID())
     }
     
     var body: some View {
@@ -358,6 +420,12 @@ struct AddUserView: View {
                     TextField("Last Name", text: $lastName)
                     TextField("Age", text: $age)
                         .keyboardType(.numberPad)
+                    
+                    Picker("Gender", selection: $selectedGender) {
+                        Text("Hidden").tag(PublicSchema.Genders.hidden)
+                        Text("Male").tag(PublicSchema.Genders.male)
+                        Text("Female").tag(PublicSchema.Genders.female)
+                    }
                 }
                 
                 Section("Supervisor") {
@@ -379,19 +447,38 @@ struct AddUserView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Add") {
-                        let user = TestUser(
-                            id: Int.random(in: 1000...9999),
-                            first_name: firstName.trimmingCharacters(in: .whitespacesAndNewlines),
-                            last_name: lastName.trimmingCharacters(in: .whitespacesAndNewlines),
-                            age: Int(age) ?? 0,
-                            supervisor_uid: selectedSupervisorUid
-                        )
-                        onAdd(user)
-                        dismiss()
+                        addUser()
                     }
                     .disabled(firstName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
                              lastName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
-                             Int(age) == nil)
+                             Int(age) == nil ||
+                             isLoading)
+                }
+            }
+        }
+    }
+    
+    private func addUser() {
+        isLoading = true
+        
+        Task {
+            do {
+                let user = try await TestUserService.shared.createTestUser(
+                    firstName: firstName.trimmingCharacters(in: .whitespacesAndNewlines),
+                    lastName: lastName.trimmingCharacters(in: .whitespacesAndNewlines),
+                    age: Int(age) ?? 0,
+                    gender: selectedGender,
+                    supervisorUid: selectedSupervisorUid
+                )
+                
+                await MainActor.run {
+                    onAdd(user)
+                    dismiss()
+                }
+            } catch {
+                print("Failed to create user: \(error)")
+                await MainActor.run {
+                    isLoading = false
                 }
             }
         }

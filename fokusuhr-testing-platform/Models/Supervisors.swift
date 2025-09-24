@@ -7,17 +7,12 @@
 
 import Foundation
 
+typealias Supervisor = PublicSchema.SupervisorsSelect
 
-struct Supervisor: Codable, Identifiable {
-    let uid: String
-    let first_name: String
-    let last_name: String
-    let email: String?
-    let status: String
-
-    var id: String { uid }
-
+extension PublicSchema.SupervisorsSelect: Identifiable {
+    var id: UUID { uid }
+    
     var fullName: String {
-        "\(first_name) \(last_name)"
+        "\(firstName) \(lastName)"
     }
 }

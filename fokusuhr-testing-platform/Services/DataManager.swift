@@ -2,7 +2,6 @@ import Foundation
 import Combine
 import SwiftUI
 
-// TODO: Refactor out all the building block inside this Data Manager into their self-contained models
 class DataManager: ObservableObject {
     @Published var apps: [AppInfo] = []
     @Published var testUsers: [TestUser] = []
@@ -17,7 +16,6 @@ class DataManager: ObservableObject {
     func fetchApps() async {
         await MainActor.run { isLoading = true }
         
-
         await MainActor.run {
             apps = getDefaultApps()
             isLoading = false
@@ -37,45 +35,82 @@ class DataManager: ObservableObject {
         
         return apps
     }
-    
 
     func fetchTestUsers() async {
         await MainActor.run { isLoading = true }
         
-        // TODO: Replace with Supabase API call & refactor into own model class
-        await MainActor.run {
-            testUsers = getDefaultUsers()
-            isLoading = false
+        do {
+            let users = try await TestUserService.shared.fetchTestUsers()
+            await MainActor.run {
+                self.testUsers = users
+                isLoading = false
+            }
+        } catch {
+            print("Failed to fetch test users: \(error)")
+            await MainActor.run {
+                self.testUsers = getDefaultUsers()
+                isLoading = false
+            }
         }
     }
     
     private func getDefaultUsers() -> [TestUser] {
-        return [
-            TestUser(id: 1, first_name: "Jon", last_name: "Doe", age: 29, supervisor_uid: "1"),
-            TestUser(id: 2, first_name: "Lina", last_name: "Wong", age: 34, supervisor_uid: "2"),
-            TestUser(id: 3, first_name: "Alex", last_name: "Smith", age: 26, supervisor_uid: "1")
-        ]
+        return []
     }
-    
 
     func saveJournalEntry(_ entry: JournalEntry) async -> Bool {
         await MainActor.run { isLoading = true }
         
-        // TODO: Replace with Supabase API call & refactor into own model class
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
-        
-        await MainActor.run { isLoading = false }
-        return true
+        do {
+            guard let session = supabase.auth.currentSession else {
+                await MainActor.run { isLoading = false }
+                return false
+            }
+            
+            _ = try await JournalService.shared.saveJournalEntry(
+                description: entry.entryText,
+                testUserId: Int32(entry.userId),
+                supervisorUid: session.user.id,
+                appName: entry.appName
+            )
+            
+            await MainActor.run { isLoading = false }
+            return true
+        } catch {
+            print("Failed to save journal entry: \(error)")
+            await MainActor.run { isLoading = false }
+            return false
+        }
     }
     
     func fetchJournalEntries() async -> [JournalEntry] {
         await MainActor.run { isLoading = true }
         
-        // TODO: Replace with Supabase API call & refactor into own model class
-        try? await Task.sleep(nanoseconds: 500_000_000)
-        
-        await MainActor.run { isLoading = false }
-        return []
+        do {
+            let journals = try await JournalService.shared.fetchJournalEntries()
+            await MainActor.run { isLoading = false }
+            
+            return journals.compactMap { journal in
+                if let description = journal.description,
+                   let testUserId = journal.testUserId {
+                    let user = testUsers.first { $0.id == testUserId }
+                    return JournalEntry(
+                        id: UUID(),
+                        date: journal.createdAt,
+                        appName: journal.appName ?? "Unknown App",
+                        userName: user?.fullName ?? "Unknown User",
+                        userId: Int(testUserId),
+                        entryText: description
+                    )
+                } else {
+                    return nil
+                }
+            }
+        } catch {
+            print("Failed to fetch journal entries: \(error)")
+            await MainActor.run { isLoading = false }
+            return []
+        }
     }
     
     private func loadDefaultData() {

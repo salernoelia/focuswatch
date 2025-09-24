@@ -7,10 +7,11 @@
 
 import Foundation
 
-struct Journal: Identifiable, Codable {
-    let id: Int
-    let description: String?
-    let test_user_id: Int?
-    let supervisor_uid: String?
-    let app_id: Int?
+typealias Journal = PublicSchema.JournalsSelect
+
+extension PublicSchema.JournalsSelect: Identifiable {
+    var createdAt: Date {
+        // For now return current date - we could parse created_at if it exists in the schema
+        return Date()
+    }
 }

@@ -7,6 +7,8 @@ struct LoginView: View {
     @State private var showingSuccessMessage = false
     @State private var isLoading = false
     @Environment(\.presentationMode) private var presentationMode
+    
+    private let authService = AuthService.shared
 
     var body: some View {
         VStack(spacing: 20) {
@@ -67,24 +69,19 @@ struct LoginView: View {
         showingSuccessMessage = false
         isLoading = true
         defer { isLoading = false }
+        
         do {
-            let response = try await supabase.auth.signIn(
-                email: email,
-                password: password
-            )
-            if response.user != nil {
-                showingSuccessMessage = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    presentationMode.wrappedValue.dismiss()
-                }
-            } else {
-                errorMessage = "Login failed. Please check your credentials."
+            try await authService.signIn(email: email, password: password)
+            showingSuccessMessage = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                presentationMode.wrappedValue.dismiss()
             }
         } catch {
             errorMessage = error.localizedDescription
         }
     }
 }
+
 
 #Preview {
     LoginView()

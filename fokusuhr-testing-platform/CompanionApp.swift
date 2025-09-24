@@ -8,12 +8,15 @@
 import SwiftUI
 
 @main
-struct CompanionApp: App {
+struct CompanionApp: SwiftUI.App {
     @StateObject private var watchConnector = WatchConnector()
-    
+    @StateObject private var authService = AuthService.shared
+
     var body: some Scene {
         WindowGroup {
-           CompanionView()
+            CompanionView()
+                .environmentObject(watchConnector)
+                .environmentObject(authService)
         }
     }
 }

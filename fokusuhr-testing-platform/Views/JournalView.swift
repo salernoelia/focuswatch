@@ -11,7 +11,7 @@ struct JournalEntry: Identifiable, Codable {
 
 struct JournalView: View {
     @StateObject private var dataManager = DataManager.shared
-    @State private var selectedAppIndex: Int = 0
+    @State private var appName = ""
     @State private var selectedUserIndex: Int = 0
     @State private var entryText = ""
     @State private var isSubmitting = false
@@ -29,17 +29,8 @@ struct JournalView: View {
                             .foregroundColor(.blue)
                             .frame(width: 20)
                         
-                        if dataManager.apps.isEmpty {
-                            Text("Loading apps...")
-                                .foregroundColor(.secondary)
-                        } else {
-                            Picker("App", selection: $selectedAppIndex) {
-                                ForEach(Array(dataManager.apps.enumerated()), id: \.offset) { index, app in
-                                    Text(app.title).tag(index)
-                                }
-                            }
-                            .pickerStyle(.menu)
-                        }
+                        TextField("App Name", text: $appName)
+                            .textFieldStyle(.roundedBorder)
                     }
                     
                     HStack {
@@ -137,13 +128,12 @@ struct JournalView: View {
     }
     
     private var canSubmit: Bool {
-        !dataManager.apps.isEmpty &&
+        !appName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
         !dataManager.testUsers.isEmpty &&
         !entryText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
     
     private func loadData() async {
-        await dataManager.fetchApps()
         await dataManager.fetchTestUsers()
         entries = await dataManager.fetchJournalEntries()
     }
@@ -151,19 +141,19 @@ struct JournalView: View {
     private func submitJournalEntry() {
         textFieldFocused = false
         
-        guard !dataManager.apps.isEmpty && !dataManager.testUsers.isEmpty else { return }
+        guard !dataManager.testUsers.isEmpty else { return }
         
         withAnimation(.easeInOut) {
             isSubmitting = true
         }
         
-        let selectedApp = dataManager.apps[selectedAppIndex]
         let selectedUser = dataManager.testUsers[selectedUserIndex]
+        let trimmedAppName = appName.trimmingCharacters(in: .whitespacesAndNewlines)
         
         let newEntry = JournalEntry(
-            appName: selectedApp.title,
+            appName: trimmedAppName,
             userName: selectedUser.fullName,
-            userId: selectedUser.id,
+            userId: Int(selectedUser.id),
             entryText: entryText.trimmingCharacters(in: .whitespacesAndNewlines)
         )
         
@@ -185,6 +175,7 @@ struct JournalView: View {
     
     private func resetForm() {
         entryText = ""
+        appName = ""
     }
 }
 

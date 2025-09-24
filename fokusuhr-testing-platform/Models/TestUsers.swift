@@ -5,15 +5,22 @@
 //  Created by Elia Salerno on 07.09.2025.
 //
 
-struct TestUser: Identifiable, Codable {
-    let id: Int
-    var first_name: String
-    var last_name: String
-    var age: Int
-    var gender: String
-    var supervisor_uid: String
+import Foundation
+
+typealias TestUser = PublicSchema.TestUsersSelect
+
+extension PublicSchema.TestUsersSelect: Identifiable {
+    var id: Int32 { self.id }
     
     var fullName: String {
-        "\(first_name) \(last_name)"
+        "\(firstName) \(lastName)"
+    }
+    
+    var genderString: String? {
+        switch gender {
+        case .male: return "male"
+        case .female: return "female" 
+        case .hidden: return "hidden"
+        }
     }
 }
