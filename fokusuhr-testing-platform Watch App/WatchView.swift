@@ -49,7 +49,14 @@ struct WatchView: View {
                 description: "Digitaler Fidget Spinner",
                 color: .orange,
                 destination: AnyView(FidgetSpinnerView())
+            ),
+            PrototypeApp(
+                title: "Anne (Beta)",
+                description: "Virtueller Assistent",
+                color: .blue,
+                destination: AnyView(AnneView())
             )
+  
         ])
         
         return apps

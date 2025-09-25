@@ -2,6 +2,8 @@ import Foundation
 import Combine
 import SwiftUI
 
+
+// TODO: Refactor entire DataManager into smaller, more concise parts
 class DataManager: ObservableObject {
     @Published var apps: [AppInfo] = []
     @Published var testUsers: [TestUser] = []

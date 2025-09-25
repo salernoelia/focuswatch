@@ -20,7 +20,8 @@ struct WizardView: View {
         
         apps.append(contentsOf: [
             ("Farbatmung", "Beruhigende Atemübungen", Color.green),
-            ("Fidget Spinner", "Digitaler Fidget Spinner", Color.orange)
+            ("Fidget Spinner", "Digitaler Fidget Spinner", Color.orange),
+            ("Anne (Beta)", "Virtueller Assistent", Color.blue)
         ])
         
         return apps

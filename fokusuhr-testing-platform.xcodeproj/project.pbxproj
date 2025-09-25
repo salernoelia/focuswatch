@@ -58,13 +58,6 @@
 			);
 			target = 0E9D8CBE2E0D6C23002B7989 /* fokusuhr-testing-platform */;
 		};
-		0E12535D2E840AF3005F5FB4 /* Exceptions for "fokusuhr-testing-platform Watch App" folder in "fokusuhr-testing-platform Watch App" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"fokusuhr-testing-platform-Watch-App-Info.plist",
-			);
-			target = 0E9D8CCE2E0D6C24002B7989 /* fokusuhr-testing-platform Watch App */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -78,9 +71,6 @@
 		};
 		0E9D8CD32E0D6C24002B7989 /* fokusuhr-testing-platform Watch App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				0E12535D2E840AF3005F5FB4 /* Exceptions for "fokusuhr-testing-platform Watch App" folder in "fokusuhr-testing-platform Watch App" target */,
-			);
 			path = "fokusuhr-testing-platform Watch App";
 			sourceTree = "<group>";
 		};
@@ -405,6 +395,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "fokusuhr-testing-platform-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "fokusuhr-testing-platform";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Required for voice transcription.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = net.fokusapp.FokusWatch.TestingPlattform;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -438,6 +429,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "fokusuhr-testing-platform-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "fokusuhr-testing-platform";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Required for voice transcription.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = net.fokusapp.FokusWatch.TestingPlattform;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -473,6 +465,7 @@
 				INFOPLIST_FILE = "fokusuhr-testing-platform/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "fokusuhr-testing-platform";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to take photos.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Required for voice transcription.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -509,6 +502,7 @@
 				INFOPLIST_FILE = "fokusuhr-testing-platform/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "fokusuhr-testing-platform";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to take photos.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Required for voice transcription.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
