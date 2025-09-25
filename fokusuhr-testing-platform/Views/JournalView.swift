@@ -10,7 +10,9 @@ struct JournalEntry: Identifiable, Codable {
 }
 
 struct JournalView: View {
-    @StateObject private var dataManager = DataManager.shared
+    @StateObject private var testUsersManager = TestUsersManager.shared
+    @StateObject private var journalManager = JournalManager.shared
+    @StateObject private var appsManager = AppsManager.shared
     @State private var selectedAppIndex: Int = 0
     @State private var selectedUserIndex: Int = 0
     @State private var entryText = ""
@@ -29,12 +31,12 @@ struct JournalView: View {
                             .foregroundColor(.blue)
                             .frame(width: 20)
                         
-                        if dataManager.apps.isEmpty {
+                        if appsManager.apps.isEmpty {
                             Text("Loading apps...")
                                 .foregroundColor(.secondary)
                         } else {
                             Picker("App", selection: $selectedAppIndex) {
-                                ForEach(Array(dataManager.apps.enumerated()), id: \.offset) { index, app in
+                                ForEach(Array(appsManager.apps.enumerated()), id: \.offset) { index, app in
                                     Text(app.title).tag(index)
                                 }
                             }
@@ -47,12 +49,12 @@ struct JournalView: View {
                             .foregroundColor(.green)
                             .frame(width: 20)
                         
-                        if dataManager.testUsers.isEmpty {
+                        if testUsersManager.testUsers.isEmpty {
                             Text("Loading users...")
                                 .foregroundColor(.secondary)
                         } else {
                             Picker("Test User", selection: $selectedUserIndex) {
-                                ForEach(Array(dataManager.testUsers.enumerated()), id: \.offset) { index, user in
+                                ForEach(Array(testUsersManager.testUsers.enumerated()), id: \.offset) { index, user in
                                     Text(user.fullName).tag(index)
                                 }
                             }
@@ -137,28 +139,28 @@ struct JournalView: View {
     }
     
     private var canSubmit: Bool {
-        !dataManager.apps.isEmpty &&
-        !dataManager.testUsers.isEmpty &&
+        !appsManager.apps.isEmpty &&
+        !testUsersManager.testUsers.isEmpty &&
         !entryText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
     
     private func loadData() async {
-        await dataManager.fetchApps()
-        await dataManager.fetchTestUsers()
-        entries = await dataManager.fetchJournalEntries()
+        await appsManager.fetchApps()
+        await testUsersManager.fetchTestUsers()
+        entries = await journalManager.fetchJournalEntries()
     }
     
     private func submitJournalEntry() {
         textFieldFocused = false
         
-        guard !dataManager.apps.isEmpty && !dataManager.testUsers.isEmpty else { return }
+        guard !appsManager.apps.isEmpty && !testUsersManager.testUsers.isEmpty else { return }
         
         withAnimation(.easeInOut) {
             isSubmitting = true
         }
         
-        let selectedApp = dataManager.apps[selectedAppIndex]
-        let selectedUser = dataManager.testUsers[selectedUserIndex]
+        let selectedApp = appsManager.apps[selectedAppIndex]
+        let selectedUser = testUsersManager.testUsers[selectedUserIndex]
         
         let newEntry = JournalEntry(
             appName: selectedApp.title,
@@ -168,7 +170,7 @@ struct JournalView: View {
         )
         
         Task {
-            let success = await dataManager.saveJournalEntry(newEntry)
+            let success = await journalManager.saveJournalEntry(newEntry)
             
             await MainActor.run {
                 if success {
