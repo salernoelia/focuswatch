@@ -36,7 +36,7 @@ struct SpeedometerView: View {
                     DragGesture()
                         .onChanged { value in
                             let dx = value.location.x - center.x
-                            let radius = size * 0.4
+                            let radius = size * 0.2
                             
                             if abs(dx) <= radius {
                                 moodValue = (dx + radius) / (2 * radius)
