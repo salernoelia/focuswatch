@@ -54,7 +54,7 @@ struct SpeedometerView: View {
         switch moodValue {
         case 0.0..<0.33: return "🚜"
         case 0.33..<0.66: return "🚙"
-        default: return "🚀"
+        default: return "🏎️"
         }
     }
 }
