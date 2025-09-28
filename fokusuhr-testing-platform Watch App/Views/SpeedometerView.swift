@@ -1,15 +1,126 @@
-//
-//  SpeedometerView.swift
-//  fokusuhr-testing-platform Watch App
-//
-//  Created by Elia Salerno on 28.09.2025.
-//
-
 import SwiftUI
 
 struct SpeedometerView: View {
+    @State private var moodValue: Double = 0.5
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        GeometryReader { geometry in
+            let size = min(geometry.size.width, geometry.size.height) * 1.9
+            let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height * 0.6)
+            
+            ZStack {
+                SemicircleSegments()
+                    .frame(width: size, height: size / 2)
+                    .position(center)
+                
+                NeedleView(value: moodValue, radius: size * 0.4)
+                    .position(center)
+                
+                Circle()
+                    .fill(Color.white)
+                    .frame(width: 8, height: 8)
+                    .position(center)
+                
+                Text(moodLabel)
+                    .font(.title2)
+                    .foregroundColor(.white)
+                    .position(x: center.x, y: center.y + 35)
+            }
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        let dx = value.location.x - center.x
+                        let radius = size * 0.4
+                        
+                        if abs(dx) <= radius {
+                            moodValue = (dx + radius) / (2 * radius)
+                            moodValue = max(0, min(1, moodValue))
+                        }
+                    }
+            )
+        }
+    }
+    
+    private var moodLabel: String {
+        switch moodValue {
+        case 0.0..<0.33: return "🚜"
+        case 0.33..<0.66: return "🚙"
+        default: return "🚀"
+        }
+    }
+}
+
+struct SemicircleSegments: View {
+    var body: some View {
+        ZStack {
+            SemicircleSegment(startAngle: 180, endAngle: 240)
+                .fill(Color.red)
+            
+            SemicircleSegment(startAngle: 240, endAngle: 300)
+                .fill(Color.orange)
+            
+            SemicircleSegment(startAngle: 300, endAngle: 360)
+                .fill(Color.green)
+        }
+    }
+}
+
+struct SemicircleSegment: Shape {
+    let startAngle: Double
+    let endAngle: Double
+    
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+        let radius = min(rect.width, rect.height) / 2
+        
+        path.move(to: center)
+        path.addArc(
+            center: center,
+            radius: radius,
+            startAngle: .degrees(startAngle),
+            endAngle: .degrees(endAngle),
+            clockwise: false
+        )
+        path.closeSubpath()
+        
+        return path
+    }
+}
+
+struct NeedleView: View {
+    let value: Double
+    let radius: CGFloat
+    
+    var needleAngle: Double {
+        return 270 + (value * 180)
+    }
+    
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .fill(Color.white)
+                .frame(width: 2, height: radius * 0.7)
+                .offset(y: -radius * 0.35)
+                .rotationEffect(.degrees(needleAngle))
+            
+            Triangle()
+                .fill(Color.white)
+                .frame(width: 12, height: 8)
+                .offset(y: -radius * 0.65)
+                .rotationEffect(.degrees(needleAngle))
+        }
+    }
+}
+
+struct Triangle: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.midX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.closeSubpath()
+        return path
     }
 }
 
