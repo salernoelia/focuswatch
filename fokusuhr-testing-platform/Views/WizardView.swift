@@ -4,6 +4,7 @@ import WatchConnectivity
 struct WizardView: View {
     @EnvironmentObject private var watchConnector: WatchConnector
     @StateObject private var checklistManager: ChecklistManager
+    @StateObject private var testUsersManager = TestUsersManager.shared
     @State private var showingEditor = false
     @State private var isReconnecting = false
     @State private var isSyncing = false
@@ -30,6 +31,39 @@ struct WizardView: View {
     var body: some View {
         NavigationView {
             List {
+                Section("Current Test User") {
+                    if let selectedUser = testUsersManager.selectedUser {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(selectedUser.fullName)
+                                    .font(.headline)
+                                    .fontWeight(.medium)
+                                Text("Age: \(selectedUser.age)")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                if let supervisor = testUsersManager.supervisors.first(where: { $0.uid == selectedUser.supervisor_uid }) {
+                                    Text("Supervisor: \(supervisor.fullName)")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            Spacer()
+                            NavigationLink("", destination: UserSelectionView())
+                                .font(.subheadline)
+                        }
+                        .padding(.vertical, 4)
+                    } else {
+                        HStack {
+                            Text("No user selected")
+                                .font(.subheadline)
+                                .foregroundColor(.red)
+                            Spacer()
+                            NavigationLink("Select User", destination: UserSelectionView())
+                                .font(.subheadline)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
 
                 Section("Applications") {
                     ForEach(Array(prototypeApps.enumerated()), id: \.offset) { idx, app in
@@ -51,14 +85,15 @@ struct WizardView: View {
                         }
                         .disabled(!watchConnector.isConnected)
                     }
-                     Button("Put Watch into Menu State") {
+                    
+                    Button("Put Watch into Menu State") {
                         watchConnector.returnToMainMenu()
                     }
                     .disabled(!watchConnector.isConnected)
-                     Button("Edit Checklists") {
+                    
+                    Button("Edit Checklists") {
                         showingEditor = true
                     }
-                    
                 }
                 
                 Section("Connection") {
@@ -74,7 +109,6 @@ struct WizardView: View {
                         }
                     }
                     
-
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Debug Info:")
                             .font(.caption)
@@ -114,20 +148,20 @@ struct WizardView: View {
                     }
                 }
                 
-                 Button(action: forceSyncToWatch) {
-                HStack {
-                    if isSyncing {
-                        ProgressView()
-                            .scaleEffect(0.8)
-                    } else {
-                        Image(systemName: "arrow.triangle.2.circlepath")
-                                 .foregroundColor(.red)
+                Button(action: forceSyncToWatch) {
+                    HStack {
+                        if isSyncing {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "arrow.triangle.2.circlepath")
+                                .foregroundColor(.red)
+                        }
+                        Text(isSyncing ? "Force Syncing..." : "Force Sync All Data")
+                            .foregroundColor(.red)
                     }
-                    Text(isSyncing ? "Force Syncing..." : "Force Sync All Data")
-                        .foregroundColor(.red)
                 }
-            }
-            .disabled(!watchConnector.isConnected || isSyncing)
+                .disabled(!watchConnector.isConnected || isSyncing)
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Wizard of Oz")
@@ -135,14 +169,9 @@ struct WizardView: View {
                 ChecklistEditorView(checklistManager: checklistManager)
             }
             .onAppear {
-                // Sync the watchConnector with checklistManager when view appears
                 checklistManager.watchConnector = watchConnector
                 watchConnector.checklistData = ChecklistManager.loadSharedData()
             }
-            
-            
-           
-
         }
     }
     
@@ -161,7 +190,6 @@ struct WizardView: View {
     private func resetConnection() {
         isReconnecting = true
         
-        // Use the new reset method
         watchConnector.resetWatchConnectivity()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
