@@ -144,12 +144,10 @@ struct AddItemView: View {
     @State private var title = ""
     @State private var selectedImage = ""
     @Environment(\.presentationMode) var presentationMode
-    
+
     var body: some View {
         NavigationView {
             Form {
-                TextField("Item title", text: $title)
-                
                 Section("Image") {
                     Picker("Select Image", selection: $selectedImage) {
                         Text("None").tag("")
@@ -158,25 +156,41 @@ struct AddItemView: View {
                         }
                     }
                 }
+                TextField("Item title", text: $title)
+
+               
             }
-            .navigationTitle("Add Item")
+            .onChange(of: selectedImage) { newValue in
+            
+                if title.isEmpty {
+                    title = newValue
+                }
+            }
+            .navigationTitle("Add Image")
             .navigationBarItems(
                 leading: Button("Cancel") {
                     presentationMode.wrappedValue.dismiss()
                 },
                 trailing: Button("Save") {
-                    checklistManager.addItem(to: checklist, title: title, imageName: selectedImage)
-                    checklist.items.append(ChecklistItem(title: title, imageName: selectedImage))
+                    checklistManager.addItem(
+                        to: checklist,
+                        title: title,
+                        imageName: selectedImage
+                    )
+                    checklist.items.append(
+                        ChecklistItem(title: title, imageName: selectedImage)
+                    )
                     presentationMode.wrappedValue.dismiss()
                 }
-                .disabled(title.isEmpty)
+                .disabled(title.isEmpty && selectedImage.isEmpty)
             )
         }
     }
-    
+
     private var availableImages: [String] {
         let watchImages = ["Schere", "Lineal", "Bleistift", "Leimstift", "Buntes Papier", "Wolle", "Wackelaugen", "Locher", "Zucker", "Ei", "Haselnüsse", "Schokoladenpulver", "Maizena", "Schüssel", "Kelle", "Backblech", "Backpapier", "Waage", "Messlöffel", "Topflappen"]
         let galleryImages = galleryStorage.items.map { $0.label }
         return galleryImages + watchImages.filter { UIImage(named: $0) != nil }
     }
 }
+

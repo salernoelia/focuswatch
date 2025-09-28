@@ -29,7 +29,6 @@ class GalleryStorage: ObservableObject {
             .appendingPathComponent(item.imagePath)
         try? FileManager.default.removeItem(at: url)
         
-        // Remove from array
         items.removeAll { $0.id == item.id }
         saveItems()
     }

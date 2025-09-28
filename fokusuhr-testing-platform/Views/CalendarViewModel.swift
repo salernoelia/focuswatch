@@ -26,7 +26,6 @@ class CalendarViewModel: ObservableObject {
             if cal.isDate(event.date, inSameDayAs: day) {
                 matchingEvents.append(event)
             }
-            // Check for repeating events
             else if event.repeatRule != .none && shouldRepeatOn(event: event, date: day) {
                 var repeatedEvent = event
                 repeatedEvent.date = day
@@ -84,7 +83,7 @@ class CalendarViewModel: ObservableObject {
     func add(_ event: Event) {
         events.append(event)
         saveEvents()
-        objectWillChange.send() // Ensure UI updates
+        objectWillChange.send()
     }
     
     func update(eventId: UUID, title: String, date: Date, startTime: Date, endTime: Date, repeatRule: RepeatRule, customWeekdays: [Int], type: ActivityType) {
@@ -100,14 +99,14 @@ class CalendarViewModel: ObservableObject {
                 type: type
             )
             saveEvents()
-            objectWillChange.send() // Ensure UI updates
+            objectWillChange.send()
         }
     }
     
     func delete(_ event: Event) {
         events.removeAll { $0.id == event.id }
         saveEvents()
-        objectWillChange.send() // Ensure UI updates
+        objectWillChange.send()
     }
     
     private func saveEvents() {

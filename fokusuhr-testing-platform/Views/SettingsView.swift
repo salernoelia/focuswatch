@@ -1,7 +1,6 @@
 import SwiftUI
 
 class SettingsViewModel: ObservableObject {
-    @Published var apiKey: String = ""
     @Published var supervisors: [Supervisor] = []
     @Published var users: [TestUser] = []
     @Published var selectedUserId: Int?
@@ -111,42 +110,7 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section("API Configuration") {
-                    SecureField("Enter API Key", text: $vm.apiKey)
-                    
-                    if !vm.apiKey.isEmpty {
-                        Text("API Key Configured")
-                            .foregroundColor(.green)
-                    }
-                }
-                
-                Section {
-                    HStack {
-                        Text("Supervisors")
-                            .font(.headline)
-                        Spacer()
-                        Text("\(vm.supervisors.count)")
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    if vm.supervisors.isEmpty {
-                        Text("No supervisors added yet")
-                            .foregroundColor(.secondary)
-                            .font(.subheadline)
-                    } else {
-                        ForEach(vm.supervisors) { supervisor in
-                            SupervisorRow(supervisor: supervisor) {
-                                vm.deleteSupervisor(supervisor)
-                            }
-                        }
-                    }
-                    
-                    Button {
-                        vm.showingAddSupervisor = true
-                    } label: {
-                        Text("Add Supervisor")
-                    }
-                }
+              
                 
                 Section {
                     HStack {
