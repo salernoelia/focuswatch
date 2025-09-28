@@ -63,22 +63,30 @@ struct JournalView: View {
                     }
                 }
                 
-                Section("Your Thoughts") {
-                    TextEditor(text: $entryText)
-                        .frame(minHeight: 100)
-                        .focused($textFieldFocused)
-                        .overlay(
-                            Group {
-                                if entryText.isEmpty {
-                                    Text("Share your experience, thoughts, or feedback...")
-                                        .foregroundColor(.secondary)
-                                        .padding(.horizontal, 5)
-                                        .padding(.vertical, 8)
-                                        .allowsHitTesting(false)
+                    Section("Your Thoughts") {
+                        TextEditor(text: $entryText)
+                            .frame(minHeight: 100)
+                            .focused($textFieldFocused)
+                            .overlay(
+                                Group {
+                                    if entryText.isEmpty {
+                                        Text("Share your experience, thoughts, or feedback...")
+                                            .foregroundColor(.secondary)
+                                            .padding(.horizontal, 5)
+                                            .padding(.vertical, 8)
+                                            .allowsHitTesting(false)
+                                    }
+                                }, alignment: .topLeading
+                            )
+                            .toolbar {
+                                ToolbarItemGroup(placement: .keyboard) {
+                                    Spacer()
+                                    Button("Done") {
+                                        textFieldFocused = false
+                                    }
                                 }
-                            }, alignment: .topLeading
-                        )
-                }
+                            }
+                    }
                 
                 Section {
                     Button(action: submitJournalEntry) {
@@ -102,16 +110,6 @@ struct JournalView: View {
                 }
                 .listRowBackground(Color.clear)
                 
-                if !entries.isEmpty {
-                    Section {
-                        Button("View All Entries (\(entries.count))") {
-                            showingHistory = true
-                        }
-                        .frame(maxWidth: .infinity)
-                        .foregroundColor(.blue)
-                    }
-                    .listRowBackground(Color.clear)
-                }
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Journal")
