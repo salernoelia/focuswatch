@@ -30,7 +30,7 @@ struct AppInfo: Identifiable, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         title = try container.decode(String.self, forKey: .title)
         description = try container.decode(String.self, forKey: .description)
-        color = .blue // Default color when decoding
+        color = .blue 
     }
     
     func encode(to encoder: Encoder) throws {
