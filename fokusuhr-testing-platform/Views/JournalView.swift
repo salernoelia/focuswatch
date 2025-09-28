@@ -13,6 +13,7 @@ struct JournalView: View {
     @StateObject private var testUsersManager = TestUsersManager.shared
     @StateObject private var journalManager = JournalManager.shared
     @StateObject private var appsManager = AppsManager.shared
+    @StateObject private var authManager = AuthManager.shared
     @State private var selectedAppIndex: Int = 0
     @State private var selectedUserIndex: Int = 0
     @State private var entryText = ""
@@ -20,119 +21,164 @@ struct JournalView: View {
     @State private var entries: [JournalEntry] = []
     @State private var showingHistory = false
     @State private var showingSuccessAlert = false
+    @State private var showingLoginSheet = false
     @FocusState private var textFieldFocused: Bool
     
     var body: some View {
         NavigationView {
-            List {
-                Section("Entry Details") {
-                    HStack {
-                        Image(systemName: "app.badge")
-                            .foregroundColor(.blue)
-                            .frame(width: 20)
-                        
-                        if appsManager.apps.isEmpty {
-                            Text("Loading apps...")
-                                .foregroundColor(.secondary)
-                        } else {
-                            Picker("App", selection: $selectedAppIndex) {
-                                ForEach(Array(appsManager.apps.enumerated()), id: \.offset) { index, app in
-                                    Text(app.title).tag(index)
-                                }
-                            }
-                            .pickerStyle(.menu)
-                        }
-                    }
-                    
-                    HStack {
-                        Image(systemName: "person.circle")
-                            .foregroundColor(.green)
-                            .frame(width: 20)
-                        
-                        if testUsersManager.testUsers.isEmpty {
-                            Text("Loading users...")
-                                .foregroundColor(.secondary)
-                        } else {
-                            Picker("Test User", selection: $selectedUserIndex) {
-                                ForEach(Array(testUsersManager.testUsers.enumerated()), id: \.offset) { index, user in
-                                    Text(user.fullName).tag(index)
-                                }
-                            }
-                            .pickerStyle(.menu)
-                        }
-                    }
-                }
-                
-                    Section("Your Thoughts") {
-                        TextEditor(text: $entryText)
-                            .frame(minHeight: 100)
-                            .focused($textFieldFocused)
-                            .overlay(
-                                Group {
-                                    if entryText.isEmpty {
-                                        Text("Share your experience, thoughts, or feedback...")
-                                            .foregroundColor(.secondary)
-                                            .padding(.horizontal, 5)
-                                            .padding(.vertical, 8)
-                                            .allowsHitTesting(false)
-                                    }
-                                }, alignment: .topLeading
-                            )
-                            .toolbar {
-                                ToolbarItemGroup(placement: .keyboard) {
-                                    Spacer()
-                                    Button("Done") {
-                                        textFieldFocused = false
-                                    }
-                                }
-                            }
-                    }
-                
-                Section {
-                    Button(action: submitJournalEntry) {
-                        HStack {
-                            if isSubmitting {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                    .scaleEffect(0.8)
-                            } else {
-                                Image(systemName: "paperplane.fill")
-                            }
-                            Text(isSubmitting ? "Saving..." : "Save Entry")
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(canSubmit ? Color.accentColor : Color.gray)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
-                    }
-                    .disabled(!canSubmit || isSubmitting)
-                }
-                .listRowBackground(Color.clear)
-                
-            }
-            .listStyle(.insetGrouped)
-            .navigationTitle("Journal")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("History") {
-                        showingHistory = true
-                    }
-                    .disabled(entries.isEmpty)
+            Group {
+                if authManager.isLoggedIn {
+                    journalContent
+                } else {
+                    loginRequiredView
                 }
             }
-            .sheet(isPresented: $showingHistory) {
-                JournalHistoryView(entries: entries)
+        }
+        .sheet(isPresented: $showingLoginSheet) {
+            LoginView()
+        }
+        .onAppear {
+            if !authManager.isLoggedIn {
+                showingLoginSheet = true
             }
-            .alert("Entry Saved!", isPresented: $showingSuccessAlert) {
-                Button("OK") { }
-            } message: {
-                Text("Your journal entry has been saved successfully.")
-            }
-            .task {
+        }
+        .task {
+            if authManager.isLoggedIn {
                 await loadData()
             }
+        }
+    }
+    
+    private var loginRequiredView: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "lock.circle")
+                .font(.system(size: 60))
+                .foregroundColor(.secondary)
+            
+            Text("Login Required")
+                .font(.title2)
+                .fontWeight(.semibold)
+            
+            Text("Please log in to access your journal entries")
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+            
+            Button("Login") {
+                showingLoginSheet = true
+            }
+            .buttonStyle(.borderedProminent)
+            .padding(.top)
+        }
+        .padding()
+        .navigationTitle("Journal")
+        .navigationBarTitleDisplayMode(.large)
+    }
+    
+    private var journalContent: some View {
+        List {
+            Section("Entry Details") {
+                HStack {
+                    Image(systemName: "app.badge")
+                        .foregroundColor(.blue)
+                        .frame(width: 20)
+                    
+                    if appsManager.apps.isEmpty {
+                        Text("Loading apps...")
+                            .foregroundColor(.secondary)
+                    } else {
+                        Picker("App", selection: $selectedAppIndex) {
+                            ForEach(Array(appsManager.apps.enumerated()), id: \.offset) { index, app in
+                                Text(app.title).tag(index)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                    }
+                }
+                
+                HStack {
+                    Image(systemName: "person.circle")
+                        .foregroundColor(.green)
+                        .frame(width: 20)
+                    
+                    if testUsersManager.testUsers.isEmpty {
+                        Text("Loading users...")
+                            .foregroundColor(.secondary)
+                    } else {
+                        Picker("Test User", selection: $selectedUserIndex) {
+                            ForEach(Array(testUsersManager.testUsers.enumerated()), id: \.offset) { index, user in
+                                Text(user.fullName).tag(index)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                    }
+                }
+            }
+            
+            Section("Your Thoughts") {
+                TextEditor(text: $entryText)
+                    .frame(minHeight: 100)
+                    .focused($textFieldFocused)
+                    .overlay(
+                        Group {
+                            if entryText.isEmpty {
+                                Text("Share your experience, thoughts, or feedback...")
+                                    .foregroundColor(.secondary)
+                                    .padding(.horizontal, 5)
+                                    .padding(.vertical, 8)
+                                    .allowsHitTesting(false)
+                            }
+                        }, alignment: .topLeading
+                    )
+                    .toolbar {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            Spacer()
+                            Button("Done") {
+                                textFieldFocused = false
+                            }
+                        }
+                    }
+            }
+            
+            Section {
+                Button(action: submitJournalEntry) {
+                    HStack {
+                        if isSubmitting {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "paperplane.fill")
+                        }
+                        Text(isSubmitting ? "Saving..." : "Save Entry")
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(canSubmit ? Color.accentColor : Color.gray)
+                    .foregroundColor(.white)
+                    .cornerRadius(12)
+                }
+                .disabled(!canSubmit || isSubmitting)
+            }
+            .listRowBackground(Color.clear)
+        }
+        .listStyle(.insetGrouped)
+        .navigationTitle("Journal")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("History") {
+                    showingHistory = true
+                }
+                .disabled(entries.isEmpty)
+            }
+        }
+        .sheet(isPresented: $showingHistory) {
+            JournalHistoryView(entries: entries)
+        }
+        .alert("Entry Saved!", isPresented: $showingSuccessAlert) {
+            Button("OK") { }
+        } message: {
+            Text("Your journal entry has been saved successfully.")
         }
     }
     

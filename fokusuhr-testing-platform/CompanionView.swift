@@ -19,6 +19,12 @@ struct CompanionView: View {
                     Text("Wizard")
                 }
 
+            GalleryView()
+                .tabItem {
+                    Image(systemName: "photo.on.rectangle.angled")
+                    Text("Gallery")
+                }
+            
             CalendarView()
                 .tabItem {
                     Image(systemName: "calendar")
@@ -31,11 +37,7 @@ struct CompanionView: View {
                     Text("Journal")
                 }
 
-            GalleryView()
-                .tabItem {
-                    Image(systemName: "photo.on.rectangle.angled")
-                    Text("Gallery")
-                }
+           
 
             SettingsView()
                 .tabItem {
