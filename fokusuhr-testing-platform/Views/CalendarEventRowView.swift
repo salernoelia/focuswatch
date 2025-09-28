@@ -1,5 +1,5 @@
 //
-//  EventRowView.swift
+//  CalendarEventRowView.swift
 //  fokusuhr-testing-platform
 //
 //  Created by Elia Salerno on 21.08.2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct EventRowView: View {
+struct CalendarEventRowView: View {
     let event: Event
     
     private var typeColor: Color {

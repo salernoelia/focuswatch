@@ -1,5 +1,5 @@
 //
-//  EventFormView.swift
+//  CalendarEventFormView.swift
 //  fokusuhr-testing-platform
 //
 //  Created by Elia Salerno on 21.08.2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct EventFormView: View {
+struct CalendarEventFormView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var vm: CalendarViewModel
     private let editingEvent: Event?
