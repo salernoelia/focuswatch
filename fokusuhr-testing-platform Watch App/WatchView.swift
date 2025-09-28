@@ -21,6 +21,35 @@ struct WatchView: View {
     private var prototypeApps: [PrototypeApp] {
         var apps: [PrototypeApp] = []
         
+
+        apps.append(contentsOf: [
+            PrototypeApp(
+                title: "Tachometer",
+                description: "Wie fühlst du dich gerade?",
+                color: .yellow,
+                destination: AnyView(SpeedometerView())
+            ),
+            PrototypeApp(
+                title: "Farbatmung",
+                description: "Beruhigende Atemübungen",
+                color: .green,
+                destination: AnyView(ColorBreathingView())
+            ),
+            PrototypeApp(
+                title: "Fidget Spinner",
+                description: "Digitaler Fidget Spinner",
+                color: .orange,
+                destination: AnyView(FidgetSpinnerView())
+            ),
+            PrototypeApp(
+                title: "Anne (Beta)",
+                description: "Virtueller Assistent",
+                color: .red,
+                destination: AnyView(AnneView())
+            )
+  
+        ])
+        
         for checklist in watchConnector.checklistData.checklists {
             apps.append(PrototypeApp(
                 title: checklist.name,
@@ -37,27 +66,6 @@ struct WatchView: View {
             ))
         }
         
-        apps.append(contentsOf: [
-            PrototypeApp(
-                title: "Farbatmung",
-                description: "Beruhigende Atemübungen",
-                color: .green,
-                destination: AnyView(ColorBreathingView())
-            ),
-            PrototypeApp(
-                title: "Fidget Spinner",
-                description: "Digitaler Fidget Spinner",
-                color: .orange,
-                destination: AnyView(FidgetSpinnerView())
-            ),
-            PrototypeApp(
-                title: "Anne (Beta)",
-                description: "Virtueller Assistent",
-                color: .blue,
-                destination: AnyView(AnneView())
-            )
-  
-        ])
         
         return apps
     }

@@ -5,6 +5,7 @@ struct WizardView: View {
     @EnvironmentObject private var watchConnector: WatchConnector
     @StateObject private var checklistManager: ChecklistManager
     @StateObject private var testUsersManager = TestUsersManager.shared
+    @StateObject private var appsManager = AppsManager.shared
     @State private var showingEditor = false
     @State private var isReconnecting = false
     @State private var isSyncing = false
@@ -12,20 +13,6 @@ struct WizardView: View {
     init() {
         let tempConnector = WatchConnector()
         self._checklistManager = StateObject(wrappedValue: ChecklistManager(watchConnector: tempConnector))
-    }
-    
-    private var prototypeApps: [(String, String, Color)] {
-        var apps = checklistManager.data.checklists.map { checklist in
-            (checklist.name, "Interaktive Checkliste", Color.blue)
-        }
-        
-        apps.append(contentsOf: [
-            ("Farbatmung", "Beruhigende Atemübungen", Color.green),
-            ("Fidget Spinner", "Digitaler Fidget Spinner", Color.orange),
-            ("Anne (Beta)", "Virtueller Assistent", Color.blue)
-        ])
-        
-        return apps
     }
     
     var body: some View {
@@ -66,20 +53,20 @@ struct WizardView: View {
                 }
 
                 Section("Applications") {
-                    ForEach(Array(prototypeApps.enumerated()), id: \.offset) { idx, app in
+                    ForEach(appsManager.apps, id: \.id) { app in
                         Button {
-                            watchConnector.switchToApp(index: idx)
+                            watchConnector.switchToApp(index: app.index)
                         } label: {
                             Label {
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(app.0)
-                                    Text(app.1)
+                                    Text(app.title)
+                                    Text(app.description)
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
                             } icon: {
                                 Circle()
-                                    .fill(app.2)
+                                    .fill(app.color)
                                     .frame(width: 12, height: 12)
                             }
                         }
@@ -167,6 +154,9 @@ struct WizardView: View {
             .navigationTitle("Wizard of Oz")
             .sheet(isPresented: $showingEditor) {
                 ChecklistEditorView(checklistManager: checklistManager)
+                    .onDisappear {
+                        appsManager.refreshApps()
+                    }
             }
             .onAppear {
                 checklistManager.watchConnector = watchConnector

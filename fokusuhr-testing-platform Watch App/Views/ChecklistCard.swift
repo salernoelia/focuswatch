@@ -24,11 +24,11 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
     var body: some View {
         VStack(spacing: 16) {
             Text(item.title)
-                .fontWeight(.regular)
+                .fontWeight(.medium)
                 .foregroundColor(.white)
                 .lineLimit(4)
                 .multilineTextAlignment(.center)
-                .shadow(color: .black.opacity(0.5), radius: 2, x: 1, y: 1)
+                .shadow(color: .black.opacity(0.6), radius: 2, x: 1, y: 1)
         }
         .frame(maxWidth: .infinity)
         .frame(height: 130)

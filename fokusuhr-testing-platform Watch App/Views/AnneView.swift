@@ -19,7 +19,7 @@ struct AnneView: View {
                     .padding(.horizontal)
             }
 
-            Button(recorder.isRecording ? "Stop" : "Talk to Anne") {
+            Button(recorder.isRecording ? "Stop" : "Sprich zu Anne") {
                 if recorder.isRecording {
                     recorder.uploadRecording()
                     recorder.stopRecording()
