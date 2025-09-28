@@ -4,7 +4,9 @@ import PhotosUI
 class GalleryStorage: ObservableObject {
     @Published var items: [GalleryItem] = []
     
-    init() {
+    static let shared = GalleryStorage()
+    
+    private init() {
         loadItems()
     }
     

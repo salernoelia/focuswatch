@@ -2,7 +2,7 @@ import SwiftUI
 import PhotosUI
 
 struct GalleryView: View {
-    @StateObject private var galleryStorage = GalleryStorage()
+    @StateObject private var galleryStorage = GalleryStorage.shared
     @State private var showingPhotoPicker = false
     @State private var showingCameraPicker = false
     @State private var showingActionSheet = false
@@ -20,11 +20,11 @@ struct GalleryView: View {
         var columns: [GridItem] {
             switch self {
             case .small:
-                return Array(repeating: GridItem(.flexible(), spacing: 8), count: 4)
+                return Array(repeating: GridItem(.flexible(), spacing: 12), count: 4)
             case .medium:
-                return Array(repeating: GridItem(.flexible(), spacing: 8), count: 3)
+                return Array(repeating: GridItem(.flexible(), spacing: 12), count: 3)
             case .large:
-                return Array(repeating: GridItem(.flexible(), spacing: 8), count: 2)
+                return Array(repeating: GridItem(.flexible(), spacing: 12), count: 2)
             }
         }
         
@@ -53,12 +53,13 @@ struct GalleryView: View {
                     emptyStateView
                 } else {
                     ScrollView {
-                        LazyVGrid(columns: selectedGridSize.columns, spacing: 8) {
+                        LazyVGrid(columns: selectedGridSize.columns, spacing: 12) {
                             ForEach(filteredItems) { item in
                                 GalleryItemCard(item: item, size: selectedGridSize.itemSize, galleryStorage: galleryStorage)
                             }
                         }
-                        .padding()
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
                     }
                     .searchable(text: $searchText, prompt: "Search images...")
                 }

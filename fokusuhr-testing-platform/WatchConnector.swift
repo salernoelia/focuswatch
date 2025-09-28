@@ -171,7 +171,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
                 "timestamp": Date().timeIntervalSince1970
             ]
             
-            let galleryStorage = GalleryStorage()
+            let galleryStorage = GalleryStorage.shared
             var imageData: [String: String] = [:]
             
             let usedImageNames = Set(checklistData.checklists.flatMap { checklist in

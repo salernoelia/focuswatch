@@ -24,10 +24,9 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
     var body: some View {
         VStack(spacing: 16) {
             Text(item.title)
-                .font(.title3)
-                .fontWeight(.semibold)
+                .fontWeight(.regular)
                 .foregroundColor(.white)
-                .lineLimit(2)
+                .lineLimit(4)
                 .multilineTextAlignment(.center)
                 .shadow(color: .black.opacity(0.5), radius: 2, x: 1, y: 1)
         }
