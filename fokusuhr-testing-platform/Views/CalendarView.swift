@@ -73,7 +73,7 @@ struct CalendarView: View {
                             .font(.subheadline)
                     } else {
                         ForEach(eventsForSelectedDate) { event in
-                            EventRowView(event: event)
+                            CalendarEventRowView(event: event)
                                 .contextMenu {
                                     Button {
                                         editingEvent = event
@@ -127,17 +127,13 @@ struct CalendarView: View {
             .sheet(isPresented: $showingForm, onDismiss: {
                 editingEvent = nil
             }) {
-                EventFormView(vm: vm, defaultDate: selectedDate, editingEvent: editingEvent)
+                CalendarEventFormView(vm: vm, defaultDate: selectedDate, editingEvent: editingEvent)
             }
         }
     }
 }
 
-struct CalendarView_Previews: PreviewProvider {
-    static var previews: some View {
-        CalendarView()
-    }
-}
+
 #Preview {
     CalendarView()
 }

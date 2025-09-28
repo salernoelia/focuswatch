@@ -37,16 +37,11 @@ class AuthManager: ObservableObject {
             )
             
             await MainActor.run {
-                if response.user != nil {
-                    isLoggedIn = true
-                    currentUserEmail = response.user.email ?? ""
-                    isLoading = false
-                    return
-                }
-                errorMessage = "Login failed. Please check your credentials."
+                isLoggedIn = true
+                currentUserEmail = response.user.email ?? ""
                 isLoading = false
             }
-            return response.user != nil
+            return true
         } catch {
             await MainActor.run {
                 errorMessage = error.localizedDescription
