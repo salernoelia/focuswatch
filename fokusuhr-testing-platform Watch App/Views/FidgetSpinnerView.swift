@@ -10,8 +10,12 @@ struct FidgetSpinnerView: View {
     @State private var crownAccumulator: Double = 0
     @State private var lastCrownValue: Double = 0
     @State private var decelerationTimer: Timer?
+    @State private var lastVibrationTime: Date = Date()
+    
+    @Environment(\.scenePhase) private var scenePhase
     
     private let vibrationManager = VibrationManager.shared
+    private let minVibrationInterval: TimeInterval = 0.1
     
     var body: some View {
         GeometryReader { geometry in
@@ -38,24 +42,30 @@ struct FidgetSpinnerView: View {
                                 lastAngle = calculateAngle(from: centerPoint, to: value.location)
                                 vibrationManager.resetVibrationTiming()
                                 stopDeceleration()
+                                lastVibrationTime = Date() 
                             }
                             
                             let currentAngle = calculateAngle(from: centerPoint, to: value.location)
                             var angleDelta = currentAngle - lastAngle
                             
+                    
                             if angleDelta > 180 {
                                 angleDelta -= 360
                             } else if angleDelta < -180 {
                                 angleDelta += 360
                             }
                             
-                            velocity = angleDelta * 4 
+                     
+                            let newVelocity = max(-50, min(50, angleDelta * 4))
+                            velocity = newVelocity
                             rotation += angleDelta
                             lastAngle = currentAngle
                             
 
-                            if abs(velocity) > 0.5 {
+                            let now = Date()
+                            if abs(velocity) > 2.0 && now.timeIntervalSince(lastVibrationTime) > minVibrationInterval {
                                 vibrationManager.triggerVelocityVibration(velocity: abs(velocity))
+                                lastVibrationTime = now
                             }
                         }
                         .onEnded { _ in
@@ -76,13 +86,18 @@ struct FidgetSpinnerView: View {
                 .onChange(of: crownAccumulator) { newValue in
                     if !isDragging {
                         let crownDelta = newValue - lastCrownValue
-                        let crownVelocity = crownDelta * 180 // Convert to degrees
+                        let crownVelocity = crownDelta * 180 
                         
-                        velocity = crownVelocity * 2
+
+                        let limitedVelocity = max(-30, min(30, crownVelocity * 2))
+                        velocity = limitedVelocity
                         rotation += crownVelocity
                         
-                        if abs(velocity) > 0.5 {
+
+                        let now = Date()
+                        if abs(velocity) > 2.0 && now.timeIntervalSince(lastVibrationTime) > minVibrationInterval {
                             vibrationManager.triggerVelocityVibration(velocity: abs(velocity))
+                            lastVibrationTime = now
                             stopDeceleration()
                             startDeceleration()
                         }
@@ -95,21 +110,34 @@ struct FidgetSpinnerView: View {
         .onDisappear {
             stopDeceleration()
         }
+        .onChange(of: scenePhase) { newPhase in
+
+            if newPhase != .active {
+                stopDeceleration()
+            }
+        }
     }
     
     private func startDeceleration() {
         stopDeceleration()
         
         if abs(velocity) > 1 {
-            decelerationTimer = Timer.scheduledTimer(withTimeInterval: 0.016, repeats: true) { timer in // 60 FPS
-                velocity *= 0.98
-                rotation += velocity * 0.5
+
+            decelerationTimer = Timer.scheduledTimer(withTimeInterval: 0.033, repeats: true) { timer in
+
+                velocity *= 0.96
+                rotation += velocity * 0.3
                 
                 if abs(velocity) < 0.5 {
                     timer.invalidate()
                     decelerationTimer = nil
                 } else {
-                    vibrationManager.triggerVelocityVibration(velocity: abs(velocity))
+
+                    let now = Date()
+                    if abs(velocity) > 3.0 && now.timeIntervalSince(lastVibrationTime) > minVibrationInterval * 2 {
+                        vibrationManager.triggerVelocityVibration(velocity: abs(velocity))
+                        lastVibrationTime = now
+                    }
                 }
             }
         }
@@ -120,10 +148,24 @@ struct FidgetSpinnerView: View {
         decelerationTimer = nil
     }
     
+
     private func calculateAngle(from center: CGPoint, to point: CGPoint) -> Double {
         let deltaX = point.x - center.x
         let deltaY = point.y - center.y
-        return atan2(deltaY, deltaX) * (180 / Double.pi)
+        
+
+        guard abs(deltaX) > 0.001 || abs(deltaY) > 0.001 else {
+            return 0
+        }
+        
+        let angle = atan2(deltaY, deltaX) * (180 / Double.pi)
+        
+
+        if angle.isNaN || angle.isInfinite {
+            return 0
+        }
+        
+        return angle
     }
 }
 
