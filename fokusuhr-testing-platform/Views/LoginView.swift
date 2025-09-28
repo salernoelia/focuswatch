@@ -3,85 +3,73 @@ import SwiftUI
 struct LoginView: View {
     @State private var email: String = ""
     @State private var password: String = ""
-    @State private var errorMessage: String?
-    @State private var showingSuccessMessage = false
-    @State private var isLoading = false
-    @Environment(\.presentationMode) private var presentationMode
+    @StateObject private var authManager = AuthManager.shared
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Login")
-                .font(.largeTitle)
-                .bold()
+        NavigationView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Login")
+                    .font(.largeTitle)
+                    .bold()
+                    .padding(.bottom, 20)
 
-            TextField("Email", text: $email)
-                .keyboardType(.emailAddress)
-                .autocapitalization(.none)
-                .padding()
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(8)
-
-            SecureField("Password", text: $password)
-                .padding()
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(8)
-
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
-                    .foregroundColor(.red)
-                    .multilineTextAlignment(.center)
-            }
-            
-            if showingSuccessMessage {
-                Text("Login successful!")
-                    .foregroundColor(.green)
-                    .multilineTextAlignment(.center)
-            }
-
-            Button(action: {
-                Task {
-                    await signIn()
-                }
-            }) {
-                if isLoading {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
+                VStack(spacing: 12) {
+                    TextField("Email", text: $email)
+                        .keyboardType(.emailAddress)
+                        .autocapitalization(.none)
                         .padding()
-                } else {
-                    Text("Sign In")
-                        .bold()
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
-                }
-            }
-            .disabled(isLoading || email.isEmpty || password.isEmpty)
-        }
-        .padding()
-    }
+                        .background(Color(.systemGray6))
+                        .cornerRadius(10)
 
-    private func signIn() async {
-        errorMessage = nil
-        showingSuccessMessage = false
-        isLoading = true
-        defer { isLoading = false }
-        do {
-            let response = try await supabase.auth.signIn(
-                email: email,
-                password: password
-            )
-            if response.user != nil {
-                showingSuccessMessage = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    presentationMode.wrappedValue.dismiss()
+                    SecureField("Password", text: $password)
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(10)
                 }
-            } else {
-                errorMessage = "Login failed. Please check your credentials."
+
+                if let errorMessage = authManager.errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .font(.caption)
+                }
+
+                Button("Sign In") {
+                    Task {
+                        let success = await authManager.signIn(email: email, password: password)
+                        if success {
+                            dismiss()
+                        }
+                    }
+                }
+                .disabled(authManager.isLoading || email.isEmpty || password.isEmpty)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(email.isEmpty || password.isEmpty || authManager.isLoading ? Color.gray : Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+                
+                if authManager.isLoading {
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                            .scaleEffect(0.8)
+                        Spacer()
+                    }
+                }
+
+                Spacer()
             }
-        } catch {
-            errorMessage = error.localizedDescription
+            .padding()
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .foregroundColor(.red.opacity(0.7))
+                }
+            }
         }
     }
 }
