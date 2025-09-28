@@ -8,36 +8,45 @@ struct SpeedometerView: View {
             let size = min(geometry.size.width, geometry.size.height) * 1.9
             let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height * 0.6)
             
-            ZStack {
-                SemicircleSegments()
-                    .frame(width: size, height: size / 2)
-                    .position(center)
-                
-                NeedleView(value: moodValue, radius: size * 0.4)
-                    .position(center)
-                
-                Circle()
-                    .fill(Color.white)
-                    .frame(width: 8, height: 8)
-                    .position(center)
-                
-                Text(moodLabel)
-                    .font(.title2)
+            VStack(spacing: 8) {
+                Text("Wie fühlst du dich?")
+                    .font(.caption)
                     .foregroundColor(.white)
-                    .position(x: center.x, y: center.y + 35)
-            }
-            .gesture(
-                DragGesture()
-                    .onChanged { value in
-                        let dx = value.location.x - center.x
-                        let radius = size * 0.4
-                        
-                        if abs(dx) <= radius {
-                            moodValue = (dx + radius) / (2 * radius)
-                            moodValue = max(0, min(1, moodValue))
+                    .multilineTextAlignment(.center)
+                
+                ZStack {
+                    SemicircleSegments()
+                        .frame(width: size, height: size / 2)
+                        .position(center)
+                    
+                    NeedleView(value: moodValue, radius: size * 0.4)
+                        .position(center)
+                    
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: 8, height: 8)
+                        .position(center)
+                    
+                    Text(moodLabel)
+                        .font(.title2)
+                        .foregroundColor(.white)
+                        .position(x: center.x, y: center.y + 35)
+                }
+                .gesture(
+                    DragGesture()
+                        .onChanged { value in
+                            let dx = value.location.x - center.x
+                            let radius = size * 0.4
+                            
+                            if abs(dx) <= radius {
+                                moodValue = (dx + radius) / (2 * radius)
+                                moodValue = max(0, min(1, moodValue))
+                            }
                         }
-                    }
-            )
+                )
+                .focusable()
+                .digitalCrownRotation($moodValue, from: 0.0, through: 1.0, by: 0.01, sensitivity: .medium)
+            }
         }
     }
     
@@ -100,14 +109,14 @@ struct NeedleView: View {
         ZStack {
             Rectangle()
                 .fill(Color.white)
-                .frame(width: 2, height: radius * 0.7)
-                .offset(y: -radius * 0.35)
+                .frame(width: 3, height: radius * 0.6)
+                .offset(y: -radius * 0.3)
                 .rotationEffect(.degrees(needleAngle))
             
             Triangle()
                 .fill(Color.white)
                 .frame(width: 12, height: 8)
-                .offset(y: -radius * 0.65)
+                .offset(y: -radius * 0.55)
                 .rotationEffect(.degrees(needleAngle))
         }
     }
