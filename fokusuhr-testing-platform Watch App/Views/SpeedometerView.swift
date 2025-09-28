@@ -6,7 +6,7 @@ struct SpeedometerView: View {
     var body: some View {
         GeometryReader { geometry in
             let size = min(geometry.size.width, geometry.size.height) * 1.9
-            let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height * 0.6)
+            let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height * 0.4)
             
             VStack(spacing: 8) {
                 Text("Wie fühlst du dich gerade?")
@@ -45,7 +45,7 @@ struct SpeedometerView: View {
                         }
                 )
                 .focusable()
-                .digitalCrownRotation($moodValue, from: 0.0, through: 1.0, by: 0.01, sensitivity: .medium)
+                .digitalCrownRotation($moodValue, from: 0.0, through: 1.0, by: 0.01, sensitivity: .low)
             }
         }
     }

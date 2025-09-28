@@ -71,11 +71,19 @@ struct WatchView: View {
     }
     
     var body: some View {
-        NavigationView {
+      NavigationView {
             Group {
                 if let selectedIndex = selectedAppIndex, selectedIndex < prototypeApps.count {
                     prototypeApps[selectedIndex].destination
-                        .navigationBarHidden(true)
+                        .navigationBarHidden(false)
+                        .navigationBarTitleDisplayMode(.inline)
+                         .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Zurück") {
+                                    selectedAppIndex = nil
+                                }
+                            }
+                        }
                 } else {
                     mainMenuView
                 }
