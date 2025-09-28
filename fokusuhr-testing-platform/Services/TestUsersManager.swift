@@ -1,11 +1,19 @@
 import Foundation
+import PostgREST
 import Combine
 import SwiftUI
 
+typealias TestUser = PublicSchema.TestUsersSelect
+
+extension TestUser: Identifiable {
+    var fullName: String {
+        "\(firstName) \(lastName)"
+    }
+}
+
 class TestUsersManager: ObservableObject {
     @Published var testUsers: [TestUser] = []
-    @Published var supervisors: [Supervisor] = []
-    @Published var selectedUserId: Int?
+    @Published var selectedUserId: Int32?
     @Published var isLoading = false
     
     static let shared = TestUsersManager()
@@ -18,106 +26,88 @@ class TestUsersManager: ObservableObject {
     private init() {
         Task {
             await fetchTestUsers()
-            await fetchSupervisors()
         }
     }
     
     func fetchTestUsers() async {
         await MainActor.run { isLoading = true }
         
-
-        
-        await MainActor.run {
-            testUsers = getDefaultUsers()
-            if selectedUserId == nil {
-                selectedUserId = testUsers.first?.id
+        do {
+            let users: [TestUser] = try await supabase
+                .from("test_users")
+                .select()
+                .execute()
+                .value
+            
+            await MainActor.run {
+                testUsers = users
+                if selectedUserId == nil {
+                    selectedUserId = testUsers.first?.id
+                }
+                isLoading = false
             }
-            isLoading = false
+        } catch {
+            print("Error fetching test users: \(error)")
+            await MainActor.run {
+                testUsers = []
+                isLoading = false
+            }
         }
     }
     
-    func fetchSupervisors() async {
+    func addTestUser(_ user: PublicSchema.TestUsersInsert) async {
         await MainActor.run { isLoading = true }
         
-
-        
-        await MainActor.run {
-            supervisors = getDefaultSupervisors()
-            isLoading = false
-        }
-    }
-    
-    func addTestUser(_ user: TestUser) async {
-        await MainActor.run { isLoading = true }
-        
-
-        
-        await MainActor.run {
-            testUsers.append(user)
-            if selectedUserId == nil {
-                selectedUserId = user.id
+        do {
+            let newUser: TestUser = try await supabase
+                .from("test_users")
+                .insert(user)
+                .select()
+                .single()
+                .execute()
+                .value
+            
+            await MainActor.run {
+                testUsers.append(newUser)
+                if selectedUserId == nil {
+                    selectedUserId = newUser.id
+                }
+                isLoading = false
             }
-            isLoading = false
+        } catch {
+            print("Error adding test user: \(error)")
+            await MainActor.run { isLoading = false }
         }
     }
     
     func deleteTestUser(_ user: TestUser) async {
         await MainActor.run { isLoading = true }
         
-
-        
-        await MainActor.run {
-            testUsers.removeAll { $0.id == user.id }
-            if selectedUserId == user.id {
-                selectedUserId = testUsers.first?.id
+        do {
+            try await supabase
+                .from("test_users")
+                .delete()
+                .eq("id", value: user.id as! PostgrestFilterValue)
+                .execute()
+            
+            await MainActor.run {
+                testUsers.removeAll { $0.id == user.id }
+                if selectedUserId == user.id {
+                    selectedUserId = testUsers.first?.id
+                }
+                isLoading = false
             }
-            isLoading = false
+        } catch {
+            print("Error deleting test user: \(error)")
+            await MainActor.run { isLoading = false }
         }
     }
     
-    func addSupervisor(_ supervisor: Supervisor) async {
-        await MainActor.run { isLoading = true }
-        
-      
-        
-        await MainActor.run {
-            supervisors.append(supervisor)
-            isLoading = false
-        }
-    }
-    
-    func deleteSupervisor(_ supervisor: Supervisor) async {
-        await MainActor.run { isLoading = true }
-        
-
-        
-        await MainActor.run {
-            supervisors.removeAll { $0.uid == supervisor.uid }
-            isLoading = false
-        }
-    }
-    
-    func selectUser(_ userId: Int?) {
+    func selectUser(_ userId: Int32?) {
         selectedUserId = userId
     }
-    
-    private func getDefaultUsers() -> [TestUser] {
-        return [
-            TestUser(id: 1, first_name: "Jon", last_name: "Doe", age: 29, supervisor_uid: "1"),
-            TestUser(id: 2, first_name: "Lina", last_name: "Wong", age: 34, supervisor_uid: "2"),
-            TestUser(id: 3, first_name: "Alex", last_name: "Smith", age: 26, supervisor_uid: "1"),
-            TestUser(id: 4, first_name: "Sarah", last_name: "Johnson", age: 31, supervisor_uid: "2"),
-            TestUser(id: 5, first_name: "Mike", last_name: "Chen", age: 28, supervisor_uid: "1")
-        ]
-    }
-    
-    private func getDefaultSupervisors() -> [Supervisor] {
-        return [
-            Supervisor(uid: "1", first_name: "Ari", last_name: "Kato"),
-            Supervisor(uid: "2", first_name: "Maya", last_name: "Perez")
-        ]
-    }
 }
+
 
 
 

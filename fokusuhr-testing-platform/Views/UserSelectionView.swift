@@ -12,6 +12,7 @@ struct UserSelectionView: View {
     @StateObject private var testUsersManager = TestUsersManager.shared
     @Environment(\.dismiss) private var dismiss
     @State private var searchText = ""
+    @State private var showingAddUser = false
     
     private var filteredUsers: [TestUser] {
         if searchText.isEmpty {
@@ -55,6 +56,19 @@ struct UserSelectionView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
                         dismiss()
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Add") {
+                        showingAddUser = true
+                    }
+                }
+            }
+            .sheet(isPresented: $showingAddUser) {
+                UserAddView { user in
+                    Task {
+                        await testUsersManager.addTestUser(user)
                     }
                 }
             }

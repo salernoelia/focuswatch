@@ -5,6 +5,8 @@ struct WizardView: View {
     @EnvironmentObject private var watchConnector: WatchConnector
     @StateObject private var checklistManager: ChecklistManager
     @StateObject private var testUsersManager = TestUsersManager.shared
+    @StateObject private var supervisorManager = SupervisorManager.shared
+    @StateObject private var authManager = AuthManager.shared
     @StateObject private var appsManager = AppsManager.shared
     @State private var showingEditor = false
     @State private var isReconnecting = false
@@ -18,39 +20,41 @@ struct WizardView: View {
     var body: some View {
         NavigationView {
             List {
-                Section("Current Test User") {
-                    if let selectedUser = testUsersManager.selectedUser {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(selectedUser.fullName)
-                                    .font(.headline)
-                                    .fontWeight(.medium)
-                                Text("Age: \(selectedUser.age)")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                if let supervisor = testUsersManager.supervisors.first(where: { $0.uid == selectedUser.supervisor_uid }) {
-                                    Text("Supervisor: \(supervisor.fullName)")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                            }
-                            Spacer()
-                            NavigationLink("", destination: UserSelectionView())
-                                .font(.subheadline)
-                        }
-                        .padding(.vertical, 4)
-                    } else {
-                        HStack {
-                            Text("No user selected")
-                                .font(.subheadline)
-                                .foregroundColor(.red)
-                            Spacer()
-                            NavigationLink("Select User", destination: UserSelectionView())
-                                .font(.subheadline)
-                        }
-                        .padding(.vertical, 4)
-                    }
-                }
+                // if authManager.isLoggedIn {
+                //     Section("Current Test User") {
+                //         if let selectedUser = testUsersManager.selectedUser {
+                //             HStack {
+                //                 VStack(alignment: .leading, spacing: 4) {
+                //                     Text(selectedUser.fullName)
+                //                         .font(.headline)
+                //                         .fontWeight(.medium)
+                //                     Text("Age: \(selectedUser.age)")
+                //                         .font(.subheadline)
+                //                         .foregroundColor(.secondary)
+                //                     if let supervisor = supervisorManager.currentSupervisor {
+                //                         Text("Supervisor: \(supervisor.fullName)")
+                //                             .font(.caption)
+                //                             .foregroundColor(.secondary)
+                //                     }
+                //                 }
+                //                 Spacer()
+                //                 NavigationLink("", destination: UserSelectionView())
+                //                     .font(.subheadline)
+                //             }
+                //             .padding(.vertical, 4)
+                //         } else {
+                //             HStack {
+                //                 Text("No user selected")
+                //                     .font(.subheadline)
+                //                     .foregroundColor(.red)
+                //                 Spacer()
+                //                 NavigationLink("Select User", destination: UserSelectionView())
+                //                     .font(.subheadline)
+                //             }
+                //             .padding(.vertical, 4)
+                //         }
+                //     }
+                // }
 
                 Section("Applications") {
                     ForEach(appsManager.apps, id: \.id) { app in
@@ -151,6 +155,11 @@ struct WizardView: View {
                 .disabled(!watchConnector.isConnected || isSyncing)
             }
             .listStyle(.insetGrouped)
+            .refreshable {
+                await testUsersManager.fetchTestUsers()
+                await supervisorManager.fetchCurrentSupervisor()
+                await appsManager.fetchApps()
+            }
             .navigationTitle("Wizard of Oz")
             .sheet(isPresented: $showingEditor) {
                 ChecklistEditorView(checklistManager: checklistManager)

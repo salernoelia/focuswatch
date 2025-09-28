@@ -1,19 +1,10 @@
-//
-//  TestUsers.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 07.09.2025.
-//
+import Foundation
 
-struct TestUser: Identifiable, Codable {
-    let id: Int
-    var first_name: String
-    var last_name: String
-    var age: Int
-    var supervisor_uid: String
-    
+typealias TestUser = PublicSchema.TestUsersSelect
+
+extension TestUser: Identifiable {
     var fullName: String {
-        "\(first_name) \(last_name)"
+        "\(firstName) \(lastName)"
     }
 }
 

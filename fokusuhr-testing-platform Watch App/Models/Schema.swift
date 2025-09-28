@@ -90,6 +90,7 @@ internal enum PublicSchema {
   internal struct JournalsSelect: Codable, Hashable, Sendable {
     internal let appId: Int64?
     internal let appName: String?
+    internal let createdAt: String?
     internal let description: String?
     internal let id: Int32
     internal let supervisorUid: UUID?
@@ -97,6 +98,7 @@ internal enum PublicSchema {
     internal enum CodingKeys: String, CodingKey {
       case appId = "app_id"
       case appName = "app_name"
+      case createdAt = "created_at"
       case description = "description"
       case id = "id"
       case supervisorUid = "supervisor_uid"
@@ -106,6 +108,7 @@ internal enum PublicSchema {
   internal struct JournalsInsert: Codable, Hashable, Sendable {
     internal let appId: Int64?
     internal let appName: String?
+    internal let createdAt: String?
     internal let description: String?
     internal let id: Int32?
     internal let supervisorUid: UUID?
@@ -113,6 +116,7 @@ internal enum PublicSchema {
     internal enum CodingKeys: String, CodingKey {
       case appId = "app_id"
       case appName = "app_name"
+      case createdAt = "created_at"
       case description = "description"
       case id = "id"
       case supervisorUid = "supervisor_uid"
@@ -122,6 +126,7 @@ internal enum PublicSchema {
   internal struct JournalsUpdate: Codable, Hashable, Sendable {
     internal let appId: Int64?
     internal let appName: String?
+    internal let createdAt: String?
     internal let description: String?
     internal let id: Int32?
     internal let supervisorUid: UUID?
@@ -129,6 +134,7 @@ internal enum PublicSchema {
     internal enum CodingKeys: String, CodingKey {
       case appId = "app_id"
       case appName = "app_name"
+      case createdAt = "created_at"
       case description = "description"
       case id = "id"
       case supervisorUid = "supervisor_uid"

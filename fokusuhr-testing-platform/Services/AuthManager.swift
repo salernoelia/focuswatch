@@ -18,6 +18,9 @@ class AuthManager: ObservableObject {
         if let session = supabase.auth.currentSession {
             isLoggedIn = true
             currentUserEmail = session.user.email ?? ""
+            Task {
+                await SupervisorManager.shared.fetchCurrentSupervisor()
+            }
         } else {
             isLoggedIn = false
             currentUserEmail = ""
@@ -41,6 +44,9 @@ class AuthManager: ObservableObject {
                 currentUserEmail = response.user.email ?? ""
                 isLoading = false
             }
+            
+            await SupervisorManager.shared.fetchCurrentSupervisor()
+            
             return true
         } catch {
             await MainActor.run {

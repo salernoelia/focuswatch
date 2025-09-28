@@ -1,14 +1,5 @@
 import SwiftUI
 
-struct JournalEntry: Identifiable, Codable {
-    var id = UUID()
-    var date = Date()
-    var appName: String
-    var userName: String
-    var userId: Int
-    var entryText: String
-}
-
 struct JournalView: View {
     @StateObject private var testUsersManager = TestUsersManager.shared
     @StateObject private var journalManager = JournalManager.shared
@@ -100,16 +91,15 @@ struct JournalView: View {
                         .foregroundColor(.green)
                         .frame(width: 20)
                     
-                    if testUsersManager.testUsers.isEmpty {
+                    if let selectedUser = testUsersManager.selectedUser {
+                        Text("Test User: \(selectedUser.fullName)")
+                            .foregroundColor(.primary)
+                    } else if testUsersManager.testUsers.isEmpty {
                         Text("Loading users...")
                             .foregroundColor(.secondary)
                     } else {
-                        Picker("Test User", selection: $selectedUserIndex) {
-                            ForEach(Array(testUsersManager.testUsers.enumerated()), id: \.offset) { index, user in
-                                Text(user.fullName).tag(index)
-                            }
-                        }
-                        .pickerStyle(.menu)
+                        Text("No user selected")
+                            .foregroundColor(.red)
                     }
                 }
             }
@@ -162,6 +152,9 @@ struct JournalView: View {
             .listRowBackground(Color.clear)
         }
         .listStyle(.insetGrouped)
+        .refreshable {
+            await loadData()
+        }
         .navigationTitle("Journal")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -184,7 +177,7 @@ struct JournalView: View {
     
     private var canSubmit: Bool {
         !appsManager.apps.isEmpty &&
-        !testUsersManager.testUsers.isEmpty &&
+        testUsersManager.selectedUser != nil &&
         !entryText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
     
@@ -197,14 +190,14 @@ struct JournalView: View {
     private func submitJournalEntry() {
         textFieldFocused = false
         
-        guard !appsManager.apps.isEmpty && !testUsersManager.testUsers.isEmpty else { return }
+        guard !appsManager.apps.isEmpty, 
+              let selectedUser = testUsersManager.selectedUser else { return }
         
         withAnimation(.easeInOut) {
             isSubmitting = true
         }
         
         let selectedApp = appsManager.apps[selectedAppIndex]
-        let selectedUser = testUsersManager.testUsers[selectedUserIndex]
         
         let newEntry = JournalEntry(
             appName: selectedApp.title,

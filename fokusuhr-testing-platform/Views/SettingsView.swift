@@ -3,7 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @StateObject private var authManager = AuthManager.shared
     @StateObject private var testUsersManager = TestUsersManager.shared
-    @State private var showingAddSupervisor = false
+    @StateObject private var supervisorManager = SupervisorManager.shared
     @State private var showingAddUser = false
     @State private var showingLogin = false
     @State private var searchText = ""
@@ -44,12 +44,9 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section("Test Users") {
-               
-    
-                    
-                    if !testUsersManager.testUsers.isEmpty {
-                  
+                if authManager.isLoggedIn {
+                    Section("Active Testuser") {
+                        if !testUsersManager.testUsers.isEmpty {
                             if let selectedUser = testUsersManager.selectedUser {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 4) {
@@ -59,7 +56,7 @@ struct SettingsView: View {
                                         Text("Age: \(selectedUser.age)")
                                             .font(.subheadline)
                                             .foregroundColor(.secondary)
-                                        if let supervisor = testUsersManager.supervisors.first(where: { $0.uid == selectedUser.supervisor_uid }) {
+                                        if let supervisor = supervisorManager.currentSupervisor {
                                             Text("Supervisor: \(supervisor.fullName)")
                                                 .font(.caption)
                                                 .foregroundColor(.secondary)
@@ -81,15 +78,14 @@ struct SettingsView: View {
                                 }
                                 .padding(.vertical, 4)
                             }
+                        }
                         
+                        Button("Add new Test User") {
+                            showingAddUser = true
+                        }
+                        .disabled(!authManager.isLoggedIn || testUsersManager.isLoading)
                     }
-                    
-                   
-                    
-                    Button("Add new Test User") {
-                        showingAddUser = true
-                    }
-                    .disabled(testUsersManager.supervisors.isEmpty || testUsersManager.isLoading)
+                }
                 }
                 
                
@@ -102,7 +98,7 @@ struct SettingsView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Refresh") {
                         Task {
-                            await testUsersManager.fetchSupervisors()
+                            await supervisorManager.fetchCurrentSupervisor()
                             await testUsersManager.fetchTestUsers()
                         }
                     }
@@ -110,7 +106,11 @@ struct SettingsView: View {
                 }
             }
             .task {
-                await testUsersManager.fetchSupervisors()
+                await supervisorManager.fetchCurrentSupervisor()
+                await testUsersManager.fetchTestUsers()
+            }
+            .refreshable {
+                await supervisorManager.fetchCurrentSupervisor()
                 await testUsersManager.fetchTestUsers()
             }
             .sheet(isPresented: $showingLogin) {
@@ -121,7 +121,7 @@ struct SettingsView: View {
             }
             
             .sheet(isPresented: $showingAddUser) {
-                UserAddView(supervisors: testUsersManager.supervisors) { user in
+                UserAddView { user in
                     Task {
                         await testUsersManager.addTestUser(user)
                     }
@@ -136,7 +136,7 @@ struct SettingsView: View {
             }
         }
     }
-}
+
 
 
 
