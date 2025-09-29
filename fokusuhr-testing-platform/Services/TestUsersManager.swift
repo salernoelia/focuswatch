@@ -5,6 +5,12 @@ import SwiftUI
 
 typealias TestUser = PublicSchema.TestUsersSelect
 
+struct UserOption: Identifiable {
+    let id: Int32
+    let displayName: String
+    let isSpecial: Bool
+}
+
 extension TestUser: Identifiable {
     var fullName: String {
         "\(firstName) \(lastName)"
@@ -18,7 +24,7 @@ class TestUsersManager: ObservableObject {
     
     static let shared = TestUsersManager()
     
-    // Special ID for "No Testuser" option
+
     static let noTestUserID: Int32 = -1
     
     var selectedUser: TestUser? {
@@ -30,7 +36,7 @@ class TestUsersManager: ObservableObject {
         selectedUserId == Self.noTestUserID
     }
     
-    // All available options including "No Testuser"
+
     var allUserOptions: [UserOption] {
         var options = [UserOption(id: Self.noTestUserID, displayName: "No Testuser (Supervisor Entry)", isSpecial: true)]
         options.append(contentsOf: testUsers.map { UserOption(id: $0.id, displayName: $0.fullName, isSpecial: false) })
@@ -56,7 +62,7 @@ class TestUsersManager: ObservableObject {
             await MainActor.run {
                 testUsers = users
                 if selectedUserId == nil {
-                    selectedUserId = testUsers.first?.id
+                    selectedUserId = Self.noTestUserID
                 }
                 isLoading = false
             }
@@ -84,8 +90,9 @@ class TestUsersManager: ObservableObject {
             
             await MainActor.run {
                 testUsers.append(newUser)
+                // Keep current selection unless no selection was made yet
                 if selectedUserId == nil {
-                    selectedUserId = newUser.id
+                    selectedUserId = Self.noTestUserID
                 }
                 isLoading = false
             }
@@ -108,7 +115,7 @@ class TestUsersManager: ObservableObject {
             await MainActor.run {
                 testUsers.removeAll { $0.id == user.id }
                 if selectedUserId == user.id {
-                    selectedUserId = testUsers.first?.id
+                    selectedUserId = Self.noTestUserID
                 }
                 isLoading = false
             }

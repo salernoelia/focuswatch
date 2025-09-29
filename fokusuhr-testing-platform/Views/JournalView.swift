@@ -92,7 +92,10 @@ struct JournalView: View {
                         .frame(width: 20)
                     
                     NavigationLink(destination: UserSelectionView()) {
-                        if let selectedUser = testUsersManager.selectedUser {
+                        if testUsersManager.isNoTestUserSelected {
+                            Text("Your Entry (Supervisor)")
+                                .foregroundColor(.primary)
+                        } else if let selectedUser = testUsersManager.selectedUser {
                             Text("Tester: \(selectedUser.fullName)")
                                 .foregroundColor(.primary)
                         } else if testUsersManager.testUsers.isEmpty {
@@ -180,7 +183,7 @@ struct JournalView: View {
     
     private var canSubmit: Bool {
         !appsManager.apps.isEmpty &&
-        testUsersManager.selectedUser != nil &&
+        (testUsersManager.selectedUser != nil || testUsersManager.isNoTestUserSelected) &&
         !entryText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
     
@@ -193,8 +196,7 @@ struct JournalView: View {
     private func submitJournalEntry() {
         textFieldFocused = false
         
-        guard !appsManager.apps.isEmpty, 
-              let selectedUser = testUsersManager.selectedUser else { return }
+        guard !appsManager.apps.isEmpty else { return }
         
         withAnimation(.easeInOut) {
             isSubmitting = true
@@ -202,12 +204,28 @@ struct JournalView: View {
         
         let selectedApp = appsManager.apps[selectedAppIndex]
         
-        let newEntry = JournalEntry(
-            appName: selectedApp.title,
-            userName: selectedUser.fullName,
-            userId: selectedUser.id,
-            entryText: entryText.trimmingCharacters(in: .whitespacesAndNewlines)
-        )
+        let newEntry: JournalEntry
+        
+        if testUsersManager.isNoTestUserSelected {
+
+            let supervisorName = SupervisorManager.shared.currentSupervisor?.fullName ?? "Supervisor"
+            newEntry = JournalEntry(
+                appName: selectedApp.title,
+                userName: supervisorName,
+                userId: TestUsersManager.noTestUserID, 
+                entryText: entryText.trimmingCharacters(in: .whitespacesAndNewlines)
+            )
+        } else if let selectedUser = testUsersManager.selectedUser {
+            newEntry = JournalEntry(
+                appName: selectedApp.title,
+                userName: selectedUser.fullName,
+                userId: selectedUser.id,
+                entryText: entryText.trimmingCharacters(in: .whitespacesAndNewlines)
+            )
+        } else {
+            isSubmitting = false
+            return
+        }
         
         Task {
             let success = await journalManager.saveJournalEntry(newEntry)

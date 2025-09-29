@@ -14,34 +14,44 @@ struct UserSelectionView: View {
     @State private var searchText = ""
     @State private var showingAddUser = false
     
-    private var filteredUsers: [TestUser] {
+    private var filteredUsers: [UserOption] {
+        let allOptions = testUsersManager.allUserOptions
+        
         if searchText.isEmpty {
-            return testUsersManager.testUsers
+            return allOptions
         }
-        return testUsersManager.testUsers.filter { user in
-            user.fullName.localizedCaseInsensitiveContains(searchText)
+        
+        return allOptions.filter { option in
+            option.displayName.localizedCaseInsensitiveContains(searchText)
         }
     }
     
     var body: some View {
         NavigationView {
             List {
-                ForEach(filteredUsers) { user in
+                ForEach(filteredUsers) { option in
                     Button {
-                        testUsersManager.selectUser(user.id)
+                        testUsersManager.selectUser(option.id)
                         dismiss()
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
-                                Text(user.fullName)
+                                Text(option.displayName)
                                     .font(.body)
                                     .foregroundColor(.primary)
-                                Text("Age: \(user.age)")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                                
+                                if option.isSpecial {
+                                    Text("Your own journal entry")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                } else if let user = testUsersManager.testUsers.first(where: { $0.id == option.id }) {
+                                    Text("Age: \(user.age)")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
                             }
                             Spacer()
-                            if testUsersManager.selectedUserId == user.id {
+                            if testUsersManager.selectedUserId == option.id {
                                 Image(systemName: "checkmark")
                                     .foregroundColor(.blue)
                             }

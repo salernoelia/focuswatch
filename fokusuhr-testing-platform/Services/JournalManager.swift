@@ -25,15 +25,30 @@ class JournalManager: ObservableObject {
                 return false
             }
             
-            let journalInsert = PublicSchema.JournalsInsert(
-                appId: nil,
-                appName: entry.appName,
-                createdAt: nil,
-                description: entry.entryText,
-                id: nil,
-                supervisorUid: session.user.id,
-                testUserId: entry.userId
-            )
+            let journalInsert: PublicSchema.JournalsInsert
+            
+
+            if entry.userId == TestUsersManager.noTestUserID {
+                journalInsert = PublicSchema.JournalsInsert(
+                    appId: nil,
+                    appName: entry.appName,
+                    createdAt: nil,
+                    description: entry.entryText,
+                    id: nil,
+                    supervisorUid: session.user.id,
+                    testUserId: nil 
+                )
+            } else {
+                journalInsert = PublicSchema.JournalsInsert(
+                    appId: nil,
+                    appName: entry.appName,
+                    createdAt: nil,
+                    description: entry.entryText,
+                    id: nil,
+                    supervisorUid: session.user.id,
+                    testUserId: entry.userId
+                )
+            }
             
             try await supabase
                 .from("journals")
@@ -71,23 +86,46 @@ class JournalManager: ObservableObject {
                 .execute()
                 .value
             
+            let supervisors: [Supervisor] = try await supabase
+                .from("supervisors")
+                .select()
+                .eq("uid", value: session.user.id)
+                .execute()
+                .value
+            
+            let currentSupervisor = supervisors.first
+            
             let entries = journals.compactMap { journal -> JournalEntry? in
-                guard let userId = journal.testUserId,
-                      let appName = journal.appName,
+                guard let appName = journal.appName,
                       let description = journal.description else { return nil }
-                
-                let user = testUsers.first { $0.id == userId }
-                let userName = user?.fullName ?? "Unknown User"
                 
                 let createdDate = journal.createdAt.flatMap { ISO8601DateFormatter().date(from: $0) } ?? Date()
                 
-                return JournalEntry(
-                    date: createdDate,
-                    appName: appName,
-                    userName: userName,
-                    userId: userId,
-                    entryText: description
-                )
+
+                if journal.testUserId == nil {
+                    let supervisorName = currentSupervisor?.fullName ?? "Supervisor"
+                    return JournalEntry(
+                        date: createdDate,
+                        appName: appName,
+                        userName: supervisorName,
+                        userId: TestUsersManager.noTestUserID,
+                        entryText: description
+                    )
+                } else if let userId = journal.testUserId {
+
+                    let user = testUsers.first { $0.id == userId }
+                    let userName = user?.fullName ?? "Unknown User"
+                    
+                    return JournalEntry(
+                        date: createdDate,
+                        appName: appName,
+                        userName: userName,
+                        userId: userId,
+                        entryText: description
+                    )
+                }
+                
+                return nil
             }
             
             await MainActor.run { isLoading = false }
