@@ -1,0 +1,20 @@
+
+
+{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "supabase-access-token",
+      "description": "Supabase personal access token",
+      "password": true
+    }
+  ],
+  "servers": {
+   "apple-doc": {
+      "command": "npx",
+      "args": [
+        "apple-doc-mcp-server@latest"
+      ]
+    }
+  }
+}

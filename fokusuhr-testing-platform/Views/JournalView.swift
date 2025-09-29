@@ -78,28 +78,31 @@ struct JournalView: View {
                             .foregroundColor(.secondary)
                     } else {
                         Picker("App", selection: $selectedAppIndex) {
+                            Text("IOS App").tag(0)
                             ForEach(Array(appsManager.apps.enumerated()), id: \.offset) { index, app in
-                                Text(app.title).tag(index)
+                                Text(app.title).tag(index + 1)
                             }
                         }
                         .pickerStyle(.menu)
                     }
                 }
-                
                 HStack {
                     Image(systemName: "person.circle")
                         .foregroundColor(.green)
                         .frame(width: 20)
                     
-                    if let selectedUser = testUsersManager.selectedUser {
-                        Text("Test User: \(selectedUser.fullName)")
-                            .foregroundColor(.primary)
-                    } else if testUsersManager.testUsers.isEmpty {
-                        Text("Loading users...")
-                            .foregroundColor(.secondary)
-                    } else {
-                        Text("No user selected")
-                            .foregroundColor(.red)
+                    NavigationLink(destination: UserSelectionView()) {
+                        if let selectedUser = testUsersManager.selectedUser {
+                            Text("Tester: \(selectedUser.fullName)")
+                                .foregroundColor(.primary)
+                        } else if testUsersManager.testUsers.isEmpty {
+                            Text("Loading users...")
+                                .foregroundColor(.secondary)
+                        } else {
+                            Text("Select User")
+                                .font(.subheadline)
+                                .foregroundColor(.blue)
+                        }
                     }
                 }
             }

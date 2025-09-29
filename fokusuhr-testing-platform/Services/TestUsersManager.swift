@@ -18,9 +18,23 @@ class TestUsersManager: ObservableObject {
     
     static let shared = TestUsersManager()
     
+    // Special ID for "No Testuser" option
+    static let noTestUserID: Int32 = -1
+    
     var selectedUser: TestUser? {
-        guard let selectedUserId = selectedUserId else { return nil }
+        guard let selectedUserId = selectedUserId, selectedUserId != Self.noTestUserID else { return nil }
         return testUsers.first { $0.id == selectedUserId }
+    }
+    
+    var isNoTestUserSelected: Bool {
+        selectedUserId == Self.noTestUserID
+    }
+    
+    // All available options including "No Testuser"
+    var allUserOptions: [UserOption] {
+        var options = [UserOption(id: Self.noTestUserID, displayName: "No Testuser (Supervisor Entry)", isSpecial: true)]
+        options.append(contentsOf: testUsers.map { UserOption(id: $0.id, displayName: $0.fullName, isSpecial: false) })
+        return options
     }
     
     private init() {
@@ -46,6 +60,7 @@ class TestUsersManager: ObservableObject {
                 }
                 isLoading = false
             }
+            
         } catch {
             print("Error fetching test users: \(error)")
             await MainActor.run {

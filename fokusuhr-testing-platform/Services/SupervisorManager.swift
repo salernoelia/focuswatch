@@ -36,17 +36,22 @@ class SupervisorManager: ObservableObject {
                 return
             }
             
-            let supervisor: Supervisor = try await supabase
+            let supervisors: [Supervisor] = try await supabase
                 .from("supervisors")
                 .select()
                 .eq("uid", value: session.user.id)
-                .single()
                 .execute()
                 .value
             
             await MainActor.run {
-                currentSupervisor = supervisor
+                currentSupervisor = supervisors.first
                 isLoading = false
+            }
+            
+            if supervisors.isEmpty {
+                print("Warning: No supervisor found for user ID: \(session.user.id)")
+            } else if supervisors.count > 1 {
+                print("Warning: Multiple supervisors found for user ID: \(session.user.id), using first one")
             }
         } catch {
             print("Error fetching supervisor: \(error)")
