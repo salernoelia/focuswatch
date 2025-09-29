@@ -35,12 +35,12 @@ struct WatchView: View {
                 color: .green,
                 destination: AnyView(ColorBreathingView())
             ),
-            PrototypeApp(
-                title: "Fidget Spinner",
-                description: "Digitaler Fidget Spinner",
-                color: .orange,
-                destination: AnyView(FidgetSpinnerView())
-            ),
+            // PrototypeApp(
+            //     title: "Fidget Spinner",
+            //     description: "Digitaler Fidget Spinner",
+            //     color: .orange,
+            //     destination: AnyView(FidgetSpinnerView())
+            // ),
             PrototypeApp(
                 title: "Anne (Beta)",
                 description: "Virtueller Assistent",

@@ -37,7 +37,7 @@ class AppsManager: ObservableObject {
         let builtInApps = [
             ("Tachometer", "Gefühlsanzeige", Color.yellow),
             ("Farbatmung", "Beruhigende Atemübungen", Color.green),
-            ("Fidget Spinner", "Digitaler Fidget Spinner", Color.orange),
+            //("Fidget Spinner", "Digitaler Fidget Spinner", Color.orange),
             ("Anne (Beta)", "Virtueller Assistent", Color.red)
         ]
         
@@ -76,7 +76,7 @@ class AppsManager: ObservableObject {
     private func getDefaultApps() -> [AppInfo] {
         var apps = [
             AppInfo(title: "Farbatmung", description: "Beruhigende Atemübungen", color: .green, index: 0),
-            AppInfo(title: "Fidget Spinner", description: "Digitaler Fidget Spinner", color: .orange, index: 1)
+            // AppInfo(title: "Fidget Spinner", description: "Digitaler Fidget Spinner", color: .orange, index: 1)
         ]
         
         let checklistData = ChecklistManager.loadSharedData()
