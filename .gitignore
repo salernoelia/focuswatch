@@ -1,1 +1,4 @@
 vscode/
+
+Development.xcconfig
+Production.xcconfig

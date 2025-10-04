@@ -18,6 +18,12 @@
 		0E078E032E6E2C5100D74BDA /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 0E078E022E6E2C5100D74BDA /* PostgREST */; };
 		0E078E052E6E2C5100D74BDA /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 0E078E042E6E2C5100D74BDA /* Storage */; };
 		0E078E072E6E2C5100D74BDA /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 0E078E062E6E2C5100D74BDA /* Supabase */; };
+		0E195C002E917A2500DC7E4B /* Production.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0E195BFF2E917A2500DC7E4B /* Production.xcconfig */; };
+		0E195C012E917A2500DC7E4B /* Production.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0E195BFF2E917A2500DC7E4B /* Production.xcconfig */; };
+		0E195C052E917BAF00DC7E4B /* Development.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0E195C042E917BAF00DC7E4B /* Development.xcconfig */; };
+		0E195C062E917BAF00DC7E4B /* Development.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0E195C042E917BAF00DC7E4B /* Development.xcconfig */; };
+		0E195C082E917D2A00DC7E4B /* Example.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0E195C072E917D2A00DC7E4B /* Example.xcconfig */; };
+		0E195C092E917D2A00DC7E4B /* Example.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0E195C072E917D2A00DC7E4B /* Example.xcconfig */; };
 		0E9D8CD02E0D6C24002B7989 /* fokusuhr-testing-platform Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0E9D8CCF2E0D6C24002B7989 /* fokusuhr-testing-platform Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -46,6 +52,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0E195BFF2E917A2500DC7E4B /* Production.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Production.xcconfig; sourceTree = "<group>"; };
+		0E195C042E917BAF00DC7E4B /* Development.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Development.xcconfig; sourceTree = "<group>"; };
+		0E195C072E917D2A00DC7E4B /* Example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Example.xcconfig; sourceTree = "<group>"; };
 		0E9D8CBF2E0D6C23002B7989 /* fokusuhr-testing-platform.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fokusuhr-testing-platform.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E9D8CCF2E0D6C24002B7989 /* fokusuhr-testing-platform Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fokusuhr-testing-platform Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -108,6 +117,9 @@
 		0E9D8CB62E0D6C22002B7989 = {
 			isa = PBXGroup;
 			children = (
+				0E195C072E917D2A00DC7E4B /* Example.xcconfig */,
+				0E195BFF2E917A2500DC7E4B /* Production.xcconfig */,
+				0E195C042E917BAF00DC7E4B /* Development.xcconfig */,
 				0E9D8CC12E0D6C23002B7989 /* fokusuhr-testing-platform */,
 				0E9D8CD32E0D6C24002B7989 /* fokusuhr-testing-platform Watch App */,
 				0E9D8CC02E0D6C23002B7989 /* Products */,
@@ -229,6 +241,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E195C052E917BAF00DC7E4B /* Development.xcconfig in Resources */,
+				0E195C002E917A2500DC7E4B /* Production.xcconfig in Resources */,
+				0E195C082E917D2A00DC7E4B /* Example.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,6 +251,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E195C062E917BAF00DC7E4B /* Development.xcconfig in Resources */,
+				0E195C012E917A2500DC7E4B /* Production.xcconfig in Resources */,
+				0E195C092E917D2A00DC7E4B /* Example.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,6 +287,7 @@
 /* Begin XCBuildConfiguration section */
 		0E9D8CDD2E0D6C25002B7989 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0E195C042E917BAF00DC7E4B /* Development.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -330,6 +349,7 @@
 		};
 		0E9D8CDE2E0D6C25002B7989 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0E195BFF2E917A2500DC7E4B /* Production.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
