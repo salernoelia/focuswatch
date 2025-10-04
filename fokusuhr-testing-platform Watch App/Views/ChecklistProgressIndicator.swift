@@ -1,11 +1,3 @@
-//
-//  ChecklistProgressIndicator.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 02.07.2025.
-//
-
-
 import SwiftUI
 
 struct ChecklistProgressIndicator: View {

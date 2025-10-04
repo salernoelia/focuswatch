@@ -15,6 +15,7 @@ extension Supervisor {
 class SupervisorManager: ObservableObject {
     @Published var currentSupervisor: Supervisor?
     @Published var isLoading = false
+    @Published var lastError: AppError?
     
     static let shared = SupervisorManager()
     
@@ -25,13 +26,21 @@ class SupervisorManager: ObservableObject {
     }
     
     func fetchCurrentSupervisor() async {
-        await MainActor.run { isLoading = true }
+        await MainActor.run { 
+            isLoading = true
+            lastError = nil
+        }
         
         do {
             guard let session = supabase.auth.currentSession else {
+                let error = AppError.noActiveSession
+                #if DEBUG
+                ErrorLogger.log(error)
+                #endif
                 await MainActor.run {
                     currentSupervisor = nil
                     isLoading = false
+                    lastError = error
                 }
                 return
             }
@@ -48,16 +57,23 @@ class SupervisorManager: ObservableObject {
                 isLoading = false
             }
             
+            #if DEBUG
             if supervisors.isEmpty {
                 print("Warning: No supervisor found for user ID: \(session.user.id)")
             } else if supervisors.count > 1 {
                 print("Warning: Multiple supervisors found for user ID: \(session.user.id), using first one")
             }
+            #endif
         } catch {
-            print("Error fetching supervisor: \(error)")
+            let appError = AppError.databaseQueryFailed(operation: "fetch supervisor", underlying: error)
+            #if DEBUG
+            ErrorLogger.log(appError)
+            #endif
+            
             await MainActor.run {
                 currentSupervisor = nil
                 isLoading = false
+                lastError = appError
             }
         }
     }

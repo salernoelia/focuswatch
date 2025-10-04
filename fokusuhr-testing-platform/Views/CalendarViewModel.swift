@@ -1,10 +1,3 @@
-//
-//  CalendarViewModel.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 21.08.2025.
-//
-
 import SwiftUI
 import Combine
 

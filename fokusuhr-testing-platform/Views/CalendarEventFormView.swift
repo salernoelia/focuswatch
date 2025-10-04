@@ -1,10 +1,3 @@
-//
-//  CalendarEventFormView.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 21.08.2025.
-//
-
 import SwiftUI
 
 struct CalendarEventFormView: View {
@@ -87,7 +80,6 @@ struct CalendarEventFormView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        // Combine date with start and end times
                         let combinedStartTime = combineDateTime(date: date, time: startTime)
                         let combinedEndTime = combineDateTime(date: date, time: endTime)
                         

@@ -21,11 +21,11 @@ class TestUsersManager: ObservableObject {
     @Published var testUsers: [TestUser] = []
     @Published var selectedUserId: Int32?
     @Published var isLoading = false
+    @Published var lastError: AppError?
     
     static let shared = TestUsersManager()
     
-
-    static let noTestUserID: Int32 = -1
+    static let noTestUserID: Int32 = AppConstants.TestUser.noTestUserID
     
     var selectedUser: TestUser? {
         guard let selectedUserId = selectedUserId, selectedUserId != Self.noTestUserID else { return nil }
@@ -38,8 +38,14 @@ class TestUsersManager: ObservableObject {
     
 
     var allUserOptions: [UserOption] {
-        var options = [UserOption(id: Self.noTestUserID, displayName: "No Testuser (Supervisor Entry)", isSpecial: true)]
-        options.append(contentsOf: testUsers.map { UserOption(id: $0.id, displayName: $0.fullName, isSpecial: false) })
+        var options = [UserOption(
+            id: Self.noTestUserID, 
+            displayName: AppConstants.TestUser.noTestUserDisplayName, 
+            isSpecial: true
+        )]
+        options.append(contentsOf: testUsers.map { 
+            UserOption(id: $0.id, displayName: $0.fullName, isSpecial: false) 
+        })
         return options
     }
     
@@ -50,7 +56,10 @@ class TestUsersManager: ObservableObject {
     }
     
     func fetchTestUsers() async {
-        await MainActor.run { isLoading = true }
+        await MainActor.run { 
+            isLoading = true
+            lastError = nil
+        }
         
         do {
             let users: [TestUser] = try await supabase
@@ -68,16 +77,24 @@ class TestUsersManager: ObservableObject {
             }
             
         } catch {
-            print("Error fetching test users: \(error)")
+            let appError = AppError.databaseQueryFailed(operation: "fetch test users", underlying: error)
+            #if DEBUG
+            ErrorLogger.log(appError)
+            #endif
+            
             await MainActor.run {
                 testUsers = []
                 isLoading = false
+                lastError = appError
             }
         }
     }
     
     func addTestUser(_ user: PublicSchema.TestUsersInsert) async {
-        await MainActor.run { isLoading = true }
+        await MainActor.run { 
+            isLoading = true
+            lastError = nil
+        }
         
         do {
             let newUser: TestUser = try await supabase
@@ -90,26 +107,39 @@ class TestUsersManager: ObservableObject {
             
             await MainActor.run {
                 testUsers.append(newUser)
-                // Keep current selection unless no selection was made yet
                 if selectedUserId == nil {
                     selectedUserId = Self.noTestUserID
                 }
                 isLoading = false
             }
         } catch {
-            print("Error adding test user: \(error)")
-            await MainActor.run { isLoading = false }
+            let appError = AppError.databaseQueryFailed(operation: "add test user", underlying: error)
+            #if DEBUG
+            ErrorLogger.log(appError)
+            #endif
+            
+            await MainActor.run { 
+                isLoading = false
+                lastError = appError
+            }
         }
     }
     
     func deleteTestUser(_ user: TestUser) async {
-        await MainActor.run { isLoading = true }
+        await MainActor.run { 
+            isLoading = true
+            lastError = nil
+        }
         
         do {
+            guard let filterValue = user.id as? PostgrestFilterValue else {
+                throw AppError.invalidData(reason: "User ID cannot be used as filter value")
+            }
+            
             try await supabase
                 .from("test_users")
                 .delete()
-                .eq("id", value: user.id as! PostgrestFilterValue)
+                .eq("id", value: filterValue)
                 .execute()
             
             await MainActor.run {
@@ -120,8 +150,21 @@ class TestUsersManager: ObservableObject {
                 isLoading = false
             }
         } catch {
-            print("Error deleting test user: \(error)")
-            await MainActor.run { isLoading = false }
+            let appError: AppError
+            if let error = error as? AppError {
+                appError = error
+            } else {
+                appError = AppError.databaseQueryFailed(operation: "delete test user", underlying: error)
+            }
+            
+            #if DEBUG
+            ErrorLogger.log(appError)
+            #endif
+            
+            await MainActor.run { 
+                isLoading = false
+                lastError = appError
+            }
         }
     }
     

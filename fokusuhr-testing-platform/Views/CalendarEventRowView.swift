@@ -1,10 +1,3 @@
-//
-//  CalendarEventRowView.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 21.08.2025.
-//
-
 import SwiftUI
 
 struct CalendarEventRowView: View {
@@ -25,7 +18,6 @@ struct CalendarEventRowView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            // Type indicator
             RoundedRectangle(cornerRadius: 2)
                 .fill(typeColor)
                 .frame(width: 4, height: 44)

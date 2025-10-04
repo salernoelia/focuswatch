@@ -1,11 +1,3 @@
-//
-//  ChecklistAddItemView.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 28.09.2025.
-//
-
-
 import SwiftUI
 import PhotosUI
 
@@ -39,7 +31,6 @@ struct ChecklistAddItemView: View {
                     }
                     .foregroundColor(.blue)
                     
-                    // Show preview of selected photo
                     if let newImage = selectedUIImage {
                         HStack {
                             Text("New Photo:")
@@ -87,7 +78,6 @@ struct ChecklistAddItemView: View {
                 trailing: Button("Save") {
                     var finalImageName = selectedImage
                     
-                    // If we have a new photo, add it to gallery with the user's label
                     if let newImage = selectedUIImage, !title.isEmpty {
                         galleryStorage.addItem(image: newImage, label: title)
                         finalImageName = title
@@ -129,7 +119,7 @@ struct ChecklistAddItemView: View {
             PhotoPicker(source: .photoLibrary) { images in
                 if let image = images.first {
                     selectedUIImage = image
-                    selectedImage = "" // Clear existing selection
+                    selectedImage = "" 
                 }
             }
         }
@@ -137,7 +127,7 @@ struct ChecklistAddItemView: View {
             PhotoPicker(source: .camera) { images in
                 if let image = images.first {
                     selectedUIImage = image
-                    selectedImage = "" // Clear existing selection
+                    selectedImage = "" 
                 }
             }
         }

@@ -1,9 +1,3 @@
-//
-//  AppsManager.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 25.09.2025.
-//
 
 import Foundation
 import Combine

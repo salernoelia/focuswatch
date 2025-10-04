@@ -13,15 +13,26 @@ struct JournalEntry: Identifiable, Codable {
 
 class JournalManager: ObservableObject {
     @Published var isLoading = false
+    @Published var lastError: AppError?
     
     static let shared = JournalManager()
 
     func saveJournalEntry(_ entry: JournalEntry) async -> Bool {
-        await MainActor.run { isLoading = true }
+        await MainActor.run { 
+            isLoading = true
+            lastError = nil
+        }
         
         do {
             guard let session = supabase.auth.currentSession else {
-                await MainActor.run { isLoading = false }
+                let error = AppError.noActiveSession
+                #if DEBUG
+                ErrorLogger.log(error)
+                #endif
+                await MainActor.run { 
+                    isLoading = false
+                    lastError = error
+                }
                 return false
             }
             
@@ -58,18 +69,35 @@ class JournalManager: ObservableObject {
             await MainActor.run { isLoading = false }
             return true
         } catch {
-            print("Error saving journal entry: \(error)")
-            await MainActor.run { isLoading = false }
+            let appError = AppError.databaseQueryFailed(operation: "save journal entry", underlying: error)
+            #if DEBUG
+            ErrorLogger.log(appError)
+            #endif
+            
+            await MainActor.run { 
+                isLoading = false
+                lastError = appError
+            }
             return false
         }
     }
     
     func fetchJournalEntries() async -> [JournalEntry] {
-        await MainActor.run { isLoading = true }
+        await MainActor.run { 
+            isLoading = true
+            lastError = nil
+        }
         
         do {
             guard let session = supabase.auth.currentSession else {
-                await MainActor.run { isLoading = false }
+                let error = AppError.noActiveSession
+                #if DEBUG
+                ErrorLogger.log(error)
+                #endif
+                await MainActor.run { 
+                    isLoading = false
+                    lastError = error
+                }
                 return []
             }
             
@@ -131,8 +159,15 @@ class JournalManager: ObservableObject {
             await MainActor.run { isLoading = false }
             return entries
         } catch {
-            print("Error fetching journal entries: \(error)")
-            await MainActor.run { isLoading = false }
+            let appError = AppError.databaseQueryFailed(operation: "fetch journal entries", underlying: error)
+            #if DEBUG
+            ErrorLogger.log(appError)
+            #endif
+            
+            await MainActor.run { 
+                isLoading = false
+                lastError = appError
+            }
             return []
         }
     }

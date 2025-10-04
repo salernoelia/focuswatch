@@ -12,36 +12,84 @@ class GalleryStorage: ObservableObject {
     
     func addItem(image: UIImage, label: String) {
         let imageName = "\(UUID().uuidString).jpg"
-        let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent(imageName)
         
-        let resizedImage = resizeImage(image, targetSize: CGSize(width: 300, height: 300))
+        guard let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            #if DEBUG
+            ErrorLogger.log(.fileNotFound(path: "documents directory"))
+            #endif
+            return
+        }
         
-        if let data = resizedImage.jpegData(compressionQuality: 0.3) {
-            try? data.write(to: url)
+        let url = documentsURL.appendingPathComponent(imageName)
+        
+        let resizedImage = resizeImage(image, targetSize: AppConstants.Image.thumbnailSize)
+        
+        guard let data = resizedImage.jpegData(compressionQuality: AppConstants.Image.compressionQuality) else {
+            #if DEBUG
+            ErrorLogger.log(.encodingFailed(type: "image", underlying: NSError(domain: "GalleryStorage", code: -1, userInfo: nil)))
+            #endif
+            return
+        }
+        
+        do {
+            try data.write(to: url)
             let item = GalleryItem(imagePath: imageName, label: label)
             items.append(item)
             saveItems()
+        } catch {
+            #if DEBUG
+            ErrorLogger.log(.fileOperationFailed(operation: "save image", underlying: error))
+            #endif
         }
     }
     
     func deleteItem(_ item: GalleryItem) {
-    
-        let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent(item.imagePath)
-        try? FileManager.default.removeItem(at: url)
+        guard let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            #if DEBUG
+            ErrorLogger.log(.fileNotFound(path: "documents directory"))
+            #endif
+            return
+        }
+        
+        let url = documentsURL.appendingPathComponent(item.imagePath)
+        
+        if FileManager.default.fileExists(atPath: url.path) {
+            do {
+                try FileManager.default.removeItem(at: url)
+            } catch {
+                #if DEBUG
+                ErrorLogger.log(.fileOperationFailed(operation: "delete image", underlying: error))
+                #endif
+            }
+        }
         
         items.removeAll { $0.id == item.id }
         saveItems()
     }
     
     func deleteItems(at offsets: IndexSet) {
+        guard let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            #if DEBUG
+            ErrorLogger.log(.fileNotFound(path: "documents directory"))
+            #endif
+            return
+        }
+        
         for index in offsets {
             let item = items[index]
-            let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-                .appendingPathComponent(item.imagePath)
-            try? FileManager.default.removeItem(at: url)
+            let url = documentsURL.appendingPathComponent(item.imagePath)
+            
+            if FileManager.default.fileExists(atPath: url.path) {
+                do {
+                    try FileManager.default.removeItem(at: url)
+                } catch {
+                    #if DEBUG
+                    ErrorLogger.log(.fileOperationFailed(operation: "delete image", underlying: error))
+                    #endif
+                }
+            }
         }
+        
         items.remove(atOffsets: offsets)
         saveItems()
     }
@@ -58,7 +106,7 @@ class GalleryStorage: ObservableObject {
         
         let rect = CGRect(origin: .zero, size: newSize)
         
-        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+        UIGraphicsBeginImageContextWithOptions(newSize, false, AppConstants.Image.renderingScale)
         image.draw(in: rect)
         let newImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
@@ -67,15 +115,26 @@ class GalleryStorage: ObservableObject {
     }
     
     private func saveItems() {
-        if let data = try? JSONEncoder().encode(items) {
+        do {
+            let data = try JSONEncoder().encode(items)
             UserDefaults.standard.set(data, forKey: "galleryItems")
+        } catch {
+            #if DEBUG
+            ErrorLogger.log(.encodingFailed(type: "gallery items", underlying: error))
+            #endif
         }
     }
     
     private func loadItems() {
-        guard let data = UserDefaults.standard.data(forKey: "galleryItems"),
-              let decoded = try? JSONDecoder().decode([GalleryItem].self, from: data) else { return }
-        items = decoded
+        guard let data = UserDefaults.standard.data(forKey: "galleryItems") else { return }
+        
+        do {
+            items = try JSONDecoder().decode([GalleryItem].self, from: data)
+        } catch {
+            #if DEBUG
+            ErrorLogger.log(.decodingFailed(type: "gallery items", underlying: error))
+            #endif
+        }
     }
 
     func updateItemLabel(_ item: GalleryItem, newLabel: String) {

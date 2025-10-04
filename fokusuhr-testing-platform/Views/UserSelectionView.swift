@@ -1,11 +1,3 @@
-//
-//  UserSelectionView.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 28.09.2025.
-//
-
-
 import SwiftUI
 
 struct UserSelectionView: View {

@@ -4,6 +4,7 @@ import WatchConnectivity
 class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     @Published var isConnected = false
     @Published var checklistData = ChecklistData.default
+    @Published var lastError: AppError?
     
     override init() {
         super.init()
@@ -13,7 +14,10 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     
     private func setupWatchConnectivity() {
         guard WCSession.isSupported() else {
-            print("WatchConnectivity not supported")
+            lastError = .watchNotSupported
+            #if DEBUG
+            ErrorLogger.log(.watchNotSupported)
+            #endif
             return
         }
         
@@ -42,35 +46,51 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     }
     
     func resetWatchConnectivity() {
+        guard WCSession.isSupported() else { return }
+        
+        #if DEBUG
         print("Resetting Watch Connectivity...")
+        #endif
         
         if WCSession.default.activationState == .activated {
             WCSession.default.delegate = nil
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + AppConstants.Timing.mediumDelay) {
             WCSession.default.delegate = self
             WCSession.default.activate()
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + AppConstants.Timing.longDelay) {
                 self.isConnected = WCSession.default.activationState == .activated && WCSession.default.isReachable
+                
+                #if DEBUG
                 print("Reset complete - Connected: \(self.isConnected)")
                 print("Activation State: \(WCSession.default.activationState.rawValue)")
                 print("Is Reachable: \(WCSession.default.isReachable)")
                 print("Is Paired: \(WCSession.default.isPaired)")
                 print("Is Watch App Installed: \(WCSession.default.isWatchAppInstalled)")
+                #endif
             }
         }
     }
     
     private func sendWakeUpMessage() {
-        guard WCSession.default.isReachable else { return }
+        guard WCSession.default.isReachable else { 
+            lastError = .watchNotReachable
+            return 
+        }
         
         let message = ["action": "wakeUp"]
         WCSession.default.sendMessage(message, replyHandler: { _ in
+            #if DEBUG
             print("Wake up message sent successfully")
+            #endif
         }) { error in
-            print("Error sending wake up message: \(error.localizedDescription)")
+            let appError = AppError.watchMessageFailed(underlying: error)
+            #if DEBUG
+            ErrorLogger.log(appError)
+            #endif
+            self.lastError = appError
         }
     }
     
@@ -79,9 +99,15 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             self.isConnected = activationState == .activated && session.isReachable
             
             if let error = error {
-                print("WCSession activation error: \(error.localizedDescription)")
+                let appError = AppError.watchMessageFailed(underlying: error)
+                #if DEBUG
+                ErrorLogger.log(appError)
+                #endif
+                self.lastError = appError
             } else {
+                #if DEBUG
                 print("WCSession activated with state: \(activationState.rawValue)")
+                #endif
             }
             
             if self.isConnected {
@@ -93,24 +119,33 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     func sessionDidBecomeInactive(_ session: WCSession) {
         DispatchQueue.main.async {
             self.isConnected = false
+            self.lastError = .watchSessionInactive
+            
+            #if DEBUG
             print("WCSession became inactive")
+            #endif
         }
     }
     
     func sessionDidDeactivate(_ session: WCSession) {
         DispatchQueue.main.async {
             self.isConnected = false
+            
+            #if DEBUG
             print("WCSession deactivated")
+            #endif
         }
         
-        // Try to reactivate
         session.activate()
     }
     
     func sessionReachabilityDidChange(_ session: WCSession) {
         DispatchQueue.main.async {
             self.isConnected = session.isReachable
+            
+            #if DEBUG
             print("WCSession reachability changed: \(session.isReachable)")
+            #endif
             
             if self.isConnected {
                 self.syncChecklistToWatch()
@@ -120,25 +155,39 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     
     func switchToApp(index: Int) {
         guard WCSession.default.isReachable else {
+            lastError = .watchNotReachable
+            #if DEBUG
             print("Watch not reachable for switchToApp")
+            #endif
             return
         }
         
         let message = ["action": "switchToApp", "appIndex": index] as [String : Any]
         WCSession.default.sendMessage(message, replyHandler: nil) { error in
-            print("Error sending switchToApp message: \(error.localizedDescription)")
+            let appError = AppError.watchMessageFailed(underlying: error)
+            #if DEBUG
+            ErrorLogger.log(appError)
+            #endif
+            self.lastError = appError
         }
     }
     
     func returnToMainMenu() {
         guard WCSession.default.isReachable else {
+            lastError = .watchNotReachable
+            #if DEBUG
             print("Watch not reachable for returnToMainMenu")
+            #endif
             return
         }
         
         let message = ["action": "returnToMainMenu"]
         WCSession.default.sendMessage(message, replyHandler: nil) { error in
-            print("Error sending returnToMainMenu message: \(error.localizedDescription)")
+            let appError = AppError.watchMessageFailed(underlying: error)
+            #if DEBUG
+            ErrorLogger.log(appError)
+            #endif
+            self.lastError = appError
         }
     }
     
@@ -150,7 +199,10 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     
     func forceSyncToWatch() {
         guard WCSession.default.isReachable else {
+            lastError = .watchNotReachable
+            #if DEBUG
             print("Watch not reachable for force sync")
+            #endif
             return
         }
         syncChecklistToWatch()
@@ -158,7 +210,10 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     
     private func syncChecklistToWatch() {
         guard WCSession.default.isReachable else {
+            lastError = .watchNotReachable
+            #if DEBUG
             print("Watch not reachable for sync")
+            #endif
             return
         }
         
@@ -179,13 +234,17 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             }.filter { !$0.isEmpty })
             
             for item in galleryStorage.items {
-                if usedImageNames.contains(item.label) {
-                    let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-                        .appendingPathComponent(item.imagePath)
-                    if let data = try? Data(contentsOf: url) {
-                        imageData[item.label] = data.base64EncodedString()
-                    }
-                }
+                guard usedImageNames.contains(item.label) else { continue }
+                
+                let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+                guard let documentsURL = documentsURL else { continue }
+                
+                let url = documentsURL.appendingPathComponent(item.imagePath)
+                
+                guard FileManager.default.fileExists(atPath: url.path),
+                      let data = try? Data(contentsOf: url) else { continue }
+                
+                imageData[item.label] = data.base64EncodedString()
             }
             
             if !imageData.isEmpty {
@@ -193,42 +252,66 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
                 
                 do {
                     let jsonData = try JSONSerialization.data(withJSONObject: message, options: [])
-                    let sizeInKB = Double(jsonData.count) / 1024.0
-                    print("Payload size: \(String(format: "%.1f", sizeInKB)) KB")
+                    let sizeInKB = Double(jsonData.count) / AppConstants.Network.bytesToKBDivisor
                     
-                    if sizeInKB > 60 {
+                    #if DEBUG
+                    print("Payload size: \(String(format: "%.1f", sizeInKB)) KB")
+                    #endif
+                    
+                    if sizeInKB > AppConstants.Network.maxPayloadSizeKB {
+                        #if DEBUG
                         print("Payload too large, sending without images")
+                        #endif
                         message.removeValue(forKey: "imageData")
                     }
                 } catch {
-                    print("Error serializing message for size check: \(error.localizedDescription)")
+                    let appError = AppError.encodingFailed(type: "sync message", underlying: error)
+                    #if DEBUG
+                    ErrorLogger.log(appError)
+                    #endif
                     message.removeValue(forKey: "imageData")
                 }
             }
             
+            #if DEBUG
             print("Sending force sync with \(checklistData.checklists.count) checklists")
+            #endif
             
             WCSession.default.sendMessage(message, replyHandler: { response in
+                #if DEBUG
                 print("Checklist force sync successful: \(response)")
+                #endif
             }) { error in
-                print("Error force syncing checklist: \(error.localizedDescription)")
+                let appError = AppError.watchMessageFailed(underlying: error)
+                #if DEBUG
+                ErrorLogger.log(appError)
+                #endif
+                self.lastError = appError
             }
         } catch {
-            print("Error encoding checklist: \(error.localizedDescription)")
+            let appError = AppError.encodingFailed(type: "checklist", underlying: error)
+            #if DEBUG
+            ErrorLogger.log(appError)
+            #endif
+            lastError = appError
         }
     }
     
     private func saveChecklistData() {
         do {
             let data = try JSONEncoder().encode(checklistData)
-            UserDefaults.standard.set(data, forKey: "checklistData")
+            UserDefaults.standard.set(data, forKey: AppConstants.StorageKeys.checklistData)
         } catch {
-            print("Error saving checklist data: \(error.localizedDescription)")
+            let appError = AppError.encodingFailed(type: "checklist data", underlying: error)
+            #if DEBUG
+            ErrorLogger.log(appError)
+            #endif
+            lastError = appError
         }
     }
     
     private func loadChecklistData() {
-        guard let data = UserDefaults.standard.data(forKey: "checklistData") else {
+        guard let data = UserDefaults.standard.data(forKey: AppConstants.StorageKeys.checklistData) else {
             checklistData = ChecklistData.default
             saveChecklistData()
             return
@@ -237,7 +320,11 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
         do {
             checklistData = try JSONDecoder().decode(ChecklistData.self, from: data)
         } catch {
-            print("Error loading checklist data: \(error.localizedDescription)")
+            let appError = AppError.decodingFailed(type: "checklist data", underlying: error)
+            #if DEBUG
+            ErrorLogger.log(appError)
+            #endif
+            lastError = appError
             checklistData = ChecklistData.default
             saveChecklistData()
         }

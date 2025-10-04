@@ -1,11 +1,3 @@
-//
-//  ChecklistItemEditRow.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 28.09.2025.
-//
-
-
 import SwiftUI
 import PhotosUI
 

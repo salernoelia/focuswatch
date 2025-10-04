@@ -36,7 +36,10 @@ struct WizardView: View {
                             } icon: {
                                 Circle()
                                     .fill(app.color)
-                                    .frame(width: 12, height: 12)
+                                    .frame(
+                                        width: AppConstants.UI.cornerRadius, 
+                                        height: AppConstants.UI.cornerRadius
+                                    )
                             }
                         }
                         .disabled(!watchConnector.isConnected)
@@ -56,10 +59,13 @@ struct WizardView: View {
                     HStack {
                         Text("Watch Status")
                         Spacer()
-                        HStack(spacing: 8) {
+                        HStack(spacing: AppConstants.UI.statusIndicatorSize) {
                             Circle()
                                 .fill(watchConnector.isConnected ? .green : .red)
-                                .frame(width: 8, height: 8)
+                                .frame(
+                                    width: AppConstants.UI.statusIndicatorSize, 
+                                    height: AppConstants.UI.statusIndicatorSize
+                                )
                             Text(watchConnector.isConnected ? "Connected" : "Disconnected")
                                 .foregroundColor(watchConnector.isConnected ? .green : .red)
                         }
@@ -84,7 +90,7 @@ struct WizardView: View {
                             HStack {
                                 if isReconnecting {
                                     ProgressView()
-                                        .scaleEffect(0.8)
+                                        .scaleEffect(AppConstants.UI.progressScaleFactor)
                                 } else {
                                     Image(systemName: "arrow.clockwise")
                                 }
@@ -108,7 +114,7 @@ struct WizardView: View {
                     HStack {
                         if isSyncing {
                             ProgressView()
-                                .scaleEffect(0.8)
+                                .scaleEffect(AppConstants.UI.progressScaleFactor)
                         } else {
                             Image(systemName: "arrow.triangle.2.circlepath")
                                 .foregroundColor(.red)
@@ -142,10 +148,10 @@ struct WizardView: View {
     private func reconnectToWatch() {
         isReconnecting = true
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + AppConstants.Timing.shortDelay) {
             watchConnector.forceReconnect()
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + AppConstants.Timing.longDelay) {
                 isReconnecting = false
             }
         }
@@ -156,7 +162,7 @@ struct WizardView: View {
         
         watchConnector.resetWatchConnectivity()
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + AppConstants.Timing.reconnectionDelay) {
             isReconnecting = false
         }
     }
@@ -166,7 +172,7 @@ struct WizardView: View {
         
         watchConnector.updateChecklistData(checklistManager.data)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + AppConstants.Timing.longDelay) {
             isSyncing = false
         }
     }

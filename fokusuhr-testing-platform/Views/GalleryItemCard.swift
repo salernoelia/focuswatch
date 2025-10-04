@@ -1,11 +1,3 @@
-//
-//  GalleryItemCard.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 22.09.2025.
-//
-
-
 import SwiftUI
 import PhotosUI
 
