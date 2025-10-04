@@ -70,6 +70,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		0E195C0A2E917F6800DC7E4B /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
+			sourceTree = "<group>";
+		};
 		0E9D8CC12E0D6C23002B7989 /* fokusuhr-testing-platform */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -117,6 +122,7 @@
 		0E9D8CB62E0D6C22002B7989 = {
 			isa = PBXGroup;
 			children = (
+				0E195C0A2E917F6800DC7E4B /* Shared */,
 				0E195C072E917D2A00DC7E4B /* Example.xcconfig */,
 				0E195BFF2E917A2500DC7E4B /* Production.xcconfig */,
 				0E195C042E917BAF00DC7E4B /* Development.xcconfig */,
@@ -153,6 +159,7 @@
 				0E9D8CD22E0D6C24002B7989 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				0E195C0A2E917F6800DC7E4B /* Shared */,
 				0E9D8CC12E0D6C23002B7989 /* fokusuhr-testing-platform */,
 			);
 			name = "fokusuhr-testing-platform";
@@ -181,6 +188,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				0E195C0A2E917F6800DC7E4B /* Shared */,
 				0E9D8CD32E0D6C24002B7989 /* fokusuhr-testing-platform Watch App */,
 			);
 			name = "fokusuhr-testing-platform Watch App";

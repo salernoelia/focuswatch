@@ -20,41 +20,6 @@ struct WizardView: View {
     var body: some View {
         NavigationView {
             List {
-                // if authManager.isLoggedIn {
-                //     Section("Current Test User") {
-                //         if let selectedUser = testUsersManager.selectedUser {
-                //             HStack {
-                //                 VStack(alignment: .leading, spacing: 4) {
-                //                     Text(selectedUser.fullName)
-                //                         .font(.headline)
-                //                         .fontWeight(.medium)
-                //                     Text("Age: \(selectedUser.age)")
-                //                         .font(.subheadline)
-                //                         .foregroundColor(.secondary)
-                //                     if let supervisor = supervisorManager.currentSupervisor {
-                //                         Text("Supervisor: \(supervisor.fullName)")
-                //                             .font(.caption)
-                //                             .foregroundColor(.secondary)
-                //                     }
-                //                 }
-                //                 Spacer()
-                //                 NavigationLink("", destination: UserSelectionView())
-                //                     .font(.subheadline)
-                //             }
-                //             .padding(.vertical, 4)
-                //         } else {
-                //             HStack {
-                //                 Text("No user selected")
-                //                     .font(.subheadline)
-                //                     .foregroundColor(.red)
-                //                 Spacer()
-                //                 NavigationLink("Select User", destination: UserSelectionView())
-                //                     .font(.subheadline)
-                //             }
-                //             .padding(.vertical, 4)
-                //         }
-                //     }
-                // }
 
                 Section("Applications") {
                     ForEach(appsManager.apps, id: \.id) { app in
