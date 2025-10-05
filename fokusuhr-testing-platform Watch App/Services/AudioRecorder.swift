@@ -2,79 +2,44 @@ import Foundation
 import AVFoundation
 import Combine
 
-
 class AudioRecorder: NSObject, ObservableObject {
     @Published var isRecording = false
     @Published var errorMessage: String?
     @Published var isUploading = false
     @Published var uploadStatus: String?
     
-    var audioRecorder: AVAudioRecorder?
-    var audioPlayer: AVAudioPlayer?
-    var recordingURL: URL?
+    private var audioRecorder: AVAudioRecorder?
+    private var audioPlayer: AVAudioPlayer?
+    private var recordingURL: URL?
     
-    // TODO: Configure server URL after setup of anne endpoint
-    private var serverURL: String {
-        return "http://192.168.1.137:8080/upload" // dead fallback
-    }
+    private let serverURL = "http://192.168.1.137:8080/upload"
     
     func startRecording() {
-        if #available(watchOS 10.0, *) {
-            AVAudioApplication.requestRecordPermission { [weak self] granted in
-                guard let self = self else { return }
-                
-                if granted {
-                    DispatchQueue.main.async {
-                        self.setupRecordingSession()
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        self.errorMessage = AppError.microphoneAccessDenied.errorDescription
-                    }
-                }
+        Task {
+            let granted: Bool
+            if #available(watchOS 10.0, *) {
+                granted = await PermissionManager.requestAudioPermission()
+            } else {
+                granted = await PermissionManager.requestAudioPermissionLegacy()
             }
-        } else {
-            AVAudioSession.sharedInstance().requestRecordPermission { [weak self] granted in
-                guard let self = self else { return }
-                
+            
+            await MainActor.run {
                 if granted {
-                    DispatchQueue.main.async {
-                        self.setupRecordingSession()
-                    }
+                    setupRecordingSession()
                 } else {
-                    DispatchQueue.main.async {
-                        self.errorMessage = AppError.microphoneAccessDenied.errorDescription
-                    }
+                    errorMessage = AppError.microphoneAccessDenied.errorDescription
                 }
             }
         }
     }
     
     private func setupRecordingSession() {
-        let session = AVAudioSession.sharedInstance()
-        
         do {
-            try session.setCategory(.playAndRecord, mode: .default)
-            try session.setActive(true, options: .notifyOthersOnDeactivation)
+            try AudioSessionManager.setupRecordingSession()
+            let fileURL = try FileManager.default.recordingFileURL()
+            try FileManager.default.removeFileIfExists(at: fileURL)
             
-            guard let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-                errorMessage = AppError.fileNotFound(path: "documents directory").errorDescription
-                return
-            }
-            
-            let fileURL = documentsURL.appendingPathComponent(AppConstants.Audio.recordingFileName)
-            
-            if FileManager.default.fileExists(atPath: fileURL.path) {
-                try FileManager.default.removeItem(at: fileURL)
-            }
-            
-            let settings: [String: Any] = [
-                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                AVSampleRateKey: AppConstants.Audio.sampleRate,
-                AVNumberOfChannelsKey: AppConstants.Audio.numberOfChannels,
-                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-            ]
-            
+            let settings = AudioSessionManager.createRecordingSettings()
             audioRecorder = try AVAudioRecorder(url: fileURL, settings: settings)
             audioRecorder?.delegate = self
             audioRecorder?.prepareToRecord()
@@ -88,6 +53,11 @@ class AudioRecorder: NSObject, ObservableObject {
             isRecording = true
             errorMessage = nil
             uploadStatus = nil
+        } catch let error as AppError {
+            errorMessage = error.errorDescription
+            #if DEBUG
+            ErrorLogger.log(error)
+            #endif
         } catch {
             let appError = AppError.audioSessionError(underlying: error)
             errorMessage = appError.errorDescription
@@ -102,7 +72,7 @@ class AudioRecorder: NSObject, ObservableObject {
         isRecording = false
         
         do {
-            try AVAudioSession.sharedInstance().setActive(false)
+            try AudioSessionManager.deactivateSession()
         } catch {
             let appError = AppError.audioSessionError(underlying: error)
             #if DEBUG
@@ -117,12 +87,8 @@ class AudioRecorder: NSObject, ObservableObject {
             return
         }
         
-        let session = AVAudioSession.sharedInstance()
-        
         do {
-            try session.setCategory(.playback, mode: .default)
-            try session.setActive(true)
-            
+            try AudioSessionManager.setupPlaybackSession()
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer?.delegate = self
             
@@ -157,86 +123,66 @@ class AudioRecorder: NSObject, ObservableObject {
             return
         }
         
-        isUploading = true
-        uploadStatus = "Uploading..."
+        Task {
+            await performUpload(from: url)
+        }
+    }
+    
+    private func performUpload(from url: URL) async {
+        await MainActor.run {
+            isUploading = true
+            uploadStatus = "Uploading..."
+        }
         
-        #if DEBUG
-        print("Attempting to upload recording from URL: \(url)")
-        #endif
-
         do {
             let audioData = try Data(contentsOf: url)
             
-            #if DEBUG
-            print("Audio data read successfully. Size: \(audioData.count) bytes")
-            #endif
-
             guard let uploadURL = URL(string: serverURL) else {
-                let appError = AppError.invalidData(reason: "Invalid server URL: \(serverURL)")
-                errorMessage = appError.errorDescription
-                #if DEBUG
-                ErrorLogger.log(appError)
-                #endif
-                isUploading = false
-                return
+                throw AppError.invalidData(reason: "Invalid server URL")
             }
             
             var request = URLRequest(url: uploadURL)
             request.httpMethod = "POST"
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
+            
             let filename = "watch_recording_\(Date().timeIntervalSince1970).m4a"
             let payload: [String: Any] = [
                 "filename": filename,
                 "audioData": audioData.base64EncodedString()
             ]
             
-            let jsonData = try JSONSerialization.data(withJSONObject: payload)
-            request.httpBody = jsonData
+            request.httpBody = try JSONSerialization.data(withJSONObject: payload)
             
-            let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-                DispatchQueue.main.async {
-                    self?.isUploading = false
-
-                    if let error = error {
-                        let appError = AppError.serverError(underlying: error)
-                        self?.uploadStatus = appError.errorDescription
-                        #if DEBUG
-                        ErrorLogger.log(appError)
-                        #endif
-                        return
-                    }
-
-                    guard let httpResponse = response as? HTTPURLResponse else {
-                        let appError = AppError.invalidResponse
-                        self?.uploadStatus = appError.errorDescription
-                        #if DEBUG
-                        ErrorLogger.log(appError)
-                        #endif
-                        return
-                    }
-
-                    if (200...299).contains(httpResponse.statusCode) {
-                        self?.uploadStatus = "Upload successful!"
-                        #if DEBUG
-                        print("Upload successful! HTTP Status: \(httpResponse.statusCode)")
-                        #endif
-                    } else {
-                        let responseData = data.flatMap { String(data: $0, encoding: .utf8) } ?? "No data"
-                        let appError = AppError.requestFailed(statusCode: httpResponse.statusCode, message: responseData)
-                        self?.uploadStatus = appError.errorDescription
-                        #if DEBUG
-                        ErrorLogger.log(appError)
-                        #endif
-                    }
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw AppError.invalidResponse
+            }
+            
+            await MainActor.run {
+                isUploading = false
+                
+                if (200...299).contains(httpResponse.statusCode) {
+                    uploadStatus = "Upload successful!"
+                } else {
+                    let responseMessage = String(data: data, encoding: .utf8) ?? "No data"
+                    uploadStatus = AppError.requestFailed(statusCode: httpResponse.statusCode, message: responseMessage).errorDescription
                 }
             }
-            task.resume()
-
+        } catch let error as AppError {
+            await MainActor.run {
+                isUploading = false
+                uploadStatus = error.errorDescription
+            }
+            #if DEBUG
+            ErrorLogger.log(error)
+            #endif
         } catch {
-            isUploading = false
             let appError = AppError.fileOperationFailed(operation: "upload recording", underlying: error)
-            uploadStatus = appError.errorDescription
+            await MainActor.run {
+                isUploading = false
+                uploadStatus = appError.errorDescription
+            }
             #if DEBUG
             ErrorLogger.log(appError)
             #endif

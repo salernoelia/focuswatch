@@ -144,23 +144,18 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
         isProcessing = false
     }
     
-   private func loadImage(named imageName: String) -> UIImage? {
-
-    let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-    let imageURL = documentsPath.appendingPathComponent("\(imageName).jpg")
-    
-    if let data = try? Data(contentsOf: imageURL) {
-        return UIImage(data: data)
-    }
-    
-    if let contents = try? FileManager.default.contentsOfDirectory(at: documentsPath, includingPropertiesForKeys: nil) {
-        print("Files in documents directory:")
-        for url in contents {
-            print("- \(url.lastPathComponent)")
+    private func loadImage(named imageName: String) -> UIImage? {
+        guard !imageName.isEmpty else { return nil }
+        
+        do {
+            let imageURL = try FileManager.default.imageURL(for: imageName)
+            let data = try Data(contentsOf: imageURL)
+            return UIImage(data: data)
+        } catch {
+            #if DEBUG
+            ErrorLogger.log(AppError.fileNotFound(path: imageName))
+            #endif
+            return nil
         }
-        print("Looking for: \(imageName).jpg")
     }
-    
-    return nil
-}
 }

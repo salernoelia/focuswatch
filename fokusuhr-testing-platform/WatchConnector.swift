@@ -1,193 +1,41 @@
 import Foundation
 import WatchConnectivity
 
-class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
+class WatchConnector: NSObject, ObservableObject {
     @Published var isConnected = false
     @Published var checklistData = ChecklistData.default
     @Published var lastError: AppError?
     
+    private let connectivityManager = WatchConnectivityManager()
+    
     override init() {
         super.init()
         loadChecklistData()
-        setupWatchConnectivity()
-    }
-    
-    private func setupWatchConnectivity() {
-        guard WCSession.isSupported() else {
-            lastError = .watchNotSupported
-            #if DEBUG
-            ErrorLogger.log(.watchNotSupported)
-            #endif
-            return
-        }
-        
-        WCSession.default.delegate = self
-        WCSession.default.activate()
+        connectivityManager.delegate = self
     }
     
     func forceReconnect() {
-        guard WCSession.isSupported() else { return }
-        
-
-        if WCSession.default.activationState != .activated {
-            WCSession.default.activate()
-        }
-        
-
-        DispatchQueue.main.async {
-            self.isConnected = WCSession.default.activationState == .activated && WCSession.default.isReachable
-            
-            if self.isConnected {
-                self.syncChecklistToWatch()
-
-                self.sendWakeUpMessage()
-            }
+        connectivityManager.forceReconnect()
+        if isConnected {
+            syncChecklistToWatch()
         }
     }
     
     func resetWatchConnectivity() {
-        guard WCSession.isSupported() else { return }
-        
-        #if DEBUG
-        print("Resetting Watch Connectivity...")
-        #endif
-        
-        if WCSession.default.activationState == .activated {
-            WCSession.default.delegate = nil
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + AppConstants.Timing.mediumDelay) {
-            WCSession.default.delegate = self
-            WCSession.default.activate()
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + AppConstants.Timing.longDelay) {
-                self.isConnected = WCSession.default.activationState == .activated && WCSession.default.isReachable
-                
-                #if DEBUG
-                print("Reset complete - Connected: \(self.isConnected)")
-                print("Activation State: \(WCSession.default.activationState.rawValue)")
-                print("Is Reachable: \(WCSession.default.isReachable)")
-                print("Is Paired: \(WCSession.default.isPaired)")
-                print("Is Watch App Installed: \(WCSession.default.isWatchAppInstalled)")
-                #endif
-            }
-        }
-    }
-    
-    private func sendWakeUpMessage() {
-        guard WCSession.default.isReachable else { 
-            lastError = .watchNotReachable
-            return 
-        }
-        
-        let message = ["action": "wakeUp"]
-        WCSession.default.sendMessage(message, replyHandler: { _ in
-            #if DEBUG
-            print("Wake up message sent successfully")
-            #endif
-        }) { error in
-            let appError = AppError.watchMessageFailed(underlying: error)
-            #if DEBUG
-            ErrorLogger.log(appError)
-            #endif
-            self.lastError = appError
-        }
-    }
-    
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-        DispatchQueue.main.async {
-            self.isConnected = activationState == .activated && session.isReachable
-            
-            if let error = error {
-                let appError = AppError.watchMessageFailed(underlying: error)
-                #if DEBUG
-                ErrorLogger.log(appError)
-                #endif
-                self.lastError = appError
-            } else {
-                #if DEBUG
-                print("WCSession activated with state: \(activationState.rawValue)")
-                #endif
-            }
-            
-            if self.isConnected {
-                self.syncChecklistToWatch()
-            }
-        }
-    }
-    
-    func sessionDidBecomeInactive(_ session: WCSession) {
-        DispatchQueue.main.async {
-            self.isConnected = false
-            self.lastError = .watchSessionInactive
-            
-            #if DEBUG
-            print("WCSession became inactive")
-            #endif
-        }
-    }
-    
-    func sessionDidDeactivate(_ session: WCSession) {
-        DispatchQueue.main.async {
-            self.isConnected = false
-            
-            #if DEBUG
-            print("WCSession deactivated")
-            #endif
-        }
-        
-        session.activate()
-    }
-    
-    func sessionReachabilityDidChange(_ session: WCSession) {
-        DispatchQueue.main.async {
-            self.isConnected = session.isReachable
-            
-            #if DEBUG
-            print("WCSession reachability changed: \(session.isReachable)")
-            #endif
-            
-            if self.isConnected {
-                self.syncChecklistToWatch()
-            }
-        }
+        connectivityManager.resetSession()
     }
     
     func switchToApp(index: Int) {
-        guard WCSession.default.isReachable else {
-            lastError = .watchNotReachable
-            #if DEBUG
-            print("Watch not reachable for switchToApp")
-            #endif
-            return
-        }
-        
         let message = ["action": "switchToApp", "appIndex": index] as [String : Any]
-        WCSession.default.sendMessage(message, replyHandler: nil) { error in
-            let appError = AppError.watchMessageFailed(underlying: error)
-            #if DEBUG
-            ErrorLogger.log(appError)
-            #endif
-            self.lastError = appError
+        connectivityManager.sendMessage(message) { [weak self] error in
+            self?.lastError = error
         }
     }
     
     func returnToMainMenu() {
-        guard WCSession.default.isReachable else {
-            lastError = .watchNotReachable
-            #if DEBUG
-            print("Watch not reachable for returnToMainMenu")
-            #endif
-            return
-        }
-        
         let message = ["action": "returnToMainMenu"]
-        WCSession.default.sendMessage(message, replyHandler: nil) { error in
-            let appError = AppError.watchMessageFailed(underlying: error)
-            #if DEBUG
-            ErrorLogger.log(appError)
-            #endif
-            self.lastError = appError
+        connectivityManager.sendMessage(message) { [weak self] error in
+            self?.lastError = error
         }
     }
     
@@ -198,25 +46,10 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     }
     
     func forceSyncToWatch() {
-        guard WCSession.default.isReachable else {
-            lastError = .watchNotReachable
-            #if DEBUG
-            print("Watch not reachable for force sync")
-            #endif
-            return
-        }
         syncChecklistToWatch()
     }
     
     private func syncChecklistToWatch() {
-        guard WCSession.default.isReachable else {
-            lastError = .watchNotReachable
-            #if DEBUG
-            print("Watch not reachable for sync")
-            #endif
-            return
-        }
-        
         do {
             let data = try JSONEncoder().encode(checklistData)
             var message: [String: Any] = [
@@ -277,16 +110,12 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             print("Sending force sync with \(checklistData.checklists.count) checklists")
             #endif
             
-            WCSession.default.sendMessage(message, replyHandler: { response in
+            connectivityManager.sendMessageWithReply(message, replyHandler: { response in
                 #if DEBUG
                 print("Checklist force sync successful: \(response)")
                 #endif
-            }) { error in
-                let appError = AppError.watchMessageFailed(underlying: error)
-                #if DEBUG
-                ErrorLogger.log(appError)
-                #endif
-                self.lastError = appError
+            }) { [weak self] error in
+                self?.lastError = error
             }
         } catch {
             let appError = AppError.encodingFailed(type: "checklist", underlying: error)
@@ -328,5 +157,18 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             checklistData = ChecklistData.default
             saveChecklistData()
         }
+    }
+}
+
+extension WatchConnector: WatchConnectivityDelegate {
+    func didUpdateConnectionState(_ isConnected: Bool) {
+        self.isConnected = isConnected
+        if isConnected {
+            syncChecklistToWatch()
+        }
+    }
+    
+    func didEncounterError(_ error: AppError) {
+        lastError = error
     }
 }
