@@ -10,6 +10,7 @@ struct AnneView: View {
     private let frameDuration: TimeInterval = 0.2
     
     private let appLogger = AppLogger.shared
+    private let telemetryManager = TelemetryManager.shared
 
     var body: some View {
         VStack(spacing: 12) {
@@ -20,11 +21,15 @@ struct AnneView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }
+            
 
             Button(recorder.isRecording ? "Stop" : "Sprich zu Anne") {
-                Task {
-                    await appLogger.logSimpleEvent(appName: "anne", eventType: "voice_recording_triggered")
+                if telemetryManager.hasConsent {
+                    Task {
+                        await appLogger.logSimpleEvent(appName: "anne", eventType: "voice_recording_triggered")
+                    }
                 }
+              
                 
                 if recorder.isRecording {
                     recorder.uploadRecording()

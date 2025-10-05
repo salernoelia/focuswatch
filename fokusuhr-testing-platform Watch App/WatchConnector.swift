@@ -123,6 +123,27 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
                 switch action {
                 case "wakeUp":
                     self.currentView = .mainMenu
+                case "updateTelemetry":
+                    if let hasConsent = applicationContext["hasConsent"] as? Bool {
+                        TelemetryManager.shared.hasConsent = hasConsent
+                        print("Telemetry consent updated via background transfer: \(hasConsent)")
+                    }
+                default:
+                    break
+                }
+            }
+        }
+    }
+    
+    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
+        DispatchQueue.main.async {
+            if let action = userInfo["action"] as? String {
+                switch action {
+                case "updateTelemetry":
+                    if let hasConsent = userInfo["hasConsent"] as? Bool {
+                        TelemetryManager.shared.hasConsent = hasConsent
+                        print("Telemetry consent updated via background transfer: \(hasConsent)")
+                    }
                 default:
                     break
                 }

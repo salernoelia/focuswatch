@@ -357,16 +357,22 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     }
     
     private func syncTelemetryToWatch() {
-        guard WCSession.default.isReachable else { return }
-        
-        let message: [String: Any] = [
+        let userInfo: [String: A    ny] = [
             "action": "updateTelemetry",
             "hasConsent": TelemetryManager.shared.hasConsent
         ]
         
-        WCSession.default.sendMessage(message, replyHandler: nil) { error in
+        if WCSession.default.isReachable {
+            WCSession.default.sendMessage(userInfo, replyHandler: nil) { error in
+                #if DEBUG
+                print("Failed to sync telemetry to watch: \(error.localizedDescription)")
+                #endif
+                WCSession.default.transferUserInfo(userInfo)
+            }
+        } else {
+            WCSession.default.transferUserInfo(userInfo)
             #if DEBUG
-            print("Failed to sync telemetry to watch: \(error.localizedDescription)")
+            print("Watch not reachable, queued telemetry sync for background transfer")
             #endif
         }
     }

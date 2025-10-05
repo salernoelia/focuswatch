@@ -18,6 +18,7 @@ struct WatchView: View {
     @State private var currentView: WatchViewState = .mainMenu
     @State private var selectedAppIndex: Int? = nil
     
+    
     private var prototypeApps: [PrototypeApp] {
         var apps: [PrototypeApp] = []
         

@@ -197,6 +197,9 @@
     "Grid Size" : {
 
     },
+    "Has consent:" : {
+
+    },
     "History" : {
 
     },
@@ -261,6 +264,9 @@
 
     },
     "New Photo:" : {
+
+    },
+    "No" : {
 
     },
     "No Entries" : {
@@ -414,6 +420,9 @@
 
     },
     "Wizard of Oz" : {
+
+    },
+    "Yes" : {
 
     },
     "Your Entry (Supervisor)" : {
