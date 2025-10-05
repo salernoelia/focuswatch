@@ -17,6 +17,7 @@ struct WatchView: View {
     @EnvironmentObject var watchConnector: WatchConnector
     @State private var currentView: WatchViewState = .mainMenu
     @State private var selectedAppIndex: Int? = nil
+    private var checklistManager = ChecklistManager.shared
 
     private var prototypeApps: [PrototypeApp] {
         var apps: [PrototypeApp] = []
@@ -49,7 +50,7 @@ struct WatchView: View {
 
         ])
 
-        for checklist in watchConnector.checklistData.checklists {
+        for checklist in checklistManager.checklistData.checklists {
             apps.append(
                 PrototypeApp(
                     title: checklist.name,
