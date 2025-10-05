@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CalendarEventRowView: View {
-    let event: Event
+    let event: CalendarEventModel
     
     private var typeColor: Color {
         switch event.type {

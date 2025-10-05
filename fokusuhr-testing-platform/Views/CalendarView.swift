@@ -1,13 +1,13 @@
 import SwiftUI
 
 struct CalendarView: View {
-    @StateObject private var vm = CalendarViewModel()
+    @EnvironmentObject private var vm: CalendarViewModel
     @State private var showingForm = false
     @State private var selectedDate: Date = Date()
-    @State private var editingEvent: Event?
+    @State private var editingEvent: CalendarEventModel?
     @State private var isCalendarCollapsed = false
 
-    private var eventsForSelectedDate: [Event] {
+    private var eventsForSelectedDate: [CalendarEventModel] {
         vm.events(on: selectedDate)
           .sorted { $0.startTime < $1.startTime }
     }

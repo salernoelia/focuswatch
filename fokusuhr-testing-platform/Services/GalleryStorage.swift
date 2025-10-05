@@ -1,13 +1,31 @@
 import SwiftUI
 import PhotosUI
+import SwiftData
 
+@MainActor
 class GalleryStorage: ObservableObject {
-    @Published var items: [GalleryItem] = []
+    private let modelContext: ModelContext
     
-    static let shared = GalleryStorage()
+    @Published var items: [GalleryItemModel] = []
     
-    private init() {
-        loadItems()
+    init(modelContext: ModelContext) {
+        self.modelContext = modelContext
+        fetchItems()
+    }
+    
+    private func fetchItems() {
+        let descriptor = FetchDescriptor<GalleryItemModel>(
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        
+        do {
+            items = try modelContext.fetch(descriptor)
+        } catch {
+            #if DEBUG
+            ErrorLogger.log(.databaseQueryFailed(operation: "fetch gallery items", underlying: error))
+            #endif
+            items = []
+        }
     }
     
     func addItem(image: UIImage, label: String) {
@@ -33,9 +51,9 @@ class GalleryStorage: ObservableObject {
         
         do {
             try data.write(to: url)
-            let item = GalleryItem(imagePath: imageName, label: label)
-            items.append(item)
-            saveItems()
+            let item = GalleryItemModel(imagePath: imageName, label: label)
+            modelContext.insert(item)
+            saveChanges()
         } catch {
             #if DEBUG
             ErrorLogger.log(.fileOperationFailed(operation: "save image", underlying: error))
@@ -43,7 +61,7 @@ class GalleryStorage: ObservableObject {
         }
     }
     
-    func deleteItem(_ item: GalleryItem) {
+    func deleteItem(_ item: GalleryItemModel) {
         guard let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             #if DEBUG
             ErrorLogger.log(.fileNotFound(path: "documents directory"))
@@ -63,8 +81,8 @@ class GalleryStorage: ObservableObject {
             }
         }
         
-        items.removeAll { $0.id == item.id }
-        saveItems()
+        modelContext.delete(item)
+        saveChanges()
     }
     
     func deleteItems(at offsets: IndexSet) {
@@ -88,10 +106,10 @@ class GalleryStorage: ObservableObject {
                     #endif
                 }
             }
+            modelContext.delete(item)
         }
         
-        items.remove(atOffsets: offsets)
-        saveItems()
+        saveChanges()
     }
     
     private func resizeImage(_ image: UIImage, targetSize: CGSize) -> UIImage {
@@ -101,8 +119,8 @@ class GalleryStorage: ObservableObject {
         let heightRatio = targetSize.height / size.height
         
         let newSize = widthRatio > heightRatio ?
-            CGSize(width: size.width * heightRatio, height: size.height * heightRatio) :
-            CGSize(width: size.width * widthRatio, height: size.height * widthRatio)
+            CGSize(width: size.width * heightRatio, height: targetSize.height) :
+            CGSize(width: targetSize.width, height: size.height * widthRatio)
         
         let rect = CGRect(origin: .zero, size: newSize)
         
@@ -114,33 +132,19 @@ class GalleryStorage: ObservableObject {
         return newImage ?? image
     }
     
-    private func saveItems() {
+    private func saveChanges() {
         do {
-            let data = try JSONEncoder().encode(items)
-            UserDefaults.standard.set(data, forKey: "galleryItems")
+            try modelContext.save()
+            fetchItems()
         } catch {
             #if DEBUG
-            ErrorLogger.log(.encodingFailed(type: "gallery items", underlying: error))
-            #endif
-        }
-    }
-    
-    private func loadItems() {
-        guard let data = UserDefaults.standard.data(forKey: "galleryItems") else { return }
-        
-        do {
-            items = try JSONDecoder().decode([GalleryItem].self, from: data)
-        } catch {
-            #if DEBUG
-            ErrorLogger.log(.decodingFailed(type: "gallery items", underlying: error))
+            ErrorLogger.log(.databaseQueryFailed(operation: "save gallery", underlying: error))
             #endif
         }
     }
 
-    func updateItemLabel(_ item: GalleryItem, newLabel: String) {
-    if let index = items.firstIndex(where: { $0.id == item.id }) {
-        items[index].label = newLabel
-        saveItems()
+    func updateItemLabel(_ item: GalleryItemModel, newLabel: String) {
+        item.label = newLabel
+        saveChanges()
     }
-}
 }

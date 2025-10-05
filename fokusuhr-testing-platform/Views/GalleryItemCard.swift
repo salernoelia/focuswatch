@@ -2,7 +2,7 @@ import SwiftUI
 import PhotosUI
 
 struct GalleryItemCard: View {
-    let item: GalleryItem
+    let item: GalleryItemModel
     let size: CGFloat
     @State private var showingDeleteAlert = false
     @State private var showingEditSheet = false

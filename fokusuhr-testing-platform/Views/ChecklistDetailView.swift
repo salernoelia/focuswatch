@@ -2,7 +2,7 @@ import SwiftUI
 import PhotosUI
 
 struct ChecklistDetailView: View {
-    @State var checklist: Checklist
+    @Bindable var checklist: ChecklistModel
     @ObservedObject var checklistManager: ChecklistManager
     @ObservedObject var galleryStorage: GalleryStorage
     @State private var showingAddItem = false
@@ -18,7 +18,7 @@ struct ChecklistDetailView: View {
             
             Section("Items") {
                 ForEach(checklist.items) { item in
-                    ChecklistItemEditRow(item: item, checklist: $checklist, checklistManager: checklistManager, galleryStorage: galleryStorage)
+                    ChecklistItemEditRow(item: item, checklist: checklist, checklistManager: checklistManager, galleryStorage: galleryStorage)
                 }
                 .onDelete(perform: deleteItems)
                 
@@ -30,15 +30,14 @@ struct ChecklistDetailView: View {
         .navigationTitle(checklist.name)    
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showingAddItem) {
-            ChecklistAddItemView(checklist: $checklist, checklistManager: checklistManager, galleryStorage: galleryStorage)
+            ChecklistAddItemView(checklist: checklist, checklistManager: checklistManager, galleryStorage: galleryStorage)
         }
     }
     
     private func deleteItems(offsets: IndexSet) {
         for index in offsets {
             let item = checklist.items[index]
-            checklistManager.deleteItem(from: checklist, item: item)
-            checklist.items.remove(at: index)
+            checklistManager.deleteItem(item)
         }
     }
 }

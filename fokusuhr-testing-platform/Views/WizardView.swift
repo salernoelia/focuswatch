@@ -1,8 +1,11 @@
 import SwiftUI
 import WatchConnectivity
+import SwiftData
 
 struct WizardView: View {
     @EnvironmentObject private var watchConnector: WatchConnector
+    @Environment(\.modelContext) private var modelContext
+    
     @StateObject private var checklistManager: ChecklistManager
     @StateObject private var testUsersManager = TestUsersManager.shared
     @StateObject private var supervisorManager = SupervisorManager.shared
@@ -13,8 +16,9 @@ struct WizardView: View {
     @State private var isSyncing = false
     
     init() {
-        let tempConnector = WatchConnector()
-        self._checklistManager = StateObject(wrappedValue: ChecklistManager(watchConnector: tempConnector))
+        let context = ModelContainerProvider.shared.container.mainContext
+        let connector = WatchConnector()
+        self._checklistManager = StateObject(wrappedValue: ChecklistManager(modelContext: context, watchConnector: connector))
     }
     
     var body: some View {
@@ -170,14 +174,10 @@ struct WizardView: View {
     private func forceSyncToWatch() {
         isSyncing = true
         
-        watchConnector.updateChecklistData(checklistManager.data)
+        watchConnector.forceSyncToWatch()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + AppConstants.Timing.longDelay) {
             isSyncing = false
         }
     }
-}
-
-#Preview {
-    WizardView()
 }

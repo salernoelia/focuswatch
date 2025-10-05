@@ -1,11 +1,13 @@
-import SwiftUI
+import Foundation
 import SwiftData
 
-@main
-struct CompanionApp: App {
-    @StateObject private var watchConnector = WatchConnector()
+@MainActor
+class ModelContainerProvider {
+    static let shared = ModelContainerProvider()
     
-    let modelContainer: ModelContainer = {
+    let container: ModelContainer
+    
+    private init() {
         let schema = Schema([
             ChecklistModel.self,
             ChecklistItemModel.self,
@@ -19,19 +21,9 @@ struct CompanionApp: App {
         )
         
         do {
-            return try ModelContainer(for: schema, configurations: [configuration])
+            container = try ModelContainer(for: schema, configurations: [configuration])
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
-    }()
-    
-    var body: some Scene {
-        WindowGroup {
-           CompanionView()
-                .environment(watchConnector)
-        }
-        .modelContainer(modelContainer)
     }
 }
-
-

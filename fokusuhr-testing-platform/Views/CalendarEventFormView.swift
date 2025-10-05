@@ -3,7 +3,7 @@ import SwiftUI
 struct CalendarEventFormView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var vm: CalendarViewModel
-    private let editingEvent: Event?
+    private let editingEvent: CalendarEventModel?
     private let defaultDate: Date?
 
     @State private var title = ""
@@ -14,7 +14,7 @@ struct CalendarEventFormView: View {
     @State private var customWeekdays: [Int] = []
     @State private var type: ActivityType = .homework
 
-    init(vm: CalendarViewModel, defaultDate: Date? = nil, editingEvent: Event? = nil) {
+    init(vm: CalendarViewModel, defaultDate: Date? = nil, editingEvent: CalendarEventModel? = nil) {
         self.vm = vm
         self.defaultDate = defaultDate
         self.editingEvent = editingEvent
@@ -95,7 +95,7 @@ struct CalendarEventFormView: View {
                                 type: type
                             )
                         } else {
-                            let ev = Event(
+                            vm.add(
                                 title: title,
                                 date: date,
                                 startTime: combinedStartTime,
@@ -104,7 +104,6 @@ struct CalendarEventFormView: View {
                                 customWeekdays: customWeekdays,
                                 type: type
                             )
-                            vm.add(ev)
                         }
                         dismiss()
                     }

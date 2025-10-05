@@ -3,13 +3,13 @@ import PhotosUI
 
 struct ChecklistEditorView: View {
     @ObservedObject var checklistManager: ChecklistManager
-    @StateObject private var galleryStorage = GalleryStorage.shared
+    @EnvironmentObject private var galleryStorage: GalleryStorage
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         NavigationView {
             List {
-                ForEach(checklistManager.data.checklists) { checklist in
+                ForEach(checklistManager.checklists) { checklist in
                     NavigationLink(destination: ChecklistDetailView(checklist: checklist, checklistManager: checklistManager, galleryStorage: galleryStorage)) {
                         Text(checklist.name)
                     }   
@@ -29,7 +29,7 @@ struct ChecklistEditorView: View {
     
     private func deleteChecklists(offsets: IndexSet) {
         for index in offsets {
-            checklistManager.deleteChecklist(checklistManager.data.checklists[index])
+            checklistManager.deleteChecklist(checklistManager.checklists[index])
         }
     }
 }

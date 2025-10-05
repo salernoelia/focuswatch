@@ -2,7 +2,7 @@ import SwiftUI
 import PhotosUI
 
 struct GalleryView: View {
-    @StateObject private var galleryStorage = GalleryStorage.shared
+    @EnvironmentObject private var galleryStorage: GalleryStorage
     @State private var showingPhotoPicker = false
     @State private var showingCameraPicker = false
     @State private var showingActionSheet = false
@@ -37,7 +37,7 @@ struct GalleryView: View {
         }
     }
     
-    private var filteredItems: [GalleryItem] {
+    private var filteredItems: [GalleryItemModel] {
         if searchText.isEmpty {
             return galleryStorage.items
         }

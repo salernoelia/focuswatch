@@ -3,7 +3,7 @@ import WatchConnectivity
 
 class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     @Published var currentView: WatchViewState = .mainMenu
-    @Published var checklistData = ChecklistData.default
+    @Published var checklistData = ChecklistData(checklists: [])
     
     override init() {
         super.init()
@@ -159,7 +159,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             checklistData = try JSONDecoder().decode(ChecklistData.self, from: data)
         } catch {
             print("Error loading checklist data: \(error.localizedDescription)")
-            checklistData = ChecklistData.default
+            checklistData = ChecklistData(checklists: [])
             saveChecklistData()
         }
     }

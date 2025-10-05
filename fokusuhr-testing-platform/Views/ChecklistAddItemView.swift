@@ -2,7 +2,7 @@ import SwiftUI
 import PhotosUI
 
 struct ChecklistAddItemView: View {
-    @Binding var checklist: Checklist
+    let checklist: ChecklistModel
     @ObservedObject var checklistManager: ChecklistManager
     @ObservedObject var galleryStorage: GalleryStorage
     @State private var title = ""
@@ -89,9 +89,6 @@ struct ChecklistAddItemView: View {
                         to: checklist,
                         title: finalTitle,
                         imageName: finalImageName
-                    )
-                    checklist.items.append(
-                        ChecklistItem(title: finalTitle, imageName: finalImageName)
                     )
                     presentationMode.wrappedValue.dismiss()
                 }

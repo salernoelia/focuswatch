@@ -3,7 +3,7 @@ import WatchConnectivity
 
 class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     @Published var isConnected = false
-    @Published var checklistData = ChecklistData.default
+    @Published var checklistData = ChecklistData(checklists: [])
     @Published var lastError: AppError?
     
     override init() {
@@ -312,7 +312,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     
     private func loadChecklistData() {
         guard let data = UserDefaults.standard.data(forKey: AppConstants.StorageKeys.checklistData) else {
-            checklistData = ChecklistData.default
+            checklistData = ChecklistData(checklists: [])
             saveChecklistData()
             return
         }
@@ -325,7 +325,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             ErrorLogger.log(appError)
             #endif
             lastError = appError
-            checklistData = ChecklistData.default
+            checklistData = ChecklistData(checklists: [])
             saveChecklistData()
         }
     }

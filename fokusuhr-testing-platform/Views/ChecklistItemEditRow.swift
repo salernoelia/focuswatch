@@ -2,8 +2,8 @@ import SwiftUI
 import PhotosUI
 
 struct ChecklistItemEditRow: View {
-    @State var item: ChecklistItem
-    @Binding var checklist: Checklist
+    @Bindable var item: ChecklistItemModel
+    let checklist: ChecklistModel
     @ObservedObject var checklistManager: ChecklistManager
     @ObservedObject var galleryStorage: GalleryStorage
     
@@ -12,19 +12,19 @@ struct ChecklistItemEditRow: View {
             VStack(alignment: .leading) {
                 TextField("Item title", text: $item.title)
                     .onSubmit {
-                        updateItem()
+                        checklistManager.updateChecklist(checklist)
                     }
                 
                 Menu("Image: \(item.imageName.isEmpty ? "None" : item.imageName)") {
                     Button("None") {
                         item.imageName = ""
-                        updateItem()
+                        checklistManager.updateChecklist(checklist)
                     }
                     
                     ForEach(availableImages, id: \.self) { imageName in
                         Button(imageName) {
                             item.imageName = imageName
-                            updateItem()
+                            checklistManager.updateChecklist(checklist)
                         }
                     }
                 }
@@ -53,12 +53,5 @@ struct ChecklistItemEditRow: View {
         let watchImages = ["Schere", "Lineal", "Bleistift", "Leimstift", "Buntes Papier", "Wolle", "Wackelaugen", "Locher", "Zucker", "Ei", "Haselnüsse", "Schokoladenpulver", "Maizena", "Schüssel", "Kelle", "Backblech", "Backpapier", "Waage", "Messlöffel", "Topflappen"]
         let galleryImages = galleryStorage.items.map { $0.label }
         return galleryImages + watchImages.filter { UIImage(named: $0) != nil }
-    }
-    
-    private func updateItem() {
-        if let index = checklist.items.firstIndex(where: { $0.id == item.id }) {
-            checklist.items[index] = item
-            checklistManager.updateChecklist(checklist)
-        }
     }
 }

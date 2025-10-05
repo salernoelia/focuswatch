@@ -1,29 +1,53 @@
 import SwiftUI
 import Combine
+import SwiftData
 
+@MainActor
 class CalendarViewModel: ObservableObject {
-    @Published var events: [Event] = []
+    private let modelContext: ModelContext
+    
+    @Published var events: [CalendarEventModel] = []
     @Published var visibleMonth: Date = Date()
     
-    private let eventsKey = "calendar_events"
-    
-    init() {
-        loadEvents()
+    init(modelContext: ModelContext) {
+        self.modelContext = modelContext
+        fetchEvents()
     }
     
-    func events(on day: Date) -> [Event] {
+    private func fetchEvents() {
+        let descriptor = FetchDescriptor<CalendarEventModel>(
+            sortBy: [SortDescriptor(\.date)]
+        )
+        
+        do {
+            events = try modelContext.fetch(descriptor)
+        } catch {
+            #if DEBUG
+            ErrorLogger.log(.databaseQueryFailed(operation: "fetch events", underlying: error))
+            #endif
+            events = []
+        }
+    }
+    
+    func events(on day: Date) -> [CalendarEventModel] {
         let cal = Calendar.current
-        var matchingEvents: [Event] = []
+        var matchingEvents: [CalendarEventModel] = []
         
         for event in events {
             if cal.isDate(event.date, inSameDayAs: day) {
                 matchingEvents.append(event)
             }
             else if event.repeatRule != .none && shouldRepeatOn(event: event, date: day) {
-                var repeatedEvent = event
-                repeatedEvent.date = day
-                repeatedEvent.startTime = combineDateTime(date: day, time: event.startTime)
-                repeatedEvent.endTime = combineDateTime(date: day, time: event.endTime)
+                let repeatedEvent = CalendarEventModel(
+                    id: event.id,
+                    title: event.title,
+                    date: day,
+                    startTime: combineDateTime(date: day, time: event.startTime),
+                    endTime: combineDateTime(date: day, time: event.endTime),
+                    repeatRule: event.repeatRule,
+                    customWeekdays: event.customWeekdays,
+                    type: event.type
+                )
                 matchingEvents.append(repeatedEvent)
             }
         }
@@ -31,7 +55,7 @@ class CalendarViewModel: ObservableObject {
         return matchingEvents
     }
     
-    private func shouldRepeatOn(event: Event, date: Date) -> Bool {
+    private func shouldRepeatOn(event: CalendarEventModel, date: Date) -> Bool {
         let cal = Calendar.current
         let eventDate = event.date
         let targetDate = date
@@ -73,45 +97,48 @@ class CalendarViewModel: ObservableObject {
         return calendar.date(from: combined) ?? date
     }
     
-    func add(_ event: Event) {
-        events.append(event)
-        saveEvents()
-        objectWillChange.send()
+    func add(title: String, date: Date, startTime: Date, endTime: Date, repeatRule: RepeatRule, customWeekdays: [Int], type: ActivityType) {
+        let event = CalendarEventModel(
+            title: title,
+            date: date,
+            startTime: startTime,
+            endTime: endTime,
+            repeatRule: repeatRule,
+            customWeekdays: customWeekdays,
+            type: type
+        )
+        modelContext.insert(event)
+        saveChanges()
     }
     
     func update(eventId: UUID, title: String, date: Date, startTime: Date, endTime: Date, repeatRule: RepeatRule, customWeekdays: [Int], type: ActivityType) {
-        if let index = events.firstIndex(where: { $0.id == eventId }) {
-            events[index] = Event(
-                id: eventId,
-                title: title,
-                date: date,
-                startTime: startTime,
-                endTime: endTime,
-                repeatRule: repeatRule,
-                customWeekdays: customWeekdays,
-                type: type
-            )
-            saveEvents()
+        guard let event = events.first(where: { $0.id == eventId }) else { return }
+        
+        event.title = title
+        event.date = date
+        event.startTime = startTime
+        event.endTime = endTime
+        event.repeatRule = repeatRule
+        event.customWeekdays = customWeekdays
+        event.type = type
+        
+        saveChanges()
+    }
+    
+    func delete(_ event: CalendarEventModel) {
+        modelContext.delete(event)
+        saveChanges()
+    }
+    
+    private func saveChanges() {
+        do {
+            try modelContext.save()
+            fetchEvents()
             objectWillChange.send()
-        }
-    }
-    
-    func delete(_ event: Event) {
-        events.removeAll { $0.id == event.id }
-        saveEvents()
-        objectWillChange.send()
-    }
-    
-    private func saveEvents() {
-        if let encoded = try? JSONEncoder().encode(events) {
-            UserDefaults.standard.set(encoded, forKey: eventsKey)
-        }
-    }
-    
-    private func loadEvents() {
-        if let data = UserDefaults.standard.data(forKey: eventsKey),
-           let decoded = try? JSONDecoder().decode([Event].self, from: data) {
-            events = decoded
+        } catch {
+            #if DEBUG
+            ErrorLogger.log(.databaseQueryFailed(operation: "save events", underlying: error))
+            #endif
         }
     }
     

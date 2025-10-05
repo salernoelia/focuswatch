@@ -1,74 +1,90 @@
 import Foundation
 import SwiftUI
+import SwiftData
 
+@MainActor
 class ChecklistManager: ObservableObject {
-    @Published var data: ChecklistData
+    private let modelContext: ModelContext
     var watchConnector: WatchConnector
     
-    init(watchConnector: WatchConnector) {
+    @Published var checklists: [ChecklistModel] = []
+    
+    init(modelContext: ModelContext, watchConnector: WatchConnector) {
+        self.modelContext = modelContext
         self.watchConnector = watchConnector
-        self.data = Self.loadSharedData()
-        watchConnector.checklistData = self.data
+        fetchChecklists()
+        ensureDefaultChecklists()
     }
     
-    static func loadSharedData() -> ChecklistData {
-        let loadedData = UserDefaults.standard.data(forKey: "checklistData")
-        if let loadedData = loadedData,
-           let decoded = try? JSONDecoder().decode(ChecklistData.self, from: loadedData) {
-            return decoded
-        } else {
-            let defaultData = ChecklistData.default
-            if let encoded = try? JSONEncoder().encode(defaultData) {
-                UserDefaults.standard.set(encoded, forKey: "checklistData")
-            }
-            return defaultData
+    private func fetchChecklists() {
+        let descriptor = FetchDescriptor<ChecklistModel>(
+            sortBy: [SortDescriptor(\.name)]
+        )
+        
+        do {
+            checklists = try modelContext.fetch(descriptor)
+        } catch {
+            #if DEBUG
+            ErrorLogger.log(.databaseQueryFailed(operation: "fetch checklists", underlying: error))
+            #endif
+            checklists = []
         }
+    }
+    
+    private func ensureDefaultChecklists() {
+        guard checklists.isEmpty else { return }
+        
+        let defaultChecklists = ChecklistData.getDefault()
+        for checklist in defaultChecklists {
+            modelContext.insert(checklist)
+        }
+        
+        saveChanges()
     }
     
     func addChecklist(name: String) {
-        data.checklists.append(Checklist(name: name))
-        saveData()
+        let checklist = ChecklistModel(name: name)
+        modelContext.insert(checklist)
+        saveChanges()
     }
     
-    func deleteChecklist(_ checklist: Checklist) {
-        data.checklists.removeAll { $0.id == checklist.id }
-        saveData()
+    func deleteChecklist(_ checklist: ChecklistModel) {
+        modelContext.delete(checklist)
+        saveChanges()
     }
     
-    func updateChecklist(_ checklist: Checklist) {
-        if let index = data.checklists.firstIndex(where: { $0.id == checklist.id }) {
-            data.checklists[index] = checklist
-            saveData()
+    func updateChecklist(_ checklist: ChecklistModel) {
+        saveChanges()
+    }
+    
+    func addItem(to checklist: ChecklistModel, title: String, imageName: String = "") {
+        let item = ChecklistItemModel(title: title, imageName: imageName)
+        item.checklist = checklist
+        checklist.items.append(item)
+        modelContext.insert(item)
+        saveChanges()
+    }
+    
+    func deleteItem(_ item: ChecklistItemModel) {
+        modelContext.delete(item)
+        saveChanges()
+    }
+    
+    private func saveChanges() {
+        do {
+            try modelContext.save()
+            fetchChecklists()
+            syncToWatch()
+        } catch {
+            #if DEBUG
+            ErrorLogger.log(.databaseQueryFailed(operation: "save checklists", underlying: error))
+            #endif
         }
     }
     
-    func addItem(to checklist: Checklist, title: String, imageName: String = "") {
-        if let index = data.checklists.firstIndex(where: { $0.id == checklist.id }) {
-            data.checklists[index].items.append(ChecklistItem(title: title, imageName: imageName))
-            saveData()
-        }
-    }
-    
-    func deleteItem(from checklist: Checklist, item: ChecklistItem) {
-        if let checklistIndex = data.checklists.firstIndex(where: { $0.id == checklist.id }) {
-            data.checklists[checklistIndex].items.removeAll { $0.id == item.id }
-            saveData()
-        }
-    }
-    
-    private func saveData() {
-        if let encoded = try? JSONEncoder().encode(data) {
-            UserDefaults.standard.set(encoded, forKey: "checklistData")
-        }
+    private func syncToWatch() {
+        let data = ChecklistData(from: checklists)
         watchConnector.checklistData = data
         watchConnector.forceSyncToWatch()
-    }
-    
-    private func loadData() -> ChecklistData {
-        guard let data = UserDefaults.standard.data(forKey: "checklistData"),
-              let decoded = try? JSONDecoder().decode(ChecklistData.self, from: data) else {
-            return ChecklistData.default
-        }
-        return decoded
     }
 }
