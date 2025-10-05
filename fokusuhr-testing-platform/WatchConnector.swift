@@ -41,6 +41,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
                 self.syncChecklistToWatch()
 
                 self.sendWakeUpMessage()
+                self.syncTelemetryToWatch()
             }
         }
     }
@@ -114,6 +115,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             if self.isConnected {
                 self.syncChecklistToWatch()
                 self.syncAuthToWatch()
+                self.syncTelemetryToWatch()
             }
         }
     }
@@ -152,6 +154,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             if self.isConnected {
                 self.syncChecklistToWatch()
                 self.syncAuthToWatch()
+                self.syncTelemetryToWatch()
             }
         }
     }
@@ -349,6 +352,21 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
         WCSession.default.sendMessage(message, replyHandler: nil) { error in
             #if DEBUG
             print("Failed to sync auth to watch: \(error.localizedDescription)")
+            #endif
+        }
+    }
+    
+    private func syncTelemetryToWatch() {
+        guard WCSession.default.isReachable else { return }
+        
+        let message: [String: Any] = [
+            "action": "updateTelemetry",
+            "hasConsent": TelemetryManager.shared.hasConsent
+        ]
+        
+        WCSession.default.sendMessage(message, replyHandler: nil) { error in
+            #if DEBUG
+            print("Failed to sync telemetry to watch: \(error.localizedDescription)")
             #endif
         }
     }

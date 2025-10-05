@@ -23,7 +23,7 @@ struct AnneView: View {
 
             Button(recorder.isRecording ? "Stop" : "Sprich zu Anne") {
                 Task {
-                    await appLogger.logSimpleEvent(appName: "anne", eventType: "button_clicked")
+                    await appLogger.logSimpleEvent(appName: "anne", eventType: "voice_recording_triggered")
                 }
                 
                 if recorder.isRecording {

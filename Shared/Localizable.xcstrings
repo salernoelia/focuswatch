@@ -1,7 +1,439 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
 
+    },
+    "%@ – %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ – %2$@"
+          }
+        }
+      }
+    },
+    "•" : {
+
+    },
+    "✓" : {
+
+    },
+    "Activation: %lld" : {
+
+    },
+    "Active Testuser" : {
+
+    },
+    "Activity" : {
+
+    },
+    "Add" : {
+
+    },
+    "Add Checklist" : {
+
+    },
+    "Add First Photo" : {
+
+    },
+    "Add Image" : {
+
+    },
+    "Add Item" : {
+
+    },
+    "Add new Test User" : {
+
+    },
+    "Add Photo" : {
+
+    },
+    "Add photos to your gallery to use them in checklists and other apps" : {
+
+    },
+    "Add TestUser" : {
+
+    },
+    "Age" : {
+
+    },
+    "Age: %d" : {
+
+    },
+    "Alles gesammelt." : {
+
+    },
+    "Allow Telemetry" : {
+
+    },
+    "App" : {
+
+    },
+    "Applications" : {
+
+    },
+    "Apps" : {
+
+    },
+    "Are you sure you want to delete '%@'? This action cannot be undone." : {
+
+    },
+    "Assigned to:" : {
+
+    },
+    "Ausatmen" : {
+
+    },
+    "Authentication" : {
+
+    },
+    "by %@" : {
+
+    },
+    "Calendar" : {
+
+    },
+    "Camera" : {
+
+    },
+    "Cancel" : {
+
+    },
+    "Checklist Name" : {
+
+    },
+    "Checklists" : {
+
+    },
+    "Connected" : {
+
+    },
+    "Connection" : {
+
+    },
+    "Current user" : {
+
+    },
+    "Current: %@" : {
+
+    },
+    "Date" : {
+
+    },
+    "Debug Info:" : {
+
+    },
+    "Delete" : {
+
+    },
+    "Delete Photo" : {
+
+    },
+    "Disconnected" : {
+
+    },
+    "Done" : {
+
+    },
+    "Edit" : {
+
+    },
+    "Edit Checklists" : {
+
+    },
+    "Edit Event" : {
+
+    },
+    "Edit Label" : {
+
+    },
+    "Edit photo label:" : {
+
+    },
+    "Einatmen" : {
+
+    },
+    "Email" : {
+
+    },
+    "End" : {
+
+    },
+    "Enter a label for your photo:" : {
+
+    },
+    "Enter image label" : {
+
+    },
+    "Enter new label" : {
+
+    },
+    "Entry Details" : {
+
+    },
+    "Entry Saved!" : {
+
+    },
+    "Female" : {
+
+    },
+    "First Name" : {
+
+    },
+    "Force Sync All Data" : {
+
+    },
+    "Force Syncing..." : {
+
+    },
+    "Gallery" : {
+
+    },
+    "Gender" : {
+
+    },
+    "Grid Size" : {
+
+    },
+    "History" : {
+
+    },
+    "Image Label" : {
+
+    },
+    "Image Selection" : {
+
+    },
+    "Image: %@" : {
+
+    },
+    "IOS App" : {
+
+    },
+    "Item title" : {
+
+    },
+    "Items" : {
+
+    },
+    "Journal" : {
+
+    },
+    "Journal History" : {
+
+    },
+    "Last Name" : {
+
+    },
+    "Links = Später" : {
+
+    },
+    "Loading apps..." : {
+
+    },
+    "Loading supervisor..." : {
+
+    },
+    "Loading users..." : {
+
+    },
+    "Loading..." : {
+
+    },
+    "Logged in as:" : {
+
+    },
+    "Login" : {
+
+    },
+    "Login Required" : {
+
+    },
+    "Loslegen" : {
+
+    },
+    "Male" : {
+
+    },
+    "New Event" : {
+
+    },
+    "New Photo:" : {
+
+    },
+    "No Entries" : {
+
+    },
+    "No events scheduled" : {
+
+    },
+    "No Photos" : {
+
+    },
+    "No user selected" : {
+
+    },
+    "None" : {
+
+    },
+    "OK" : {
+
+    },
+    "Password" : {
+
+    },
+    "Photo label" : {
+
+    },
+    "Photo Library" : {
+
+    },
+    "Please log in to access your journal entries" : {
+
+    },
+    "Prefer not to say" : {
+
+    },
+    "Put Watch into Menu State" : {
+
+    },
+    "Rechts = Hab ich!" : {
+
+    },
+    "Reconnecting..." : {
+
+    },
+    "Refresh" : {
+
+    },
+    "Remove" : {
+
+    },
+    "Repeat" : {
+
+    },
+    "Replace Photo" : {
+
+    },
+    "Reset Connection" : {
+
+    },
+    "Rule" : {
+
+    },
+    "Save" : {
+
+    },
+    "Save Entry" : {
+
+    },
+    "Saving..." : {
+
+    },
+    "Search entries..." : {
+
+    },
+    "Search images..." : {
+
+    },
+    "Search users" : {
+
+    },
+    "Select Image" : {
+
+    },
+    "Select User" : {
+
+    },
+    "Settings" : {
+
+    },
+    "Share your experience, thoughts, or feedback..." : {
+
+    },
+    "Sign In" : {
+
+    },
+    "Sign Out" : {
+
+    },
+    "Sprich zu Anne" : {
+
+    },
+    "Start" : {
+
+    },
+    "Stop" : {
+
+    },
+    "Super gemacht!" : {
+
+    },
+    "Supervisor" : {
+
+    },
+    "Supervisor: %@" : {
+
+    },
+    "Take New Photo" : {
+
+    },
+    "Telemetry" : {
+
+    },
+    "Tester: %@" : {
+
+    },
+    "TestUser Details" : {
+
+    },
+    "The usage data of the watch will be collected to improve the functionality of FokusUhr as it is a scientific project." : {
+
+    },
+    "Title" : {
+
+    },
+    "Try Reconnecting" : {
+
+    },
+    "Type" : {
+
+    },
+    "Watch Status" : {
+
+    },
+    "When" : {
+
+    },
+    "Wie fühlst du dich gerade?" : {
+
+    },
+    "Wizard" : {
+
+    },
+    "Wizard of Oz" : {
+
+    },
+    "Your Entry (Supervisor)" : {
+
+    },
+    "Your journal entries will appear here" : {
+
+    },
+    "Your journal entry has been saved successfully." : {
+
+    },
+    "Your own journal entry" : {
+
+    },
+    "Your Thoughts" : {
+
+    },
+    "Zurück" : {
+
+    }
   },
   "version" : "1.0"
 }

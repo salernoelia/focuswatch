@@ -62,6 +62,11 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
                         }
                     }
                     replyHandler(["status": "success"])
+                case "updateTelemetry":
+                    if let hasConsent = message["hasConsent"] as? Bool {
+                        TelemetryManager.shared.hasConsent = hasConsent
+                    }
+                    replyHandler(["status": "success"])
                 default:
                     replyHandler(["status": "unknown_action"])
                 }
@@ -100,6 +105,10 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
                         } else {
                             self.authManager.clearAuthState()
                         }
+                    }
+                case "updateTelemetry":
+                    if let hasConsent = message["hasConsent"] as? Bool {
+                        TelemetryManager.shared.hasConsent = hasConsent
                     }
                 default:
                     break
