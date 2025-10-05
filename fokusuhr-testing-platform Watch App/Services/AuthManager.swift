@@ -1,10 +1,10 @@
 import Foundation
 import Supabase
 
-class WatchAuthManager: ObservableObject {
+class AuthManager: ObservableObject {
     @Published var isLoggedIn = false
     
-    static let shared = WatchAuthManager()
+    static let shared = AuthManager()
     
     private var client: SupabaseClient?
     

@@ -85,6 +85,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             #if DEBUG
             print("Wake up message sent successfully")
             #endif
+            self.syncAuthToWatch()
         }) { error in
             let appError = AppError.watchMessageFailed(underlying: error)
             #if DEBUG
@@ -112,6 +113,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             
             if self.isConnected {
                 self.syncChecklistToWatch()
+                self.syncAuthToWatch()
             }
         }
     }
@@ -149,6 +151,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             
             if self.isConnected {
                 self.syncChecklistToWatch()
+                self.syncAuthToWatch()
             }
         }
     }
@@ -327,6 +330,26 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             lastError = appError
             checklistData = ChecklistData.default
             saveChecklistData()
+        }
+    }
+    
+    private func syncAuthToWatch() {
+        guard WCSession.default.isReachable else { return }
+        
+        var message: [String: Any] = ["action": "updateAuth"]
+        
+        if let session = supabase.auth.currentSession {
+            message["accessToken"] = session.accessToken
+            message["refreshToken"] = session.refreshToken
+            message["isLoggedIn"] = true
+        } else {
+            message["isLoggedIn"] = false
+        }
+        
+        WCSession.default.sendMessage(message, replyHandler: nil) { error in
+            #if DEBUG
+            print("Failed to sync auth to watch: \(error.localizedDescription)")
+            #endif
         }
     }
 }

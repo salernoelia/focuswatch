@@ -5,6 +5,8 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     @Published var currentView: WatchViewState = .mainMenu
     @Published var checklistData = ChecklistData.default
     
+    private var authManager = AuthManager.shared
+    
     override init() {
         super.init()
         loadChecklistData()
@@ -49,6 +51,17 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
                         self.saveGalleryImages(imageData)
                     }
                     replyHandler(["status": "success"])
+                case "updateAuth":
+                    if let isLoggedIn = message["isLoggedIn"] as? Bool {
+                        if isLoggedIn,
+                           let accessToken = message["accessToken"] as? String,
+                           let refreshToken = message["refreshToken"] as? String {
+                            self.authManager.updateAuthState(accessToken: accessToken, refreshToken: refreshToken)
+                        } else {
+                            self.authManager.clearAuthState()
+                        }
+                    }
+                    replyHandler(["status": "success"])
                 default:
                     replyHandler(["status": "unknown_action"])
                 }
@@ -78,6 +91,16 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
                     if let imageData = message["imageData"] as? [String: String] {
                         self.saveGalleryImages(imageData)
                     }
+                case "updateAuth":
+                    if let isLoggedIn = message["isLoggedIn"] as? Bool {
+                        if isLoggedIn,
+                           let accessToken = message["accessToken"] as? String,
+                           let refreshToken = message["refreshToken"] as? String {
+                            self.authManager.updateAuthState(accessToken: accessToken, refreshToken: refreshToken)
+                        } else {
+                            self.authManager.clearAuthState()
+                        }
+                    }
                 default:
                     break
                 }
@@ -103,13 +126,8 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             let newData = try JSONDecoder().decode(ChecklistData.self, from: data)
             
             if forceOverwrite {
-
                 print("Force overwrite: Clearing old data and replacing with new data")
-                
-
                 clearOldGalleryImages()
-                
-
                 checklistData = newData
                 print("Replaced with \(newData.checklists.count) checklists")
             } else {

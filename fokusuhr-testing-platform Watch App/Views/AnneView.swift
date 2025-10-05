@@ -3,11 +3,13 @@ import AVFoundation
 import Combine
 
 struct AnneView: View {
-    //@ObservedObject var recorder: AudioRecorder
+
     @State private var currentFrame = 1
     @StateObject private var recorder = AudioRecorder()
     private let frameCount = 5
     private let frameDuration: TimeInterval = 0.2
+    
+    private let appLogger = AppLogger.shared
 
     var body: some View {
         VStack(spacing: 12) {
@@ -20,6 +22,10 @@ struct AnneView: View {
             }
 
             Button(recorder.isRecording ? "Stop" : "Sprich zu Anne") {
+                Task {
+                    await appLogger.logSimpleEvent(appName: "anne", eventType: "button_clicked")
+                }
+                
                 if recorder.isRecording {
                     recorder.uploadRecording()
                     recorder.stopRecording()

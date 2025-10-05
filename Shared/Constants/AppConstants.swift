@@ -62,6 +62,8 @@ enum AppConstants {
 
     enum StorageKeys {
         static let checklistData = "checklistData"
+        static let authToken = "authToken"
+        static let refreshToken = "refreshToken"
     }
 
     enum TestUser {
