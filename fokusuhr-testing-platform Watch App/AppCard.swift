@@ -2,22 +2,21 @@ import SwiftUI
 import SwiftUICore
 
 struct AppInfo {
-    let title: String;
-    let description: String;
-    let color: Color;
+    let title: String
+    let description: String
+    let color: Color
 }
-
 
 struct AppCard: View {
     let app: AppInfo
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(app.title)
                 .font(.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
-            
+
             Text(app.description)
                 .font(.caption)
                 .foregroundColor(.white.opacity(0.8))

@@ -89,9 +89,6 @@
     "Authentication" : {
 
     },
-    "by %@" : {
-
-    },
     "Calendar" : {
 
     },
@@ -197,9 +194,6 @@
     "Grid Size" : {
 
     },
-    "Has consent:" : {
-
-    },
     "History" : {
 
     },
@@ -264,9 +258,6 @@
 
     },
     "New Photo:" : {
-
-    },
-    "No" : {
 
     },
     "No Entries" : {
@@ -389,6 +380,9 @@
     "Telemetry" : {
 
     },
+    "Test User ID: %d" : {
+
+    },
     "Tester: %@" : {
 
     },
@@ -420,9 +414,6 @@
 
     },
     "Wizard of Oz" : {
-
-    },
-    "Yes" : {
 
     },
     "Your Entry (Supervisor)" : {

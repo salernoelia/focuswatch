@@ -357,7 +357,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     }
     
     private func syncTelemetryToWatch() {
-        let userInfo: [String: A    ny] = [
+        let userInfo: [String: Any] = [
             "action": "updateTelemetry",
             "hasConsent": TelemetryManager.shared.hasConsent
         ]

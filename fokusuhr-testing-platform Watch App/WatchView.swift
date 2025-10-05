@@ -7,21 +7,19 @@ enum WatchViewState {
 }
 
 struct PrototypeApp {
-    let title: String;
-    let description: String;
-    let color: Color;
-    let destination: AnyView;
+    let title: String
+    let description: String
+    let color: Color
+    let destination: AnyView
 }
 
 struct WatchView: View {
     @EnvironmentObject var watchConnector: WatchConnector
     @State private var currentView: WatchViewState = .mainMenu
     @State private var selectedAppIndex: Int? = nil
-    
-    
+
     private var prototypeApps: [PrototypeApp] {
         var apps: [PrototypeApp] = []
-        
 
         apps.append(contentsOf: [
             PrototypeApp(
@@ -47,38 +45,40 @@ struct WatchView: View {
                 description: "Virtueller Assistent",
                 color: .red,
                 destination: AnyView(AnneView())
-            )
-  
+            ),
+
         ])
-        
+
         for checklist in watchConnector.checklistData.checklists {
-            apps.append(PrototypeApp(
-                title: checklist.name,
-                description: "Interaktive Checkliste",
-                color: .blue,
-                destination: AnyView(
-                    UniversalChecklistView(
-                        title: checklist.name,
-                        instructionTitle: checklist.name,
-                        items: checklist.items,
-                        selectedAppIndex: $selectedAppIndex
+            apps.append(
+                PrototypeApp(
+                    title: checklist.name,
+                    description: "Interaktive Checkliste",
+                    color: .blue,
+                    destination: AnyView(
+                        UniversalChecklistView(
+                            title: checklist.name,
+                            instructionTitle: checklist.name,
+                            items: checklist.items,
+                            selectedAppIndex: $selectedAppIndex
+                        )
                     )
-                )
-            ))
+                ))
         }
-        
-        
+
         return apps
     }
-    
+
     var body: some View {
-      NavigationView {
+        NavigationView {
             Group {
-                if let selectedIndex = selectedAppIndex, selectedIndex < prototypeApps.count {
+                if let selectedIndex = selectedAppIndex,
+                    selectedIndex < prototypeApps.count
+                {
                     prototypeApps[selectedIndex].destination
                         .navigationBarHidden(false)
                         .navigationBarTitleDisplayMode(.inline)
-                         .toolbar {
+                        .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
                                 Button("Zurück") {
                                     selectedAppIndex = nil
@@ -106,7 +106,8 @@ struct WatchView: View {
     private var mainMenuView: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                ForEach(Array(prototypeApps.enumerated()), id: \.offset) { index, app in
+                ForEach(Array(prototypeApps.enumerated()), id: \.offset) {
+                    index, app in
                     appNavigationLink(for: app, at: index)
                 }
             }
@@ -117,17 +118,20 @@ struct WatchView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    private func appNavigationLink(for app: PrototypeApp, at index: Int) -> some View {
+    private func appNavigationLink(for app: PrototypeApp, at index: Int)
+        -> some View
+    {
         NavigationLink(
             destination: app.destination,
             tag: index,
             selection: $selectedAppIndex
         ) {
-            AppCard(app: AppInfo(
-                title: app.title,
-                description: app.description,
-                color: app.color
-            ))
+            AppCard(
+                app: AppInfo(
+                    title: app.title,
+                    description: app.description,
+                    color: app.color
+                ))
         }
         .buttonStyle(PlainButtonStyle())
     }

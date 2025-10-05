@@ -1,46 +1,44 @@
 import SwiftUI
 
 struct CompanionView: View {
-    @StateObject private var watchConnector = WatchConnector()
-    
-    var body: some View {
-        TabView {
-            WizardView()
-                .environmentObject(watchConnector)
-                .tabItem {
-                    Image(systemName: "wand.and.rays")
-                    Text("Wizard")
-                }
+  @StateObject private var watchConnector = WatchConnector()
 
-            GalleryView()
-                .tabItem {
-                    Image(systemName: "photo.on.rectangle.angled")
-                    Text("Gallery")
-                }
-            
-            CalendarView()
-                .tabItem {
-                    Image(systemName: "calendar")
-                    Text("Calendar")
-                }
+  var body: some View {
+    TabView {
+      WizardView()
+        .environmentObject(watchConnector)
+        .tabItem {
+          Image(systemName: "wand.and.rays")
+          Text("Wizard")
+        }
 
-            JournalView()
-                .tabItem {
-                    Image(systemName: "book")
-                    Text("Journal")
-                }
+      GalleryView()
+        .tabItem {
+          Image(systemName: "photo.on.rectangle.angled")
+          Text("Gallery")
+        }
 
-           
+      CalendarView()
+        .tabItem {
+          Image(systemName: "calendar")
+          Text("Calendar")
+        }
 
-            SettingsView()
-                .tabItem {
-                    Image(systemName: "gearshape")
-                    Text("Settings")
-                }
+      JournalView()
+        .tabItem {
+          Image(systemName: "book")
+          Text("Journal")
+        }
+
+      SettingsView()
+        .tabItem {
+          Image(systemName: "gearshape")
+          Text("Settings")
         }
     }
+  }
 }
 
 #Preview {
-    CompanionView()
+  CompanionView()
 }

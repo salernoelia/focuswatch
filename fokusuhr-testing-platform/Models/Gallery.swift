@@ -1,15 +1,15 @@
-import SwiftUI
 import PhotosUI
+import SwiftUI
 
 struct GalleryItem: Identifiable, Codable {
-    var id = UUID()
-    let imagePath: String 
-    var label: String
-    
-    var image: UIImage? {
-        let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent(imagePath)
-        guard let data = try? Data(contentsOf: url) else { return nil }
-        return UIImage(data: data)
-    }
+  var id = UUID()
+  let imagePath: String
+  var label: String
+
+  var image: UIImage? {
+    let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+      .appendingPathComponent(imagePath)
+    guard let data = try? Data(contentsOf: url) else { return nil }
+    return UIImage(data: data)
+  }
 }
