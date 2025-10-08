@@ -421,20 +421,20 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"fokusuhr-testing-platform Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = TA2AJAJUME;
+				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "fokusuhr-testing-platform-Watch-App-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "fokusuhr-testing-platform";
+				INFOPLIST_KEY_CFBundleDisplayName = "FokusUhr Platform";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Required for voice transcription.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = net.fokusapp.FokusWatch.TestingPlattform;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = net.com.fokusuhr.FokusUhr;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = net.fokusapp.FokusWatch.TestingPlattform.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
@@ -455,20 +455,20 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"fokusuhr-testing-platform Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = TA2AJAJUME;
+				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "fokusuhr-testing-platform-Watch-App-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "fokusuhr-testing-platform";
+				INFOPLIST_KEY_CFBundleDisplayName = "FokusUhr Platform";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Required for voice transcription.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = net.fokusapp.FokusWatch.TestingPlattform;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = net.com.fokusuhr.FokusUhr;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = net.fokusapp.FokusWatch.TestingPlattform.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
@@ -490,11 +490,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"fokusuhr-testing-platform/Preview Content\"";
-				DEVELOPMENT_TEAM = TA2AJAJUME;
+				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "fokusuhr-testing-platform/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "fokusuhr-testing-platform";
+				INFOPLIST_KEY_CFBundleDisplayName = "FokusUhr Platform";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.medical";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to take photos.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Required for voice transcription.";
@@ -509,7 +509,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = net.fokusapp.FokusWatch.TestingPlattform;
+				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -528,11 +528,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"fokusuhr-testing-platform/Preview Content\"";
-				DEVELOPMENT_TEAM = TA2AJAJUME;
+				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "fokusuhr-testing-platform/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "fokusuhr-testing-platform";
+				INFOPLIST_KEY_CFBundleDisplayName = "FokusUhr Platform";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.medical";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to take photos.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Required for voice transcription.";
@@ -547,7 +547,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = net.fokusapp.FokusWatch.TestingPlattform;
+				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
