@@ -1,8 +1,7 @@
-# Fokusuhr Testing Platform
+# Fokusuhr Platform
 
-This repository contains prototypes developed during the Fokusuhr workshops. 
-It is not production-ready; rather, its purpose is to provide a flexible, testable foundation for TestFlight 
-builds that can be quickly adjusted and expanded to evaluate ideas and concepts that are too complex for a simple clickable prototype.
+Repository contains the main development branch for the Fokusuhr Platform, a iOS and watchOS application for assisting kids with focussing on their tasks and helps build
+routines intrinsically.
 
 ## Class Reference
 
