@@ -12,7 +12,6 @@ enum AppConstants {
     }
 
     enum UI {
-
         static let cornerRadius: CGFloat = 12
 
         static let smallSpacing: CGFloat = 12

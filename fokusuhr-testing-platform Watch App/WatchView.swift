@@ -30,6 +30,12 @@ struct WatchView: View {
                 destination: AnyView(SpeedometerView())
             ),
             PrototypeApp(
+                title: "Schreiben",
+                description: "Fokushilfe beim Schreiben.",
+                color: .blue,
+                destination: AnyView(WritingView())
+            ),
+            PrototypeApp(
                 title: "Farbatmung",
                 description: "Beruhigende Atemübungen",
                 color: .green,
@@ -127,7 +133,7 @@ struct WatchView: View {
             tag: index,
             selection: $selectedAppIndex
         ) {
-            AppCard(
+            AppCardView(
                 app: AppInfo(
                     title: app.title,
                     description: app.description,

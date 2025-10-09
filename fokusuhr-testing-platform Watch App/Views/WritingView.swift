@@ -1,18 +1,36 @@
-//
-//  WritingView.swift
-//  fokusuhr-testing-platform Watch App
-//
-//  Created by Elia Salerno on 09.10.2025.
-//
-
 import SwiftUI
 
 struct WritingView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+  @StateObject private var configs = UserConfigs.shared
+  @EnvironmentObject var exerciseManager: ExerciseManager
+  @State private var configsLoaded = false
+
+  var body: some View {
+    TabView {
+
+      ColorView()
+        .tabItem {
+          Label("Starten", systemImage: "play.circle")
+        }
+
+      ConfigurationsView(
+        current_setting: $configs.configs
+      )
+      .tabItem {
+        Label("Configurations", systemImage: "list.dash")
+      }
+
+      NavigationView {
+        FileUploadView()
+      }
+      .tabItem {
+        Label("Upload Files", systemImage: "arrow.up.circle")
+      }
     }
+
+  }
 }
 
 #Preview {
-    WritingView()
+  WritingView()
 }

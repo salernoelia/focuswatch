@@ -33,9 +33,11 @@ class AppsManager: ObservableObject {
 
     let builtInApps = [
       ("Tachometer", "Gefühlsanzeige", Color.yellow),
+      ("Schreiben", "Fokushilfe beim Schreiben.", Color.blue),
       ("Farbatmung", "Beruhigende Atemübungen", Color.green),
       //("Fidget Spinner", "Digitaler Fidget Spinner", Color.orange),
       ("Anne (Beta)", "Virtueller Assistent", Color.red),
+
     ]
 
     for (title, description, color) in builtInApps {

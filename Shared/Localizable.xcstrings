@@ -14,10 +14,16 @@
         }
       }
     },
+    "%lld" : {
+
+    },
     "•" : {
 
     },
     "✓" : {
+
+    },
+    "🏆" : {
 
     },
     "Activation: %lld" : {
@@ -62,6 +68,9 @@
     "Age: %d" : {
 
     },
+    "Aktuelle Einstellung:" : {
+
+    },
     "Alles gesammelt." : {
 
     },
@@ -104,6 +113,9 @@
     "Checklists" : {
 
     },
+    "Configurations" : {
+
+    },
     "Connected" : {
 
     },
@@ -123,6 +135,9 @@
 
     },
     "Delete" : {
+
+    },
+    "Delete orphaned Files" : {
 
     },
     "Delete Photo" : {
@@ -152,6 +167,12 @@
     "Einatmen" : {
 
     },
+    "Einstellung ändern" : {
+
+    },
+    "Einstellung zurücksetzen" : {
+
+    },
     "Email" : {
 
     },
@@ -171,6 +192,9 @@
 
     },
     "Entry Saved!" : {
+
+    },
+    "Failed Uploads:\n%@" : {
 
     },
     "Female" : {
@@ -254,6 +278,9 @@
     "Male" : {
 
     },
+    "Negative Feedback is on" : {
+
+    },
     "New Event" : {
 
     },
@@ -278,6 +305,9 @@
     "OK" : {
 
     },
+    "Passe deine Fokus-Routine an:\n\nDu kannst die Dauer deiner Schreibzeit (S) festlegen.\n\nAktiviere den \"Pomodoro\"-Modus, um deine Übungen in Arbeitsphase (A) mit Pausen (P) zu unterteilen, oder arbeite ohne Unterbrechungen.\n\nWähle positives oder negatives haptisches Feedback." : {
+
+    },
     "Password" : {
 
     },
@@ -288,6 +318,12 @@
 
     },
     "Please log in to access your journal entries" : {
+
+    },
+    "Pomodoro" : {
+
+    },
+    "Positive Feedback is on" : {
 
     },
     "Prefer not to say" : {
@@ -317,8 +353,21 @@
     "Reset Connection" : {
 
     },
+    "Restore" : {
+
+    },
     "Rule" : {
 
+    },
+    "S: %@, P: %lld, A: %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "S: %1$@, P: %2$lld, A: %3$lld"
+          }
+        }
+      }
     },
     "Save" : {
 
@@ -362,6 +411,9 @@
     "Start" : {
 
     },
+    "Starten" : {
+
+    },
     "Stop" : {
 
     },
@@ -399,6 +451,18 @@
 
     },
     "Type" : {
+
+    },
+    "Übung stoppen" : {
+
+    },
+    "Upload" : {
+
+    },
+    "Upload data %lld" : {
+
+    },
+    "Upload Files" : {
 
     },
     "Watch Status" : {
