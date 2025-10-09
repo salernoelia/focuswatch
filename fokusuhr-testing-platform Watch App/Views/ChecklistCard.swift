@@ -82,10 +82,11 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
     let translation = value.translation.width
 
     if abs(translation) > abs(value.translation.height) {
-      dragOffset = translation
-
-      let progress = min(abs(translation) / 100, 1.0)
-      scale = 1.0 - (progress * 0.1)
+      withAnimation(.interactiveSpring()) {
+        dragOffset = translation
+        let progress = min(abs(translation) / 100, 1.0)
+        scale = 1.0 - (progress * 0.1)
+      }
     }
   }
 
@@ -138,9 +139,11 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
   }
 
   private func resetState() {
-    dragOffset = 0
-    scale = 1.0
-    opacity = 1.0
+    withAnimation(.linear(duration: 0)) {
+      dragOffset = 0
+      scale = 1.0
+      opacity = 1.0
+    }
     isProcessing = false
   }
 
