@@ -17,7 +17,6 @@ struct WizardView: View {
     self._checklistManager = StateObject(
       wrappedValue: ChecklistManager(watchConnector: tempConnector))
 
-      
   }
 
   var body: some View {
@@ -131,11 +130,11 @@ struct WizardView: View {
             appsManager.refreshApps()
           }
       }
-     .onAppear {
-  checklistManager.watchConnector = watchConnector
-  watchConnector.checklistData = ChecklistManager.loadSharedData()
-  tryInitialWatchConnect()
-}
+      .onAppear {
+        checklistManager.watchConnector = watchConnector
+        watchConnector.checklistData = ChecklistManager.loadSharedData()
+        tryInitialWatchConnect()
+      }
 
     }
   }
@@ -181,14 +180,11 @@ struct WizardView: View {
   }
 
   private func tryInitialWatchConnect() {
-  guard !watchConnector.isConnected else { return }
-  reconnectToWatch()
+    guard !watchConnector.isConnected else { return }
+    reconnectToWatch()
+  }
+
 }
-
-
-}
-
-
 
 #Preview {
   WizardView()
