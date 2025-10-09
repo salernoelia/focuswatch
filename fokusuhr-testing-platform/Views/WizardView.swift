@@ -16,11 +16,54 @@ struct WizardView: View {
     let tempConnector = WatchConnector()
     self._checklistManager = StateObject(
       wrappedValue: ChecklistManager(watchConnector: tempConnector))
+
+      
   }
 
   var body: some View {
     NavigationView {
       List {
+
+        Section("Connection") {
+          HStack {
+            Text("Watch Status")
+            Spacer()
+            HStack(spacing: AppConstants.UI.statusIndicatorSize) {
+              Circle()
+                .fill(watchConnector.isConnected ? .green : .red)
+                .frame(
+                  width: AppConstants.UI.statusIndicatorSize,
+                  height: AppConstants.UI.statusIndicatorSize
+                )
+              Text(watchConnector.isConnected ? "Connected" : "Disconnected")
+                .foregroundColor(watchConnector.isConnected ? .green : .red)
+            }
+          }
+
+          if !watchConnector.isConnected {
+            Button(action: reconnectToWatch) {
+              HStack {
+                if isReconnecting {
+                  ProgressView()
+                    .scaleEffect(AppConstants.UI.progressScaleFactor)
+                } else {
+                  Image(systemName: "arrow.clockwise")
+                }
+                Text(isReconnecting ? "Reconnecting..." : "Try Reconnecting")
+              }
+            }
+            .disabled(isReconnecting)
+
+            Button(action: resetConnection) {
+              HStack {
+                Image(systemName: "wifi.slash")
+                Text("Reset Connection")
+              }
+            }
+            .disabled(isReconnecting)
+            .foregroundColor(.orange)
+          }
+        }
 
         Section("Applications") {
           ForEach(appsManager.apps, id: \.id) { app in
@@ -56,72 +99,21 @@ struct WizardView: View {
           }
         }
 
-        Section("Connection") {
-          HStack {
-            Text("Watch Status")
-            Spacer()
-            HStack(spacing: AppConstants.UI.statusIndicatorSize) {
-              Circle()
-                .fill(watchConnector.isConnected ? .green : .red)
-                .frame(
-                  width: AppConstants.UI.statusIndicatorSize,
-                  height: AppConstants.UI.statusIndicatorSize
-                )
-              Text(watchConnector.isConnected ? "Connected" : "Disconnected")
-                .foregroundColor(watchConnector.isConnected ? .green : .red)
-            }
-          }
-
-          VStack(alignment: .leading, spacing: 4) {
-            Text("Debug Info:")
-              .font(.caption)
-              .foregroundColor(.secondary)
-            Text("Activation: \(WCSession.default.activationState.rawValue)")
-              .font(.caption2)
-            Text("Reachable: \(WCSession.default.isReachable)")
-              .font(.caption2)
-            Text("Paired: \(WCSession.default.isPaired)")
-              .font(.caption2)
-            Text("App Installed: \(WCSession.default.isWatchAppInstalled)")
-              .font(.caption2)
-          }
-
-          if !watchConnector.isConnected {
-            Button(action: reconnectToWatch) {
-              HStack {
-                if isReconnecting {
-                  ProgressView()
-                    .scaleEffect(AppConstants.UI.progressScaleFactor)
-                } else {
-                  Image(systemName: "arrow.clockwise")
-                }
-                Text(isReconnecting ? "Reconnecting..." : "Try Reconnecting")
-              }
-            }
-            .disabled(isReconnecting)
-
-            Button(action: resetConnection) {
-              HStack {
-                Image(systemName: "wifi.slash")
-                Text("Reset Connection")
-              }
-            }
-            .disabled(isReconnecting)
-            .foregroundColor(.orange)
-          }
-        }
-
         Button(action: forceSyncToWatch) {
           HStack {
             if isSyncing {
               ProgressView()
-                .scaleEffect(AppConstants.UI.progressScaleFactor)
+                .scaleEffect(
+                  AppConstants.UI.progressScaleFactor)
             } else {
               Image(systemName: "arrow.triangle.2.circlepath")
                 .foregroundColor(.red)
             }
-            Text(isSyncing ? "Force Syncing..." : "Force Sync All Data")
-              .foregroundColor(.red)
+            Text(
+              isSyncing
+                ? "Force Syncing..." : "Force Sync All Data"
+            )
+            .foregroundColor(.red)
           }
         }
         .disabled(!watchConnector.isConnected || isSyncing)
@@ -139,20 +131,26 @@ struct WizardView: View {
             appsManager.refreshApps()
           }
       }
-      .onAppear {
-        checklistManager.watchConnector = watchConnector
-        watchConnector.checklistData = ChecklistManager.loadSharedData()
-      }
+     .onAppear {
+  checklistManager.watchConnector = watchConnector
+  watchConnector.checklistData = ChecklistManager.loadSharedData()
+  tryInitialWatchConnect()
+}
+
     }
   }
 
   private func reconnectToWatch() {
     isReconnecting = true
 
-    DispatchQueue.main.asyncAfter(deadline: .now() + AppConstants.Timing.shortDelay) {
+    DispatchQueue.main.asyncAfter(
+      deadline: .now() + AppConstants.Timing.shortDelay
+    ) {
       watchConnector.forceReconnect()
 
-      DispatchQueue.main.asyncAfter(deadline: .now() + AppConstants.Timing.longDelay) {
+      DispatchQueue.main.asyncAfter(
+        deadline: .now() + AppConstants.Timing.longDelay
+      ) {
         isReconnecting = false
       }
     }
@@ -163,7 +161,9 @@ struct WizardView: View {
 
     watchConnector.resetWatchConnectivity()
 
-    DispatchQueue.main.asyncAfter(deadline: .now() + AppConstants.Timing.reconnectionDelay) {
+    DispatchQueue.main.asyncAfter(
+      deadline: .now() + AppConstants.Timing.reconnectionDelay
+    ) {
       isReconnecting = false
     }
   }
@@ -173,11 +173,22 @@ struct WizardView: View {
 
     watchConnector.updateChecklistData(checklistManager.data)
 
-    DispatchQueue.main.asyncAfter(deadline: .now() + AppConstants.Timing.longDelay) {
+    DispatchQueue.main.asyncAfter(
+      deadline: .now() + AppConstants.Timing.longDelay
+    ) {
       isSyncing = false
     }
   }
+
+  private func tryInitialWatchConnect() {
+  guard !watchConnector.isConnected else { return }
+  reconnectToWatch()
 }
+
+
+}
+
+
 
 #Preview {
   WizardView()
