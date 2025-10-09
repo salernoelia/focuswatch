@@ -3,6 +3,7 @@ import SwiftUI
 
 class ChecklistManager: ObservableObject {
   @Published var data: ChecklistData
+  @Published var lastError: AppError?
   var watchConnector: WatchConnector
 
   init(watchConnector: WatchConnector) {
@@ -12,12 +13,21 @@ class ChecklistManager: ObservableObject {
   }
 
   static func loadSharedData() -> ChecklistData {
-    let loadedData = UserDefaults.standard.data(forKey: "checklistData")
-    if let loadedData = loadedData,
-      let decoded = try? JSONDecoder().decode(ChecklistData.self, from: loadedData)
-    {
-      return decoded
-    } else {
+    guard let loadedData = UserDefaults.standard.data(forKey: "checklistData") else {
+      let defaultData = ChecklistData.default
+      if let encoded = try? JSONEncoder().encode(defaultData) {
+        UserDefaults.standard.set(encoded, forKey: "checklistData")
+      }
+      return defaultData
+    }
+
+    do {
+      return try JSONDecoder().decode(ChecklistData.self, from: loadedData)
+    } catch {
+      let appError = AppError.decodingFailed(type: "checklist data", underlying: error)
+      #if DEBUG
+        ErrorLogger.log(appError)
+      #endif
       let defaultData = ChecklistData.default
       if let encoded = try? JSONEncoder().encode(defaultData) {
         UserDefaults.standard.set(encoded, forKey: "checklistData")
@@ -58,19 +68,34 @@ class ChecklistManager: ObservableObject {
   }
 
   private func saveData() {
-    if let encoded = try? JSONEncoder().encode(data) {
+    do {
+      let encoded = try JSONEncoder().encode(data)
       UserDefaults.standard.set(encoded, forKey: "checklistData")
+      watchConnector.checklistData = data
+      watchConnector.forceSyncToWatch()
+    } catch {
+      let appError = AppError.encodingFailed(type: "checklist data", underlying: error)
+      #if DEBUG
+        ErrorLogger.log(appError)
+      #endif
+      lastError = appError
     }
-    watchConnector.checklistData = data
-    watchConnector.forceSyncToWatch()
   }
 
   private func loadData() -> ChecklistData {
-    guard let data = UserDefaults.standard.data(forKey: "checklistData"),
-      let decoded = try? JSONDecoder().decode(ChecklistData.self, from: data)
-    else {
+    guard let data = UserDefaults.standard.data(forKey: "checklistData") else {
       return ChecklistData.default
     }
-    return decoded
+
+    do {
+      return try JSONDecoder().decode(ChecklistData.self, from: data)
+    } catch {
+      let appError = AppError.decodingFailed(type: "checklist data", underlying: error)
+      #if DEBUG
+        ErrorLogger.log(appError)
+      #endif
+      lastError = appError
+      return ChecklistData.default
+    }
   }
 }

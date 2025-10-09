@@ -33,6 +33,7 @@ enum AppError: LocalizedError {
   case watchNotSupported
   case watchNotConnected
   case watchNotReachable
+  case watchConnectionFailed(underlying: Error)
   case watchMessageFailed(underlying: Error)
   case watchSessionInactive
 
@@ -106,6 +107,8 @@ enum AppError: LocalizedError {
       return "Apple Watch is not connected."
     case .watchNotReachable:
       return "Apple Watch is not reachable. Make sure it's nearby and unlocked."
+    case .watchConnectionFailed(let error):
+      return "Watch connection failed: \(error.localizedDescription)"
     case .watchMessageFailed(let error):
       return "Failed to communicate with Apple Watch: \(error.localizedDescription)"
     case .watchSessionInactive:
@@ -170,18 +173,3 @@ extension Result where Failure: Error {
     }
   }
 }
-
-#if DEBUG
-  struct ErrorLogger {
-    static func log(
-      _ error: AppError, file: String = #file, function: String = #function, line: Int = #line
-    ) {
-      let fileName = (file as NSString).lastPathComponent
-      print("🔴 Error in \(fileName):\(line) \(function)")
-      print("   \(error.errorDescription ?? "Unknown error")")
-      if let suggestion = error.recoverySuggestion {
-        print("   💡 \(suggestion)")
-      }
-    }
-  }
-#endif

@@ -5,6 +5,7 @@ import SwiftUI
 class AppsManager: ObservableObject {
   @Published var apps: [AppInfo] = []
   @Published var isLoading = false
+  @Published var lastError: AppError?
 
   static let shared = AppsManager()
 
@@ -15,7 +16,10 @@ class AppsManager: ObservableObject {
   }
 
   func fetchApps() async {
-    await MainActor.run { isLoading = true }
+    await MainActor.run {
+      isLoading = true
+      lastError = nil
+    }
 
     await MainActor.run {
       apps = buildAppsList()
