@@ -75,7 +75,6 @@ struct ConfigurationsView: View {
           }) {
             Text("Einstellung ändern")
               .font(.footnote)
-              .scenePadding()
           }
           .padding()
         }
@@ -132,7 +131,6 @@ struct ConfigurationsView: View {
           }) {
             Text("Einstellung zurücksetzen")
               .font(.footnote)
-              .scenePadding()
           }
           .padding()
         }
@@ -566,4 +564,9 @@ struct FileUploadView: View {
       print("Failed to list files in directory: \(documentsDirectory.path), error: \(error)")
     }
   }
+}
+
+#Preview {
+  ConfigurationsView(current_setting: .constant(UserConfigs.shared.configs))
+        .environmentObject(ExerciseManager())
 }
