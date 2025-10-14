@@ -1,4 +1,4 @@
-//  ExerciseManager.swift
+//  WritingExerciseManager.swift
 //  FokusUhr Watch App
 //
 //  Created by Julian Amacker on 25.01.2024.
@@ -10,12 +10,12 @@ import Foundation
 import SwiftUI
 import WidgetKit
 
-// MARK: - ExerciseManager Class
+// MARK: - WritingExerciseManager Class
 /// Manages the state, timers, and data logging for an exercise session.
 /// This class handles both Pomodoro and non-Pomodoro style sessions,
 /// tracking user activity (working, thinking, disrupted) and providing haptic feedback.
 /// TODO: RENAME
-class ExerciseManager: NSObject, ObservableObject {
+class WritingExerciseManager: NSObject, ObservableObject {
   // MARK: - Published Properties
 
   /// The current time remaining in the active timer (exercise or pause), published for UI updates.
@@ -28,7 +28,7 @@ class ExerciseManager: NSObject, ObservableObject {
   }
 
   /// An optional timer for tracking "thinking" periods.
-  @Published var thinkTimer: TimeManager?
+  @Published var thinkTimer: WritingTimeManager?
 
   /// The current time remaining in a pause period, published for UI updates.
   @Published var currentPauseTime: Int = 0
@@ -54,10 +54,10 @@ class ExerciseManager: NSObject, ObservableObject {
   // MARK: - Timers
 
   /// An optional timer for managing pause durations between exercise repetitions.
-  var pauseTimer: TimeManager?
+  var pauseTimer: WritingTimeManager?
 
   /// An optional timer for managing the duration of the main exercise/work period.
-  var exerciseTimer: TimeManager?
+  var exerciseTimer: WritingTimeManager?
 
   /// A private timer used to periodically monitor the user's exercise state.
   private var monitoringTimer: Timer?
@@ -84,8 +84,8 @@ class ExerciseManager: NSObject, ObservableObject {
   // MARK: - Haptic Feedback
 
   /// Lazily initialized manager for handling all haptic feedback.
-  lazy var hapticManager: HapticFeedbackManager = {
-    return HapticFeedbackManager(exerciseManager: self)
+  lazy var hapticManager: WritingHapticFeedbackManager = {
+    return WritingHapticFeedbackManager(WritingExerciseManager: self)
   }()
 
   // MARK: - Session Data
@@ -118,18 +118,18 @@ class ExerciseManager: NSObject, ObservableObject {
   // MARK: - Location
 
   /// A shared instance of the location manager to fetch the user's location.
-  let locationManager = LocationManager.shared
+  let WritingLocationManager = WritingLocationManager.shared
 
   /// Lazily initialized manager for writing sensor data to files.
-  lazy var writeManager: WriteManager = {
-    let manager = WriteManager()
-    manager.exerciseManager = self
+  lazy var WritingManager: WritingManager = {
+    let manager = WritingManager()
+    manager.WritingExerciseManager = self
     return manager
   }()
 
   // MARK: - Initializer
 
-  /// Initializes the ExerciseManager and sets up initial values for the widget.
+  /// Initializes the WritingExerciseManager and sets up initial values for the widget.
   override init() {
     super.init()
     storeWidgetValue()
@@ -155,7 +155,7 @@ class ExerciseManager: NSObject, ObservableObject {
     recordStartDate = nil
     repetitionsRemaining = currentSetting.repetitions
     // Sets up the data writer and timers, then starts the first repetition.
-    setupWriteManagerAndTimer { [weak self] in
+    setupWritingManagerAndTimer { [weak self] in
       guard let self = self else { return }
       self.createAndUploadSessionJSON()
       self.startNextRepetition()
@@ -174,7 +174,7 @@ class ExerciseManager: NSObject, ObservableObject {
     // The exercise timer duration depends on the mode.
     // **Pomodoro Mode**: Uses the user-defined 'learn' duration.
     // **Non-Pomodoro Mode**: Uses a fixed duration (e.g., 60 minutes) for each cycle.
-    self.exerciseTimer = TimeManager(
+    self.exerciseTimer = WritingTimeManager(
       time: self.pomodoro ? self.currentSetting.learn : 60, countDown: true)
     self.exerciseTimer?.startTimer()
 
@@ -218,11 +218,11 @@ class ExerciseManager: NSObject, ObservableObject {
     }
   }
 
-  /// Sets up the `WriteManager` and starts the initial timer.
+  /// Sets up the `WritingManager` and starts the initial timer.
   /// The completion handler is called after the setup is complete.
-  func setupWriteManagerAndTimer(completion: @escaping () -> Void) {
+  func setupWritingManagerAndTimer(completion: @escaping () -> Void) {
     // The write manager is started differently based on the mode.
-    writeManager.startWritingManager(isPomodoro: self.pomodoro) { [weak self] startDate in
+    WritingManager.startWritingManager(isPomodoro: self.pomodoro) { [weak self] startDate in
       guard let self = self, let startDate = startDate else { return }
       DispatchQueue.main.async {
         if self.recordStartDate == nil {
@@ -240,8 +240,9 @@ class ExerciseManager: NSObject, ObservableObject {
   /// Monitors the user's activity by checking if they are writing/working.
   /// This method is central to the app's state logic during a work interval.
   private func monitorExercise() {
-    // Check the user's current writing status from the WriteManager.
-    let (proba, status) = writeManager.checkIfWriting(isMLMode: isMLMode, currentTime: currentTime)
+    // Check the user's current writing status from the WritingManager.
+    let (proba, status) = WritingManager.checkIfWriting(
+      isMLMode: isMLMode, currentTime: currentTime)
     let posFeedbackInterval = currentSetting.posFBIntveral
     DispatchQueue.main.async {
       self.proba = proba
@@ -319,11 +320,11 @@ class ExerciseManager: NSObject, ObservableObject {
   /// Starts a pause period between work repetitions.
   /// This is specific to **Pomodoro Mode**.
   private func startPause() {
-    pauseTimer = TimeManager(time: currentSetting.pause, countDown: true)
+    pauseTimer = WritingTimeManager(time: currentSetting.pause, countDown: true)
     pauseTimer?.startTimer()
     changeState(to: .pausing)
 
-    writeManager.resetThinkCount()
+    WritingManager.resetThinkCount()
 
     // Play a notification haptic.
     hapticManager.playHaptic(type: .notification, repeatCount: 2, delayBetween: 0.8)
@@ -415,7 +416,7 @@ class ExerciseManager: NSObject, ObservableObject {
   /// Resets the manager to its initial state, ready for a new session.
   func resetExercise() {
     changeState(to: .ready)
-    writeManager.resetThinkCount()
+    WritingManager.resetThinkCount()
     stateHistory = []
     workingHistory = []
     emaResHistory = []
@@ -496,7 +497,7 @@ class ExerciseManager: NSObject, ObservableObject {
     let dataStorageManager = DataStorageManager()
 
     // Request location to include in session data.
-    locationManager.requestLocation { [weak self] result in
+    WritingLocationManager.requestLocation { [weak self] result in
       guard let self = self else { return }
       var location: Any = "N/A"
       switch result {
@@ -573,7 +574,7 @@ class ExerciseManager: NSObject, ObservableObject {
 }
 
 // MARK: - WKExtendedRuntimeSessionDelegate
-extension ExerciseManager: WKExtendedRuntimeSessionDelegate {
+extension WritingExerciseManager: WKExtendedRuntimeSessionDelegate {
   /// Called when the extended runtime session has successfully started.
   func extendedRuntimeSessionDidStart(_ extendedRuntimeSession: WKExtendedRuntimeSession) {
     startRoutine()
@@ -655,7 +656,7 @@ extension ExerciseManager: WKExtendedRuntimeSessionDelegate {
 }
 
 // MARK: - State Management and History
-extension ExerciseManager {
+extension WritingExerciseManager {
   /// Changes the current exercise state and logs the change.
   func changeState(to newState: ExerciseState, completion: (() -> Void)? = nil) {
     exerciseState = newState

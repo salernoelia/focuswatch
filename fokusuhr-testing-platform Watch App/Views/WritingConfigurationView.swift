@@ -7,18 +7,18 @@
 import Foundation
 import SwiftUI
 
-// MARK: - ConfigurationsView
+// MARK: - WritingConfigurationsView
 /// A view that allows users to manage and view their application settings,
 /// handle failed data uploads, and see device information.
 /// TODO: RENAME
-struct ConfigurationsView: View {
+struct WritingConfigurationsView: View {
   // MARK: - Properties
 
   /// A binding to the current configuration object, allowing this view to modify it.
   @Binding var current_setting: Config
 
   /// The environment object that manages the overall state of the exercise session.
-  @EnvironmentObject var exerciseManager: ExerciseManager
+  @EnvironmentObject var WritingExerciseManager: WritingExerciseManager
 
   /// A prefix of the device's UUID for identification purposes.
   private let deviceUUIDPrefix = DeviceIdentifier.shared.uuid.prefix(6)
@@ -69,7 +69,7 @@ struct ConfigurationsView: View {
         .scenePadding()
 
         // Show "Change Settings" button only when the session is not active.
-        if !exerciseManager.showRunView {
+        if !WritingExerciseManager.showRunView {
           Button(action: {
             showPickerSheet = true
           }) {
@@ -80,25 +80,25 @@ struct ConfigurationsView: View {
         }
 
         // Show "Stop Exercise" button only when the session is active.
-        if exerciseManager.showRunView {
+        if WritingExerciseManager.showRunView {
           Button("Übung stoppen") {
-            exerciseManager.showRunView = false
-            exerciseManager.stopExercise {
-              exerciseManager.resetExercise()
+            WritingExerciseManager.showRunView = false
+            WritingExerciseManager.stopExercise {
+              WritingExerciseManager.resetExercise()
             }
           }
           .padding()
         }
 
         // Toggles for session mode and feedback type.
-        Toggle(isOn: $exerciseManager.pomodoro) {
+        Toggle(isOn: $WritingExerciseManager.pomodoro) {
           Text("Pomodoro")
         }
         .padding()
 
-        Toggle(isOn: $exerciseManager.positive_feedback) {
+        Toggle(isOn: $WritingExerciseManager.positive_feedback) {
           Text(
-            exerciseManager.positive_feedback
+            WritingExerciseManager.positive_feedback
               ? "Positive Feedback is on" : "Negative Feedback is on")
         }
         .padding()
@@ -125,7 +125,7 @@ struct ConfigurationsView: View {
         }
 
         // Button to reset settings to their default/remote state.
-        if !exerciseManager.showRunView {
+        if !WritingExerciseManager.showRunView {
           Button(action: {
             configs.resetConfigs()
           }) {
@@ -286,7 +286,7 @@ struct ConfigurationsView: View {
 struct PickerSheetView: View {
   // MARK: - Properties
 
-  @EnvironmentObject var exerciseManager: ExerciseManager
+  @EnvironmentObject var WritingExerciseManager: WritingExerciseManager
   @Binding var learnValue: Int
   @Binding var pauseValue: Int
   @Binding var repetitionsValue: Int
@@ -305,7 +305,7 @@ struct PickerSheetView: View {
           saveCurrentConfig()
         }
         // Show pause and repetition pickers only if Pomodoro mode is enabled.
-        if exerciseManager.pomodoro {
+        if WritingExerciseManager.pomodoro {
           PickerSectionView(title: "Pause", value: $pauseValue, range: 1..<30) {
             current_setting.pause = Double(pauseValue)
             saveCurrentConfig()
@@ -567,6 +567,6 @@ struct FileUploadView: View {
 }
 
 #Preview {
-  ConfigurationsView(current_setting: .constant(UserConfigs.shared.configs))
-        .environmentObject(ExerciseManager())
+  WritingConfigurationsView(current_setting: .constant(UserConfigs.shared.configs))
+    .environmentObject(WritingExerciseManager())
 }

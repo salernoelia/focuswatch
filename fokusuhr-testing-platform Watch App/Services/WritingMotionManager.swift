@@ -1,5 +1,5 @@
 //
-//  MotionManager.swift
+//  WritingMotionManager.swift
 //  FokusUhr Watch App
 //
 //  Created by Julian Amacker on 29.08.2024.
@@ -7,14 +7,14 @@
 import CoreMotion
 import Foundation
 
-// MARK: - MotionManager Class
-/// A wrapper around `CMMotionManager` to simplify starting and stopping accelerometer updates
+// MARK: - WritingMotionManager Class
+/// A wrapper around `CMWritingMotionManager` to simplify starting and stopping accelerometer updates
 /// and storing the data in a thread-safe ring buffer.
-class MotionManager {
+class WritingMotionManager {
   // MARK: - Properties
 
-  /// The underlying `CMMotionManager` instance that provides the sensor data.
-  let motionManager = CMMotionManager()
+  /// The underlying `CMWritingMotionManager` instance that provides the sensor data.
+  let WritingMotionManager = CMWritingMotionManager()
 
   /// The fixed size of the data buffer.
   let bufferSize = 100
@@ -27,10 +27,11 @@ class MotionManager {
   /// Starts collecting accelerometer data at a specified interval.
   /// - Parameter updateInterval: The time interval in seconds between accelerometer updates. Defaults to 0.01 (100 Hz).
   func startAccelerometerUpdates(updateInterval: TimeInterval = 0.01) {
-    guard motionManager.isAccelerometerAvailable else { return }
+    guard WritingMotionManager.isAccelerometerAvailable else { return }
 
-    motionManager.accelerometerUpdateInterval = updateInterval
-    motionManager.startAccelerometerUpdates(to: OperationQueue()) { [weak self] (data, error) in
+    WritingMotionManager.accelerometerUpdateInterval = updateInterval
+    WritingMotionManager.startAccelerometerUpdates(to: OperationQueue()) {
+      [weak self] (data, error) in
       guard let self = self, error == nil, let data = data else { return }
 
       // Append the new data point to the ring buffer.
@@ -40,8 +41,7 @@ class MotionManager {
 
   /// Stops the collection of accelerometer data.
   func stopAccelerometerUpdates() {
-    motionManager.stopAccelerometerUpdates()
+    WritingMotionManager.stopAccelerometerUpdates()
   }
 }
 
-  

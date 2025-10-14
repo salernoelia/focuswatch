@@ -2,18 +2,18 @@ import SwiftUI
 
 struct WritingView: View {
   @StateObject private var configs = UserConfigs.shared
-  @EnvironmentObject var exerciseManager: ExerciseManager
+  @EnvironmentObject var WritingExerciseManager: WritingExerciseManager
   @State private var configsLoaded = false
 
   var body: some View {
     TabView {
 
-      ColorView()
+      WritingColorView()
         .tabItem {
           Label("Starten", systemImage: "play.circle")
         }
 
-      ConfigurationsView(
+      WritingConfigurationsView(
         current_setting: $configs.configs
       )
       .tabItem {

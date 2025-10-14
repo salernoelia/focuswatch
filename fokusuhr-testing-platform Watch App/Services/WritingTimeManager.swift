@@ -1,5 +1,5 @@
 //
-//  TimeManager.swift
+//  WritingTimeManager.swift
 //  FokusUhr Watch App
 //
 //  Created by Julian Amacker on 08.02.2024.
@@ -7,7 +7,7 @@
 import Foundation
 
 /// TODO: RENAME
-class TimeManager: ObservableObject {
+class WritingTimeManager: ObservableObject {
   /// - Returns: The time in seconds
   /// - Parameter timerTime: The time in seconds
   private var timerTime: Int

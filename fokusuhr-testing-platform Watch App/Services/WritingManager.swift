@@ -7,18 +7,18 @@
 import CoreMotion
 import Foundation
 
-// MARK: - WriteManager Class
+// MARK: - WritingManager Class
 /// Manages accelerometer data collection, processing, and activity detection (writing vs. not writing).
-/// It interacts with `MotionManager` to get sensor data and uses either a simple EMA model or a CoreML model
+/// It interacts with `WritingMotionManager` to get sensor data and uses either a simple EMA model or a CoreML model
 /// to determine the user's current state. It also handles the recording of raw sensor data.
-class WriteManager {
+class WritingManager {
   // MARK: - Properties
 
-  /// A weak reference to the `ExerciseManager` to prevent retain cycles and allow communication.
-  weak var exerciseManager: ExerciseManager?
+  /// A weak reference to the `WritingExerciseManager` to prevent retain cycles and allow communication.
+  weak var WritingExerciseManager: WritingExerciseManager?
 
-  /// An instance of `MotionManager` to handle real-time accelerometer data buffering.
-  private var motionManager = MotionManager()
+  /// An instance of `WritingMotionManager` to handle real-time accelerometer data buffering.
+  private var WritingMotionManager = WritingMotionManager()
 
   /// A `CMSensorRecorder` instance used for background recording of accelerometer data for the entire session.
   private var sensorRecorder = CMSensorRecorder()
@@ -49,7 +49,7 @@ class WriteManager {
 
   // MARK: - Initializer
 
-  /// Initializes the `WriteManager`, loading user settings and calculating the total exercise time based on those settings.
+  /// Initializes the `WritingManager`, loading user settings and calculating the total exercise time based on those settings.
   init() {
     let currentSetting =
       UserConfigs.loadConfigFromUserDefaults(forKey: "config_\(deviceID)") ?? Config()
@@ -69,7 +69,7 @@ class WriteManager {
   ///   - completion: A completion handler that returns the start date of the recording.
   func startWritingManager(isPomodoro: Bool, completion: @escaping (Date?) -> Void) {
     let settingSampleFreq = Double(currentSetting?.modelParams.samplingRateHz ?? 100)
-    motionManager.startAccelerometerUpdates(updateInterval: 1 / settingSampleFreq)
+    WritingMotionManager.startAccelerometerUpdates(updateInterval: 1 / settingSampleFreq)
 
     // For non-Pomodoro sessions, set a fixed total exercise time (e.g., 1 hour -> which is the maximum allowed time for backgroun wk session. If longer sessions needed, additional wk extended session logic is needed).
     if !isPomodoro {
@@ -101,8 +101,8 @@ class WriteManager {
   }
 
   /// Stops the real-time accelerometer updates.
-  func stopWriteManager() {
-    motionManager.stopAccelerometerUpdates()
+  func stopWritingManager() {
+    WritingMotionManager.stopAccelerometerUpdates()
     // The CMSensorRecorder stops automatically after its specified duration.
   }
 
@@ -126,7 +126,7 @@ class WriteManager {
 
   /// The main entry point for checking the user's writing status. It dispatches to the appropriate model.
   /// - Parameters:
-  ///   - isMLMode: A flag to decide between the ML model and the EMA model. (Note: Deprecated in `ExerciseManager`)
+  ///   - isMLMode: A flag to decide between the ML model and the EMA model. (Note: Deprecated in `WritingExerciseManager`)
   ///   - currentTime: The current time in the session.
   /// - Returns: A tuple containing the probability of writing and the status code.
   func checkIfWriting(isMLMode: Bool, currentTime: Int) -> (Float, Int) {
@@ -149,7 +149,7 @@ class WriteManager {
   /// Processes accelerometer data using the simple, rule-based EMA model.
   private func processEMAModel() {
     let settingSampleFreq = Int(currentSetting?.modelParams.samplingRateHz ?? 100)
-    let accelerometerDataArray = self.motionManager.dataBuffer.toArray().compactMap { $0 }
+    let accelerometerDataArray = self.WritingMotionManager.dataBuffer.toArray().compactMap { $0 }
 
     // Limit the input data to the expected size (e.g., 1 second worth of data).
     let limitedDataArray = accelerometerDataArray.prefix(settingSampleFreq)
@@ -179,7 +179,7 @@ class WriteManager {
 
   /// Processes accelerometer data using the pre-trained CoreML model.
   private func processMLModel(currentTime: Int) {
-    let accelerometerDataArray = self.motionManager.dataBuffer.toArray().compactMap { $0 }
+    let accelerometerDataArray = self.WritingMotionManager.dataBuffer.toArray().compactMap { $0 }
     let predictionResult = self.predictWriting(from: accelerometerDataArray)
     let threshold = 0.25
     var currentWriteState = false
@@ -196,7 +196,7 @@ class WriteManager {
     }
 
     // Override at the beginning of the session to assume writing.
-    let bufferSize = self.motionManager.bufferSize
+    let bufferSize = self.WritingMotionManager.bufferSize
     if currentTime < (bufferSize / 60) {
       currentWriteState = true
     }
@@ -243,7 +243,7 @@ class WriteManager {
     }
 
     // Use the session filename to create a corresponding .bin filename.
-    guard let sessionFilename = self.exerciseManager?.sessionFilename else {
+    guard let sessionFilename = self.WritingExerciseManager?.sessionFilename else {
       print("Session filename is not available")
       return
     }
