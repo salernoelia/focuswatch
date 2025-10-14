@@ -65,6 +65,7 @@ struct WatchView: View {
           destination: AnyView(
             UniversalChecklistView(
               title: checklist.name,
+              description: checklist.description,
               instructionTitle: checklist.name,
               items: checklist.items,
               checklistId: checklist.id,

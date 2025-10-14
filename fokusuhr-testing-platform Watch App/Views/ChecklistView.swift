@@ -9,6 +9,7 @@ protocol ChecklistItemProtocol: Identifiable {
 extension ChecklistItem: ChecklistItemProtocol {}
 
 enum ChecklistState {
+  case description
   case instructions
   case resumePrompt
   case checklist
@@ -17,6 +18,7 @@ enum ChecklistState {
 
 struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
   let title: String
+  let description: String
   let instructionTitle: String
   let items: [Item]
   let checklistId: UUID
@@ -26,13 +28,22 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
   @State private var remainingItems: [Item] = []
   @State private var collectedItems: [Item] = []
   @State private var currentIndex = 0
-  @State private var state: ChecklistState = .instructions
+  @State private var state: ChecklistState = .description
   @State private var hasExistingProgress = false
 
   private let progressManager = ChecklistProgressManager.shared
 
   var body: some View {
     switch state {
+    case .description:
+      ChecklistDescriptionView(
+        title: title,
+        description: description,
+        onContinue: {
+          state = .instructions
+        }
+      )
+      .transition(.opacity)
     case .instructions:
       ChecklistInstructionsView(
         title: instructionTitle,

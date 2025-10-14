@@ -14,6 +14,12 @@ struct ChecklistDetailView: View {
           .onChange(of: checklist.name) { _ in
             checklistManager.updateChecklist(checklist)
           }
+
+        TextField("Description", text: $checklist.description, axis: .vertical)
+          .lineLimit(3...6)
+          .onChange(of: checklist.description) { _ in
+            checklistManager.updateChecklist(checklist)
+          }
       }
 
       Section("Items") {
