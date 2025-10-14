@@ -147,6 +147,13 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     _ session: WCSession,
     didReceiveApplicationContext applicationContext: [String: Any]
   ) {
+    guard !applicationContext.isEmpty else {
+      #if DEBUG
+        ErrorLogger.log("Received empty application context")
+      #endif
+      return
+    }
+
     DispatchQueue.main.async {
       if let action = applicationContext["action"] as? String {
         switch action {
@@ -160,8 +167,14 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             #endif
           }
         default:
-          break
+          #if DEBUG
+            ErrorLogger.log("Unknown action in application context: \(action)")
+          #endif
         }
+      } else {
+        #if DEBUG
+          ErrorLogger.log("Application context received without action key")
+        #endif
       }
     }
   }
@@ -169,6 +182,13 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
   func session(
     _ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]
   ) {
+    guard !userInfo.isEmpty else {
+      #if DEBUG
+        ErrorLogger.log("Received empty user info")
+      #endif
+      return
+    }
+
     DispatchQueue.main.async {
       if let action = userInfo["action"] as? String {
         switch action {
@@ -180,8 +200,14 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             #endif
           }
         default:
-          break
+          #if DEBUG
+            ErrorLogger.log("Unknown action in user info: \(action)")
+          #endif
         }
+      } else {
+        #if DEBUG
+          ErrorLogger.log("User info received without action key")
+        #endif
       }
     }
   }

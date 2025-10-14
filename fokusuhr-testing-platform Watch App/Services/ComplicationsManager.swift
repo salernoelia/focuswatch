@@ -42,12 +42,12 @@ class ComplicationsManager: NSObject, CLKComplicationDataSource {
     switch family {
     case .graphicCircular:
       return CLKComplicationTemplateGraphicCircularStackText(
-        line1TextProvider: CLKSimpleTextProvider(text: "v"),
+        line1TextProvider: CLKSimpleTextProvider(text: "FokusUhr"),
         line2TextProvider: CLKSimpleTextProvider(text: appVersion)
       )
     case .graphicCorner:
       return CLKComplicationTemplateGraphicCornerTextImage(
-        textProvider: CLKSimpleTextProvider(text: "v\(appVersion)"),
+        textProvider: CLKSimpleTextProvider(text: "FokusUhr\(appVersion)"),
         imageProvider: CLKFullColorImageProvider(
           fullColorImage: UIImage(systemName: "app.badge") ?? UIImage())
       )

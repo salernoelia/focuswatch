@@ -44,11 +44,8 @@ struct widgetEntryView: View {
 
   var body: some View {
     VStack(spacing: 2) {
-      Text("v")
-        .font(.caption2)
-        .fontWeight(.medium)
       Text(entry.version)
-        .font(.caption)
+        .font(.title3)
         .fontWeight(.bold)
     }
   }

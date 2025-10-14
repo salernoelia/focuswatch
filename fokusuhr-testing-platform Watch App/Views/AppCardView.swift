@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftUICore
 
 // TODO: Factor out
 struct AppInfo {
