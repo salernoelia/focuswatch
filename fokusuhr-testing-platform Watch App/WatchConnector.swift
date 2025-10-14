@@ -59,11 +59,11 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
           {
             let forceOverwrite =
               message["forceOverwrite"] as? Bool ?? false
-            checklistManager.updateChecklistData(
+            self.checklistManager.updateChecklistData(
               from: data, forceOverwrite: forceOverwrite)
           }
           if let imageData = message["imageData"] as? [String: String] {
-            galleryManager.saveGalleryImages(imageData)
+            self.galleryManager.saveGalleryImages(imageData)
           }
           replyHandler(["status": "success"])
         case "updateAuth":

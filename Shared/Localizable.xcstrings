@@ -68,9 +68,6 @@
     "Aktuelle Einstellung:" : {
 
     },
-    "Alles gesammelt." : {
-
-    },
     "Allow Telemetry" : {
 
     },
@@ -212,6 +209,9 @@
     "Force Syncing..." : {
 
     },
+    "Fortschritt gefunden" : {
+
+    },
     "Gallery" : {
 
     },
@@ -282,6 +282,9 @@
 
     },
     "Negative Feedback is on" : {
+
+    },
+    "Neu anfangen" : {
 
     },
     "New Event" : {
@@ -472,6 +475,9 @@
 
     },
     "Watch Status" : {
+
+    },
+    "Weitermachen" : {
 
     },
     "When" : {

@@ -8,17 +8,17 @@
 import CoreLocation
 import Foundation
 
-class WritingLocationManager: NSObject, CLWritingLocationManagerDelegate {
-  private var WritingLocationManager: CLWritingLocationManager?
+class WritingLocationManager: NSObject, CLLocationManagerDelegate {
+  private var locationManager: CLLocationManager?
   private var completion: ((Result<[String: Double], Error>) -> Void)?
 
   static let shared = WritingLocationManager()
 
   private override init() {
     super.init()
-    self.WritingLocationManager = CLWritingLocationManager()
-    self.WritingLocationManager?.delegate = self
-    self.WritingLocationManager?.desiredAccuracy = kCLLocationAccuracyBest
+    self.locationManager = CLLocationManager()
+    self.locationManager?.delegate = self
+    self.locationManager?.desiredAccuracy = kCLLocationAccuracyBest
   }
 
   // Request location with a completion handler
@@ -28,7 +28,7 @@ class WritingLocationManager: NSObject, CLWritingLocationManagerDelegate {
     // Check if location services are enabled
     let myQueue = DispatchQueue(label: "locationQueue")
     myQueue.async {
-      guard CLWritingLocationManager.locationServicesEnabled() else {
+      guard CLLocationManager.locationServicesEnabled() else {
         completion(
           .failure(
             NSError(
@@ -38,12 +38,12 @@ class WritingLocationManager: NSObject, CLWritingLocationManagerDelegate {
       }
     }
     // Start updating location directly
-    WritingLocationManager?.requestLocation()
+    locationManager?.requestLocation()
   }
 
   // Handle successful location updates
-  func WritingLocationManager(
-    _ manager: CLWritingLocationManager, didUpdateLocations locations: [CLLocation]
+  func locationManager(
+    _ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]
   ) {
     guard let location = locations.last else {
       self.completion?(
@@ -72,14 +72,14 @@ class WritingLocationManager: NSObject, CLWritingLocationManagerDelegate {
   }
 
   // Handle location update errors
-  func WritingLocationManager(_ manager: CLWritingLocationManager, didFailWithError error: Error) {
+  func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
     print("Location manager failed with error: \(error.localizedDescription)")
     self.completion?(.failure(error))
     self.completion = nil  // Clear the completion handler to avoid duplicate calls
   }
 
   // Handle authorization status changes
-  func WritingLocationManagerDidChangeAuthorization(_ manager: CLWritingLocationManager) {
+  func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
     switch manager.authorizationStatus {
     case .authorizedWhenInUse, .authorizedAlways:
       // Authorized, nothing to do

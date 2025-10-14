@@ -14,7 +14,7 @@ class WritingMotionManager {
   // MARK: - Properties
 
   /// The underlying `CMWritingMotionManager` instance that provides the sensor data.
-  let WritingMotionManager = CMWritingMotionManager()
+  let WritingMotionManager = CMMotionManager()
 
   /// The fixed size of the data buffer.
   let bufferSize = 100

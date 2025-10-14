@@ -1,6 +1,7 @@
+import Combine
 import Foundation
 
-class ChecklistManager {
+class ChecklistManager: ObservableObject {
   @Published var checklistData = ChecklistData.default
   private var galleryManager = GalleryManager.shared
 
@@ -44,18 +45,25 @@ class ChecklistManager {
           ErrorLogger.log("Force overwrite: Clearing old data and replacing with new data")
         #endif
         galleryManager.clearOldGalleryImages()
-        checklistData = newData
+
+        DispatchQueue.main.async {
+          self.checklistData = newData
+          self.saveChecklistData()
+        }
+
         #if DEBUG
           ErrorLogger.log("Replaced with \(newData.checklists.count) checklists")
         #endif
       } else {
-        checklistData = newData
+        DispatchQueue.main.async {
+          self.checklistData = newData
+          self.saveChecklistData()
+        }
+
         #if DEBUG
           ErrorLogger.log("Updated with \(newData.checklists.count) checklists")
         #endif
       }
-
-      saveChecklistData()
     } catch {
       let appError = AppError.decodingFailed(type: "checklist data", underlying: error)
       #if DEBUG

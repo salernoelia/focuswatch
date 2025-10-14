@@ -101,20 +101,7 @@ extension WatchConnector {
         )
       #endif
 
-      WCSession.default.sendMessage(
-        message,
-        replyHandler: { response in
-          #if DEBUG
-            print("Checklist force sync successful: \(response)")
-          #endif
-        }
-      ) { error in
-        let appError = AppError.watchMessageFailed(underlying: error)
-        #if DEBUG
-          ErrorLogger.log(appError)
-        #endif
-        self.lastError = appError
-      }
+      sendMessageWithRetry(message: message, retryCount: 3)
     } catch {
       let appError = AppError.encodingFailed(
         type: "checklist", underlying: error)
@@ -122,6 +109,49 @@ extension WatchConnector {
         ErrorLogger.log(appError)
       #endif
       lastError = appError
+    }
+  }
+
+  private func sendMessageWithRetry(message: [String: Any], retryCount: Int) {
+    guard retryCount > 0 else {
+      #if DEBUG
+        print("Max retries reached for sync")
+      #endif
+      lastError = .watchMessageFailed(
+        underlying: NSError(
+          domain: "WatchConnector",
+          code: -1,
+          userInfo: [NSLocalizedDescriptionKey: "Max retries reached"]
+        ))
+      return
+    }
+
+    guard WCSession.default.isReachable else {
+      #if DEBUG
+        print("Watch not reachable, retrying in 1s...")
+      #endif
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        self.sendMessageWithRetry(message: message, retryCount: retryCount - 1)
+      }
+      return
+    }
+
+    WCSession.default.sendMessage(
+      message,
+      replyHandler: { response in
+        #if DEBUG
+          print("Checklist sync successful: \(response)")
+        #endif
+      }
+    ) { error in
+      #if DEBUG
+        print("Sync failed, retrying... (\(retryCount - 1) left)")
+        ErrorLogger.log(AppError.watchMessageFailed(underlying: error))
+      #endif
+
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        self.sendMessageWithRetry(message: message, retryCount: retryCount - 1)
+      }
     }
   }
 

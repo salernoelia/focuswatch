@@ -9,6 +9,7 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
   @State private var scale: CGFloat = 1.0
   @State private var opacity: Double = 1.0
   @State private var isProcessing = false
+  @State private var cachedImage: UIImage?
 
   private let dragThreshold: CGFloat = 40
   private let animationDuration: Double = 0.3
@@ -26,30 +27,19 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
     .frame(height: 130)
     .background(
       ZStack {
-        if let uiImage = loadImage(named: item.imageName) {
-          Image(uiImage: uiImage)
+        if let image = cachedImage {
+          Image(uiImage: image)
             .resizable()
             .aspectRatio(contentMode: .fill)
+            .frame(maxWidth: .infinity)
             .frame(height: 130)
             .clipped()
+            .brightness(-0.2)
         } else {
-          if UIImage(named: item.imageName) != nil {
-            Image(item.imageName)
-              .resizable()
-              .aspectRatio(contentMode: .fill)
-              .frame(height: 130)
-              .clipped()
-          } else {
-            Image(systemName: "photo")
-              .foregroundColor(.gray)
-              .font(.system(size: 40))
-          }
+          Color.blue.opacity(0.6)
         }
-
-        Rectangle()
-          .fill(Color.black.opacity(0.3))
-
       }
+
     )
     .clipShape(RoundedRectangle(cornerRadius: 16))
     .overlay(
@@ -65,6 +55,11 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
         .onChanged(handleDragChange)
         .onEnded(handleDragEnd)
     )
+    .onAppear {
+      if cachedImage == nil {
+        cachedImage = loadImage(named: item.imageName)
+      }
+    }
   }
 
   private var borderColor: Color {
@@ -82,11 +77,9 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
     let translation = value.translation.width
 
     if abs(translation) > abs(value.translation.height) {
-      withAnimation(.interactiveSpring()) {
-        dragOffset = translation
-        let progress = min(abs(translation) / 100, 1.0)
-        scale = 1.0 - (progress * 0.1)
-      }
+      dragOffset = translation * 0.8
+      let progress = min(abs(translation) / 100, 1.0)
+      scale = 1.0 - (progress * 0.05)
     }
   }
 
@@ -126,12 +119,15 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
       } else {
         onSkip()
       }
-      resetState()
+      dragOffset = 0
+      scale = 1.0
+      opacity = 1.0
+      isProcessing = false
     }
   }
 
   private func resetCard() {
-    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+    withAnimation(.easeOut(duration: 0.2)) {
       dragOffset = 0
       scale = 1.0
       opacity = 1.0
@@ -139,15 +135,17 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
   }
 
   private func resetState() {
-    withAnimation(.linear(duration: 0)) {
-      dragOffset = 0
-      scale = 1.0
-      opacity = 1.0
-    }
+    dragOffset = 0
+    scale = 1.0
+    opacity = 1.0
     isProcessing = false
   }
 
   private func loadImage(named imageName: String) -> UIImage? {
+    if let bundledImage = UIImage(named: imageName) {
+      return bundledImage
+    }
+
     guard
       let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         .first

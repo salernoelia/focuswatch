@@ -118,12 +118,12 @@ class WritingExerciseManager: NSObject, ObservableObject {
   // MARK: - Location
 
   /// A shared instance of the location manager to fetch the user's location.
-  let WritingLocationManager = WritingLocationManager.shared
+  let writingLocationManager = WritingLocationManager.shared
 
   /// Lazily initialized manager for writing sensor data to files.
-  lazy var WritingManager: WritingManager = {
+  lazy var writingManager: WritingManager = {
     let manager = WritingManager()
-    manager.WritingExerciseManager = self
+    manager.exerciseManager = self
     return manager
   }()
 
@@ -222,7 +222,7 @@ class WritingExerciseManager: NSObject, ObservableObject {
   /// The completion handler is called after the setup is complete.
   func setupWritingManagerAndTimer(completion: @escaping () -> Void) {
     // The write manager is started differently based on the mode.
-    WritingManager.startWritingManager(isPomodoro: self.pomodoro) { [weak self] startDate in
+    writingManager.startWritingManager(isPomodoro: self.pomodoro) { [weak self] startDate in
       guard let self = self, let startDate = startDate else { return }
       DispatchQueue.main.async {
         if self.recordStartDate == nil {
@@ -241,7 +241,7 @@ class WritingExerciseManager: NSObject, ObservableObject {
   /// This method is central to the app's state logic during a work interval.
   private func monitorExercise() {
     // Check the user's current writing status from the WritingManager.
-    let (proba, status) = WritingManager.checkIfWriting(
+    let (proba, status) = writingManager.checkIfWriting(
       isMLMode: isMLMode, currentTime: currentTime)
     let posFeedbackInterval = currentSetting.posFBIntveral
     DispatchQueue.main.async {
@@ -324,7 +324,7 @@ class WritingExerciseManager: NSObject, ObservableObject {
     pauseTimer?.startTimer()
     changeState(to: .pausing)
 
-    WritingManager.resetThinkCount()
+    writingManager.resetThinkCount()
 
     // Play a notification haptic.
     hapticManager.playHaptic(type: .notification, repeatCount: 2, delayBetween: 0.8)
@@ -416,7 +416,7 @@ class WritingExerciseManager: NSObject, ObservableObject {
   /// Resets the manager to its initial state, ready for a new session.
   func resetExercise() {
     changeState(to: .ready)
-    WritingManager.resetThinkCount()
+    writingManager.resetThinkCount()
     stateHistory = []
     workingHistory = []
     emaResHistory = []
@@ -497,7 +497,7 @@ class WritingExerciseManager: NSObject, ObservableObject {
     let dataStorageManager = DataStorageManager()
 
     // Request location to include in session data.
-    WritingLocationManager.requestLocation { [weak self] result in
+    writingLocationManager.requestLocation { [weak self] result in
       guard let self = self else { return }
       var location: Any = "N/A"
       switch result {

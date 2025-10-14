@@ -14,23 +14,13 @@ struct ChecklistMainView<Item: ChecklistItemProtocol>: View {
       VStack {
         Spacer()
 
-        if !remainingItems.isEmpty && currentIndex < remainingItems.count {
+        if !remainingItems.isEmpty, currentIndex < remainingItems.count {
           ChecklistCard(
             item: remainingItems[currentIndex],
             onAdd: addCurrentItem,
             onSkip: skipCurrentItem
           )
           .id(remainingItems[currentIndex].id)
-        } else if !remainingItems.isEmpty {
-          ChecklistCard(
-            item: remainingItems[0],
-            onAdd: addCurrentItem,
-            onSkip: skipCurrentItem
-          )
-          .id(remainingItems[0].id)
-          .onAppear {
-            currentIndex = 0
-          }
         }
 
         Spacer()
