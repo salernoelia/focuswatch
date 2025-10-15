@@ -24,12 +24,6 @@ struct WatchView: View {
 
     apps.append(contentsOf: [
       PrototypeApp(
-        title: "Tachometer",
-        description: "Wie fühlst du dich gerade?",
-        color: .yellow,
-        destination: AnyView(SpeedometerView())
-      ),
-      PrototypeApp(
         title: "Schreiben",
         description: "Fokushilfe beim Schreiben.",
         color: .blue,

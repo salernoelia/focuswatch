@@ -5,12 +5,12 @@ struct SpeedometerView: View {
 
   var body: some View {
     GeometryReader { geometry in
-      let size = min(geometry.size.width, geometry.size.height) * 1.9
+      let size = min(geometry.size.width, geometry.size.height) * 1.86
       let center = CGPoint(
         x: geometry.size.width / 2, y: geometry.size.height * 0.4)
 
       VStack(spacing: 8) {
-        Text("Wie fühlst du dich gerade?")
+        Text("Wie fühlst du dich?")
           .font(.caption)
           .foregroundColor(.white)
           .multilineTextAlignment(.center)
@@ -33,18 +33,18 @@ struct SpeedometerView: View {
             .foregroundColor(.white)
             .position(x: center.x, y: center.y + 35)
         }
-        .gesture(
-          DragGesture()
-            .onChanged { value in
-              let dx = value.location.x - center.x
-              let radius = size * 0.18
+        // .gesture(
+        //   DragGesture()
+        //     .onChanged { value in
+        //       let dx = value.location.x - center.x
+        //       let radius = size * 0.18
 
-              if abs(dx) <= radius {
-                moodValue = (dx + radius) / (2 * radius)
-                moodValue = max(0, min(1, moodValue))
-              }
-            }
-        )
+        //       if abs(dx) <= radius {
+        //         moodValue = (dx + radius) / (2 * radius)
+        //         moodValue = max(0, min(1, moodValue))
+        //       }
+        //     }
+        // )
         .focusable()
         .digitalCrownRotation(
           $moodValue, from: 0.0, through: 1.0, by: 0.01,

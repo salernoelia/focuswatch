@@ -15,7 +15,7 @@ struct ChecklistDescriptionView: View {
             .foregroundColor(.white)
             .frame(maxWidth: .infinity, alignment: .center)
         }
-        .frame(maxHeight: 120)
+        .frame(maxHeight: 150)
       }
       Button("Weiter") {
         onContinue()

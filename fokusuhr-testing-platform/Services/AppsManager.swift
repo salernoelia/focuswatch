@@ -32,7 +32,7 @@ class AppsManager: ObservableObject {
     var currentIndex = 0
 
     let builtInApps = [
-      ("Tachometer", "Gefühlsanzeige", Color.yellow),
+      //   ("Tachometer", "Gefühlsanzeige", Color.yellow),
       ("Schreiben", "Fokushilfe beim Schreiben.", Color.blue),
       ("Farbatmung", "Beruhigende Atemübungen", Color.green),
       //("Fidget Spinner", "Digitaler Fidget Spinner", Color.orange),
