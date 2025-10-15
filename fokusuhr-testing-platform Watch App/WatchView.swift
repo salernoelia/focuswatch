@@ -79,24 +79,34 @@ struct WatchView: View {
   }
 
   var body: some View {
-    NavigationView {
-      Group {
-        if let selectedIndex = selectedAppIndex,
-          selectedIndex < prototypeApps.count
-        {
-          prototypeApps[selectedIndex].destination
-            .navigationBarHidden(false)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-              ToolbarItem(placement: .cancellationAction) {
-                Button("Zurück") {
-                  selectedAppIndex = nil
+    TabView {
+      SpeedometerView()
+        .tabItem {
+          Label("Tachometer", systemImage: "gauge")
+        }
+
+      NavigationView {
+        Group {
+          if let selectedIndex = selectedAppIndex,
+            selectedIndex < prototypeApps.count
+          {
+            prototypeApps[selectedIndex].destination
+              .navigationBarHidden(false)
+              .navigationBarTitleDisplayMode(.inline)
+              .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                  Button("Zurück") {
+                    selectedAppIndex = nil
+                  }
                 }
               }
-            }
-        } else {
-          mainMenuView
+          } else {
+            mainMenuView
+          }
         }
+      }
+      .tabItem {
+        Label("Apps", systemImage: "square.grid.2x2")
       }
     }
     .onReceive(watchConnector.$currentView) { newView in

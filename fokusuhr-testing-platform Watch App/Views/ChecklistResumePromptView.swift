@@ -7,8 +7,8 @@ struct ChecklistResumePromptView: View {
   var body: some View {
     VStack(spacing: 16) {
       Text("Fortschritt gefunden")
-        .font(.title3)
-        .fontWeight(.semibold)
+        .lineLimit(nil)
+        .fixedSize(horizontal: false, vertical: true)
 
       VStack(spacing: 12) {
         Button(action: onResume) {
