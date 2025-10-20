@@ -1,5 +1,5 @@
-import SwiftUI
 import PhotosUI
+import SwiftUI
 
 struct ChecklistAddItemView: View {
     @Binding var checklist: Checklist
@@ -11,107 +11,161 @@ struct ChecklistAddItemView: View {
     @State private var showingCameraPicker = false
     @State private var showingActionSheet = false
     @State private var selectedUIImage: UIImage?
-    @State private var newImageLabel = ""
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         NavigationView {
             Form {
                 Section {
-                    Picker("Select Image", selection: $selectedImage) {
+                    if let newImage = selectedUIImage {
+                        HStack {
+                            Spacer()
+                            Image(uiImage: newImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 120, height: 120)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(
+                                            Color.secondary.opacity(0.2),
+                                            lineWidth: 1
+                                        )
+                                )
+                            Spacer()
+                        }
+
+                        Button(role: .destructive) {
+                            selectedUIImage = nil
+                            if title == "New Item" {
+                                title = ""
+                            }
+                        } label: {
+                            Label("Remove Photo", systemImage: "trash")
+                        }
+                    } else if !selectedImage.isEmpty,
+                        let image = getSelectedImage()
+                    {
+                        HStack {
+                            Spacer()
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 120, height: 120)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(
+                                            Color.secondary.opacity(0.2),
+                                            lineWidth: 1
+                                        )
+                                )
+                            Spacer()
+                        }
+                    }
+                } header: {
+                    Text("Preview")
+                }
+
+                Section {
+                    TextField("Enter label", text: $title)
+                } header: {
+                    Text("Label")
+                } footer: {
+                    Text("This label will be displayed alongside the image")
+                }
+
+                Section {
+                    Picker("Image", selection: $selectedImage) {
                         Text("None").tag("")
                         ForEach(availableImages, id: \.self) { imageName in
                             Text(imageName).tag(imageName)
                         }
                     }
                     .disabled(selectedUIImage != nil)
-                    
-                    Button(selectedUIImage != nil ? "Replace Photo" : "Take New Photo") {
+
+                    Button {
                         showingActionSheet = true
-                    }
-                    .foregroundColor(.blue)
-                    
-                    if let newImage = selectedUIImage {
-                        HStack {
-                            Text("New Photo:")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Spacer()
-                            Image(uiImage: newImage)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 60, height: 60)
-                                .clipped()
-                                .cornerRadius(8)
-                            Button("Remove") {
-                                selectedUIImage = nil
-                                if title == "New Item" {
-                                    title = ""
-                                }
-                            }
-                            .font(.caption)
-                            .foregroundColor(.red)
-                        }
+                    } label: {
+                        Label(
+                            selectedUIImage != nil
+                                ? "Replace Photo" : "Take New Photo",
+                            systemImage: "camera"
+                        )
                     }
                 } header: {
                     Text("Image Selection")
                 }
-                
-                Section {
-                    TextField("Enter image label", text: $title)
-                } header: {
-                    Text("Image Label")
-                }
 
-               
             }
             .onChange(of: selectedImage) { newValue in
                 if title.isEmpty {
                     title = newValue
                 }
             }
-            .navigationTitle("Add Image")
-            .navigationBarItems(
-                leading: Button("Cancel") {
-                    presentationMode.wrappedValue.dismiss()
-                },
-                trailing: Button("Save") {
-                    var finalImageName = selectedImage
-                    
-                    if let newImage = selectedUIImage, !title.isEmpty {
-                        galleryStorage.addItem(image: newImage, label: title)
-                        finalImageName = title
+            .navigationTitle("Add Item")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
                     }
-                    
-                    let finalTitle = title.isEmpty ? (selectedImage.isEmpty ? "Untitled" : selectedImage) : title
-                    
-                    checklistManager.addItem(
-                        to: checklist,
-                        title: finalTitle,
-                        imageName: finalImageName
-                    )
-                    checklist.items.append(
-                        ChecklistItem(title: finalTitle, imageName: finalImageName)
-                    )
-                    presentationMode.wrappedValue.dismiss()
                 }
-                .disabled((title.isEmpty && selectedImage.isEmpty && selectedUIImage == nil) || 
-                         (selectedUIImage != nil && title.isEmpty))
-            )
+
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        var finalImageName = selectedImage
+
+                        if let newImage = selectedUIImage, !title.isEmpty {
+                            galleryStorage.addItem(
+                                image: newImage,
+                                label: title
+                            )
+                            finalImageName = title
+                        }
+
+                        let finalTitle =
+                            title.isEmpty
+                            ? (selectedImage.isEmpty
+                                ? "Untitled" : selectedImage) : title
+
+                        checklistManager.addItem(
+                            to: checklist,
+                            title: finalTitle,
+                            imageName: finalImageName
+                        )
+                        checklist.items.append(
+                            ChecklistItem(
+                                title: finalTitle,
+                                imageName: finalImageName
+                            )
+                        )
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                    .disabled(
+                        (title.isEmpty && selectedImage.isEmpty
+                            && selectedUIImage == nil)
+                            || (selectedUIImage != nil && title.isEmpty)
+                    )
+                    .fontWeight(.semibold)
+                }
+            }
         }
         .actionSheet(isPresented: $showingActionSheet) {
             ActionSheet(
                 title: Text("Add Photo"),
                 buttons: [
                     .default(Text("Camera")) {
-                        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                        if UIImagePickerController.isSourceTypeAvailable(
+                            .camera
+                        ) {
                             showingCameraPicker = true
                         }
                     },
                     .default(Text("Photo Library")) {
                         showingPhotoPicker = true
                     },
-                    .cancel()
+                    .cancel(),
                 ]
             )
         }
@@ -119,7 +173,7 @@ struct ChecklistAddItemView: View {
             PhotoPicker(source: .photoLibrary) { images in
                 if let image = images.first {
                     selectedUIImage = image
-                    selectedImage = "" 
+                    selectedImage = ""
                 }
             }
         }
@@ -127,15 +181,30 @@ struct ChecklistAddItemView: View {
             PhotoPicker(source: .camera) { images in
                 if let image = images.first {
                     selectedUIImage = image
-                    selectedImage = "" 
+                    selectedImage = ""
                 }
             }
         }
     }
 
     private var availableImages: [String] {
-        let watchImages = ["Schere", "Lineal", "Bleistift", "Leimstift", "Buntes Papier", "Wolle", "Wackelaugen", "Locher", "Zucker", "Ei", "Haselnüsse", "Schokoladenpulver", "Maizena", "Schüssel", "Kelle", "Backblech", "Backpapier", "Waage", "Messlöffel", "Topflappen"]
+        let watchImages = [
+            "Schere", "Lineal", "Bleistift", "Leimstift", "Buntes Papier",
+            "Wolle", "Wackelaugen",
+            "Locher", "Zucker", "Ei", "Haselnüsse", "Schokoladenpulver",
+            "Maizena", "Schüssel", "Kelle",
+            "Backblech", "Backpapier", "Waage", "Messlöffel", "Topflappen",
+        ]
         let galleryImages = galleryStorage.items.map { $0.label }
         return galleryImages + watchImages.filter { UIImage(named: $0) != nil }
+    }
+
+    private func getSelectedImage() -> UIImage? {
+        if let galleryItem = galleryStorage.items.first(where: {
+            $0.label == selectedImage
+        }) {
+            return galleryItem.image
+        }
+        return UIImage(named: selectedImage)
     }
 }

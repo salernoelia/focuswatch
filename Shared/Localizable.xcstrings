@@ -17,6 +17,9 @@
     "%lld" : {
 
     },
+    "%lld items" : {
+
+    },
     "•" : {
 
     },
@@ -38,12 +41,6 @@
     "Add Checklist" : {
 
     },
-    "Add First Photo" : {
-
-    },
-    "Add Image" : {
-
-    },
     "Add Item" : {
 
     },
@@ -53,7 +50,7 @@
     "Add Photo" : {
 
     },
-    "Add photos to your gallery to use them in checklists and other apps" : {
+    "Add photos to use in checklists" : {
 
     },
     "Add TestUser" : {
@@ -158,6 +155,9 @@
     "Edit" : {
 
     },
+    "Edit Checklist" : {
+
+    },
     "Edit Checklists" : {
 
     },
@@ -167,7 +167,7 @@
     "Edit Label" : {
 
     },
-    "Edit photo label:" : {
+    "Edit Photo" : {
 
     },
     "Einatmen" : {
@@ -185,13 +185,10 @@
     "End" : {
 
     },
-    "Enter a label for your photo:" : {
+    "Enter a descriptive label for your photo" : {
 
     },
-    "Enter image label" : {
-
-    },
-    "Enter new label" : {
+    "Enter label" : {
 
     },
     "Entry Details" : {
@@ -230,13 +227,10 @@
     "History" : {
 
     },
-    "Image Label" : {
+    "Image" : {
 
     },
     "Image Selection" : {
-
-    },
-    "Image: %@" : {
 
     },
     "IOS App" : {
@@ -252,6 +246,9 @@
 
     },
     "Journal History" : {
+
+    },
+    "Label" : {
 
     },
     "Last Name" : {
@@ -296,9 +293,6 @@
     "New Event" : {
 
     },
-    "New Photo:" : {
-
-    },
     "No Entries" : {
 
     },
@@ -341,6 +335,9 @@
     "Prefer not to say" : {
 
     },
+    "Preview" : {
+
+    },
     "Put Watch into Menu State" : {
 
     },
@@ -353,7 +350,7 @@
     "Refresh" : {
 
     },
-    "Remove" : {
+    "Remove Photo" : {
 
     },
     "Repeat" : {
@@ -393,13 +390,10 @@
     "Search entries..." : {
 
     },
-    "Search images..." : {
+    "Search photos" : {
 
     },
     "Search users" : {
-
-    },
-    "Select Image" : {
 
     },
     "Select User" : {
@@ -454,6 +448,9 @@
 
     },
     "The usage data of the watch will be collected to improve the functionality of FokusUhr as it is a scientific project." : {
+
+    },
+    "This label will be displayed alongside the image" : {
 
     },
     "Title" : {

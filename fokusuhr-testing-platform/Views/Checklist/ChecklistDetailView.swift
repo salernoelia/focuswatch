@@ -11,18 +11,21 @@ struct ChecklistDetailView: View {
     List {
       Section {
         TextField("Checklist Name", text: $checklist.name)
+          .font(.headline)
           .onChange(of: checklist.name) { _ in
             checklistManager.updateChecklist(checklist)
           }
 
         TextField("Description", text: $checklist.description, axis: .vertical)
+          .font(.subheadline)
+          .foregroundColor(.secondary)
           .lineLimit(3...6)
           .onChange(of: checklist.description) { _ in
             checklistManager.updateChecklist(checklist)
           }
       }
 
-      Section("Items") {
+      Section {
         ForEach(checklist.items) { item in
           ChecklistItemEditRow(
             item: item, checklist: $checklist, checklistManager: checklistManager,
@@ -30,12 +33,21 @@ struct ChecklistDetailView: View {
         }
         .onDelete(perform: deleteItems)
 
-        Button("Add Item") {
+        Button {
           showingAddItem = true
+        } label: {
+          HStack {
+            Image(systemName: "plus.circle.fill")
+              .foregroundColor(.accentColor)
+            Text("Add Item")
+              .foregroundColor(.accentColor)
+          }
         }
+      } header: {
+        Text("Items")
       }
     }
-    .navigationTitle(checklist.name)
+    .navigationTitle("Edit Checklist")
     .navigationBarTitleDisplayMode(.inline)
     .sheet(isPresented: $showingAddItem) {
       ChecklistAddItemView(
