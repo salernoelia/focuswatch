@@ -12,6 +12,7 @@ struct ChecklistInstructionsView: View {
           .fontWeight(.bold)
         Spacer()
       }
+      .padding(.top)
       VStack(spacing: 12) {
         HStack(spacing: 8) {
           Image(systemName: "arrow.right")
@@ -34,4 +35,7 @@ struct ChecklistInstructionsView: View {
     }
     .padding()
   }
+}
+#Preview {
+  ChecklistInstructionsView(title: "Test", onStart: {})
 }

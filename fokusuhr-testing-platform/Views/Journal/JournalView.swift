@@ -61,7 +61,7 @@ struct JournalView: View {
   }
 
   private func loadData() async {
-    await appsManager.fetchApps()
+    appsManager.loadApps()
     await testUsersManager.fetchTestUsers()
     entries = await journalManager.fetchJournalEntries()
   }

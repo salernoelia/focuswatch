@@ -1,11 +1,5 @@
 import SwiftUI
 
-// TODO: Factor out
-struct AppInfo {
-  let title: String
-  let description: String
-  let color: Color
-}
 
 struct AppCardView: View {
   let app: AppInfo

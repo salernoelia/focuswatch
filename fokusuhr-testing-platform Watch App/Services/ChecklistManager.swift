@@ -11,6 +11,8 @@ class ChecklistManager: ObservableObject {
     do {
       let data = try JSONEncoder().encode(checklistData)
       UserDefaults.standard.set(data, forKey: "checklistData")
+
+      NotificationCenter.default.post(name: .checklistDataChanged, object: nil)
     } catch {
       let appError = AppError.encodingFailed(type: "checklist data", underlying: error)
       #if DEBUG

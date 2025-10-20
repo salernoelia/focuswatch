@@ -137,15 +137,11 @@ struct WizardView: View {
           await testUsersManager.fetchTestUsers()
           await supervisorManager.fetchCurrentSupervisor()
         }
-        appsManager.refreshApps()
         reconnectToWatch()
       }
       .navigationTitle("Wizard of Oz")
       .sheet(isPresented: $showingEditor) {
         ChecklistEditorView(checklistManager: checklistManager)
-          .onDisappear {
-            appsManager.refreshApps()
-          }
       }
       .onAppear {
         checklistManager.watchConnector = watchConnector

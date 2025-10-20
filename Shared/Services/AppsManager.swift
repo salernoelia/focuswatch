@@ -9,22 +9,27 @@ class AppsManager: ObservableObject {
 
   static let shared = AppsManager()
 
+  private var cancellables = Set<AnyCancellable>()
+
   private init() {
-    Task {
-      await fetchApps()
-    }
+    loadApps()
+    observeChecklistChanges()
   }
 
-  func fetchApps() async {
-    await MainActor.run {
-      isLoading = true
-      lastError = nil
-    }
+  private func observeChecklistChanges() {
+    NotificationCenter.default.publisher(for: .checklistDataChanged)
+      .sink { [weak self] _ in
+        self?.loadApps()
+      }
+      .store(in: &cancellables)
+  }
 
-    await MainActor.run {
-      apps = buildAppsList()
-      isLoading = false
-    }
+  func loadApps() {
+    isLoading = true
+    lastError = nil
+
+    apps = buildAppsList()
+    isLoading = false
   }
 
   private func buildAppsList() -> [AppInfo] {
@@ -32,12 +37,10 @@ class AppsManager: ObservableObject {
     var currentIndex = 0
 
     let builtInApps = [
-      ("Tachometer", "Gefühlsanzeige", Color.yellow),
+      ("Tachometer", "Wie fühlst du dich gerade?", Color.yellow),
       ("Schreiben", "Fokushilfe beim Schreiben.", Color.blue),
       ("Farbatmung", "Beruhigende Atemübungen", Color.green),
-      //("Fidget Spinner", "Digitaler Fidget Spinner", Color.orange),
       ("Anne (Beta)", "Virtueller Assistent", Color.red),
-
     ]
 
     for (title, description, color) in builtInApps {
@@ -51,7 +54,7 @@ class AppsManager: ObservableObject {
       currentIndex += 1
     }
 
-    let checklistData = ChecklistManager.loadSharedData()
+    let checklistData = loadChecklistData()
     for checklist in checklistData.checklists {
       appsList.append(
         AppInfo(
@@ -66,9 +69,28 @@ class AppsManager: ObservableObject {
     return appsList
   }
 
-  func refreshApps() {
-    Task {
-      await fetchApps()
+  private func loadChecklistData() -> ChecklistData {
+    guard let data = UserDefaults.standard.data(forKey: "checklistData") else {
+      return ChecklistData.default
+    }
+
+    do {
+      return try JSONDecoder().decode(ChecklistData.self, from: data)
+    } catch {
+      let appError = AppError.decodingFailed(type: "checklist data", underlying: error)
+      #if DEBUG
+        ErrorLogger.log(appError)
+      #endif
+      lastError = appError
+      return ChecklistData.default
     }
   }
+
+  func refreshApps() {
+    loadApps()
+  }
+}
+
+extension Notification.Name {
+  static let checklistDataChanged = Notification.Name("checklistDataChanged")
 }

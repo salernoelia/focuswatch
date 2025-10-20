@@ -2,163 +2,159 @@ import SwiftUI
 import WatchConnectivity
 
 enum WatchViewState {
-    case mainMenu
-    case app(Int)
+  case mainMenu
+  case app(Int)
 }
 
 struct PrototypeApp {
-    let title: String
-    let description: String
-    let color: Color
-    let destination: AnyView
+  let title: String
+  let description: String
+  let color: Color
+  let destination: AnyView
 }
 
 struct WatchView: View {
-    @EnvironmentObject var watchConnector: WatchConnector
-    @ObservedObject private var checklistManager = ChecklistManager.shared
-    @State private var currentView: WatchViewState = .mainMenu
-    @State private var selectedAppIndex: Int? = nil
-    @State private var selectedTab = 0
+  @EnvironmentObject var watchConnector: WatchConnector
+  @StateObject private var appsManager = AppsManager.shared
+  @State private var currentView: WatchViewState = .mainMenu
+  @State private var selectedAppIndex: Int? = nil
+  @State private var selectedTab = 0
 
-    private var prototypeApps: [PrototypeApp] {
-        var apps: [PrototypeApp] = []
-
-        apps.append(contentsOf: [
-            PrototypeApp(
-              title: "Tachometer",
-              description: "Wie fühlst du dich gerade?",
-              color: .yellow,
-              destination: AnyView(SpeedometerView())
-            ),
-            PrototypeApp(
-                title: "Schreiben",
-                description: "Fokushilfe beim Schreiben.",
-                color: .blue,
-                destination: AnyView(WritingView())
-            ),
-            PrototypeApp(
-                title: "Farbatmung",
-                description: "Beruhigende Atemübungen",
-                color: .green,
-                destination: AnyView(ColorBreathingView())
-            ),
-            // PrototypeApp(
-            //     title: "Fidget Spinner",
-            //     description: "Digitaler Fidget Spinner",
-            //     color: .orange,
-            //     destination: AnyView(FidgetSpinnerView())
-            // ),
-            PrototypeApp(
-                title: "Anne (Beta)",
-                description: "Virtueller Assistent",
-                color: .red,
-                destination: AnyView(AnneView())
-            ),
-
-        ])
-
-        for checklist in checklistManager.checklistData.checklists {
-            apps.append(
-                PrototypeApp(
-                    title: checklist.name,
-                    description: "Interaktive Checkliste",
-                    color: .blue,
-                    destination: AnyView(
-                        UniversalChecklistView(
-                            title: checklist.name,
-                            description: checklist.description,
-                            instructionTitle: checklist.name,
-                            items: checklist.items,
-                            checklistId: checklist.id,
-                            selectedAppIndex: $selectedAppIndex
-                        )
-                    )
-                )
-            )
-        }
-
-        return apps
+  private var prototypeApps: [PrototypeApp] {
+    appsManager.apps.map { app in
+      let destination = destinationView(for: app)
+      return PrototypeApp(
+        title: app.title,
+        description: app.description,
+        color: app.color,
+        destination: AnyView(destination)
+      )
     }
+  }
 
-    var body: some View {
+  private func destinationView(for app: AppInfo) -> some View {
+    Group {
+      switch app.title {
+      case "Tachometer":
+        SpeedometerView()
+      case "Schreiben":
+        WritingView()
+      case "Farbatmung":
+        ColorBreathingView()
+      case "Anne (Beta)":
+        AnneView()
+      default:
+        if let checklist = checklistForApp(app) {
+          UniversalChecklistView(
+            title: checklist.name,
+            description: checklist.description,
+            instructionTitle: checklist.name,
+            items: checklist.items,
+            checklistId: checklist.id,
+            selectedAppIndex: $selectedAppIndex
+          )
+        } else {
+          Text("App not found")
+        }
+      }
+    }
+  }
 
-        NavigationView {
-            Group {
-                if let selectedIndex = selectedAppIndex,
-                    selectedIndex < prototypeApps.count
-                {
-                    prototypeApps[selectedIndex].destination
-                        .navigationBarHidden(false)
-                        .navigationBarTitleDisplayMode(.inline)
-                        .toolbar {
-                            ToolbarItem(placement: .cancellationAction) {
-                                Button("Zurück") {
-                                    selectedAppIndex = nil
-                                }
-                            }
-                        }
-                } else {
-                    mainMenuView
+  private func checklistForApp(_ app: AppInfo) -> Checklist? {
+    let checklistData = loadChecklistData()
+    let checklistIndex = app.index - 4
+    guard checklistIndex >= 0 && checklistIndex < checklistData.checklists.count else {
+      return nil
+    }
+    return checklistData.checklists[checklistIndex]
+  }
+
+  private func loadChecklistData() -> ChecklistData {
+    guard let data = UserDefaults.standard.data(forKey: "checklistData") else {
+      return ChecklistData.default
+    }
+    return (try? JSONDecoder().decode(ChecklistData.self, from: data)) ?? ChecklistData.default
+  }
+
+  var body: some View {
+
+    NavigationView {
+      Group {
+        if let selectedIndex = selectedAppIndex,
+          selectedIndex < prototypeApps.count
+        {
+          prototypeApps[selectedIndex].destination
+            .navigationBarHidden(false)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+              ToolbarItem(placement: .cancellationAction) {
+                Button("Zurück") {
+                  selectedAppIndex = nil
                 }
+              }
             }
+        } else {
+          mainMenuView
         }
-        .tag(1)
-
-        .onAppear {
-            selectedTab = 0
-        }
-        .onReceive(watchConnector.$currentView) { newView in
-            currentView = newView
-            switch newView {
-            case .mainMenu:
-                selectedAppIndex = nil
-                selectedTab = 1
-            case .app(let index):
-                if index < prototypeApps.count {
-                    selectedAppIndex = index
-                    selectedTab = 1
-                }
-            }
-        }
+      }
     }
+    .tag(1)
 
-    private var mainMenuView: some View {
-        ScrollView {
-            LazyVStack(spacing: 12) {
-                ForEach(Array(prototypeApps.enumerated()), id: \.offset) {
-                    index,
-                    app in
-                    appNavigationLink(for: app, at: index)
-                }
-            }
-            .padding(.horizontal, 8)
-            .padding(.top, 8)
-        }
-        .navigationTitle("Apps")
-        .navigationBarTitleDisplayMode(.inline)
+    .onAppear {
+      selectedTab = 0
     }
+    .onReceive(watchConnector.$currentView) { newView in
+      currentView = newView
+      switch newView {
+      case .mainMenu:
+        selectedAppIndex = nil
+        selectedTab = 1
+      case .app(let index):
+        if index < prototypeApps.count {
+          selectedAppIndex = index
+          selectedTab = 1
+        }
+      }
+    }
+  }
 
-    private func appNavigationLink(for app: PrototypeApp, at index: Int)
-        -> some View
-    {
-        NavigationLink(
-            destination: app.destination,
-            tag: index,
-            selection: $selectedAppIndex
-        ) {
-            AppCardView(
-                app: AppInfo(
-                    title: app.title,
-                    description: app.description,
-                    color: app.color
-                )
-            )
+  private var mainMenuView: some View {
+    ScrollView {
+      LazyVStack(spacing: 12) {
+        ForEach(Array(prototypeApps.enumerated()), id: \.offset) {
+          index,
+          app in
+          appNavigationLink(for: app, at: index)
         }
-        .buttonStyle(PlainButtonStyle())
+      }
+      .padding(.horizontal, 8)
+      .padding(.top, 8)
     }
+    .navigationTitle("Apps")
+    .navigationBarTitleDisplayMode(.inline)
+  }
+
+  private func appNavigationLink(for app: PrototypeApp, at index: Int)
+    -> some View
+  {
+    NavigationLink(
+      destination: app.destination,
+      tag: index,
+      selection: $selectedAppIndex
+    ) {
+      AppCardView(
+        app: AppInfo(
+          title: app.title,
+          description: app.description,
+          color: app.color
+        )
+      )
+    }
+    .buttonStyle(PlainButtonStyle())
+  }
 }
 
 #Preview {
-    WatchView()
-        .environmentObject(WatchConnector())
+  WatchView()
+    .environmentObject(WatchConnector())
 }

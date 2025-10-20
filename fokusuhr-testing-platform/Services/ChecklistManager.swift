@@ -73,6 +73,8 @@ class ChecklistManager: ObservableObject {
       UserDefaults.standard.set(encoded, forKey: "checklistData")
       watchConnector.checklistData = data
       watchConnector.forceSyncToWatch()
+
+      NotificationCenter.default.post(name: .checklistDataChanged, object: nil)
     } catch {
       let appError = AppError.encodingFailed(type: "checklist data", underlying: error)
       #if DEBUG
