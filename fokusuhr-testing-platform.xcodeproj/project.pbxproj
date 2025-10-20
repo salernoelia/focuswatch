@@ -18,12 +18,6 @@
 		0E078E032E6E2C5100D74BDA /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 0E078E022E6E2C5100D74BDA /* PostgREST */; };
 		0E078E052E6E2C5100D74BDA /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 0E078E042E6E2C5100D74BDA /* Storage */; };
 		0E078E072E6E2C5100D74BDA /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 0E078E062E6E2C5100D74BDA /* Supabase */; };
-		0E195C002E917A2500DC7E4B /* Production.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0E195BFF2E917A2500DC7E4B /* Production.xcconfig */; };
-		0E195C012E917A2500DC7E4B /* Production.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0E195BFF2E917A2500DC7E4B /* Production.xcconfig */; };
-		0E195C052E917BAF00DC7E4B /* Development.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0E195C042E917BAF00DC7E4B /* Development.xcconfig */; };
-		0E195C062E917BAF00DC7E4B /* Development.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0E195C042E917BAF00DC7E4B /* Development.xcconfig */; };
-		0E195C082E917D2A00DC7E4B /* Example.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0E195C072E917D2A00DC7E4B /* Example.xcconfig */; };
-		0E195C092E917D2A00DC7E4B /* Example.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0E195C072E917D2A00DC7E4B /* Example.xcconfig */; };
 		0E43798F2E9804C9000B2941 /* notification.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0E4379882E9804C9000B2941 /* notification.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0E43799C2E9804D3000B2941 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E43799B2E9804D3000B2941 /* WidgetKit.framework */; };
 		0E43799E2E9804D3000B2941 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E43799D2E9804D3000B2941 /* SwiftUI.framework */; };
@@ -360,7 +354,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					0E4379872E9804C9000B2941 = {
 						CreatedOnToolsVersion = 16.2;
@@ -423,9 +417,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0E195C052E917BAF00DC7E4B /* Development.xcconfig in Resources */,
-				0E195C002E917A2500DC7E4B /* Production.xcconfig in Resources */,
-				0E195C082E917D2A00DC7E4B /* Example.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -433,9 +424,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0E195C062E917BAF00DC7E4B /* Development.xcconfig in Resources */,
-				0E195C012E917A2500DC7E4B /* Production.xcconfig in Resources */,
-				0E195C092E917D2A00DC7E4B /* Example.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -497,7 +485,6 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = notification/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = notification;
@@ -526,7 +513,6 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = notification/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = notification;
@@ -559,7 +545,6 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "version-complication/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "version-complication";
@@ -591,7 +576,6 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "version-complication/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "version-complication";
@@ -621,6 +605,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -650,7 +635,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -672,6 +659,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -684,6 +672,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -713,7 +702,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -728,6 +719,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
@@ -744,7 +736,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"fokusuhr-testing-platform Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "fokusuhr-testing-platform-Watch-App-Info.plist";
@@ -783,7 +774,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"fokusuhr-testing-platform Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "fokusuhr-testing-platform-Watch-App-Info.plist";
@@ -823,7 +813,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"fokusuhr-testing-platform/Preview Content\"";
-				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "fokusuhr-testing-platform/Info.plist";
@@ -836,7 +825,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -863,7 +852,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"fokusuhr-testing-platform/Preview Content\"";
-				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "fokusuhr-testing-platform/Info.plist";
@@ -876,7 +864,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

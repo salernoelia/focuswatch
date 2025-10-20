@@ -7,6 +7,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
   private var authManager = AuthManager.shared
   private var checklistManager = ChecklistManager.shared
   private var galleryManager = GalleryManager.shared
+  private var calendarManager = CalendarManager.shared
 
   override init() {
     super.init()
@@ -86,6 +87,14 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             TelemetryManager.shared.hasConsent = hasConsent
           }
           replyHandler(["status": "success"])
+        case "updateCalendar":
+          if let dataString = message["data"] as? String,
+            let data = Data(base64Encoded: dataString),
+            let events = try? JSONDecoder().decode([EventTransfer].self, from: data)
+          {
+            self.calendarManager.updateEvents(events)
+          }
+          replyHandler(["status": "success"])
         default:
           replyHandler(["status": "unknown_action"])
         }
@@ -135,6 +144,13 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
         case "updateTelemetry":
           if let hasConsent = message["hasConsent"] as? Bool {
             TelemetryManager.shared.hasConsent = hasConsent
+          }
+        case "updateCalendar":
+          if let dataString = message["data"] as? String,
+            let data = Data(base64Encoded: dataString),
+            let events = try? JSONDecoder().decode([EventTransfer].self, from: data)
+          {
+            self.calendarManager.updateEvents(events)
           }
         default:
           break

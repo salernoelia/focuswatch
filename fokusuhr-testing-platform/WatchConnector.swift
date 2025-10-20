@@ -2,86 +2,89 @@ import Foundation
 import WatchConnectivity
 
 class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
-    @Published var isConnected = false
-    @Published var checklistData = ChecklistData.default
-    @Published var lastError: AppError?
-    public var lastSyncedHash: Int?
-    public var isSyncing = false
+  @Published var isConnected = false
+  @Published var checklistData = ChecklistData.default
+  @Published var lastError: AppError?
+  public var lastSyncedHash: Int?
+  public var isSyncing = false
+  static let shared = WatchConnector()
 
-    override init() {
-        super.init()
-        loadChecklistData()
-        setupWatchConnectivity()
+  override init() {
+    super.init()
+    loadChecklistData()
+    setupWatchConnectivity()
+  }
+
+  func session(
+    _ session: WCSession,
+    activationDidCompleteWith activationState: WCSessionActivationState,
+    error: Error?
+  ) {
+    DispatchQueue.main.async {
+      self.isConnected =
+        activationState == .activated && session.isReachable
+
+      if let error = error {
+        let appError = AppError.watchMessageFailed(underlying: error)
+        #if DEBUG
+          ErrorLogger.log(appError)
+        #endif
+        self.lastError = appError
+      } else {
+        #if DEBUG
+          print(
+            "WCSession activated with state: \(activationState.rawValue)"
+          )
+        #endif
+      }
+
+      if self.isConnected {
+        self.syncChecklistToWatch()
+        self.syncAuthToWatch()
+        self.syncTelemetryToWatch()
+        self.syncCalendarToWatch()
+      }
+    }
+  }
+
+  func sessionDidBecomeInactive(_ session: WCSession) {
+    DispatchQueue.main.async {
+      self.isConnected = false
+      self.lastError = .watchSessionInactive
+
+      #if DEBUG
+        print("WCSession became inactive")
+      #endif
+    }
+  }
+
+  func sessionDidDeactivate(_ session: WCSession) {
+    DispatchQueue.main.async {
+      self.isConnected = false
+
+      #if DEBUG
+        print("WCSession deactivated")
+      #endif
     }
 
-    func session(
-        _ session: WCSession,
-        activationDidCompleteWith activationState: WCSessionActivationState,
-        error: Error?
-    ) {
-        DispatchQueue.main.async {
-            self.isConnected =
-                activationState == .activated && session.isReachable
+    session.activate()
+  }
 
-            if let error = error {
-                let appError = AppError.watchMessageFailed(underlying: error)
-                #if DEBUG
-                    ErrorLogger.log(appError)
-                #endif
-                self.lastError = appError
-            } else {
-                #if DEBUG
-                    print(
-                        "WCSession activated with state: \(activationState.rawValue)"
-                    )
-                #endif
-            }
+  func sessionReachabilityDidChange(_ session: WCSession) {
+    DispatchQueue.main.async {
+      self.isConnected = session.isReachable
 
-            if self.isConnected {
-                self.syncChecklistToWatch()
-                self.syncAuthToWatch()
-                self.syncTelemetryToWatch()
-            }
-        }
+      #if DEBUG
+        print("WCSession reachability changed: \(session.isReachable)")
+      #endif
+
+      if self.isConnected {
+        self.syncChecklistToWatch()
+        self.syncAuthToWatch()
+        self.syncTelemetryToWatch()
+        self.syncCalendarToWatch()
+      }
     }
-
-    func sessionDidBecomeInactive(_ session: WCSession) {
-        DispatchQueue.main.async {
-            self.isConnected = false
-            self.lastError = .watchSessionInactive
-
-            #if DEBUG
-                print("WCSession became inactive")
-            #endif
-        }
-    }
-
-    func sessionDidDeactivate(_ session: WCSession) {
-        DispatchQueue.main.async {
-            self.isConnected = false
-
-            #if DEBUG
-                print("WCSession deactivated")
-            #endif
-        }
-
-        session.activate()
-    }
-
-    func sessionReachabilityDidChange(_ session: WCSession) {
-        DispatchQueue.main.async {
-            self.isConnected = session.isReachable
-
-            #if DEBUG
-                print("WCSession reachability changed: \(session.isReachable)")
-            #endif
-
-            if self.isConnected {
-                self.syncChecklistToWatch()
-                self.syncAuthToWatch()
-                self.syncTelemetryToWatch()
-            }
-        }
-    }
+  }
 
 }

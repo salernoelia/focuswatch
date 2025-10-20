@@ -44,6 +44,8 @@ struct WatchView: View {
         ColorBreathingView()
       case "Anne (Beta)":
         AnneView()
+      case "Calendar":
+        CalendarView()
       default:
         if let checklist = checklistForApp(app) {
           UniversalChecklistView(
@@ -62,7 +64,7 @@ struct WatchView: View {
   }
 
   private func checklistForApp(_ app: AppInfo) -> Checklist? {
-    let checklistIndex = app.index - 4
+    let checklistIndex = app.index - 5
     guard checklistIndex >= 0 && checklistIndex < checklistManager.checklistData.checklists.count
     else {
       return nil

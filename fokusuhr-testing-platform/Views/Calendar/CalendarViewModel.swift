@@ -1,29 +1,43 @@
 import Combine
+import SwiftData
 import SwiftUI
 
+@MainActor
 class CalendarViewModel: ObservableObject {
-  @Published var events: [Event] = []
   @Published var visibleMonth: Date = Date()
   @Published var lastError: AppError?
 
-  private let eventsKey = "calendar_events"
+  private let modelContext: ModelContext
+  private let watchConnector = WatchConnector.shared
 
-  init() {
-    loadEvents()
+  init(modelContext: ModelContext) {
+    self.modelContext = modelContext
   }
 
   func events(on day: Date) -> [Event] {
     let cal = Calendar.current
+    let descriptor = FetchDescriptor<Event>()
+
+    guard let allEvents = try? modelContext.fetch(descriptor) else {
+      return []
+    }
+
     var matchingEvents: [Event] = []
 
-    for event in events {
+    for event in allEvents {
       if cal.isDate(event.date, inSameDayAs: day) {
         matchingEvents.append(event)
       } else if event.repeatRule != .none && shouldRepeatOn(event: event, date: day) {
-        var repeatedEvent = event
-        repeatedEvent.date = day
-        repeatedEvent.startTime = combineDateTime(date: day, time: event.startTime)
-        repeatedEvent.endTime = combineDateTime(date: day, time: event.endTime)
+        let repeatedEvent = Event(
+          id: UUID(),
+          title: event.title,
+          date: day,
+          startTime: combineDateTime(date: day, time: event.startTime),
+          endTime: combineDateTime(date: day, time: event.endTime),
+          repeatRule: event.repeatRule,
+          customWeekdays: event.customWeekdays,
+          type: event.type
+        )
         matchingEvents.append(repeatedEvent)
       }
     }
@@ -74,42 +88,58 @@ class CalendarViewModel: ObservableObject {
   }
 
   func add(_ event: Event) {
-    events.append(event)
-    saveEvents()
-    objectWillChange.send()
+    modelContext.insert(event)
+    save()
   }
 
   func update(
     eventId: UUID, title: String, date: Date, startTime: Date, endTime: Date,
     repeatRule: RepeatRule, customWeekdays: [Int], type: ActivityType
   ) {
-    if let index = events.firstIndex(where: { $0.id == eventId }) {
-      events[index] = Event(
-        id: eventId,
-        title: title,
-        date: date,
-        startTime: startTime,
-        endTime: endTime,
-        repeatRule: repeatRule,
-        customWeekdays: customWeekdays,
-        type: type
-      )
-      saveEvents()
-      objectWillChange.send()
+    var descriptor = FetchDescriptor<Event>()
+    descriptor.predicate = #Predicate<Event> { event in
+      event.id == eventId
     }
+
+    guard let events = try? modelContext.fetch(descriptor),
+      let event = events.first
+    else {
+      return
+    }
+
+    event.title = title
+    event.date = date
+    event.startTime = startTime
+    event.endTime = endTime
+    event.repeatRule = repeatRule
+    event.customWeekdays = customWeekdays
+    event.type = type
+
+    save()
   }
 
   func delete(_ event: Event) {
-    events.removeAll { $0.id == event.id }
-    saveEvents()
-    objectWillChange.send()
+    let id = event.id
+    var descriptor = FetchDescriptor<Event>()
+    descriptor.predicate = #Predicate<Event> { event in
+      event.id == id
+    }
+
+    guard let events = try? modelContext.fetch(descriptor),
+      let eventToDelete = events.first
+    else {
+      return
+    }
+
+    modelContext.delete(eventToDelete)
+    save()
   }
 
-  private func saveEvents() {
+  private func save() {
     do {
-      let encoded = try JSONEncoder().encode(events)
-      UserDefaults.standard.set(encoded, forKey: eventsKey)
-      lastError = nil
+      try modelContext.save()
+      syncToWatch()
+      objectWillChange.send()
     } catch {
       let appError = AppError.encodingFailed(type: "calendar events", underlying: error)
       #if DEBUG
@@ -119,21 +149,8 @@ class CalendarViewModel: ObservableObject {
     }
   }
 
-  private func loadEvents() {
-    guard let data = UserDefaults.standard.data(forKey: eventsKey) else {
-      return
-    }
-
-    do {
-      events = try JSONDecoder().decode([Event].self, from: data)
-      lastError = nil
-    } catch {
-      let appError = AppError.decodingFailed(type: "calendar events", underlying: error)
-      #if DEBUG
-        ErrorLogger.log(appError)
-      #endif
-      lastError = appError
-    }
+  private func syncToWatch() {
+    watchConnector.syncCalendarToWatch()
   }
 
   func daysInMonth() -> [Date] {

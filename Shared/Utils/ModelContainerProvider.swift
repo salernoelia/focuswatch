@@ -1,0 +1,26 @@
+import Foundation
+import SwiftData
+
+@MainActor
+class ModelContainerProvider {
+  static let shared = ModelContainerProvider()
+
+  let container: ModelContainer
+
+  private init() {
+    let schema = Schema([
+      Event.self
+    ])
+
+    let configuration = ModelConfiguration(
+      schema: schema,
+      isStoredInMemoryOnly: false
+    )
+
+    container =
+      (try? ModelContainer(for: schema, configurations: [configuration]))
+      ?? {
+        fatalError("Failed to create ModelContainer")
+      }()
+  }
+}

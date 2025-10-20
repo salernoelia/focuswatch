@@ -70,6 +70,7 @@ extension WatchConnector {
         self.syncChecklistToWatch()
         self.sendWakeUpMessage()
         self.syncTelemetryToWatch()
+        self.syncCalendarToWatch()
       }
     }
   }
