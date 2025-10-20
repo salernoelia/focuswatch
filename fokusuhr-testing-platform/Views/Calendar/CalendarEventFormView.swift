@@ -93,8 +93,11 @@ struct CalendarEventFormView: View {
             ForEach(reminders) { reminder in
               HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                  Text("\(reminder.minutesBefore) min before")
-                    .font(.body)
+                  Text(
+                    reminder.minutesBefore == 0
+                      ? "At event time" : "\(reminder.minutesBefore) min before"
+                  )
+                  .font(.body)
                   if reminder.shouldLaunchApp {
                     Text("Launches app")
                       .font(.caption)
@@ -131,6 +134,10 @@ struct CalendarEventFormView: View {
           }
 
           Menu {
+            Button("At event time") {
+              reminders.append(
+                Reminder(minutesBefore: 0, shouldLaunchApp: selectedAppIndex != nil))
+            }
             ForEach([5, 10, 15, 30, 60], id: \.self) { minutes in
               Button("\(minutes) minutes before") {
                 reminders.append(

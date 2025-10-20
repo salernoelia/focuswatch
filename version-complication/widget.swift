@@ -10,14 +10,16 @@ import WidgetKit
 
 struct Provider: AppIntentTimelineProvider {
   private var appVersion: String {
-    if let bundleURL = Bundle.main.url(
-      forResource: "fokusuhr-testing-platform Watch App", withExtension: "app"),
-      let bundle = Bundle(url: bundleURL),
-      let version = bundle.infoDictionary?["CFBundleShortVersionString"] as? String
-    {
-      return version
+    var bundle = Bundle.main
+
+    if bundle.bundleURL.pathExtension == "appex" {
+      let url = bundle.bundleURL.deletingLastPathComponent().deletingLastPathComponent()
+      if let appBundle = Bundle(url: url) {
+        bundle = appBundle
+      }
     }
-    return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+
+    return bundle.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
   }
 
   func placeholder(in context: Context) -> SimpleEntry {

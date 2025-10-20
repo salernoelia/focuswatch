@@ -17,10 +17,10 @@ struct WatchApp: App {
         .environmentObject(watchConnector)
         .environmentObject(writingExerciseManager)
         .sheet(
-          isPresented: .constant(calendarManager.pendingReminder != nil),
-          onDismiss: {
-            calendarManager.pendingReminder = nil
-          }
+          isPresented: Binding(
+            get: { calendarManager.pendingReminder != nil },
+            set: { if !$0 { calendarManager.pendingReminder = nil } }
+          )
         ) {
           if let pending = calendarManager.pendingReminder {
             CalendarEntryTriggerConsent(
