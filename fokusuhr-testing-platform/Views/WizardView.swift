@@ -15,7 +15,8 @@ struct WizardView: View {
   init() {
     let tempConnector = WatchConnector()
     self._checklistManager = StateObject(
-      wrappedValue: ChecklistManager(watchConnector: tempConnector))
+      wrappedValue: ChecklistManager(watchConnector: tempConnector)
+    )
 
   }
 
@@ -29,13 +30,20 @@ struct WizardView: View {
             Spacer()
             HStack(spacing: AppConstants.UI.statusIndicatorSize) {
               Circle()
-                .fill(watchConnector.isConnected ? .green : .red)
+                .fill(
+                  watchConnector.isConnected ? .green : .red
+                )
                 .frame(
                   width: AppConstants.UI.statusIndicatorSize,
                   height: AppConstants.UI.statusIndicatorSize
                 )
-              Text(watchConnector.isConnected ? "Connected" : "Disconnected")
-                .foregroundColor(watchConnector.isConnected ? .green : .red)
+              Text(
+                watchConnector.isConnected
+                  ? "Connected" : "Disconnected"
+              )
+              .foregroundColor(
+                watchConnector.isConnected ? .green : .red
+              )
             }
           }
 
@@ -44,11 +52,16 @@ struct WizardView: View {
               HStack {
                 if isReconnecting {
                   ProgressView()
-                    .scaleEffect(AppConstants.UI.progressScaleFactor)
+                    .scaleEffect(
+                      AppConstants.UI.progressScaleFactor
+                    )
                 } else {
                   Image(systemName: "arrow.clockwise")
                 }
-                Text(isReconnecting ? "Reconnecting..." : "Try Reconnecting")
+                Text(
+                  isReconnecting
+                    ? "Reconnecting..." : "Try Reconnecting"
+                )
               }
             }
             .disabled(isReconnecting)
@@ -103,7 +116,8 @@ struct WizardView: View {
             if isSyncing {
               ProgressView()
                 .scaleEffect(
-                  AppConstants.UI.progressScaleFactor)
+                  AppConstants.UI.progressScaleFactor
+                )
             } else {
               Image(systemName: "arrow.triangle.2.circlepath")
                 .foregroundColor(.red)
@@ -119,9 +133,12 @@ struct WizardView: View {
       }
       .listStyle(.insetGrouped)
       .refreshable {
-        await testUsersManager.fetchTestUsers()
-        await supervisorManager.fetchCurrentSupervisor()
-        await appsManager.fetchApps()
+        if authManager.isLoggedIn {
+          await testUsersManager.fetchTestUsers()
+          await supervisorManager.fetchCurrentSupervisor()
+        }
+        appsManager.refreshApps()
+        reconnectToWatch()
       }
       .navigationTitle("Wizard of Oz")
       .sheet(isPresented: $showingEditor) {

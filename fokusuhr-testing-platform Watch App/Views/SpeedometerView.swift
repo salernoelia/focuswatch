@@ -5,7 +5,7 @@ struct SpeedometerView: View {
 
   var body: some View {
     GeometryReader { geometry in
-      let size = min(geometry.size.width, geometry.size.height) * 1.86
+      let size = min(geometry.size.width, geometry.size.height) * 1.75
       let center = CGPoint(
         x: geometry.size.width / 2, y: geometry.size.height * 0.4)
 

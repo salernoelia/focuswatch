@@ -11,16 +11,14 @@ struct ChecklistDescriptionView: View {
         ScrollView {
           Text(description)
             .font(.caption)
-            .multilineTextAlignment(.center)
+            .multilineTextAlignment(.leading)
             .foregroundColor(.white)
             .frame(maxWidth: .infinity, alignment: .center)
         }
-        .frame(maxHeight: 150)
       }
       Button("Weiter") {
         onContinue()
       }
     }
-    .padding()
   }
 }
