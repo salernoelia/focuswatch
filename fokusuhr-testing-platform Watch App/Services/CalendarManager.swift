@@ -135,9 +135,9 @@ class CalendarManager: ObservableObject {
     if let message = reminder.message, !message.isEmpty {
       content.body = message
     } else if reminder.minutesBefore == 0 {
-      content.body = "Startet jetzt"
+      content.body = "Beginnt jetzt"
     } else {
-      content.body = "Startet in \(reminder.minutesBefore) Minuten"
+      content.body = "Beginnt in \(reminder.minutesBefore) Minuten"
     }
 
     content.sound = .default
