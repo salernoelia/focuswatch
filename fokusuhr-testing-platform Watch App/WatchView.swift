@@ -16,6 +16,7 @@ struct PrototypeApp {
 struct WatchView: View {
   @EnvironmentObject var watchConnector: WatchConnector
   @StateObject private var appsManager = AppsManager.shared
+  @StateObject private var checklistManager = ChecklistManager.shared
   @State private var currentView: WatchViewState = .mainMenu
   @State private var selectedAppIndex: Int? = nil
   @State private var selectedTab = 0
@@ -61,19 +62,12 @@ struct WatchView: View {
   }
 
   private func checklistForApp(_ app: AppInfo) -> Checklist? {
-    let checklistData = loadChecklistData()
     let checklistIndex = app.index - 4
-    guard checklistIndex >= 0 && checklistIndex < checklistData.checklists.count else {
+    guard checklistIndex >= 0 && checklistIndex < checklistManager.checklistData.checklists.count
+    else {
       return nil
     }
-    return checklistData.checklists[checklistIndex]
-  }
-
-  private func loadChecklistData() -> ChecklistData {
-    guard let data = UserDefaults.standard.data(forKey: "checklistData") else {
-      return ChecklistData.default
-    }
-    return (try? JSONDecoder().decode(ChecklistData.self, from: data)) ?? ChecklistData.default
+    return checklistManager.checklistData.checklists[checklistIndex]
   }
 
   var body: some View {
@@ -102,6 +96,7 @@ struct WatchView: View {
 
     .onAppear {
       selectedTab = 0
+      checklistManager.loadChecklistData()
     }
     .onReceive(watchConnector.$currentView) { newView in
       currentView = newView

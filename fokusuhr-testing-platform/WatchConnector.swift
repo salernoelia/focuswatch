@@ -5,6 +5,8 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     @Published var isConnected = false
     @Published var checklistData = ChecklistData.default
     @Published var lastError: AppError?
+    public var lastSyncedHash: Int?
+    public var isSyncing = false
 
     override init() {
         super.init()

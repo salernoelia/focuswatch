@@ -4,15 +4,18 @@ import Foundation
 class ChecklistManager: ObservableObject {
   @Published var checklistData = ChecklistData.default
   private var galleryManager = GalleryManager.shared
+  private var lastSyncedHash: Int?
 
   static let shared = ChecklistManager()
 
-  func saveChecklistData() {
+  func saveChecklistData(silent: Bool = false) {
     do {
       let data = try JSONEncoder().encode(checklistData)
       UserDefaults.standard.set(data, forKey: "checklistData")
 
-      NotificationCenter.default.post(name: .checklistDataChanged, object: nil)
+      if !silent {
+        NotificationCenter.default.post(name: .checklistDataChanged, object: nil)
+      }
     } catch {
       let appError = AppError.encodingFailed(type: "checklist data", underlying: error)
       #if DEBUG
@@ -41,6 +44,14 @@ class ChecklistManager: ObservableObject {
   func updateChecklistData(from data: Data, forceOverwrite: Bool = false) {
     do {
       let newData = try JSONDecoder().decode(ChecklistData.self, from: data)
+      let newHash = computeHash(for: newData)
+
+      if let lastHash = lastSyncedHash, lastHash == newHash {
+        #if DEBUG
+          ErrorLogger.log("Data unchanged, skipping sync")
+        #endif
+        return
+      }
 
       if forceOverwrite {
         #if DEBUG
@@ -50,7 +61,8 @@ class ChecklistManager: ObservableObject {
 
         DispatchQueue.main.async {
           self.checklistData = newData
-          self.saveChecklistData()
+          self.lastSyncedHash = newHash
+          self.saveChecklistData(silent: false)
         }
 
         #if DEBUG
@@ -59,7 +71,8 @@ class ChecklistManager: ObservableObject {
       } else {
         DispatchQueue.main.async {
           self.checklistData = newData
-          self.saveChecklistData()
+          self.lastSyncedHash = newHash
+          self.saveChecklistData(silent: false)
         }
 
         #if DEBUG
@@ -72,5 +85,16 @@ class ChecklistManager: ObservableObject {
         ErrorLogger.log(appError)
       #endif
     }
+  }
+
+  private func computeHash(for data: ChecklistData) -> Int {
+    var hasher = Hasher()
+    hasher.combine(data.checklists.count)
+    for checklist in data.checklists {
+      hasher.combine(checklist.id)
+      hasher.combine(checklist.name)
+      hasher.combine(checklist.items.count)
+    }
+    return hasher.finalize()
   }
 }

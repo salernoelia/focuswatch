@@ -28,6 +28,29 @@ extension WatchConnector {
       return
     }
 
+    guard !isSyncing else {
+      #if DEBUG
+        print("Sync already in progress, skipping")
+      #endif
+      return
+    }
+
+    let currentHash = computeChecklistHash()
+    if let lastHash = lastSyncedHash, lastHash == currentHash {
+      #if DEBUG
+        print("Checklist data unchanged (hash: \(currentHash)), skipping sync")
+      #endif
+      return
+    }
+
+    #if DEBUG
+      print(
+        "Checklist hash changed from \(lastSyncedHash?.description ?? "nil") to \(currentHash), syncing..."
+      )
+    #endif
+
+    isSyncing = true
+
     do {
       let data = try JSONEncoder().encode(checklistData)
       var message: [String: Any] = [
@@ -101,7 +124,7 @@ extension WatchConnector {
         )
       #endif
 
-      sendMessageWithRetry(message: message, retryCount: 3)
+      sendMessageWithRetry(message: message, retryCount: 3, hashToSet: currentHash)
     } catch {
       let appError = AppError.encodingFailed(
         type: "checklist", underlying: error)
@@ -109,10 +132,23 @@ extension WatchConnector {
         ErrorLogger.log(appError)
       #endif
       lastError = appError
+      isSyncing = false
     }
   }
 
-  private func sendMessageWithRetry(message: [String: Any], retryCount: Int) {
+  private func computeChecklistHash() -> Int {
+    var hasher = Hasher()
+    hasher.combine(checklistData.checklists.count)
+    for checklist in checklistData.checklists {
+      hasher.combine(checklist.id)
+      hasher.combine(checklist.name)
+      hasher.combine(checklist.items.count)
+    }
+    return hasher.finalize()
+  }
+
+  private func sendMessageWithRetry(message: [String: Any], retryCount: Int, hashToSet: Int? = nil)
+  {
     guard retryCount > 0 else {
       #if DEBUG
         print("Max retries reached for sync")
@@ -123,6 +159,9 @@ extension WatchConnector {
           code: -1,
           userInfo: [NSLocalizedDescriptionKey: "Max retries reached"]
         ))
+      DispatchQueue.main.async {
+        self.isSyncing = false
+      }
       return
     }
 
@@ -131,7 +170,8 @@ extension WatchConnector {
         print("Watch not reachable, retrying in 1s...")
       #endif
       DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-        self.sendMessageWithRetry(message: message, retryCount: retryCount - 1)
+        self.sendMessageWithRetry(
+          message: message, retryCount: retryCount - 1, hashToSet: hashToSet)
       }
       return
     }
@@ -139,6 +179,12 @@ extension WatchConnector {
     WCSession.default.sendMessage(
       message,
       replyHandler: { response in
+        DispatchQueue.main.async {
+          self.isSyncing = false
+          if let hash = hashToSet {
+            self.lastSyncedHash = hash
+          }
+        }
         #if DEBUG
           print("Checklist sync successful: \(response)")
         #endif
@@ -149,8 +195,15 @@ extension WatchConnector {
         ErrorLogger.log(AppError.watchMessageFailed(underlying: error))
       #endif
 
+      if retryCount <= 1 {
+        DispatchQueue.main.async {
+          self.isSyncing = false
+        }
+      }
+
       DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-        self.sendMessageWithRetry(message: message, retryCount: retryCount - 1)
+        self.sendMessageWithRetry(
+          message: message, retryCount: retryCount - 1, hashToSet: hashToSet)
       }
     }
   }
