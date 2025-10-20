@@ -6,6 +6,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
   @Published var checklistData = ChecklistData.default
   @Published var lastError: AppError?
   public var lastSyncedHash: Int?
+  public var lastCalendarSyncHash: Int?
   public var isSyncing = false
   static let shared = WatchConnector()
 

@@ -132,7 +132,9 @@ class CalendarManager: ObservableObject {
     let content = UNMutableNotificationContent()
     content.title = event.title
 
-    if reminder.minutesBefore == 0 {
+    if let message = reminder.message, !message.isEmpty {
+      content.body = message
+    } else if reminder.minutesBefore == 0 {
       content.body = "Startet jetzt"
     } else {
       content.body = "Startet in \(reminder.minutesBefore) Minuten"

@@ -37,7 +37,8 @@ class CalendarViewModel: ObservableObject {
           repeatRule: event.repeatRule,
           customWeekdays: event.customWeekdays,
           appIndex: event.appIndex,
-          reminders: event.reminders
+          reminders: event.reminders,
+          sourceEventId: event.id
         )
         matchingEvents.append(repeatedEvent)
       }
@@ -97,16 +98,51 @@ class CalendarViewModel: ObservableObject {
     eventId: UUID, title: String, date: Date, startTime: Date, endTime: Date,
     repeatRule: RepeatRule, customWeekdays: [Int], appIndex: Int?, reminders: [Reminder]
   ) {
+    #if DEBUG
+      print("🔍 CalendarViewModel.update called with eventId: \(eventId)")
+    #endif
+
     var descriptor = FetchDescriptor<Event>()
     descriptor.predicate = #Predicate<Event> { event in
       event.id == eventId
     }
 
-    guard let events = try? modelContext.fetch(descriptor),
-      let event = events.first
-    else {
+    guard let events = try? modelContext.fetch(descriptor) else {
+      #if DEBUG
+        print("❌ Failed to fetch events")
+      #endif
       return
     }
+
+    #if DEBUG
+      print("📊 Found \(events.count) events matching ID")
+      if events.isEmpty {
+        print("❌ NO EVENT FOUND - this will fail silently!")
+      }
+    #endif
+
+    guard let event = events.first else {
+      #if DEBUG
+        print("❌ Event not found! Creating new event instead")
+      #endif
+      let newEvent = Event(
+        title: title,
+        date: date,
+        startTime: startTime,
+        endTime: endTime,
+        repeatRule: repeatRule,
+        customWeekdays: customWeekdays,
+        appIndex: appIndex,
+        reminders: reminders
+      )
+      modelContext.insert(newEvent)
+      save()
+      return
+    }
+
+    #if DEBUG
+      print("✅ Found event to update: \(event.title)")
+    #endif
 
     event.title = title
     event.date = date
@@ -121,7 +157,7 @@ class CalendarViewModel: ObservableObject {
   }
 
   func delete(_ event: Event) {
-    let id = event.id
+    let id = event.sourceEventId ?? event.id
     var descriptor = FetchDescriptor<Event>()
     descriptor.predicate = #Predicate<Event> { event in
       event.id == id

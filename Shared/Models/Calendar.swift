@@ -10,11 +10,14 @@ struct Reminder: Codable, Identifiable {
   let id: UUID
   var minutesBefore: Int
   var shouldLaunchApp: Bool
+  var message: String?
 
-  init(id: UUID = UUID(), minutesBefore: Int, shouldLaunchApp: Bool = true) {
+  init(id: UUID = UUID(), minutesBefore: Int, shouldLaunchApp: Bool = true, message: String? = nil)
+  {
     self.id = id
     self.minutesBefore = minutesBefore
     self.shouldLaunchApp = shouldLaunchApp
+    self.message = message
   }
 }
 
@@ -29,6 +32,7 @@ final class Event {
   var customWeekdays: [Int]
   var appIndex: Int?
   var remindersData: Data?
+  var sourceEventId: UUID?
 
   var repeatRule: RepeatRule {
     get { RepeatRule(rawValue: repeatRuleRaw) ?? .none }
@@ -50,7 +54,7 @@ final class Event {
   init(
     id: UUID = UUID(), title: String, date: Date, startTime: Date, endTime: Date,
     repeatRule: RepeatRule, customWeekdays: [Int] = [], appIndex: Int? = nil,
-    reminders: [Reminder] = []
+    reminders: [Reminder] = [], sourceEventId: UUID? = nil
   ) {
     self.id = id
     self.title = title
@@ -61,6 +65,7 @@ final class Event {
     self.customWeekdays = customWeekdays
     self.appIndex = appIndex
     self.remindersData = try? JSONEncoder().encode(reminders)
+    self.sourceEventId = sourceEventId
   }
 }
 struct EventTransfer: Codable {

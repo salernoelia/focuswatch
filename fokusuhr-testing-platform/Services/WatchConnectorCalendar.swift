@@ -17,9 +17,18 @@ extension WatchConnector {
       }
 
       let transfers = events.map { EventTransfer(from: $0) }
+      let newHash = computeCalendarHash(transfers)
+
+      if let lastHash = lastCalendarSyncHash, lastHash == newHash {
+        #if DEBUG
+          print("⏭️ iOS: Calendar unchanged (hash: \(newHash)), skipping sync to watch")
+        #endif
+        return
+      }
 
       #if DEBUG
         print("📅 iOS: Preparing to sync \(transfers.count) calendar events to watch")
+        print("   → New hash: \(newHash), Last hash: \(lastCalendarSyncHash ?? -1)")
         for event in transfers {
           print("  • \(event.title) - \(event.startTime) - Reminders: \(event.reminders.count)")
         }
@@ -33,6 +42,8 @@ extension WatchConnector {
         ]
 
         try WCSession.default.updateApplicationContext(applicationContext)
+
+        lastCalendarSyncHash = newHash
 
         #if DEBUG
           print("✅ iOS: Calendar synced to watch via background context")
@@ -51,5 +62,17 @@ extension WatchConnector {
         }
       }
     }
+  }
+
+  private func computeCalendarHash(_ events: [EventTransfer]) -> Int {
+    var hasher = Hasher()
+    hasher.combine(events.count)
+    for event in events {
+      hasher.combine(event.id)
+      hasher.combine(event.title)
+      hasher.combine(event.startTime)
+      hasher.combine(event.reminders.count)
+    }
+    return hasher.finalize()
   }
 }

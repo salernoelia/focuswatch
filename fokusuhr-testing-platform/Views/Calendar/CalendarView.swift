@@ -72,7 +72,6 @@ struct CalendarView: View {
                 .contextMenu {
                   Button {
                     editingEvent = event
-                    showingForm = true
                   } label: {
                     Label("Edit", systemImage: "pencil")
                   }
@@ -98,7 +97,6 @@ struct CalendarView: View {
 
                   Button {
                     editingEvent = event
-                    showingForm = true
                   } label: {
                     Label("Edit", systemImage: "pencil")
                   }
@@ -121,17 +119,28 @@ struct CalendarView: View {
           }
         }
       }
-      .sheet(
-        isPresented: $showingForm,
-        onDismiss: {
-          editingEvent = nil
+      .sheet(item: $editingEvent) { event in
+        if let vm = vm {
+          CalendarEventFormView(vm: vm, defaultDate: selectedDate, editingEvent: event)
+        }
+      }
+      .sheet(isPresented: $showingForm) {
+        if let vm = vm, editingEvent == nil {
+          CalendarEventFormView(vm: vm, defaultDate: selectedDate, editingEvent: nil)
+        }
+      }
+      .onChange(of: showingForm) { old, new in
+        if !new {
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             loadEvents()
           }
         }
-      ) {
-        if let vm = vm {
-          CalendarEventFormView(vm: vm, defaultDate: selectedDate, editingEvent: editingEvent)
+      }
+      .onChange(of: editingEvent) { old, new in
+        if new == nil && old != nil {
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            loadEvents()
+          }
         }
       }
       .onChange(of: selectedDate) { _, _ in

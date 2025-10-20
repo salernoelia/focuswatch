@@ -35,6 +35,24 @@
     "🏆" : {
 
     },
+    "1 hour before" : {
+
+    },
+    "5 minutes before" : {
+
+    },
+    "10 minutes before" : {
+
+    },
+    "15 minutes before" : {
+
+    },
+    "30 minutes before" : {
+
+    },
+    "Actions" : {
+
+    },
     "Active Testuser" : {
 
     },
@@ -147,9 +165,6 @@
 
     },
     "Disconnected" : {
-
-    },
-    "Don't Launch" : {
 
     },
     "Done" : {
@@ -305,6 +320,9 @@
     "Male" : {
 
     },
+    "Message" : {
+
+    },
     "Negative Feedback is on" : {
 
     },
@@ -330,6 +348,9 @@
 
     },
     "None" : {
+
+    },
+    "Notification message (optional)" : {
 
     },
     "OK" : {
@@ -372,6 +393,9 @@
 
     },
     "Refresh" : {
+
+    },
+    "Reminder" : {
 
     },
     "Reminders" : {
@@ -484,6 +508,12 @@
 
     },
     "This label will be displayed alongside the image" : {
+
+    },
+    "Time" : {
+
+    },
+    "Timing" : {
 
     },
     "Title" : {
