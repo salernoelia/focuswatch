@@ -27,7 +27,7 @@
 		0E43798F2E9804C9000B2941 /* notification.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0E4379882E9804C9000B2941 /* notification.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0E43799C2E9804D3000B2941 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E43799B2E9804D3000B2941 /* WidgetKit.framework */; };
 		0E43799E2E9804D3000B2941 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E43799D2E9804D3000B2941 /* SwiftUI.framework */; };
-		0E4379A92E9804D4000B2941 /* widgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0E4379992E9804D2000B2941 /* widgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0E4379A92E9804D4000B2941 /* version-complication.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0E4379992E9804D2000B2941 /* version-complication.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0E437A892E981ABC000B2941 /* StatKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0E437A882E981ABC000B2941 /* StatKit */; };
 		0E437AA32E981D24000B2941 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 0E437AA22E981D24000B2941 /* KeychainAccess */; };
 		0E9D8CD02E0D6C24002B7989 /* fokusuhr-testing-platform Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0E9D8CCF2E0D6C24002B7989 /* fokusuhr-testing-platform Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -64,7 +64,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				0E4379A92E9804D4000B2941 /* widgetExtension.appex in Embed Foundation Extensions */,
+				0E4379A92E9804D4000B2941 /* version-complication.appex in Embed Foundation Extensions */,
 				0E43798F2E9804C9000B2941 /* notification.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -88,7 +88,7 @@
 		0E195C042E917BAF00DC7E4B /* Development.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Development.xcconfig; sourceTree = "<group>"; };
 		0E195C072E917D2A00DC7E4B /* Example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Example.xcconfig; sourceTree = "<group>"; };
 		0E4379882E9804C9000B2941 /* notification.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = notification.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		0E4379992E9804D2000B2941 /* widgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = widgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E4379992E9804D2000B2941 /* version-complication.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "version-complication.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E43799B2E9804D3000B2941 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0E43799D2E9804D3000B2941 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		0E9D8CBF2E0D6C23002B7989 /* fokusuhr-testing-platform.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fokusuhr-testing-platform.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -111,12 +111,12 @@
 			);
 			target = 0E4379872E9804C9000B2941 /* notification */;
 		};
-		0E4379AD2E9804D4000B2941 /* Exceptions for "widget" folder in "widgetExtension" target */ = {
+		0E4379AD2E9804D4000B2941 /* Exceptions for "version-complication" folder in "version-complication" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 0E4379982E9804D2000B2941 /* widgetExtension */;
+			target = 0E4379982E9804D2000B2941 /* version-complication */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -134,12 +134,12 @@
 			path = notification;
 			sourceTree = "<group>";
 		};
-		0E43799F2E9804D3000B2941 /* widget */ = {
+		0E43799F2E9804D3000B2941 /* version-complication */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				0E4379AD2E9804D4000B2941 /* Exceptions for "widget" folder in "widgetExtension" target */,
+				0E4379AD2E9804D4000B2941 /* Exceptions for "version-complication" folder in "version-complication" target */,
 			);
-			path = widget;
+			path = "version-complication";
 			sourceTree = "<group>";
 		};
 		0E9D8CC12E0D6C23002B7989 /* fokusuhr-testing-platform */ = {
@@ -224,7 +224,7 @@
 				0E9D8CC12E0D6C23002B7989 /* fokusuhr-testing-platform */,
 				0E9D8CD32E0D6C24002B7989 /* fokusuhr-testing-platform Watch App */,
 				0E4379892E9804C9000B2941 /* notification */,
-				0E43799F2E9804D3000B2941 /* widget */,
+				0E43799F2E9804D3000B2941 /* version-complication */,
 				0E43799A2E9804D2000B2941 /* Frameworks */,
 				0E9D8CC02E0D6C23002B7989 /* Products */,
 			);
@@ -236,7 +236,7 @@
 				0E9D8CBF2E0D6C23002B7989 /* fokusuhr-testing-platform.app */,
 				0E9D8CCF2E0D6C24002B7989 /* fokusuhr-testing-platform Watch App.app */,
 				0E4379882E9804C9000B2941 /* notification.appex */,
-				0E4379992E9804D2000B2941 /* widgetExtension.appex */,
+				0E4379992E9804D2000B2941 /* version-complication.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -266,9 +266,9 @@
 			productReference = 0E4379882E9804C9000B2941 /* notification.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		0E4379982E9804D2000B2941 /* widgetExtension */ = {
+		0E4379982E9804D2000B2941 /* version-complication */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0E4379AA2E9804D4000B2941 /* Build configuration list for PBXNativeTarget "widgetExtension" */;
+			buildConfigurationList = 0E4379AA2E9804D4000B2941 /* Build configuration list for PBXNativeTarget "version-complication" */;
 			buildPhases = (
 				0E4379952E9804D2000B2941 /* Sources */,
 				0E4379962E9804D2000B2941 /* Frameworks */,
@@ -279,13 +279,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				0E43799F2E9804D3000B2941 /* widget */,
+				0E43799F2E9804D3000B2941 /* version-complication */,
 			);
-			name = widgetExtension;
+			name = "version-complication";
 			packageProductDependencies = (
 			);
 			productName = widgetExtension;
-			productReference = 0E4379992E9804D2000B2941 /* widgetExtension.appex */;
+			productReference = 0E4379992E9804D2000B2941 /* version-complication.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		0E9D8CBE2E0D6C23002B7989 /* fokusuhr-testing-platform */ = {
@@ -399,7 +399,7 @@
 				0E9D8CBE2E0D6C23002B7989 /* fokusuhr-testing-platform */,
 				0E9D8CCE2E0D6C24002B7989 /* fokusuhr-testing-platform Watch App */,
 				0E4379872E9804C9000B2941 /* notification */,
-				0E4379982E9804D2000B2941 /* widgetExtension */,
+				0E4379982E9804D2000B2941 /* version-complication */,
 			);
 		};
 /* End PBXProject section */
@@ -480,7 +480,7 @@
 		};
 		0E4379A82E9804D4000B2941 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0E4379982E9804D2000B2941 /* widgetExtension */;
+			target = 0E4379982E9804D2000B2941 /* version-complication */;
 			targetProxy = 0E4379A72E9804D4000B2941 /* PBXContainerItemProxy */;
 		};
 		0E9D8CD22E0D6C24002B7989 /* PBXTargetDependency */ = {
@@ -561,8 +561,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = widget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = widget;
+				INFOPLIST_FILE = "version-complication/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "version-complication";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -571,7 +571,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.1.4;
-				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr.watchkitapp.widget;
+				PRODUCT_BUNDLE_IDENTIFIER = "net.com.fokusuhr.FokusUhr.watchkitapp.version-complication";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -593,8 +593,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = widget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = widget;
+				INFOPLIST_FILE = "version-complication/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "version-complication";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -603,7 +603,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.1.4;
-				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr.watchkitapp.widget;
+				PRODUCT_BUNDLE_IDENTIFIER = "net.com.fokusuhr.FokusUhr.watchkitapp.version-complication";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -905,7 +905,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0E4379AA2E9804D4000B2941 /* Build configuration list for PBXNativeTarget "widgetExtension" */ = {
+		0E4379AA2E9804D4000B2941 /* Build configuration list for PBXNativeTarget "version-complication" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0E4379AB2E9804D4000B2941 /* Debug */,
