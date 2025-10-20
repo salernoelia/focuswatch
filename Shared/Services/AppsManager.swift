@@ -32,7 +32,7 @@ class AppsManager: ObservableObject {
     var currentIndex = 0
 
     let builtInApps = [
-      //   ("Tachometer", "Gefühlsanzeige", Color.yellow),
+      ("Tachometer", "Gefühlsanzeige", Color.yellow),
       ("Schreiben", "Fokushilfe beim Schreiben.", Color.blue),
       ("Farbatmung", "Beruhigende Atemübungen", Color.green),
       //("Fidget Spinner", "Digitaler Fidget Spinner", Color.orange),
@@ -70,22 +70,5 @@ class AppsManager: ObservableObject {
     Task {
       await fetchApps()
     }
-  }
-
-  private func getDefaultApps() -> [AppInfo] {
-    var apps = [
-      AppInfo(title: "Farbatmung", description: "Beruhigende Atemübungen", color: .green, index: 0)
-      // AppInfo(title: "Fidget Spinner", description: "Digitaler Fidget Spinner", color: .orange, index: 1)
-    ]
-
-    let checklistData = ChecklistManager.loadSharedData()
-    for (index, checklist) in checklistData.checklists.enumerated() {
-      apps.append(
-        AppInfo(
-          title: checklist.name, description: "Interaktive Checkliste", color: .blue,
-          index: index + 2))
-    }
-
-    return apps
   }
 }
