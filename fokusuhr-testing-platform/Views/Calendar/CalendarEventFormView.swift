@@ -43,7 +43,7 @@ struct CalendarEventFormView: View {
   }
 
   var body: some View {
-    NavigationView {
+    NavigationStack {
       Form {
         Section("Event") {
           TextField("Title", text: $title)
@@ -86,29 +86,46 @@ struct CalendarEventFormView: View {
         }
 
         Section {
-          ForEach(reminders) { reminder in
-            HStack {
-              Text("\(reminder.minutesBefore) min before")
-              Spacer()
-              Toggle(
-                "Launch app",
-                isOn: Binding(
-                  get: { reminder.shouldLaunchApp },
-                  set: { newValue in
-                    if let index = reminders.firstIndex(where: { $0.id == reminder.id }) {
-                      reminders[index] = Reminder(
-                        id: reminder.id,
-                        minutesBefore: reminder.minutesBefore,
-                        shouldLaunchApp: newValue
-                      )
-                    }
+          if reminders.isEmpty {
+            Text("No reminders")
+              .foregroundStyle(.secondary)
+          } else {
+            ForEach(reminders) { reminder in
+              HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                  Text("\(reminder.minutesBefore) min before")
+                    .font(.body)
+                  if reminder.shouldLaunchApp {
+                    Text("Launches app")
+                      .font(.caption)
+                      .foregroundStyle(.secondary)
                   }
-                ))
-              Button {
-                reminders.removeAll { $0.id == reminder.id }
-              } label: {
-                Image(systemName: "trash")
-                  .foregroundColor(.red)
+                }
+                Spacer()
+              }
+              .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                Button(role: .destructive) {
+                  reminders.removeAll { $0.id == reminder.id }
+                } label: {
+                  Label("Delete", systemImage: "trash")
+                }
+              }
+              .swipeActions(edge: .leading) {
+                Button {
+                  if let index = reminders.firstIndex(where: { $0.id == reminder.id }) {
+                    reminders[index] = Reminder(
+                      id: reminder.id,
+                      minutesBefore: reminder.minutesBefore,
+                      shouldLaunchApp: !reminder.shouldLaunchApp
+                    )
+                  }
+                } label: {
+                  Label(
+                    reminder.shouldLaunchApp ? "Don't Launch" : "Launch App",
+                    systemImage: reminder.shouldLaunchApp ? "app.badge.slash" : "app.badge"
+                  )
+                }
+                .tint(.blue)
               }
             }
           }
@@ -172,19 +189,19 @@ struct CalendarEventFormView: View {
       }
     }
   }
+}
 
-  private func combineDateTime(date: Date, time: Date) -> Date {
-    let calendar = Calendar.current
-    let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
-    let timeComponents = calendar.dateComponents([.hour, .minute], from: time)
+private func combineDateTime(date: Date, time: Date) -> Date {
+  let calendar = Calendar.current
+  let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+  let timeComponents = calendar.dateComponents([.hour, .minute], from: time)
 
-    var combined = DateComponents()
-    combined.year = dateComponents.year
-    combined.month = dateComponents.month
-    combined.day = dateComponents.day
-    combined.hour = timeComponents.hour
-    combined.minute = timeComponents.minute
+  var combined = DateComponents()
+  combined.year = dateComponents.year
+  combined.month = dateComponents.month
+  combined.day = dateComponents.day
+  combined.hour = timeComponents.hour
+  combined.minute = timeComponents.minute
 
-    return calendar.date(from: combined) ?? date
-  }
+  return calendar.date(from: combined) ?? date
 }

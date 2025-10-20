@@ -146,6 +146,9 @@
     "Disconnected" : {
 
     },
+    "Don't Launch" : {
+
+    },
     "Done" : {
 
     },
@@ -263,16 +266,10 @@
     "Last Name" : {
 
     },
-    "Launch" : {
-
-    },
-    "Launch %@?" : {
-
-    },
-    "Launch app" : {
-
-    },
     "Launch App" : {
+
+    },
+    "Launches app" : {
 
     },
     "Links = Später" : {
@@ -323,13 +320,13 @@
     "No Photos" : {
 
     },
+    "No reminders" : {
+
+    },
     "No user selected" : {
 
     },
     "None" : {
-
-    },
-    "Not Now" : {
 
     },
     "OK" : {
@@ -363,9 +360,6 @@
 
     },
     "Put Watch into Menu State" : {
-
-    },
-    "Ready for" : {
 
     },
     "Rechts = Hab ich!" : {
@@ -439,6 +433,9 @@
 
     },
     "Sign Out" : {
+
+    },
+    "Später" : {
 
     },
     "Sprich zu Anne" : {

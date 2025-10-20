@@ -18,64 +18,34 @@ struct CalendarEntryTriggerConsent: View {
   }
 
   var body: some View {
-    VStack(spacing: 20) {
-      Spacer()
+    VStack(spacing: 8) {
+      Text(event.title)
+        .font(.headline)
+        .multilineTextAlignment(.center)
+        .lineLimit(2)
+        .fixedSize(horizontal: false, vertical: true)
 
-      VStack(spacing: 8) {
-        Image(systemName: "calendar.badge.clock")
-          .font(.system(size: 40))
-          .foregroundColor(.accentColor)
-
-        Text("Ready for")
-          .font(.headline)
-
-        Text(event.title)
-          .font(.title2)
-          .fontWeight(.bold)
-          .multilineTextAlignment(.center)
-
-        if event.appIndex != nil {
-          Text("Launch \(appTitle)?")
-            .font(.subheadline)
-            .foregroundColor(.secondary)
+      if event.appIndex != nil && reminder.shouldLaunchApp {
+        Button("Starten") {
+          if let appIndex = event.appIndex {
+            watchConnector.currentView = .app(appIndex)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+              dismiss()
+            }
+          }
         }
+        .tint(.green)
+        .buttonStyle(.borderedProminent)
+
       }
 
-      Spacer()
-
-      VStack(spacing: 12) {
-        if event.appIndex != nil && reminder.shouldLaunchApp {
-          Button {
-            if let appIndex = event.appIndex {
-              watchConnector.currentView = .app(appIndex)
-            }
-            dismiss()
-          } label: {
-            HStack {
-              Image(systemName: "play.circle.fill")
-              Text("Launch")
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-          }
-          .buttonStyle(.borderedProminent)
-        }
-
-        Button {
-          dismiss()
-        } label: {
-          HStack {
-            Image(systemName: event.appIndex != nil ? "xmark.circle" : "checkmark.circle")
-            Text(event.appIndex != nil ? "Not Now" : "OK")
-          }
-          .frame(maxWidth: .infinity)
-          .padding(.vertical, 12)
-        }
-        .buttonStyle(.bordered)
+      Button {
+        dismiss()
+      } label: {
+        Text("Später")
       }
-      .padding(.horizontal)
+      .buttonStyle(.bordered)
     }
-    .padding()
   }
 }
 
@@ -83,7 +53,7 @@ struct CalendarEntryTriggerConsent: View {
   CalendarEntryTriggerConsent(
     event: EventTransfer(
       id: UUID(),
-      title: "Math Homework",
+      title: "Mathe Hausaufgaben",
       date: Date(),
       startTime: Date(),
       endTime: Date().addingTimeInterval(3600),
