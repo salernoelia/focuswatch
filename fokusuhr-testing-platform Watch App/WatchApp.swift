@@ -6,6 +6,7 @@ struct WatchApp: App {
   @StateObject private var watchConnector = WatchConnector()
   @StateObject private var writingExerciseManager = WritingExerciseManager()
   @StateObject private var calendarManager = CalendarManager.shared
+  @Environment(\.scenePhase) private var scenePhase
 
   init() {
     setupNotifications()
@@ -28,6 +29,14 @@ struct WatchApp: App {
               reminder: pending.reminder,
               watchConnector: watchConnector
             )
+          }
+        }
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+          if newPhase == .active {
+            #if DEBUG
+              print("🔄 App became active - checking for calendar updates...")
+            #endif
+            watchConnector.checkForCalendarUpdates()
           }
         }
     }

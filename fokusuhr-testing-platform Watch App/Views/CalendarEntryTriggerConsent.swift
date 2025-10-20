@@ -25,18 +25,15 @@ struct CalendarEntryTriggerConsent: View {
         .lineLimit(2)
         .fixedSize(horizontal: false, vertical: true)
 
-      if event.appIndex != nil && reminder.shouldLaunchApp {
+      if let appIndex = event.appIndex {
         Button("Starten") {
-          if let appIndex = event.appIndex {
-            watchConnector.currentView = .app(appIndex)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-              dismiss()
-            }
+          watchConnector.currentView = .app(appIndex)
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            dismiss()
           }
         }
         .tint(.green)
         .buttonStyle(.borderedProminent)
-
       }
 
       Button {

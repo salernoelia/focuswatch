@@ -15,6 +15,44 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     if WCSession.isSupported() {
       WCSession.default.delegate = self
       WCSession.default.activate()
+
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        self.loadLatestApplicationContext()
+      }
+    }
+  }
+
+  func checkForCalendarUpdates() {
+    loadLatestApplicationContext()
+  }
+
+  private func loadLatestApplicationContext() {
+    let context = WCSession.default.receivedApplicationContext
+
+    #if DEBUG
+      print("🔄 Watch: Loading latest application context on launch...")
+      print("   → Context keys: \(context.keys)")
+    #endif
+
+    if let calendarDataString = context["calendarData"] as? String,
+      let data = Data(base64Encoded: calendarDataString),
+      let events = try? JSONDecoder().decode([EventTransfer].self, from: data)
+    {
+      DispatchQueue.main.async {
+        #if DEBUG
+          print("✅ Watch: Loaded calendar from stored context on launch")
+          print("   → \(events.count) events loaded")
+          for event in events {
+            print(
+              "     • \(event.title) - \(event.startTime) - Reminders: \(event.reminders.count)")
+          }
+        #endif
+        self.calendarManager.updateEvents(events)
+      }
+    } else {
+      #if DEBUG
+        print("⚠️ Watch: No calendar data in stored context or failed to decode")
+      #endif
     }
   }
 
@@ -170,7 +208,31 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
       return
     }
 
+    #if DEBUG
+      print("📲 Watch: Received application context update")
+      print("   → Timestamp: \(applicationContext["timestamp"] ?? "unknown")")
+    #endif
+
     DispatchQueue.main.async {
+      if let calendarDataString = applicationContext["calendarData"] as? String,
+        let data = Data(base64Encoded: calendarDataString),
+        let events = try? JSONDecoder().decode([EventTransfer].self, from: data)
+      {
+        #if DEBUG
+          print("✅ Watch: Calendar updated from background context")
+          print("   → \(events.count) events received")
+          for event in events {
+            print(
+              "     • \(event.title) - \(event.startTime) - Reminders: \(event.reminders.count)")
+          }
+        #endif
+        self.calendarManager.updateEvents(events)
+      } else {
+        #if DEBUG
+          print("⚠️ Watch: Calendar data not found or failed to decode")
+        #endif
+      }
+
       if let action = applicationContext["action"] as? String {
         switch action {
         case "wakeUp":
@@ -187,10 +249,6 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             ErrorLogger.log("Unknown action in application context: \(action)")
           #endif
         }
-      } else {
-        #if DEBUG
-          ErrorLogger.log("Application context received without action key")
-        #endif
       }
     }
   }

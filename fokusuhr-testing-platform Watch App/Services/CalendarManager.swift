@@ -5,6 +5,8 @@ class CalendarManager: ObservableObject {
   @Published var events: [EventTransfer] = []
   @Published var pendingReminder: (event: EventTransfer, reminder: Reminder)?
 
+  private var lastSyncedHash: Int?
+
   static let shared = CalendarManager()
 
   private init() {
@@ -13,11 +15,47 @@ class CalendarManager: ObservableObject {
   }
 
   func updateEvents(_ newEvents: [EventTransfer]) {
+    let newHash = computeEventsHash(newEvents)
+
+    #if DEBUG
+      print("📅 CalendarManager: updateEvents called")
+      print("   → New events count: \(newEvents.count)")
+      print("   → Old events count: \(self.events.count)")
+      print("   → New hash: \(newHash)")
+      print("   → Last hash: \(lastSyncedHash ?? -1)")
+    #endif
+
+    if let lastHash = lastSyncedHash, lastHash == newHash {
+      #if DEBUG
+        print("⏭️ CalendarManager: Events unchanged (hash match), skipping schedule")
+      #endif
+      return
+    }
+
     DispatchQueue.main.async {
       self.events = newEvents
+      self.lastSyncedHash = newHash
       self.saveEvents()
+
+      #if DEBUG
+        print("💾 CalendarManager: Events saved to UserDefaults")
+        print("🔔 CalendarManager: Starting to schedule reminders...")
+      #endif
+
       self.scheduleAllReminders()
     }
+  }
+
+  private func computeEventsHash(_ events: [EventTransfer]) -> Int {
+    var hasher = Hasher()
+    hasher.combine(events.count)
+    for event in events {
+      hasher.combine(event.id)
+      hasher.combine(event.title)
+      hasher.combine(event.startTime)
+      hasher.combine(event.reminders.count)
+    }
+    return hasher.finalize()
   }
 
   private func requestNotificationPermissions() {
@@ -56,11 +94,32 @@ class CalendarManager: ObservableObject {
   }
 
   func scheduleAllReminders() {
+    #if DEBUG
+      print("🗑️ CalendarManager: Removing all pending notifications")
+    #endif
+
     UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+
+    #if DEBUG
+      print("🔄 CalendarManager: Scheduling reminders for \(events.count) events")
+    #endif
 
     for event in events {
       scheduleReminders(for: event)
     }
+
+    #if DEBUG
+      UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
+        print("✅ CalendarManager: Total pending notifications: \(requests.count)")
+        for request in requests {
+          if let trigger = request.trigger as? UNCalendarNotificationTrigger,
+            let nextTriggerDate = trigger.nextTriggerDate()
+          {
+            print("   → \(request.content.title) at \(nextTriggerDate)")
+          }
+        }
+      }
+    #endif
   }
 
   private func scheduleReminders(for event: EventTransfer) {
@@ -72,7 +131,13 @@ class CalendarManager: ObservableObject {
   private func scheduleReminder(for event: EventTransfer, reminder: Reminder) {
     let content = UNMutableNotificationContent()
     content.title = event.title
-    content.body = "Startet in \(reminder.minutesBefore) Minuten"
+
+    if reminder.minutesBefore == 0 {
+      content.body = "Startet jetzt"
+    } else {
+      content.body = "Startet in \(reminder.minutesBefore) Minuten"
+    }
+
     content.sound = .default
     content.userInfo = [
       "eventId": event.id.uuidString,
@@ -84,9 +149,32 @@ class CalendarManager: ObservableObject {
     let triggerDate = Calendar.current.date(
       byAdding: .minute, value: -reminder.minutesBefore, to: event.startTime)
 
-    guard let triggerDate = triggerDate, triggerDate > Date() else {
+    guard let triggerDate = triggerDate else {
       #if DEBUG
-        print("⏭️ Skipping reminder for \(event.title) - trigger date in past")
+        print("❌ Failed to calculate trigger date for \(event.title)")
+      #endif
+      return
+    }
+
+    let now = Date()
+
+    #if DEBUG
+      let formatter = DateFormatter()
+      formatter.dateStyle = .short
+      formatter.timeStyle = .short
+      print("⏰ Scheduling: \(event.title)")
+      print("   → Event start: \(formatter.string(from: event.startTime))")
+      print("   → Reminder: \(reminder.minutesBefore) min before")
+      print("   → Trigger date: \(formatter.string(from: triggerDate))")
+      print("   → Current time: \(formatter.string(from: now))")
+    #endif
+
+    guard triggerDate > now else {
+      #if DEBUG
+        print("⏭️ SKIPPED: Trigger date is in the past")
+        print("   → Event: \(event.title)")
+        print("   → Trigger was: \(triggerDate)")
+        print("   → Now is: \(now)")
       #endif
       return
     }
@@ -101,11 +189,12 @@ class CalendarManager: ObservableObject {
     UNUserNotificationCenter.current().add(request) { error in
       if let error = error {
         #if DEBUG
+          print("❌ Failed to schedule reminder for \(event.title): \(error)")
           ErrorLogger.log("Failed to schedule reminder: \(error)")
         #endif
       } else {
         #if DEBUG
-          print("✅ Scheduled reminder for \(event.title) at \(triggerDate)")
+          print("✅ Successfully scheduled reminder for \(event.title)")
         #endif
       }
     }

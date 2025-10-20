@@ -1,0 +1,588 @@
+{
+  "kind": "symbol",
+  "topicSections": [
+    {
+      "identifiers": [
+        "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSession",
+        "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSessionDelegate"
+      ],
+      "abstract": [
+        {
+          "type": "text",
+          "text": "Initiate transfers between your iOS app and watchOS app."
+        }
+      ],
+      "title": "Essentials",
+      "anchor": "Essentials"
+    },
+    {
+      "identifiers": [
+        "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSessionFile",
+        "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSessionFileTransfer",
+        "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSessionUserInfoTransfer"
+      ],
+      "abstract": [
+        {
+          "text": "Monitor the progress of files being transferred.",
+          "type": "text"
+        }
+      ],
+      "title": "Data Objects",
+      "anchor": "Data-Objects"
+    },
+    {
+      "identifiers": [
+        "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/transferring-data-with-watch-connectivity"
+      ],
+      "title": "Sample Code",
+      "anchor": "Sample-Code"
+    }
+  ],
+  "variants": [
+    {
+      "paths": [
+        "/documentation/watchconnectivity"
+      ],
+      "traits": [
+        {
+          "interfaceLanguage": "swift"
+        }
+      ]
+    },
+    {
+      "paths": [
+        "/documentation/watchconnectivity"
+      ],
+      "traits": [
+        {
+          "interfaceLanguage": "occ"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "platforms": [
+      {
+        "beta": false,
+        "name": "iOS",
+        "introducedAt": "9.0"
+      },
+      {
+        "beta": false,
+        "name": "iPadOS",
+        "introducedAt": "9.0"
+      },
+      {
+        "beta": false,
+        "name": "Mac Catalyst",
+        "introducedAt": "13.0"
+      },
+      {
+        "beta": false,
+        "name": "visionOS",
+        "introducedAt": "1.0"
+      },
+      {
+        "beta": false,
+        "name": "watchOS",
+        "introducedAt": "2.0"
+      }
+    ],
+    "modules": [
+      {
+        "name": "Watch Connectivity"
+      }
+    ],
+    "symbolKind": "module",
+    "roleHeading": "Framework",
+    "role": "collection",
+    "externalID": "WatchConnectivity",
+    "title": "Watch Connectivity"
+  },
+  "hierarchy": {
+    "paths": [
+      [
+        "doc://com.apple.documentation/documentation/technologies"
+      ]
+    ]
+  },
+  "abstract": [
+    {
+      "type": "text",
+      "text": "Implement two-way communication between an iOS app and its paired watchOS app."
+    }
+  ],
+  "sections": [],
+  "schemaVersion": {
+    "major": 0,
+    "minor": 3,
+    "patch": 0
+  },
+  "primaryContentSections": [
+    {
+      "kind": "content",
+      "content": [
+        {
+          "text": "Overview",
+          "anchor": "overview",
+          "level": 2,
+          "type": "heading"
+        },
+        {
+          "inlineContent": [
+            {
+              "text": "Use this framework to transfer data between your iOS app and the WatchKit extension of a paired watchOS app. You can pass small amounts of data or entire files. You also use this framework to trigger an update to your watchOS app’s complication.",
+              "type": "text"
+            }
+          ],
+          "type": "paragraph"
+        },
+        {
+          "inlineContent": [
+            {
+              "text": "After initiating a transfer from your app, the system assumes responsibility for the transmission of any data. Most transfers happen in the background when the receiving app is inactive. When the app wakes up, it is notified of any data that arrived while it was inactive. Live communication is also possible when both apps are active.",
+              "type": "text"
+            }
+          ],
+          "type": "paragraph"
+        }
+      ]
+    }
+  ],
+  "identifier": {
+    "interfaceLanguage": "swift",
+    "url": "doc://com.apple.watchconnectivity/documentation/WatchConnectivity"
+  },
+  "references": {
+    "doc://com.apple.documentation/documentation/technologies": {
+      "type": "topic",
+      "title": "Technologies",
+      "kind": "technologies",
+      "role": "overview",
+      "url": "/documentation/technologies",
+      "identifier": "doc://com.apple.documentation/documentation/technologies",
+      "abstract": [
+        {
+          "text": "",
+          "type": "text"
+        }
+      ]
+    },
+    "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSessionUserInfoTransfer": {
+      "abstract": [
+        {
+          "text": "Information about in-progress data transfers.",
+          "type": "text"
+        }
+      ],
+      "title": "WCSessionUserInfoTransfer",
+      "identifier": "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSessionUserInfoTransfer",
+      "url": "/documentation/watchconnectivity/wcsessionuserinfotransfer",
+      "role": "symbol",
+      "navigatorTitle": [
+        {
+          "kind": "identifier",
+          "text": "WCSessionUserInfoTransfer"
+        }
+      ],
+      "fragments": [
+        {
+          "kind": "keyword",
+          "text": "class"
+        },
+        {
+          "kind": "text",
+          "text": " "
+        },
+        {
+          "kind": "identifier",
+          "text": "WCSessionUserInfoTransfer"
+        }
+      ],
+      "type": "topic",
+      "kind": "symbol"
+    },
+    "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSession": {
+      "abstract": [
+        {
+          "text": "The object that initiates communication between a WatchKit extension and its companion iOS app.",
+          "type": "text"
+        }
+      ],
+      "title": "WCSession",
+      "identifier": "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSession",
+      "url": "/documentation/watchconnectivity/wcsession",
+      "role": "symbol",
+      "navigatorTitle": [
+        {
+          "text": "WCSession",
+          "kind": "identifier"
+        }
+      ],
+      "fragments": [
+        {
+          "text": "class",
+          "kind": "keyword"
+        },
+        {
+          "text": " ",
+          "kind": "text"
+        },
+        {
+          "text": "WCSession",
+          "kind": "identifier"
+        }
+      ],
+      "type": "topic",
+      "kind": "symbol"
+    },
+    "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSessionFileTransfer": {
+      "abstract": [
+        {
+          "type": "text",
+          "text": "Information about in-progress file transfers."
+        }
+      ],
+      "title": "WCSessionFileTransfer",
+      "identifier": "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSessionFileTransfer",
+      "url": "/documentation/watchconnectivity/wcsessionfiletransfer",
+      "role": "symbol",
+      "navigatorTitle": [
+        {
+          "text": "WCSessionFileTransfer",
+          "kind": "identifier"
+        }
+      ],
+      "fragments": [
+        {
+          "text": "class",
+          "kind": "keyword"
+        },
+        {
+          "text": " ",
+          "kind": "text"
+        },
+        {
+          "text": "WCSessionFileTransfer",
+          "kind": "identifier"
+        }
+      ],
+      "type": "topic",
+      "kind": "symbol"
+    },
+    "doc://com.apple.watchconnectivity/documentation/WatchConnectivity": {
+      "abstract": [
+        {
+          "text": "Implement two-way communication between an iOS app and its paired watchOS app.",
+          "type": "text"
+        }
+      ],
+      "title": "Watch Connectivity",
+      "identifier": "doc://com.apple.watchconnectivity/documentation/WatchConnectivity",
+      "url": "/documentation/watchconnectivity",
+      "role": "collection",
+      "type": "topic",
+      "kind": "symbol"
+    },
+    "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/transferring-data-with-watch-connectivity": {
+      "title": "Transferring data with Watch Connectivity",
+      "kind": "article",
+      "identifier": "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/transferring-data-with-watch-connectivity",
+      "abstract": [
+        {
+          "type": "text",
+          "text": "Transfer data between a watchOS app and its companion iOS app."
+        }
+      ],
+      "role": "sampleCode",
+      "type": "topic",
+      "url": "/documentation/watchconnectivity/transferring-data-with-watch-connectivity"
+    },
+    "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSessionFile": {
+      "abstract": [
+        {
+          "type": "text",
+          "text": "Information about a file currently being transferred between an iOS app and WatchKit extension."
+        }
+      ],
+      "title": "WCSessionFile",
+      "identifier": "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSessionFile",
+      "url": "/documentation/watchconnectivity/wcsessionfile",
+      "role": "symbol",
+      "navigatorTitle": [
+        {
+          "text": "WCSessionFile",
+          "kind": "identifier"
+        }
+      ],
+      "fragments": [
+        {
+          "text": "class",
+          "kind": "keyword"
+        },
+        {
+          "text": " ",
+          "kind": "text"
+        },
+        {
+          "text": "WCSessionFile",
+          "kind": "identifier"
+        }
+      ],
+      "type": "topic",
+      "kind": "symbol"
+    },
+    "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSessionDelegate": {
+      "navigatorTitle": [
+        {
+          "kind": "identifier",
+          "text": "WCSessionDelegate"
+        }
+      ],
+      "kind": "symbol",
+      "title": "WCSessionDelegate",
+      "abstract": [
+        {
+          "type": "text",
+          "text": "A delegate protocol that defines methods for receiving messages sent by a "
+        },
+        {
+          "identifier": "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSession",
+          "type": "reference",
+          "isActive": true
+        },
+        {
+          "type": "text",
+          "text": " object."
+        }
+      ],
+      "fragments": [
+        {
+          "kind": "keyword",
+          "text": "protocol"
+        },
+        {
+          "kind": "text",
+          "text": " "
+        },
+        {
+          "kind": "identifier",
+          "text": "WCSessionDelegate"
+        }
+      ],
+      "url": "/documentation/watchconnectivity/wcsessiondelegate",
+      "role": "symbol",
+      "type": "topic",
+      "identifier": "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSessionDelegate"
+    }
+  },
+  "variantOverrides": [
+    {
+      "patch": [
+        {
+          "value": "occ",
+          "path": "/identifier/interfaceLanguage",
+          "op": "replace"
+        },
+        {
+          "value": {
+            "paths": [
+              [
+                "doc://com.apple.documentation/documentation/technologies"
+              ]
+            ]
+          },
+          "path": "/hierarchy",
+          "op": "replace"
+        },
+        {
+          "value": [
+            {
+              "identifiers": [
+                "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSession",
+                "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSessionDelegate"
+              ],
+              "abstract": [
+                {
+                  "type": "text",
+                  "text": "Initiate transfers between your iOS app and watchOS app."
+                }
+              ],
+              "anchor": "Essentials",
+              "title": "Essentials"
+            },
+            {
+              "identifiers": [
+                "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSessionFile",
+                "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSessionFileTransfer",
+                "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/WCSessionUserInfoTransfer"
+              ],
+              "abstract": [
+                {
+                  "text": "Monitor the progress of files being transferred.",
+                  "type": "text"
+                }
+              ],
+              "anchor": "Data-Objects",
+              "title": "Data Objects"
+            },
+            {
+              "identifiers": [
+                "doc://com.apple.watchconnectivity/documentation/WatchConnectivity/transferring-data-with-watch-connectivity"
+              ],
+              "anchor": "Sample-Code",
+              "title": "Sample Code"
+            }
+          ],
+          "path": "/topicSections",
+          "op": "replace"
+        },
+        {
+          "value": null,
+          "path": "/relationshipsSections",
+          "op": "add"
+        },
+        {
+          "value": null,
+          "path": "/seeAlsoSections",
+          "op": "add"
+        },
+        {
+          "value": "WCSessionUserInfoTransfer",
+          "path": "/references/doc:~1~1com.apple.watchconnectivity~1documentation~1WatchConnectivity~1WCSessionUserInfoTransfer/title",
+          "op": "replace"
+        },
+        {
+          "value": [
+            {
+              "kind": "identifier",
+              "text": "WCSessionUserInfoTransfer"
+            }
+          ],
+          "path": "/references/doc:~1~1com.apple.watchconnectivity~1documentation~1WatchConnectivity~1WCSessionUserInfoTransfer/fragments",
+          "op": "replace"
+        },
+        {
+          "value": [
+            {
+              "text": "WCSessionUserInfoTransfer",
+              "kind": "identifier"
+            }
+          ],
+          "path": "/references/doc:~1~1com.apple.watchconnectivity~1documentation~1WatchConnectivity~1WCSessionUserInfoTransfer/navigatorTitle",
+          "op": "replace"
+        },
+        {
+          "value": "WCSession",
+          "path": "/references/doc:~1~1com.apple.watchconnectivity~1documentation~1WatchConnectivity~1WCSession/title",
+          "op": "replace"
+        },
+        {
+          "value": [
+            {
+              "kind": "identifier",
+              "text": "WCSession"
+            }
+          ],
+          "path": "/references/doc:~1~1com.apple.watchconnectivity~1documentation~1WatchConnectivity~1WCSession/fragments",
+          "op": "replace"
+        },
+        {
+          "value": [
+            {
+              "kind": "identifier",
+              "text": "WCSession"
+            }
+          ],
+          "path": "/references/doc:~1~1com.apple.watchconnectivity~1documentation~1WatchConnectivity~1WCSession/navigatorTitle",
+          "op": "replace"
+        },
+        {
+          "value": "WCSessionFileTransfer",
+          "path": "/references/doc:~1~1com.apple.watchconnectivity~1documentation~1WatchConnectivity~1WCSessionFileTransfer/title",
+          "op": "replace"
+        },
+        {
+          "value": [
+            {
+              "text": "WCSessionFileTransfer",
+              "kind": "identifier"
+            }
+          ],
+          "path": "/references/doc:~1~1com.apple.watchconnectivity~1documentation~1WatchConnectivity~1WCSessionFileTransfer/fragments",
+          "op": "replace"
+        },
+        {
+          "value": [
+            {
+              "kind": "identifier",
+              "text": "WCSessionFileTransfer"
+            }
+          ],
+          "path": "/references/doc:~1~1com.apple.watchconnectivity~1documentation~1WatchConnectivity~1WCSessionFileTransfer/navigatorTitle",
+          "op": "replace"
+        },
+        {
+          "value": "WCSessionFile",
+          "path": "/references/doc:~1~1com.apple.watchconnectivity~1documentation~1WatchConnectivity~1WCSessionFile/title",
+          "op": "replace"
+        },
+        {
+          "value": [
+            {
+              "text": "WCSessionFile",
+              "kind": "identifier"
+            }
+          ],
+          "path": "/references/doc:~1~1com.apple.watchconnectivity~1documentation~1WatchConnectivity~1WCSessionFile/fragments",
+          "op": "replace"
+        },
+        {
+          "value": [
+            {
+              "kind": "identifier",
+              "text": "WCSessionFile"
+            }
+          ],
+          "path": "/references/doc:~1~1com.apple.watchconnectivity~1documentation~1WatchConnectivity~1WCSessionFile/navigatorTitle",
+          "op": "replace"
+        },
+        {
+          "value": "WCSessionDelegate",
+          "path": "/references/doc:~1~1com.apple.watchconnectivity~1documentation~1WatchConnectivity~1WCSessionDelegate/title",
+          "op": "replace"
+        },
+        {
+          "value": [
+            {
+              "text": "WCSessionDelegate",
+              "kind": "identifier"
+            }
+          ],
+          "path": "/references/doc:~1~1com.apple.watchconnectivity~1documentation~1WatchConnectivity~1WCSessionDelegate/fragments",
+          "op": "replace"
+        },
+        {
+          "value": [
+            {
+              "kind": "identifier",
+              "text": "WCSessionDelegate"
+            }
+          ],
+          "path": "/references/doc:~1~1com.apple.watchconnectivity~1documentation~1WatchConnectivity~1WCSessionDelegate/navigatorTitle",
+          "op": "replace"
+        }
+      ],
+      "traits": [
+        {
+          "interfaceLanguage": "occ"
+        }
+      ]
+    }
+  ],
+  "legalNotices": {
+    "copyright": "Copyright &copy; 2025 Apple Inc. All rights reserved.",
+    "termsOfUse": "https://www.apple.com/legal/internet-services/terms/site.html",
+    "privacyPolicy": "https://www.apple.com/privacy/privacy-policy"
+  }
+}
