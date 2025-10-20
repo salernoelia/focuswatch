@@ -20,6 +20,12 @@
     "%lld items" : {
 
     },
+    "%lld min before" : {
+
+    },
+    "%lld minutes before" : {
+
+    },
     "•" : {
 
     },
@@ -30,9 +36,6 @@
 
     },
     "Active Testuser" : {
-
-    },
-    "Activity" : {
 
     },
     "Add" : {
@@ -51,6 +54,9 @@
 
     },
     "Add photos to use in checklists" : {
+
+    },
+    "Add Reminder" : {
 
     },
     "Add TestUser" : {
@@ -188,6 +194,9 @@
     "Entry Saved!" : {
 
     },
+    "Event" : {
+
+    },
     "Failed Uploads:\n%@" : {
 
     },
@@ -215,6 +224,9 @@
     "Grid Size" : {
 
     },
+    "Heute" : {
+
+    },
     "History" : {
 
     },
@@ -239,10 +251,28 @@
     "Journal History" : {
 
     },
+    "Kalender" : {
+
+    },
+    "Keine Events" : {
+
+    },
     "Label" : {
 
     },
     "Last Name" : {
+
+    },
+    "Launch" : {
+
+    },
+    "Launch %@?" : {
+
+    },
+    "Launch app" : {
+
+    },
+    "Launch App" : {
 
     },
     "Links = Später" : {
@@ -287,9 +317,6 @@
     "No Entries" : {
 
     },
-    "No events" : {
-
-    },
     "No events scheduled" : {
 
     },
@@ -300,6 +327,9 @@
 
     },
     "None" : {
+
+    },
+    "Not Now" : {
 
     },
     "OK" : {
@@ -335,6 +365,9 @@
     "Put Watch into Menu State" : {
 
     },
+    "Ready for" : {
+
+    },
     "Rechts = Hab ich!" : {
 
     },
@@ -342,6 +375,9 @@
 
     },
     "Refresh" : {
+
+    },
+    "Reminders" : {
 
     },
     "Remove Photo" : {
@@ -432,6 +468,9 @@
     "Telemetry" : {
 
     },
+    "Test Notification" : {
+
+    },
     "Test User ID: %d" : {
 
     },
@@ -451,9 +490,6 @@
 
     },
     "Try Reconnecting" : {
-
-    },
-    "Type" : {
 
     },
     "Übung stoppen" : {
@@ -487,6 +523,9 @@
 
     },
     "Wizard of Oz" : {
+
+    },
+    "Woche" : {
 
     },
     "Your Entry (Supervisor)" : {

@@ -3,6 +3,7 @@ import SwiftUI
 struct CalendarEventFormView: View {
   @Environment(\.dismiss) private var dismiss
   @ObservedObject var vm: CalendarViewModel
+  @StateObject private var appsManager = AppsManager.shared
   private let editingEvent: Event?
   private let defaultDate: Date?
 
@@ -12,7 +13,8 @@ struct CalendarEventFormView: View {
   @State private var endTime: Date
   @State private var repeatRule: RepeatRule = .none
   @State private var customWeekdays: [Int] = []
-  @State private var type: ActivityType = .homework
+  @State private var selectedAppIndex: Int?
+  @State private var reminders: [Reminder] = []
 
   init(vm: CalendarViewModel, defaultDate: Date? = nil, editingEvent: Event? = nil) {
     self.vm = vm
@@ -27,7 +29,8 @@ struct CalendarEventFormView: View {
       _endTime = State(initialValue: event.endTime)
       _repeatRule = State(initialValue: event.repeatRule)
       _customWeekdays = State(initialValue: event.customWeekdays)
-      _type = State(initialValue: event.type)
+      _selectedAppIndex = State(initialValue: event.appIndex)
+      _reminders = State(initialValue: event.reminders)
     } else {
       let base = defaultDate ?? Date()
       let defaultEnd =
@@ -42,19 +45,23 @@ struct CalendarEventFormView: View {
   var body: some View {
     NavigationView {
       Form {
-        Section("Activity") {
+        Section("Event") {
           TextField("Title", text: $title)
-          Picker("Type", selection: $type) {
-            ForEach(ActivityType.allCases) {
-              Text($0.rawValue.capitalized).tag($0)
+
+          Picker("Launch App", selection: $selectedAppIndex) {
+            Text("None").tag(nil as Int?)
+            ForEach(appsManager.apps, id: \.index) { app in
+              Text(app.title).tag(app.index as Int?)
             }
           }
         }
+
         Section("When") {
           DatePicker("Date", selection: $date, displayedComponents: .date)
           DatePicker("Start", selection: $startTime, displayedComponents: .hourAndMinute)
           DatePicker("End", selection: $endTime, displayedComponents: .hourAndMinute)
         }
+
         Section("Repeat") {
           Picker("Rule", selection: $repeatRule) {
             ForEach(RepeatRule.allCases) {
@@ -77,6 +84,48 @@ struct CalendarEventFormView: View {
             }
           }
         }
+
+        Section {
+          ForEach(reminders) { reminder in
+            HStack {
+              Text("\(reminder.minutesBefore) min before")
+              Spacer()
+              Toggle(
+                "Launch app",
+                isOn: Binding(
+                  get: { reminder.shouldLaunchApp },
+                  set: { newValue in
+                    if let index = reminders.firstIndex(where: { $0.id == reminder.id }) {
+                      reminders[index] = Reminder(
+                        id: reminder.id,
+                        minutesBefore: reminder.minutesBefore,
+                        shouldLaunchApp: newValue
+                      )
+                    }
+                  }
+                ))
+              Button {
+                reminders.removeAll { $0.id == reminder.id }
+              } label: {
+                Image(systemName: "trash")
+                  .foregroundColor(.red)
+              }
+            }
+          }
+
+          Menu {
+            ForEach([5, 10, 15, 30, 60], id: \.self) { minutes in
+              Button("\(minutes) minutes before") {
+                reminders.append(
+                  Reminder(minutesBefore: minutes, shouldLaunchApp: selectedAppIndex != nil))
+              }
+            }
+          } label: {
+            Label("Add Reminder", systemImage: "bell.badge.fill")
+          }
+        } header: {
+          Text("Reminders")
+        }
       }
       .navigationTitle(editingEvent == nil ? "New Event" : "Edit Event")
       .navigationBarTitleDisplayMode(.inline)
@@ -95,7 +144,8 @@ struct CalendarEventFormView: View {
                 endTime: combinedEndTime,
                 repeatRule: repeatRule,
                 customWeekdays: customWeekdays,
-                type: type
+                appIndex: selectedAppIndex,
+                reminders: reminders
               )
             } else {
               let ev = Event(
@@ -105,7 +155,8 @@ struct CalendarEventFormView: View {
                 endTime: combinedEndTime,
                 repeatRule: repeatRule,
                 customWeekdays: customWeekdays,
-                type: type
+                appIndex: selectedAppIndex,
+                reminders: reminders
               )
               vm.add(ev)
             }

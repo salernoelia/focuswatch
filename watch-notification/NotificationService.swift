@@ -13,16 +13,22 @@ class NotificationService: UNNotificationServiceExtension {
     bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
 
     if let bestAttemptContent = bestAttemptContent {
-      // Modify the notification content here...
-      bestAttemptContent.title = "\(bestAttemptContent.title) [modified]"
+      if bestAttemptContent.userInfo["eventId"] as? String != nil,
+        let shouldLaunchApp = bestAttemptContent.userInfo["shouldLaunchApp"] as? Bool
+      {
+
+        if shouldLaunchApp {
+          bestAttemptContent.categoryIdentifier = "CALENDAR_REMINDER_LAUNCH"
+        } else {
+          bestAttemptContent.categoryIdentifier = "CALENDAR_REMINDER"
+        }
+      }
 
       contentHandler(bestAttemptContent)
     }
   }
 
   override func serviceExtensionTimeWillExpire() {
-    // Called just before the extension will be terminated by the system.
-    // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
     if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
       contentHandler(bestAttemptContent)
     }

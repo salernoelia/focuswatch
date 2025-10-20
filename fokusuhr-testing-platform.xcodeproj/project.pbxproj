@@ -18,7 +18,7 @@
 		0E078E032E6E2C5100D74BDA /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 0E078E022E6E2C5100D74BDA /* PostgREST */; };
 		0E078E052E6E2C5100D74BDA /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 0E078E042E6E2C5100D74BDA /* Storage */; };
 		0E078E072E6E2C5100D74BDA /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 0E078E062E6E2C5100D74BDA /* Supabase */; };
-		0E43798F2E9804C9000B2941 /* notification.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0E4379882E9804C9000B2941 /* notification.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0E43798F2E9804C9000B2941 /* watch-notification.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0E4379882E9804C9000B2941 /* watch-notification.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0E43799C2E9804D3000B2941 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E43799B2E9804D3000B2941 /* WidgetKit.framework */; };
 		0E43799E2E9804D3000B2941 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E43799D2E9804D3000B2941 /* SwiftUI.framework */; };
 		0E4379A92E9804D4000B2941 /* version-complication.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0E4379992E9804D2000B2941 /* version-complication.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -59,7 +59,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				0E4379A92E9804D4000B2941 /* version-complication.appex in Embed Foundation Extensions */,
-				0E43798F2E9804C9000B2941 /* notification.appex in Embed Foundation Extensions */,
+				0E43798F2E9804C9000B2941 /* watch-notification.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -81,7 +81,7 @@
 		0E195BFF2E917A2500DC7E4B /* Production.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Production.xcconfig; sourceTree = "<group>"; };
 		0E195C042E917BAF00DC7E4B /* Development.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Development.xcconfig; sourceTree = "<group>"; };
 		0E195C072E917D2A00DC7E4B /* Example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Example.xcconfig; sourceTree = "<group>"; };
-		0E4379882E9804C9000B2941 /* notification.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = notification.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E4379882E9804C9000B2941 /* watch-notification.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "watch-notification.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E4379992E9804D2000B2941 /* version-complication.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "version-complication.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E43799B2E9804D3000B2941 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0E43799D2E9804D3000B2941 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -98,12 +98,12 @@
 			);
 			target = 0E9D8CBE2E0D6C23002B7989 /* fokusuhr-testing-platform */;
 		};
-		0E4379932E9804C9000B2941 /* Exceptions for "notification" folder in "notification" target */ = {
+		0E4379932E9804C9000B2941 /* Exceptions for "watch-notification" folder in "watch-notification" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 0E4379872E9804C9000B2941 /* notification */;
+			target = 0E4379872E9804C9000B2941 /* watch-notification */;
 		};
 		0E4379AD2E9804D4000B2941 /* Exceptions for "version-complication" folder in "version-complication" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -120,12 +120,12 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
-		0E4379892E9804C9000B2941 /* notification */ = {
+		0E4379892E9804C9000B2941 /* watch-notification */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				0E4379932E9804C9000B2941 /* Exceptions for "notification" folder in "notification" target */,
+				0E4379932E9804C9000B2941 /* Exceptions for "watch-notification" folder in "watch-notification" target */,
 			);
-			path = notification;
+			path = "watch-notification";
 			sourceTree = "<group>";
 		};
 		0E43799F2E9804D3000B2941 /* version-complication */ = {
@@ -217,7 +217,7 @@
 				0E195C042E917BAF00DC7E4B /* Development.xcconfig */,
 				0E9D8CC12E0D6C23002B7989 /* fokusuhr-testing-platform */,
 				0E9D8CD32E0D6C24002B7989 /* fokusuhr-testing-platform Watch App */,
-				0E4379892E9804C9000B2941 /* notification */,
+				0E4379892E9804C9000B2941 /* watch-notification */,
 				0E43799F2E9804D3000B2941 /* version-complication */,
 				0E43799A2E9804D2000B2941 /* Frameworks */,
 				0E9D8CC02E0D6C23002B7989 /* Products */,
@@ -229,7 +229,7 @@
 			children = (
 				0E9D8CBF2E0D6C23002B7989 /* fokusuhr-testing-platform.app */,
 				0E9D8CCF2E0D6C24002B7989 /* fokusuhr-testing-platform Watch App.app */,
-				0E4379882E9804C9000B2941 /* notification.appex */,
+				0E4379882E9804C9000B2941 /* watch-notification.appex */,
 				0E4379992E9804D2000B2941 /* version-complication.appex */,
 			);
 			name = Products;
@@ -238,9 +238,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0E4379872E9804C9000B2941 /* notification */ = {
+		0E4379872E9804C9000B2941 /* watch-notification */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0E4379902E9804C9000B2941 /* Build configuration list for PBXNativeTarget "notification" */;
+			buildConfigurationList = 0E4379902E9804C9000B2941 /* Build configuration list for PBXNativeTarget "watch-notification" */;
 			buildPhases = (
 				0E4379842E9804C9000B2941 /* Sources */,
 				0E4379852E9804C9000B2941 /* Frameworks */,
@@ -251,13 +251,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				0E4379892E9804C9000B2941 /* notification */,
+				0E4379892E9804C9000B2941 /* watch-notification */,
 			);
-			name = notification;
+			name = "watch-notification";
 			packageProductDependencies = (
 			);
 			productName = notification;
-			productReference = 0E4379882E9804C9000B2941 /* notification.appex */;
+			productReference = 0E4379882E9804C9000B2941 /* watch-notification.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		0E4379982E9804D2000B2941 /* version-complication */ = {
@@ -392,7 +392,7 @@
 			targets = (
 				0E9D8CBE2E0D6C23002B7989 /* fokusuhr-testing-platform */,
 				0E9D8CCE2E0D6C24002B7989 /* fokusuhr-testing-platform Watch App */,
-				0E4379872E9804C9000B2941 /* notification */,
+				0E4379872E9804C9000B2941 /* watch-notification */,
 				0E4379982E9804D2000B2941 /* version-complication */,
 			);
 		};
@@ -463,7 +463,7 @@
 /* Begin PBXTargetDependency section */
 		0E43798E2E9804C9000B2941 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0E4379872E9804C9000B2941 /* notification */;
+			target = 0E4379872E9804C9000B2941 /* watch-notification */;
 			targetProxy = 0E43798D2E9804C9000B2941 /* PBXContainerItemProxy */;
 		};
 		0E4379A82E9804D4000B2941 /* PBXTargetDependency */ = {
@@ -486,8 +486,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = notification/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = notification;
+				INFOPLIST_FILE = "watch-notification/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "watch-notification";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -495,7 +495,7 @@
 					"@executable_path/../../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr.watchkitapp.notification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -514,8 +514,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = notification/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = notification;
+				INFOPLIST_FILE = "watch-notification/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "watch-notification";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -523,7 +523,7 @@
 					"@executable_path/../../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr.watchkitapp.notification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -555,7 +555,7 @@
 					"@executable_path/../../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = eq;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.com.fokusuhr.FokusUhr.watchkitapp.version-complication";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -586,7 +586,7 @@
 					"@executable_path/../../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = eq;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.com.fokusuhr.FokusUhr.watchkitapp.version-complication";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -750,7 +750,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -788,7 +788,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -830,7 +830,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -869,7 +869,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -884,7 +884,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0E4379902E9804C9000B2941 /* Build configuration list for PBXNativeTarget "notification" */ = {
+		0E4379902E9804C9000B2941 /* Build configuration list for PBXNativeTarget "watch-notification" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0E4379912E9804C9000B2941 /* Debug */,

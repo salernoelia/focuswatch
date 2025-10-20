@@ -36,7 +36,8 @@ class CalendarViewModel: ObservableObject {
           endTime: combineDateTime(date: day, time: event.endTime),
           repeatRule: event.repeatRule,
           customWeekdays: event.customWeekdays,
-          type: event.type
+          appIndex: event.appIndex,
+          reminders: event.reminders
         )
         matchingEvents.append(repeatedEvent)
       }
@@ -94,7 +95,7 @@ class CalendarViewModel: ObservableObject {
 
   func update(
     eventId: UUID, title: String, date: Date, startTime: Date, endTime: Date,
-    repeatRule: RepeatRule, customWeekdays: [Int], type: ActivityType
+    repeatRule: RepeatRule, customWeekdays: [Int], appIndex: Int?, reminders: [Reminder]
   ) {
     var descriptor = FetchDescriptor<Event>()
     descriptor.predicate = #Predicate<Event> { event in
@@ -113,7 +114,8 @@ class CalendarViewModel: ObservableObject {
     event.endTime = endTime
     event.repeatRule = repeatRule
     event.customWeekdays = customWeekdays
-    event.type = type
+    event.appIndex = appIndex
+    event.reminders = reminders
 
     save()
   }
@@ -138,8 +140,9 @@ class CalendarViewModel: ObservableObject {
   private func save() {
     do {
       try modelContext.save()
-      syncToWatch()
-      objectWillChange.send()
+      Task { @MainActor in
+        syncToWatch()
+      }
     } catch {
       let appError = AppError.encodingFailed(type: "calendar events", underlying: error)
       #if DEBUG

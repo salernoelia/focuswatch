@@ -6,9 +6,16 @@ enum RepeatRule: String, CaseIterable, Identifiable, Codable {
   var id: String { rawValue }
 }
 
-enum ActivityType: String, CaseIterable, Identifiable, Codable {
-  case homework, sports, music, other
-  var id: String { rawValue }
+struct Reminder: Codable, Identifiable {
+  let id: UUID
+  var minutesBefore: Int
+  var shouldLaunchApp: Bool
+
+  init(id: UUID = UUID(), minutesBefore: Int, shouldLaunchApp: Bool = true) {
+    self.id = id
+    self.minutesBefore = minutesBefore
+    self.shouldLaunchApp = shouldLaunchApp
+  }
 }
 
 @Model
@@ -20,21 +27,30 @@ final class Event {
   var endTime: Date
   var repeatRuleRaw: String
   var customWeekdays: [Int]
-  var typeRaw: String
+  var appIndex: Int?
+  var remindersData: Data?
 
   var repeatRule: RepeatRule {
     get { RepeatRule(rawValue: repeatRuleRaw) ?? .none }
     set { repeatRuleRaw = newValue.rawValue }
   }
 
-  var type: ActivityType {
-    get { ActivityType(rawValue: typeRaw) ?? .other }
-    set { typeRaw = newValue.rawValue }
+  var reminders: [Reminder] {
+    get {
+      guard let data = remindersData,
+        let decoded = try? JSONDecoder().decode([Reminder].self, from: data)
+      else { return [] }
+      return decoded
+    }
+    set {
+      remindersData = try? JSONEncoder().encode(newValue)
+    }
   }
 
   init(
     id: UUID = UUID(), title: String, date: Date, startTime: Date, endTime: Date,
-    repeatRule: RepeatRule, customWeekdays: [Int] = [], type: ActivityType
+    repeatRule: RepeatRule, customWeekdays: [Int] = [], appIndex: Int? = nil,
+    reminders: [Reminder] = []
   ) {
     self.id = id
     self.title = title
@@ -43,7 +59,8 @@ final class Event {
     self.endTime = endTime
     self.repeatRuleRaw = repeatRule.rawValue
     self.customWeekdays = customWeekdays
-    self.typeRaw = type.rawValue
+    self.appIndex = appIndex
+    self.remindersData = try? JSONEncoder().encode(reminders)
   }
 }
 struct EventTransfer: Codable {
@@ -54,11 +71,12 @@ struct EventTransfer: Codable {
   let endTime: Date
   let repeatRule: RepeatRule
   let customWeekdays: [Int]
-  let type: ActivityType
+  let appIndex: Int?
+  let reminders: [Reminder]
 
   init(
     id: UUID, title: String, date: Date, startTime: Date, endTime: Date, repeatRule: RepeatRule,
-    customWeekdays: [Int], type: ActivityType
+    customWeekdays: [Int], appIndex: Int? = nil, reminders: [Reminder] = []
   ) {
     self.id = id
     self.title = title
@@ -67,7 +85,8 @@ struct EventTransfer: Codable {
     self.endTime = endTime
     self.repeatRule = repeatRule
     self.customWeekdays = customWeekdays
-    self.type = type
+    self.appIndex = appIndex
+    self.reminders = reminders
   }
 
   init(from event: Event) {
@@ -78,7 +97,8 @@ struct EventTransfer: Codable {
     self.endTime = event.endTime
     self.repeatRule = event.repeatRule
     self.customWeekdays = event.customWeekdays
-    self.type = event.type
+    self.appIndex = event.appIndex
+    self.reminders = event.reminders
   }
 
   func toEvent() -> Event {
@@ -90,7 +110,8 @@ struct EventTransfer: Codable {
       endTime: endTime,
       repeatRule: repeatRule,
       customWeekdays: customWeekdays,
-      type: type
+      appIndex: appIndex,
+      reminders: reminders
     )
   }
 }

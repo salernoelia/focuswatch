@@ -1,17 +1,80 @@
-import ClockKit
 import SwiftUI
+import UserNotifications
 
 @main
 struct WatchApp: App {
   @StateObject private var watchConnector = WatchConnector()
   @StateObject private var writingExerciseManager = WritingExerciseManager()
+  @StateObject private var calendarManager = CalendarManager.shared
+
+  init() {
+    setupNotifications()
+  }
 
   var body: some Scene {
     WindowGroup {
-
       WatchView()
         .environmentObject(watchConnector)
         .environmentObject(writingExerciseManager)
+        .sheet(
+          isPresented: .constant(calendarManager.pendingReminder != nil),
+          onDismiss: {
+            calendarManager.pendingReminder = nil
+          }
+        ) {
+          if let pending = calendarManager.pendingReminder {
+            CalendarEntryTriggerConsent(
+              event: pending.event,
+              reminder: pending.reminder,
+              watchConnector: watchConnector
+            )
+          }
+        }
     }
+  }
+
+  private func setupNotifications() {
+    UNUserNotificationCenter.current().delegate = NotificationHandler.shared
+  }
+}
+
+class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
+  static let shared = NotificationHandler()
+
+  private override init() {
+    super.init()
+  }
+
+  func userNotificationCenter(
+    _ center: UNUserNotificationCenter,
+    willPresent notification: UNNotification,
+    withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+  ) {
+    completionHandler([.banner, .sound])
+  }
+
+  func userNotificationCenter(
+    _ center: UNUserNotificationCenter,
+    didReceive response: UNNotificationResponse,
+    withCompletionHandler completionHandler: @escaping () -> Void
+  ) {
+    let userInfo = response.notification.request.content.userInfo
+
+    if let eventIdString = userInfo["eventId"] as? String,
+      let eventId = UUID(uuidString: eventIdString),
+      let reminderIdString = userInfo["reminderId"] as? String,
+      let reminderId = UUID(uuidString: reminderIdString)
+    {
+      DispatchQueue.main.async {
+        let shouldLaunch = response.actionIdentifier == UNNotificationDefaultActionIdentifier
+        CalendarManager.shared.handleReminderResponse(
+          eventId: eventId,
+          reminderId: reminderId,
+          shouldLaunch: shouldLaunch
+        )
+      }
+    }
+
+    completionHandler()
   }
 }

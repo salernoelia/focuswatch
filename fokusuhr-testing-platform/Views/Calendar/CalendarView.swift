@@ -8,10 +8,11 @@ struct CalendarView: View {
   @State private var selectedDate: Date = Date()
   @State private var editingEvent: Event?
   @State private var isCalendarCollapsed = false
+  @State private var events: [Event] = []
 
-  private var eventsForSelectedDate: [Event] {
-    guard let vm = vm else { return [] }
-    return vm.events(on: selectedDate)
+  private func loadEvents() {
+    guard let vm = vm else { return }
+    events = vm.events(on: selectedDate)
       .sorted { $0.startTime < $1.startTime }
   }
 
@@ -61,12 +62,12 @@ struct CalendarView: View {
 
         List {
 
-          if eventsForSelectedDate.isEmpty {
+          if events.isEmpty {
             Text("No events scheduled")
               .foregroundColor(.secondary)
               .font(.subheadline)
           } else {
-            ForEach(eventsForSelectedDate, id: \.id) { event in
+            ForEach(events, id: \.id) { event in
               CalendarEventRowView(event: event)
                 .contextMenu {
                   Button {
@@ -77,8 +78,9 @@ struct CalendarView: View {
                   }
 
                   Button(role: .destructive) {
-                    withAnimation {
-                      vm?.delete(event)
+                    vm?.delete(event)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                      loadEvents()
                     }
                   } label: {
                     Label("Delete", systemImage: "trash")
@@ -86,8 +88,9 @@ struct CalendarView: View {
                 }
                 .swipeActions(edge: .trailing) {
                   Button(role: .destructive) {
-                    withAnimation {
-                      vm?.delete(event)
+                    vm?.delete(event)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                      loadEvents()
                     }
                   } label: {
                     Label("Delete", systemImage: "trash")
@@ -122,16 +125,23 @@ struct CalendarView: View {
         isPresented: $showingForm,
         onDismiss: {
           editingEvent = nil
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            loadEvents()
+          }
         }
       ) {
         if let vm = vm {
           CalendarEventFormView(vm: vm, defaultDate: selectedDate, editingEvent: editingEvent)
         }
       }
+      .onChange(of: selectedDate) { _, _ in
+        loadEvents()
+      }
       .onAppear {
         if vm == nil {
           vm = CalendarViewModel(modelContext: modelContext)
         }
+        loadEvents()
       }
     }
   }

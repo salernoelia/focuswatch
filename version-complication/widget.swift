@@ -10,11 +10,18 @@ import WidgetKit
 
 struct Provider: AppIntentTimelineProvider {
   private var appVersion: String {
-    Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+    if let bundleURL = Bundle.main.url(
+      forResource: "fokusuhr-testing-platform Watch App", withExtension: "app"),
+      let bundle = Bundle(url: bundleURL),
+      let version = bundle.infoDictionary?["CFBundleShortVersionString"] as? String
+    {
+      return version
+    }
+    return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
   }
 
   func placeholder(in context: Context) -> SimpleEntry {
-    SimpleEntry(date: Date(), version: "1.0")
+    SimpleEntry(date: Date(), version: appVersion)
   }
 
   func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> SimpleEntry
