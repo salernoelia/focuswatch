@@ -9,69 +9,131 @@ applyTo: '**'
 - Never write any code comments, nor ever be verbose unless asked.
 
 ```
+.
 ├── fokusuhr-testing-platform
-│   ├── Assets.xcassets
-│   │   ├── AccentColor.colorset
-│   │   └── AppIcon.appiconset
+│   ├── CompanionApp.swift
+│   ├── CompanionView.swift
 │   ├── Constants
+│   │   └── CodingKeys.swift
 │   ├── Models
-│   ├── Preview Content
-│   │   └── Preview Assets.xcassets
+│   │   └── Gallery.swift
 │   ├── Services
+│   │   ├── AuthManager.swift
+│   │   ├── ChecklistManager.swift
+│   │   ├── GalleryStorage.swift
+│   │   ├── JournalManager.swift
+│   │   ├── WatchConnectorCalendar.swift
+│   │   ├── WatchConnectorCommands.swift
+│   │   ├── WatchConnectorConnectivity.swift
+│   │   └── WatchConnectorData.swift
 │   ├── Utils
-│   └── Views
+│   │   └── PhotoPicker.swift
+│   ├── Views
+│   │   ├── Auth
+│   │   │   ├── LoginRequiredView.swift
+│   │   │   └── LoginView.swift
+│   │   ├── Calendar
+│   │   │   ├── CalendarEventFormView.swift
+│   │   │   ├── CalendarEventRowView.swift
+│   │   │   ├── CalendarView.swift
+│   │   │   └── CalendarViewModel.swift
+│   │   ├── Checklist
+│   │   │   ├── ChecklistAddItemView.swift
+│   │   │   ├── ChecklistDetailView.swift
+│   │   │   ├── ChecklistEditorView.swift
+│   │   │   └── ChecklistItemEditRow.swift
+│   │   ├── Gallery
+│   │   │   ├── GalleryItemCard.swift
+│   │   │   └── GalleryView.swift
+│   │   ├── Journal
+│   │   │   ├── JournalContentView.swift
+│   │   │   ├── JournalHistoryEntryRow.swift
+│   │   │   ├── JournalHistoryView.swift
+│   │   │   └── JournalView.swift
+│   │   ├── SettingsView.swift
+│   │   ├── Testuser
+│   │   │   ├── UserAddView.swift
+│   │   │   ├── UserRow.swift
+│   │   │   └── UserSelectionView.swift
+│   │   └── WizardView.swift
+│   └── WatchConnector.swift
 ├── fokusuhr-testing-platform Watch App
-│   ├── Assets.xcassets
-│   │   ├── AccentColor.colorset
-│   │   ├── AppIcon.appiconset
-│   │   ├── Backblech.imageset
-│   │   ├── Backpapier.imageset
-│   │   ├── Bleistift.imageset
-│   │   ├── Buntes Papier.imageset
-│   │   ├── Ei.imageset
-│   │   ├── Haselnüsse.imageset
-│   │   ├── Kelle.imageset
-│   │   ├── Leimstift.imageset
-│   │   ├── Lineal.imageset
-│   │   ├── Locher.imageset
-│   │   ├── Maizena.imageset
-│   │   ├── Messlöffel.imageset
-│   │   ├── Schere.imageset
-│   │   ├── Schokoladenpulver.imageset
-│   │   ├── Schüssel.imageset
-│   │   ├── Topflappen.imageset
-│   │   ├── Waage.imageset
-│   │   ├── Wackelaugen.imageset
-│   │   ├── Wolle.imageset
-│   │   └── Zucker.imageset
 │   ├── Models
-│   ├── Preview Content
-│   │   └── Preview Assets.xcassets
+│   │   ├── EmaModel.swift
+│   │   └── WritingConfigManager.swift
 │   ├── Services
+│   │   ├── AppLogger.swift
+│   │   ├── AudioRecorder.swift
+│   │   ├── AuthManager.swift
+│   │   ├── CalendarManager.swift
+│   │   ├── ChecklistManager.swift
+│   │   ├── GalleryManager.swift
+│   │   ├── VibrationManager.swift
+│   │   └── Writing
+│   │       ├── WritingDBManager.swift
+│   │       ├── WritingExerciseManager.swift
+│   │       ├── WritingHapticFeedbackManager.swift
+│   │       ├── WritingLocationManager.swift
+│   │       ├── WritingManager.swift
+│   │       ├── WritingMotionManager.swift
+│   │       └── WritingTimeManager.swift
 │   ├── Utils
-│   └── Views
-├── fokusuhr-testing-platform.xcodeproj
-│   ├── project.xcworkspace
-│   │   ├── xcshareddata
-│   │   │   └── swiftpm
-│   │   │       └── configuration
-│   │   └── xcuserdata
-│   │       └── eliasalerno.xcuserdatad
-│   ├── xcshareddata
-│   │   └── xcschemes
-│   └── xcuserdata
-│       └── eliasalerno.xcuserdatad
-│           └── xcschemes
+│   │   ├── ActivityPredictor.swift
+│   │   ├── FeatureCalculator.swift
+│   │   └── RingBuffer.swift
+│   ├── Views
+│   │   ├── AnneView.swift
+│   │   ├── AppCardView.swift
+│   │   ├── CalendarEntryTriggerConsent.swift
+│   │   ├── CalendarView.swift
+│   │   ├── Checklist
+│   │   │   ├── ChecklistCard.swift
+│   │   │   ├── ChecklistCompletionView.swift
+│   │   │   ├── ChecklistDescriptionView.swift
+│   │   │   ├── ChecklistInstructionsView.swift
+│   │   │   ├── ChecklistMainView.swift
+│   │   │   ├── ChecklistProgressIndicator.swift
+│   │   │   ├── ChecklistResumePromptView.swift
+│   │   │   └── ChecklistView.swift
+│   │   ├── ColorBreathingView.swift
+│   │   ├── FidgetSpinnerView.swift
+│   │   ├── Speedometer
+│   │   │   ├── SpeedometerNeedleView.swift
+│   │   │   └── SpeedometerView.swift
+│   │   └── Writing
+│   │       ├── WritingColorView.swift
+│   │       ├── WritingConfigurationView.swift
+│   │       └── WritingView.swift
+│   ├── WatchApp.swift
+│   ├── WatchConnector.swift
+│   └── WatchView.swift
 ├── Shared
 │   ├── Configs
+│   │   └── SupabaseConfig.swift
 │   ├── Constants
+│   │   └── AppConstants.swift
 │   ├── Models
+│   │   ├── AppInfo.swift
+│   │   ├── Calendar.swift
+│   │   ├── Checklist.swift
+│   │   ├── ChecklistProgress.swift
+│   │   └── Schema.swift
 │   ├── Services
+│   │   ├── AppsManager.swift
+│   │   ├── SupervisorManager.swift
+│   │   ├── TelemetryManager.swift
+│   │   └── TestUsersManager.swift
 │   └── Utils
-└── widget
-    └── Assets.xcassets
-        ├── AccentColor.colorset
-        ├── AppIcon.appiconset
+│       ├── AppError.swift
+│       ├── ErrorLogger.swift
+│       ├── ModelContainerProvider.swift
+│       ├── Supabase.swift
+│       └── ValidationHelper.swift
+├── version-complication
+│   ├── AppIntent.swift
+│   └── widget.swift
+└── watch-notification
+    └── NotificationService.swift
 ```
 
 - Never write any code comments, nor ever be verbose unless asked.

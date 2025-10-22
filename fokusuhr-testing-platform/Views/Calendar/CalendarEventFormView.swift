@@ -232,6 +232,25 @@ struct CalendarEventFormView: View {
           }
         }
       }
+      .safeAreaInset(edge: .bottom) {
+        if editingEvent != nil {
+          Button(role: .destructive) {
+            if let event = editingEvent {
+              vm.delete(event)
+            }
+            dismiss()
+          } label: {
+            Text("Delete Event")
+              .frame(maxWidth: .infinity)
+              .padding()
+              .background(Color.red)
+              .foregroundColor(.white)
+              .cornerRadius(12)
+          }
+          .padding()
+          .background(Color(.systemBackground))
+        }
+      }
       .sheet(isPresented: $showingReminderForm) {
         if let reminder = editingReminder {
           ReminderFormView(
