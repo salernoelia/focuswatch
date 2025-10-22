@@ -12,7 +12,7 @@ struct ChecklistDetailView: View {
       Section {
         TextField("Checklist Name", text: $checklist.name)
           .font(.headline)
-          .onChange(of: checklist.name ) { _ in
+          .onChange(of: checklist.name, initial: false) { _, _ in
             checklistManager.updateChecklist(checklist)
           }
 
@@ -20,7 +20,7 @@ struct ChecklistDetailView: View {
           .font(.subheadline)
           .foregroundColor(.secondary)
           .lineLimit(3...6)
-          .onChange(of: checklist.description) { _ in
+          .onChange(of: checklist.description, initial: false) { _, _ in
             checklistManager.updateChecklist(checklist)
           }
       }

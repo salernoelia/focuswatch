@@ -98,7 +98,7 @@ struct ChecklistAddItemView: View {
         }
 
       }
-      .onChange(of: selectedImage) { newValue in
+      .onChange(of: selectedImage, initial: false) { _, newValue in
         if title.isEmpty {
           title = newValue
         }

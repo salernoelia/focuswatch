@@ -22,21 +22,22 @@ class WatchConfig {
   /// A computed property that retrieves the UUID from the keychain.
   /// If no UUID exists, it creates a new one, saves it to the keychain, and returns it.
   var uuid: String {
+    let deviceUUID: String
     if let retrievedUUID = try? keychain.getString("deviceUUID") {
-      return retrievedUUID
+      deviceUUID = retrievedUUID
     } else {
       let newUUID = UUID().uuidString
       try? keychain.set(String(newUUID), key: "deviceUUID")
-      storeDeviceIDInUserDefaults()
-      return String(newUUID)
+      deviceUUID = newUUID
     }
+    storeDeviceIDInUserDefaults(deviceUUID)
+    return deviceUUID
   }
 
   // MARK: - Public Methods
 
   /// Stores the device UUID in shared `UserDefaults` to be accessible by app extensions (like widgets).
-  func storeDeviceIDInUserDefaults() {
-    let deviceID = self.uuid
+  func storeDeviceIDInUserDefaults(_ deviceID: String) {
     let sharedDefaults = UserDefaults(suiteName: "group.net.com.fokusuhr")
     sharedDefaults?.set(deviceID, forKey: "deviceUUID")
     sharedDefaults?.synchronize()

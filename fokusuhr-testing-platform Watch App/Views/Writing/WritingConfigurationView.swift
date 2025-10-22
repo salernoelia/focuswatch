@@ -344,8 +344,7 @@ struct PickerSectionView: View {
       }
       .pickerStyle(WheelPickerStyle())
       .frame(width: 70, height: 70)
-      .onChange(of: value) {
-        // Perform the save action whenever the picker value changes.
+      .onChange(of: value, initial: false) { _, _ in
         onChange()
       }
     }

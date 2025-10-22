@@ -127,21 +127,21 @@ struct CalendarView: View {
           CalendarEventFormView(vm: vm, defaultDate: selectedDate, editingEvent: nil)
         }
       }
-      .onChange(of: showingForm) { old, new in
+      .onChange(of: showingForm, initial: false) { _, new in
         if !new {
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             loadEvents()
           }
         }
       }
-      .onChange(of: editingEvent) { old, new in
-        if new == nil && old != nil {
+      .onChange(of: editingEvent, initial: false) { _, new in
+        if new == nil {
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             loadEvents()
           }
         }
       }
-      .onChange(of: selectedDate) { _, _ in
+      .onChange(of: selectedDate, initial: false) { _, _ in
         loadEvents()
       }
       .onAppear {

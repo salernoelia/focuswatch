@@ -9,7 +9,7 @@ struct WatchApp: App {
   @Environment(\.scenePhase) private var scenePhase
 
   init() {
-    WatchConfig.shared.storeDeviceIDInUserDefaults()
+    WatchConfig.shared.storeDeviceIDInUserDefaults(WatchConfig.shared.uuid)
     setupNotifications()
   }
 
@@ -32,7 +32,7 @@ struct WatchApp: App {
             )
           }
         }
-        .onChange(of: scenePhase) { oldPhase, newPhase in
+        .onChange(of: scenePhase, initial: false) { oldPhase, newPhase in
           if newPhase == .active {
             #if DEBUG
               print("🔄 App became active - checking for calendar updates...")
