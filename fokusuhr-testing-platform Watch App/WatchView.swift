@@ -18,7 +18,7 @@ struct WatchView: View {
   @StateObject private var appsManager = AppsManager.shared
   @StateObject private var checklistManager = ChecklistManager.shared
   @State private var currentView: WatchViewState = .mainMenu
-  @State private var selectedAppIndex: Int? = nil
+  @State private var navigationPath = NavigationPath()
   @State private var selectedTab = 0
 
   private var prototypeApps: [PrototypeApp] {
@@ -53,8 +53,7 @@ struct WatchView: View {
             description: checklist.description,
             instructionTitle: checklist.name,
             items: checklist.items,
-            checklistId: checklist.id,
-            selectedAppIndex: $selectedAppIndex
+            checklistId: checklist.id
           )
         } else {
           Text("App not found")
@@ -73,26 +72,23 @@ struct WatchView: View {
   }
 
   var body: some View {
-
-    NavigationView {
-      Group {
-        if let selectedIndex = selectedAppIndex,
-          selectedIndex < prototypeApps.count
-        {
-          prototypeApps[selectedIndex].destination
-            .navigationBarHidden(false)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-              ToolbarItem(placement: .cancellationAction) {
-                Button("Zurück") {
-                  selectedAppIndex = nil
-                }
-              }
-            }
-        } else {
-          mainMenuView
+    NavigationStack(path: $navigationPath) {
+      mainMenuView
+        .navigationDestination(for: Int.self) { index in
+          if index < prototypeApps.count {
+            prototypeApps[index].destination
+              .navigationBarTitleDisplayMode(.inline)
+            //   .toolbar {
+            //     ToolbarItem(placement: .cancellationAction) {
+            //       Button("Zurück") {
+            //         if !navigationPath.isEmpty {
+            //           navigationPath.removeLast()
+            //         }
+            //       }
+            //     }
+            //   }
+          }
         }
-      }
     }
     .tag(1)
 
@@ -104,12 +100,12 @@ struct WatchView: View {
       currentView = newView
       switch newView {
       case .mainMenu:
-        selectedAppIndex = nil
-        selectedTab = 1
+        if !navigationPath.isEmpty {
+          navigationPath.removeLast(navigationPath.count)
+        }
       case .app(let index):
         if index < prototypeApps.count {
-          selectedAppIndex = index
-          selectedTab = 1
+          navigationPath.append(index)
         }
       }
     }

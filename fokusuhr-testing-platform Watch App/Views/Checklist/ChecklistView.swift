@@ -22,7 +22,6 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
   let instructionTitle: String
   let items: [Item]
   let checklistId: UUID
-  @Binding var selectedAppIndex: Int?
 
   @EnvironmentObject var watchConnector: WatchConnector
   @State private var remainingItems: [Item] = []
@@ -87,7 +86,7 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
         }
       }
     case .completed:
-      ChecklistCompletionView(selectedAppIndex: $selectedAppIndex)
+      ChecklistCompletionView()
         .transition(.opacity)
     }
   }

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ChecklistCompletionView: View {
-  @Binding var selectedAppIndex: Int?
+  @Environment(\.dismiss) private var dismiss
 
   var body: some View {
     VStack(spacing: 10) {
