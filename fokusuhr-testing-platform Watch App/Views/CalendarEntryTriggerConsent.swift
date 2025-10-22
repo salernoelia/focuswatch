@@ -33,9 +33,9 @@ struct CalendarEntryTriggerConsent: View {
         #endif
 
         Button("Starten") {
-          watchConnector.currentView = .app(appIndex)
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            dismiss()
+          dismiss()
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            watchConnector.currentView = .app(appIndex)
           }
         }
         .tint(.green)
