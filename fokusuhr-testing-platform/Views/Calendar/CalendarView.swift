@@ -69,40 +69,37 @@ struct CalendarView: View {
               .font(.subheadline)
           } else {
             ForEach(events, id: \.id) { event in
-              CalendarEventRowView(event: event)
-                .contextMenu {
-                  Button {
-                    editingEvent = event
-                  } label: {
-                    Label("Edit", systemImage: "pencil")
-                  }
-
-                  Button(role: .destructive) {
-                    vm?.delete(event)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                      loadEvents()
-                    }
-                  } label: {
-                    Label("Delete", systemImage: "trash")
-                  }
+              Button {
+                editingEvent = event
+              } label: {
+                CalendarEventRowView(event: event)
+              }
+              .contextMenu {
+                Button {
+                  editingEvent = event
+                } label: {
+                  Label("Edit", systemImage: "pencil")
                 }
-                .swipeActions(edge: .trailing) {
-                  Button(role: .destructive) {
-                    vm?.delete(event)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                      loadEvents()
-                    }
-                  } label: {
-                    Label("Delete", systemImage: "trash")
-                  }
 
-                  Button {
-                    editingEvent = event
-                  } label: {
-                    Label("Edit", systemImage: "pencil")
+                Button(role: .destructive) {
+                  vm?.delete(event)
+                  DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    loadEvents()
                   }
-                  .tint(.blue)
+                } label: {
+                  Label("Delete", systemImage: "trash")
                 }
+              }
+              .swipeActions(edge: .trailing) {
+                Button(role: .destructive) {
+                  vm?.delete(event)
+                  DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    loadEvents()
+                  }
+                } label: {
+                  Label("Delete", systemImage: "trash")
+                }
+              }
             }
           }
         }
