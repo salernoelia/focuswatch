@@ -181,6 +181,20 @@ struct CalendarEventFormView: View {
         } header: {
           Text("Reminders")
         }
+
+        if editingEvent != nil {
+          Section {
+            Button(role: .destructive) {
+              if let event = editingEvent {
+                vm.delete(event)
+              }
+              dismiss()
+            } label: {
+              Text("Delete Event")
+                .frame(maxWidth: .infinity)
+            }
+          }
+        }
       }
       .navigationTitle(editingEvent == nil ? "New Event" : "Edit Event")
       .navigationBarTitleDisplayMode(.inline)
@@ -230,25 +244,6 @@ struct CalendarEventFormView: View {
           Button("Cancel") {
             dismiss()
           }
-        }
-      }
-      .safeAreaInset(edge: .bottom) {
-        if editingEvent != nil {
-          Button(role: .destructive) {
-            if let event = editingEvent {
-              vm.delete(event)
-            }
-            dismiss()
-          } label: {
-            Text("Delete Event")
-              .frame(maxWidth: .infinity)
-              .padding()
-              .background(Color.red)
-              .foregroundColor(.white)
-              .cornerRadius(12)
-          }
-          .padding()
-          .background(Color(.systemBackground))
         }
       }
       .sheet(isPresented: $showingReminderForm) {

@@ -32,6 +32,13 @@ struct OnboardingView: View {
     // ),
 
     OnboardingPage(
+      icon: "ipod.and.applewatch",
+      title: "Verbindung zur Watch",
+      description:
+        "Um die Verbindung mit der Watch herzustellen, müssen beide Apps (Companion App und Watch App) gleichzeitig geöffnet sein."
+    ),
+
+    OnboardingPage(
       icon: "chart.bar.fill",
       title: "Hilf FokusUhr sich weiter zu verbessern",
       description:
