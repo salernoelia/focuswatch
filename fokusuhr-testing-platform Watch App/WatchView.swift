@@ -134,11 +134,7 @@ struct WatchView: View {
   private func appNavigationLink(for app: PrototypeApp, at index: Int)
     -> some View
   {
-    NavigationLink(
-      destination: app.destination,
-      tag: index,
-      selection: $selectedAppIndex
-    ) {
+    NavigationLink(value: index) {
       AppCardView(
         app: AppInfo(
           title: app.title,
