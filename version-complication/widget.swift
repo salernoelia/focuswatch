@@ -23,7 +23,7 @@ struct Provider: AppIntentTimelineProvider {
   }
 
   private var deviceId: String {
-    let sharedDefaults = UserDefaults(suiteName: "group.fokus.w")
+    let sharedDefaults = UserDefaults(suiteName: "group.net.com.fokusuhr")
     let uuid = sharedDefaults?.string(forKey: "deviceUUID")
     #if DEBUG
       print("📱 Widget reading deviceUUID: \(uuid ?? "nil")")

@@ -445,7 +445,7 @@ class WritingExerciseManager: NSObject, ObservableObject {
   /// Updates the value for the home screen widget.
   func storeWidgetValue() {
     DispatchQueue.main.async {
-      guard let sharedDefaults = UserDefaults(suiteName: "group.fokus.w") else {
+      guard let sharedDefaults = UserDefaults(suiteName: "group.net.com.fokusuhr") else {
         print("Error: Unable to access shared UserDefaults.")
         return
       }

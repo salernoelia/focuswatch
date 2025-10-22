@@ -37,7 +37,7 @@ class WatchConfig {
   /// Stores the device UUID in shared `UserDefaults` to be accessible by app extensions (like widgets).
   func storeDeviceIDInUserDefaults() {
     let deviceID = self.uuid
-    let sharedDefaults = UserDefaults(suiteName: "group.fokus.w")
+    let sharedDefaults = UserDefaults(suiteName: "group.net.com.fokusuhr")
     sharedDefaults?.set(deviceID, forKey: "deviceUUID")
     sharedDefaults?.synchronize()
     #if DEBUG
