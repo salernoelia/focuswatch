@@ -64,7 +64,7 @@ struct WatchView: View {
   }
 
   private func checklistForApp(_ app: AppInfo) -> Checklist? {
-    let checklistIndex = app.index - 5
+    let checklistIndex = app.index - appsManager.builtInAppCount
     guard checklistIndex >= 0 && checklistIndex < checklistManager.checklistData.checklists.count
     else {
       return nil

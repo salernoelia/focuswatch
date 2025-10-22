@@ -95,6 +95,9 @@
     "App" : {
 
     },
+    "App Index: %lld" : {
+
+    },
     "App not found" : {
 
     },
@@ -407,9 +410,6 @@
     "Restore" : {
 
     },
-    "Rule" : {
-
-    },
     "S: %@, P: %lld, A: %lld" : {
       "localizations" : {
         "en" : {
@@ -481,9 +481,6 @@
 
     },
     "Telemetry" : {
-
-    },
-    "Test Notification" : {
 
     },
     "Test User ID: %d" : {

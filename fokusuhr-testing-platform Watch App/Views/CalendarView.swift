@@ -61,15 +61,15 @@ struct CalendarView: View {
         .background(Color(.darkGray).opacity(0.3))
         .cornerRadius(8)
 
-        #if DEBUG
-          Button {
-            calendarManager.scheduleTestNotification()
-          } label: {
-            Text("Test Notification")
-              .font(.caption2)
-              .foregroundColor(.orange)
-          }
-        #endif
+        // #if DEBUG
+        //   Button {
+        //     calendarManager.scheduleTestNotification()
+        //   } label: {
+        //     Text("Test Notification")
+        //       .font(.caption2)
+        //       .foregroundColor(.orange)
+        //   }
+        // #endif
       }
       .padding(.horizontal, 8)
       .padding(.vertical, 4)

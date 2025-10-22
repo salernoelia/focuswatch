@@ -18,7 +18,8 @@ struct CalendarView: View {
 
   private var selectedDateString: String {
     let formatter = DateFormatter()
-    formatter.dateFormat = "EEEE, MMMM d"
+    formatter.locale = Locale(identifier: "de_DE")
+    formatter.dateFormat = "EEE, dd.MM.yyyy"
     return formatter.string(from: selectedDate)
   }
 

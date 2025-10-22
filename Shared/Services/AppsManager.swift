@@ -7,6 +7,8 @@ class AppsManager: ObservableObject {
   @Published var isLoading = false
   @Published var lastError: AppError?
 
+  private(set) var builtInAppCount: Int = 0
+
   static let shared = AppsManager()
 
   private var cancellables = Set<AnyCancellable>()
@@ -43,6 +45,8 @@ class AppsManager: ObservableObject {
       // ("Anne (Beta)", "Virtueller Assistent", Color.red),
       ("Calendar", "Tägliche Aufgaben", Color.purple),
     ]
+
+    builtInAppCount = builtInApps.count
 
     for (title, description, color) in builtInApps {
       appsList.append(

@@ -81,6 +81,35 @@ struct CalendarEventFormView: View {
           )
         }
 
+        Section("Repeat") {
+          Picker("Repeat", selection: $repeatRule) {
+            ForEach(RepeatRule.allCases) {
+              Text($0.rawValue.capitalized).tag($0)
+            }
+          }
+          if repeatRule == .custom {
+            HStack {
+              ForEach(1...7, id: \.self) { day in
+                let symbol = Calendar.current
+                  .veryShortWeekdaySymbols[(day - 1) % 7]
+                Button(symbol) {
+                  if customWeekdays.contains(day) {
+                    customWeekdays.removeAll {
+                      $0 == day
+                    }
+                  } else {
+                    customWeekdays.append(day)
+                  }
+                }
+                .foregroundColor(
+                  customWeekdays.contains(day)
+                    ? .accentColor : .primary
+                )
+              }
+            }
+          }
+        }
+
         Section {
           if reminders.isEmpty {
             Text("No reminders")
@@ -124,35 +153,6 @@ struct CalendarEventFormView: View {
                   reminders.removeAll { $0.id == reminder.id }
                 } label: {
                   Label("Delete", systemImage: "trash")
-                }
-              }
-            }
-          }
-
-          Section("Repeat") {
-            Picker("Rule", selection: $repeatRule) {
-              ForEach(RepeatRule.allCases) {
-                Text($0.rawValue.capitalized).tag($0)
-              }
-            }
-            if repeatRule == .custom {
-              HStack {
-                ForEach(1...7, id: \.self) { day in
-                  let symbol = Calendar.current
-                    .veryShortWeekdaySymbols[(day - 1) % 7]
-                  Button(symbol) {
-                    if customWeekdays.contains(day) {
-                      customWeekdays.removeAll {
-                        $0 == day
-                      }
-                    } else {
-                      customWeekdays.append(day)
-                    }
-                  }
-                  .foregroundColor(
-                    customWeekdays.contains(day)
-                      ? .accentColor : .primary
-                  )
                 }
               }
             }
