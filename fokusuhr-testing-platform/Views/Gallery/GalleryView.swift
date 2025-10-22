@@ -65,7 +65,7 @@ struct GalleryView: View {
           .searchable(text: $searchText, prompt: "Search photos")
         }
       }
-      .navigationTitle("Gallery")
+      .navigationTitle("Galerie")
       .navigationBarTitleDisplayMode(.large)
       .toolbar {
         ToolbarItemGroup(placement: .navigationBarTrailing) {

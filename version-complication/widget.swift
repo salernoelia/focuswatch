@@ -22,19 +22,28 @@ struct Provider: AppIntentTimelineProvider {
     return bundle.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
   }
 
+  private var deviceId: String {
+    let sharedDefaults = UserDefaults(suiteName: "group.fokus.w")
+    let uuid = sharedDefaults?.string(forKey: "deviceUUID")
+    #if DEBUG
+    print("📱 Widget reading deviceUUID: \(uuid ?? "nil")")
+    #endif
+    return uuid?.prefix(6).uppercased() ?? "NO ID"
+  }
+
   func placeholder(in context: Context) -> SimpleEntry {
-    SimpleEntry(date: Date(), version: appVersion)
+    SimpleEntry(date: Date(), version: appVersion, deviceId: deviceId)
   }
 
   func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> SimpleEntry
   {
-    SimpleEntry(date: Date(), version: appVersion)
+    SimpleEntry(date: Date(), version: appVersion, deviceId: deviceId)
   }
 
   func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<
     SimpleEntry
   > {
-    let entry = SimpleEntry(date: Date(), version: appVersion)
+    let entry = SimpleEntry(date: Date(), version: appVersion, deviceId: deviceId)
     return Timeline(entries: [entry], policy: .never)
   }
 
@@ -46,6 +55,7 @@ struct Provider: AppIntentTimelineProvider {
 struct SimpleEntry: TimelineEntry {
   let date: Date
   let version: String
+  let deviceId: String
 }
 
 struct widgetEntryView: View {
@@ -53,7 +63,7 @@ struct widgetEntryView: View {
 
   var body: some View {
     VStack(spacing: 2) {
-      Text(entry.version)
+      Text("\(entry.version) - \(entry.deviceId)")
         .font(.title3)
         .fontWeight(.bold)
     }
@@ -76,6 +86,6 @@ struct widget: Widget {
 #Preview(as: .accessoryRectangular) {
   widget()
 } timeline: {
-  SimpleEntry(date: .now, version: "1.0")
-  SimpleEntry(date: .now, version: "2.5")
+  SimpleEntry(date: .now, version: "1.0", deviceId: "ABCDEF")
+  SimpleEntry(date: .now, version: "2.5", deviceId: "GHIJKL")
 }

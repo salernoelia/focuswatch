@@ -108,7 +108,7 @@ struct JournalContentView: View {
     }
     .listStyle(.insetGrouped)
     .modifier(RefreshableModifier(onRefresh: onRefresh))
-    .navigationTitle("Journal")
+    .navigationTitle("Feedback")
     .navigationBarTitleDisplayMode(.large)
     .toolbar {
       ToolbarItem(placement: .navigationBarTrailing) {

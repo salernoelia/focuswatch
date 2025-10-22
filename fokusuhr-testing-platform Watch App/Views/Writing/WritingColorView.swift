@@ -14,8 +14,7 @@ struct WritingColorView: View {
 
   /// The environment object that manages the overall state of the exercise session.
   @EnvironmentObject var WritingExerciseManager: WritingExerciseManager
-  /// A prefix of the device's UUID for identification purposes.
-  let deviceUUIDPrefix = DeviceIdentifier.shared.uuid.prefix(6)
+  let deviceUUIDPrefix = WatchConfig.shared.uuid.prefix(6)
 
   // MARK: - Body
 
@@ -64,7 +63,7 @@ struct ColorRunView: View {
   // MARK: - Properties
 
   @EnvironmentObject var WritingExerciseManager: WritingExerciseManager
-  let deviceUUIDPrefix = DeviceIdentifier.shared.uuid.prefix(6)
+    private let deviceUUIDPrefix = WatchConfig.shared.uuid.prefix(6)
   var currentSetting = UserConfigs.shared.configs
 
   /// The state variable that drives the wave animation's phase.
@@ -226,7 +225,7 @@ struct ColorRunViewNoWave: View {
   // MARK: - Properties
 
   @EnvironmentObject var WritingExerciseManager: WritingExerciseManager
-  let deviceUUIDPrefix = DeviceIdentifier.shared.uuid.prefix(6)
+    private let deviceUUIDPrefix = WatchConfig.shared.uuid.prefix(6) 
   var currentSetting = UserConfigs.shared.configs
 
   // MARK: - Body

@@ -43,7 +43,7 @@ class AppsManager: ObservableObject {
       ("Schreiben", "Fokushilfe beim Schreiben.", Color.blue),
       ("Farbatmung", "Beruhigende Atemübungen", Color.green),
       // ("Anne (Beta)", "Virtueller Assistent", Color.red),
-      ("Calendar", "Tägliche Aufgaben", Color.purple),
+      ("Kalender", "Tägliche Aufgaben", Color.purple),
     ]
 
     builtInAppCount = builtInApps.count

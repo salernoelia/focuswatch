@@ -68,7 +68,7 @@ class WritingExerciseManager: NSObject, ObservableObject {
   // MARK: - Data Management and Configuration
 
   /// A unique prefix derived from the device's UUID for identification.
-  let deviceUUIDPrefix = DeviceIdentifier.shared.uuid.prefix(6)
+  let deviceUUIDPrefix = WatchConfig.shared.uuid.prefix(6)
 
   /// A computed property to access the current user-defined settings.
   var currentSetting: Config {
@@ -452,8 +452,7 @@ class WritingExerciseManager: NSObject, ObservableObject {
       let totalTime = Double(self.currentSetting.learn * 60)
       let percentage = totalTime > 0 ? Double(self.currentTime) / totalTime : 0
       let endDate = Date().addingTimeInterval(Double(self.currentTime))
-      let DID = DeviceIdentifier()
-      DID.storeDeviceIDInUserDefaults()
+      WatchConfig.shared.storeDeviceIDInUserDefaults()
       sharedDefaults.set(percentage, forKey: "remainingTimePercentage")
       sharedDefaults.set(self.exerciseState.rawValue, forKey: "widgetState")
       sharedDefaults.set(endDate, forKey: "endDate")

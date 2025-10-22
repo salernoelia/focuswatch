@@ -21,7 +21,7 @@ struct WritingConfigurationsView: View {
   @EnvironmentObject var WritingExerciseManager: WritingExerciseManager
 
   /// A prefix of the device's UUID for identification purposes.
-  private let deviceUUIDPrefix = DeviceIdentifier.shared.uuid.prefix(6)
+  private let deviceUUIDPrefix = WatchConfig.shared.uuid.prefix(6)
 
   /// A state object that holds the shared `UserConfigs` instance.
   @StateObject private var configs = UserConfigs.shared

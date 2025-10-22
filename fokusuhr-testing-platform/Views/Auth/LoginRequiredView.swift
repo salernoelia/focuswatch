@@ -31,7 +31,7 @@ struct LoginRequiredView: View {
       .padding(.top)
     }
     .padding()
-    .navigationTitle("Journal")
+    .navigationTitle("Feedback")
     .navigationBarTitleDisplayMode(.large)
   }
 }

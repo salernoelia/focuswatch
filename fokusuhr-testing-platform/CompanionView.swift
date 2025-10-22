@@ -15,25 +15,25 @@ struct CompanionView: View {
       GalleryView()
         .tabItem {
           Image(systemName: "photo.on.rectangle.angled")
-          Text("Gallery")
+          Text("Galerie")
         }
 
       CalendarView()
         .tabItem {
           Image(systemName: "calendar")
-          Text("Calendar")
+          Text("Kalender")
         }
 
       JournalView()
         .tabItem {
           Image(systemName: "book")
-          Text("Journal")
+          Text("Feedback")
         }
 
       SettingsView()
         .tabItem {
           Image(systemName: "gearshape")
-          Text("Settings")
+          Text("Einstellungen")
         }
     }
   }

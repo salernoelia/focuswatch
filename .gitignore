@@ -2,7 +2,7 @@
 
 Development.xcconfig
 Production.xcconfig
-
+.env
 
 # Xcode
 *.xcworkspace

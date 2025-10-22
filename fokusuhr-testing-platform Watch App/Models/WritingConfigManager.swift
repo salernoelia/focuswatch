@@ -107,41 +107,6 @@ struct AccessServer {
     static let password = "xm7f5aqxoRmFgFutM1mw9sf93QtQoA5"
 }
 
-// MARK: - DeviceIdentifier Class
-/// A singleton class responsible for creating, storing, and retrieving a unique identifier for the device.
-/// It uses `KeychainAccess` to securely store the UUID.
-class DeviceIdentifier {
-    // MARK: - Properties
-    
-    /// The shared singleton instance.
-    static let shared = DeviceIdentifier()
-    
-    /// The Keychain service instance for secure storage.
-    let keychain = Keychain(service: "com.fokusapp.FokusWatch.watchkitapp")
-
-    /// A computed property that retrieves the UUID from the keychain.
-    /// If no UUID exists, it creates a new one, saves it to the keychain, and returns it.
-    var uuid: String {
-        if let retrievedUUID = try? keychain.getString("deviceUUID") {
-            return retrievedUUID
-        } else {
-            let newUUID = UUID().uuidString
-            try? keychain.set(String(newUUID), key: "deviceUUID")
-            storeDeviceIDInUserDefaults()
-            return String(newUUID)
-        }
-    }
-    
-    // MARK: - Public Methods
-    
-    /// Stores the device UUID in shared `UserDefaults` to be accessible by app extensions (like widgets).
-    func storeDeviceIDInUserDefaults() {
-        let deviceID = DeviceIdentifier.shared.uuid
-        let sharedDefaults = UserDefaults(suiteName: "group.fokus.w")
-        sharedDefaults?.set(deviceID, forKey: "deviceUUID")
-    }
-}
-
 // MARK: - UserConfigs Class
 /// An observable object that manages the lifecycle of the user's configuration (`Config`).
 /// It handles loading from `UserDefaults`, fetching from a remote server (Google Drive), and saving updates.
@@ -155,7 +120,7 @@ class UserConfigs: ObservableObject {
     @Published var configs = Config()
     
     /// A prefix of the device's UUID, used for naming configuration files.
-    let deviceUUIDPrefix = DeviceIdentifier.shared.uuid.prefix(6)
+    let deviceUUIDPrefix = WatchConfig.shared.uuid.prefix(6)
     
     /// The Google Drive folder ID where configurations are stored.
     let configFolder = GoogleDB.config_folder

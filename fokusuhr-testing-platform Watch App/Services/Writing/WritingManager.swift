@@ -42,7 +42,7 @@ class WritingManager {
   var currentModelState: ModelState? = nil
 
   /// A unique prefix for the device ID.
-  let deviceID = DeviceIdentifier.shared.uuid.prefix(6)
+  let deviceID = WatchConfig.shared.uuid.prefix(6)
 
   /// The current user configuration for the session.
   var currentSetting: Config?

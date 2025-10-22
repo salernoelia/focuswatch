@@ -122,7 +122,10 @@
     "Authentication" : {
 
     },
-    "Calendar" : {
+    "Bild Ersetzen" : {
+
+    },
+    "Bilder" : {
 
     },
     "Camera" : {
@@ -200,6 +203,9 @@
     "Einstellung zurücksetzen" : {
 
     },
+    "Einstellungen" : {
+
+    },
     "Email" : {
 
     },
@@ -224,6 +230,9 @@
     "Failed Uploads:\n%@" : {
 
     },
+    "Feedback" : {
+
+    },
     "Female" : {
 
     },
@@ -239,7 +248,7 @@
     "Fortschritt gefunden" : {
 
     },
-    "Gallery" : {
+    "Galerie" : {
 
     },
     "Gender" : {
@@ -270,9 +279,6 @@
 
     },
     "Items" : {
-
-    },
-    "Journal" : {
 
     },
     "Journal History" : {
@@ -333,6 +339,9 @@
 
     },
     "Neu anfangen" : {
+
+    },
+    "Neues Bild Hinzufügen" : {
 
     },
     "New Event" : {
@@ -413,9 +422,6 @@
     "Repeat" : {
 
     },
-    "Replace Photo" : {
-
-    },
     "Restore" : {
 
     },
@@ -450,9 +456,6 @@
     "Select User" : {
 
     },
-    "Settings" : {
-
-    },
     "Share your experience, thoughts, or feedback..." : {
 
     },
@@ -484,9 +487,6 @@
 
     },
     "Supervisor: %@" : {
-
-    },
-    "Take New Photo" : {
 
     },
     "Telemetrie zulassen" : {

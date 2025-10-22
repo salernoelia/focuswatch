@@ -35,7 +35,7 @@ struct CalendarView: View {
             }
           } label: {
             HStack {
-              Text("Calendar")
+              Text("Kalender")
                 .font(.title2)
                 .fontWeight(.semibold)
                 .foregroundColor(.primary)
