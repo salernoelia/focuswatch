@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CompanionView: View {
-  @StateObject private var watchConnector = WatchConnector()
+  @EnvironmentObject private var watchConnector: WatchConnector
 
   var body: some View {
     TabView {

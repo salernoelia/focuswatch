@@ -42,7 +42,7 @@ final class Event {
   var reminders: [Reminder] {
     get {
       guard let data = remindersData,
-        let decoded = try? JSONDecoder().decode([Reminder].self, from: data)
+        let decoded = try? JSONDecoder().8code([Reminder].self, from: data)
       else { return [] }
       return decoded
     }

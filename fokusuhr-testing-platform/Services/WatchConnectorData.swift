@@ -9,21 +9,21 @@ extension WatchConnector {
   }
 
   func forceSyncToWatch() {
-    guard WCSession.default.isReachable else {
-      lastError = .watchNotReachable
+    guard WCSession.default.activationState == .activated else {
       #if DEBUG
-        print("Watch not reachable for force sync")
+        print("Session not activated, cannot sync")
       #endif
+      WCSession.default.activate()
       return
     }
+
     syncChecklistToWatch()
   }
 
   func syncChecklistToWatch() {
-    guard WCSession.default.isReachable else {
-      lastError = .watchNotReachable
+    guard WCSession.default.activationState == .activated else {
       #if DEBUG
-        print("Watch not reachable for sync")
+        print("Session not activated, skipping sync")
       #endif
       return
     }
@@ -120,11 +120,18 @@ extension WatchConnector {
 
       #if DEBUG
         print(
-          "Sending force sync with \(checklistData.checklists.count) checklists"
+          "Syncing checklist with \(checklistData.checklists.count) checklists"
         )
       #endif
 
-      sendMessageWithRetry(message: message, retryCount: 3, hashToSet: currentHash)
+      if WCSession.default.isReachable {
+        sendMessageWithRetry(message: message, retryCount: 3, hashToSet: currentHash)
+      } else {
+        #if DEBUG
+          print("Watch not reachable, using background sync")
+        #endif
+        syncChecklistViaBackgroundTransfer(message: message, hashToSet: currentHash)
+      }
     } catch {
       let appError = AppError.encodingFailed(
         type: "checklist", underlying: error)
@@ -151,28 +158,17 @@ extension WatchConnector {
   {
     guard retryCount > 0 else {
       #if DEBUG
-        print("Max retries reached for sync")
+        print("Max retries reached, falling back to background sync")
       #endif
-      lastError = .watchMessageFailed(
-        underlying: NSError(
-          domain: "WatchConnector",
-          code: -1,
-          userInfo: [NSLocalizedDescriptionKey: "Max retries reached"]
-        ))
-      DispatchQueue.main.async {
-        self.isSyncing = false
-      }
+      syncChecklistViaBackgroundTransfer(message: message, hashToSet: hashToSet)
       return
     }
 
     guard WCSession.default.isReachable else {
       #if DEBUG
-        print("Watch not reachable, retrying in 1s...")
+        print("Watch not reachable during retry, using background sync")
       #endif
-      DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-        self.sendMessageWithRetry(
-          message: message, retryCount: retryCount - 1, hashToSet: hashToSet)
-      }
+      syncChecklistViaBackgroundTransfer(message: message, hashToSet: hashToSet)
       return
     }
 
@@ -186,7 +182,7 @@ extension WatchConnector {
           }
         }
         #if DEBUG
-          print("Checklist sync successful: \(response)")
+          print("Checklist sync successful via live message: \(response)")
         #endif
       }
     ) { error in
@@ -195,16 +191,47 @@ extension WatchConnector {
         ErrorLogger.log(AppError.watchMessageFailed(underlying: error))
       #endif
 
-      if retryCount <= 1 {
-        DispatchQueue.main.async {
-          self.isSyncing = false
-        }
-      }
-
       DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
         self.sendMessageWithRetry(
           message: message, retryCount: retryCount - 1, hashToSet: hashToSet)
       }
+    }
+  }
+
+  private func syncChecklistViaBackgroundTransfer(message: [String: Any], hashToSet: Int?) {
+    do {
+      try WCSession.default.updateApplicationContext(message)
+
+      DispatchQueue.main.async {
+        self.isSyncing = false
+        if let hash = hashToSet {
+          self.lastSyncedHash = hash
+        }
+      }
+
+      #if DEBUG
+        print("✅ Checklist synced via background context")
+        print("   → Watch will receive when app launches")
+      #endif
+    } catch {
+      #if DEBUG
+        print(
+          "Failed to update application context, trying transferUserInfo: \(error.localizedDescription)"
+        )
+      #endif
+
+      WCSession.default.transferUserInfo(message)
+
+      DispatchQueue.main.async {
+        self.isSyncing = false
+        if let hash = hashToSet {
+          self.lastSyncedHash = hash
+        }
+      }
+
+      #if DEBUG
+        print("✅ Checklist queued for background transfer via transferUserInfo")
+      #endif
     }
   }
 
@@ -249,6 +276,13 @@ extension WatchConnector {
   }
 
   func syncAuthToWatch() {
+    guard WCSession.default.activationState == .activated else {
+      #if DEBUG
+        print("Session not activated, skipping auth sync")
+      #endif
+      return
+    }
+
     guard WCSession.default.isReachable else { return }
 
     var message: [String: Any] = ["action": "updateAuth"]
@@ -271,6 +305,13 @@ extension WatchConnector {
   }
 
   func syncTelemetryToWatch() {
+    guard WCSession.default.activationState == .activated else {
+      #if DEBUG
+        print("Session not activated, skipping telemetry sync")
+      #endif
+      return
+    }
+
     let userInfo: [String: Any] = [
       "action": "updateTelemetry",
       "hasConsent": TelemetryManager.shared.hasConsent,

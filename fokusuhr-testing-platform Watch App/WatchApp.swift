@@ -36,7 +36,7 @@ struct WatchApp: App {
             #if DEBUG
               print("🔄 App became active - checking for calendar updates...")
             #endif
-            watchConnector.checkForCalendarUpdates()
+            watchConnector.forceReconnect()
           }
         }
     }

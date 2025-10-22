@@ -3,7 +3,8 @@ import WatchConnectivity
 
 struct WizardView: View {
   @EnvironmentObject private var watchConnector: WatchConnector
-  @StateObject private var checklistManager: ChecklistManager
+  @StateObject private var checklistManager = ChecklistManager(
+    watchConnector: WatchConnector.shared)
   @StateObject private var testUsersManager = TestUsersManager.shared
   @StateObject private var supervisorManager = SupervisorManager.shared
   @StateObject private var authManager = AuthManager.shared
@@ -12,12 +13,77 @@ struct WizardView: View {
   @State private var isReconnecting = false
   @State private var isSyncing = false
 
-  init() {
-    let tempConnector = WatchConnector()
-    self._checklistManager = StateObject(
-      wrappedValue: ChecklistManager(watchConnector: tempConnector)
-    )
+  private var connectionStatus: ConnectionStatus {
+    if !WCSession.isSupported() {
+      return .notSupported
+    }
+    if !watchConnector.isConnected {
+      return .disconnected
+    }
+    if !WCSession.default.isPaired {
+      return .notPaired
+    }
+    if !WCSession.default.isWatchAppInstalled {
+      return .appNotInstalled
+    }
+    if !WCSession.default.isReachable {
+      return .notReachable
+    }
+    return .connected
+  }
 
+  private enum ConnectionStatus {
+    case notSupported
+    case disconnected
+    case notPaired
+    case appNotInstalled
+    case notReachable
+    case connected
+
+    var color: Color {
+      switch self {
+      case .connected: return .green
+      case .notReachable: return .orange
+      default: return .red
+      }
+    }
+
+    var statusText: String {
+      switch self {
+      case .notSupported: return "Not Supported"
+      case .disconnected: return "Disconnected"
+      case .notPaired: return "Not Paired"
+      case .appNotInstalled: return "App Not Installed"
+      case .notReachable: return "Connected"
+      case .connected: return "Connected"
+      }
+    }
+
+    var infoMessage: String? {
+      switch self {
+      case .notSupported:
+        return "Apple Watch is not supported on this device"
+      case .disconnected:
+        return "Unable to connect to Apple Watch"
+      case .notPaired:
+        return "Please pair an Apple Watch with this iPhone"
+      case .appNotInstalled:
+        return "Please install the Watch App from the Watch app on your iPhone"
+      case .notReachable:
+        return "Open the Watch App to control it directly"
+      case .connected:
+        return nil
+      }
+    }
+
+    var needsReconnect: Bool {
+      switch self {
+      case .notSupported, .notPaired, .appNotInstalled:
+        return false
+      default:
+        return self != .connected
+      }
+    }
   }
 
   var body: some View {
@@ -30,24 +96,29 @@ struct WizardView: View {
             Spacer()
             HStack(spacing: AppConstants.UI.statusIndicatorSize) {
               Circle()
-                .fill(
-                  watchConnector.isConnected ? .green : .red
-                )
+                .fill(connectionStatus.color)
                 .frame(
                   width: AppConstants.UI.statusIndicatorSize,
                   height: AppConstants.UI.statusIndicatorSize
                 )
-              Text(
-                watchConnector.isConnected
-                  ? "Connected" : "Disconnected"
-              )
-              .foregroundColor(
-                watchConnector.isConnected ? .green : .red
-              )
+              Text(connectionStatus.statusText)
+                .foregroundColor(connectionStatus.color)
             }
           }
 
-          if !watchConnector.isConnected {
+          if let infoMessage = connectionStatus.infoMessage {
+            HStack(alignment: .top, spacing: 8) {
+              Image(systemName: "info.circle")
+                .foregroundColor(connectionStatus.color)
+              Text(infoMessage)
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.vertical, 4)
+          }
+
+          if connectionStatus.needsReconnect {
             Button(action: reconnectToWatch) {
               HStack {
                 if isReconnecting {
@@ -60,20 +131,11 @@ struct WizardView: View {
                 }
                 Text(
                   isReconnecting
-                    ? "Reconnecting..." : "Try Reconnecting"
+                    ? "Reconnecting..." : "Try to Reconnect"
                 )
               }
             }
             .disabled(isReconnecting)
-
-            Button(action: resetConnection) {
-              HStack {
-                Image(systemName: "wifi.slash")
-                Text("Reset Connection")
-              }
-            }
-            .disabled(isReconnecting)
-            .foregroundColor(.orange)
           }
         }
 
@@ -98,13 +160,13 @@ struct WizardView: View {
                   )
               }
             }
-            .disabled(!watchConnector.isConnected)
+            .disabled(connectionStatus != .connected)
           }
 
           Button("Put Watch into Menu State") {
             watchConnector.returnToMainMenu()
           }
-          .disabled(!watchConnector.isConnected)
+          .disabled(connectionStatus != .connected)
 
           Button("Edit Checklists") {
             showingEditor = true
@@ -154,27 +216,10 @@ struct WizardView: View {
 
   private func reconnectToWatch() {
     isReconnecting = true
+    watchConnector.forceReconnect()
 
     DispatchQueue.main.asyncAfter(
-      deadline: .now() + AppConstants.Timing.shortDelay
-    ) {
-      watchConnector.forceReconnect()
-
-      DispatchQueue.main.asyncAfter(
-        deadline: .now() + AppConstants.Timing.longDelay
-      ) {
-        isReconnecting = false
-      }
-    }
-  }
-
-  private func resetConnection() {
-    isReconnecting = true
-
-    watchConnector.resetWatchConnectivity()
-
-    DispatchQueue.main.asyncAfter(
-      deadline: .now() + AppConstants.Timing.reconnectionDelay
+      deadline: .now() + AppConstants.Timing.longDelay
     ) {
       isReconnecting = false
     }

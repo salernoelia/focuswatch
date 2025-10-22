@@ -10,10 +10,20 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
   public var isSyncing = false
   static let shared = WatchConnector()
 
+  private var connectionMonitorTimer: Timer?
+  public var reconnectAttempts = 0
+  private let maxReconnectAttempts = 5
+  private var isMonitoringConnection = false
+
   override init() {
     super.init()
     loadChecklistData()
     setupWatchConnectivity()
+    startConnectionMonitoring()
+  }
+
+  deinit {
+    stopConnectionMonitoring()
   }
 
   func session(
@@ -22,8 +32,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     error: Error?
   ) {
     DispatchQueue.main.async {
-      self.isConnected =
-        activationState == .activated && session.isReachable
+      self.isConnected = activationState == .activated
 
       if let error = error {
         let appError = AppError.watchMessageFailed(underlying: error)
@@ -31,19 +40,19 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
           ErrorLogger.log(appError)
         #endif
         self.lastError = appError
+        self.scheduleReconnectIfNeeded()
       } else {
         #if DEBUG
-          print(
-            "WCSession activated with state: \(activationState.rawValue)"
-          )
+          print("WCSession activated with state: \(activationState.rawValue)")
+          print("Is Reachable: \(session.isReachable)")
+          print("Is Paired: \(session.isPaired)")
+          print("Is Watch App Installed: \(session.isWatchAppInstalled)")
         #endif
+        self.reconnectAttempts = 0
       }
 
       if self.isConnected {
-        self.syncChecklistToWatch()
-        self.syncAuthToWatch()
-        self.syncTelemetryToWatch()
-        self.syncCalendarToWatch()
+        self.syncAllDataToWatch()
       }
     }
   }
@@ -64,7 +73,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
       self.isConnected = false
 
       #if DEBUG
-        print("WCSession deactivated")
+        print("WCSession deactivated, reactivating...")
       #endif
     }
 
@@ -72,18 +81,109 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
   }
 
   func sessionReachabilityDidChange(_ session: WCSession) {
-    DispatchQueue.main.async {
-      self.isConnected = session.isReachable
+    #if DEBUG
+      print("WCSession reachability changed: \(session.isReachable)")
+    #endif
 
-      #if DEBUG
-        print("WCSession reachability changed: \(session.isReachable)")
-      #endif
-
-      if self.isConnected {
+    if session.isReachable {
+      DispatchQueue.main.async {
+        self.reconnectAttempts = 0
         self.syncChecklistToWatch()
         self.syncAuthToWatch()
-        self.syncTelemetryToWatch()
+      }
+    }
+  }
+
+  private func syncAllDataToWatch() {
+    syncChecklistToWatch()
+    syncAuthToWatch()
+    syncTelemetryToWatch()
+    syncCalendarToWatch()
+  }
+
+  private func startConnectionMonitoring() {
+    guard !isMonitoringConnection else { return }
+    isMonitoringConnection = true
+
+    connectionMonitorTimer = Timer.scheduledTimer(
+      withTimeInterval: 10.0,
+      repeats: true
+    ) { [weak self] _ in
+      self?.checkConnectionHealth()
+    }
+  }
+
+  private func stopConnectionMonitoring() {
+    connectionMonitorTimer?.invalidate()
+    connectionMonitorTimer = nil
+    isMonitoringConnection = false
+  }
+
+  private func checkConnectionHealth() {
+    guard WCSession.isSupported() else { return }
+
+    let session = WCSession.default
+    let shouldBeConnected = session.activationState == .activated
+
+    if shouldBeConnected != isConnected {
+      DispatchQueue.main.async {
+        self.isConnected = shouldBeConnected
+
+        #if DEBUG
+          print("Connection state corrected: \(shouldBeConnected)")
+        #endif
+
+        if shouldBeConnected {
+          self.reconnectAttempts = 0
+          self.syncChecklistToWatch()
+          self.syncCalendarToWatch()
+          self.syncTelemetryToWatch()
+        }
+      }
+    }
+
+    if !isConnected && session.activationState != .activated {
+      scheduleReconnectIfNeeded()
+    }
+  }
+
+  public func scheduleReconnectIfNeeded() {
+    guard reconnectAttempts < maxReconnectAttempts else {
+      #if DEBUG
+        print("Max reconnect attempts reached")
+      #endif
+      return
+    }
+
+    reconnectAttempts += 1
+    let delay = min(Double(reconnectAttempts) * 2.0, 10.0)
+
+    #if DEBUG
+      print("Scheduling reconnect attempt \(reconnectAttempts) in \(delay)s")
+    #endif
+
+    DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+      self?.attemptReconnect()
+    }
+  }
+
+  private func attemptReconnect() {
+    guard WCSession.isSupported() else { return }
+
+    let session = WCSession.default
+
+    if session.activationState != .activated {
+      #if DEBUG
+        print("Attempting to reactivate session...")
+      #endif
+      session.activate()
+    } else {
+      DispatchQueue.main.async {
+        self.isConnected = true
+        self.reconnectAttempts = 0
+        self.syncChecklistToWatch()
         self.syncCalendarToWatch()
+        self.syncTelemetryToWatch()
       }
     }
   }

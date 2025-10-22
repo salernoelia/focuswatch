@@ -137,9 +137,6 @@
     "Configurations" : {
 
     },
-    "Connected" : {
-
-    },
     "Connection" : {
 
     },
@@ -162,9 +159,6 @@
 
     },
     "Description" : {
-
-    },
-    "Disconnected" : {
 
     },
     "Done" : {
@@ -410,9 +404,6 @@
     "Replace Photo" : {
 
     },
-    "Reset Connection" : {
-
-    },
     "Restore" : {
 
     },
@@ -519,7 +510,7 @@
     "Title" : {
 
     },
-    "Try Reconnecting" : {
+    "Try to Reconnect" : {
 
     },
     "Übung stoppen" : {

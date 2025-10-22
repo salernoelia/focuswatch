@@ -8,10 +8,21 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
   private var checklistManager = ChecklistManager.shared
   private var galleryManager = GalleryManager.shared
   private var calendarManager = CalendarManager.shared
+  private var connectionMonitorTimer: Timer?
+  private var isMonitoringConnection = false
 
   override init() {
     super.init()
     checklistManager.loadChecklistData()
+    setupWatchConnectivity()
+    startConnectionMonitoring()
+  }
+
+  deinit {
+    stopConnectionMonitoring()
+  }
+
+  private func setupWatchConnectivity() {
     if WCSession.isSupported() {
       WCSession.default.delegate = self
       WCSession.default.activate()
@@ -22,8 +33,56 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     }
   }
 
+  private func startConnectionMonitoring() {
+    guard !isMonitoringConnection else { return }
+    isMonitoringConnection = true
+
+    connectionMonitorTimer = Timer.scheduledTimer(
+      withTimeInterval: 15.0,
+      repeats: true
+    ) { [weak self] _ in
+      self?.checkConnectionHealth()
+    }
+  }
+
+  private func stopConnectionMonitoring() {
+    connectionMonitorTimer?.invalidate()
+    connectionMonitorTimer = nil
+    isMonitoringConnection = false
+  }
+
+  private func checkConnectionHealth() {
+    guard WCSession.isSupported() else { return }
+
+    let session = WCSession.default
+
+    if session.activationState != .activated {
+      #if DEBUG
+        print("🔄 Watch: Session not activated, attempting to reactivate...")
+      #endif
+      session.activate()
+    } else if session.isReachable {
+      loadLatestApplicationContext()
+    }
+  }
+
   func checkForCalendarUpdates() {
     loadLatestApplicationContext()
+  }
+
+  func forceReconnect() {
+    guard WCSession.isSupported() else { return }
+
+    let session = WCSession.default
+
+    if session.activationState != .activated {
+      #if DEBUG
+        print("🔄 Watch: Reactivating session...")
+      #endif
+      session.activate()
+    } else {
+      loadLatestApplicationContext()
+    }
   }
 
   private func loadLatestApplicationContext() {
@@ -72,6 +131,22 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
           ErrorLogger.log("Watch WCSession activated with state: \(activationState.rawValue)")
           ErrorLogger.log("Watch session reachable: \(session.isReachable)")
         #endif
+
+        if activationState == .activated {
+          self.loadLatestApplicationContext()
+        }
+      }
+    }
+  }
+
+  func sessionReachabilityDidChange(_ session: WCSession) {
+    #if DEBUG
+      print("🔄 Watch: Reachability changed to \(session.isReachable)")
+    #endif
+
+    if session.isReachable {
+      DispatchQueue.main.async {
+        self.loadLatestApplicationContext()
       }
     }
   }
@@ -237,6 +312,21 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
         switch action {
         case "wakeUp":
           self.currentView = .mainMenu
+        case "updateChecklist":
+          if let dataString = applicationContext["data"] as? String,
+            let data = Data(base64Encoded: dataString)
+          {
+            let forceOverwrite = applicationContext["forceOverwrite"] as? Bool ?? false
+            self.checklistManager.updateChecklistData(from: data, forceOverwrite: forceOverwrite)
+
+            if let imageData = applicationContext["imageData"] as? [String: String] {
+              self.galleryManager.saveGalleryImages(imageData)
+            }
+
+            #if DEBUG
+              print("✅ Watch: Checklist updated from background context")
+            #endif
+          }
         case "updateTelemetry":
           if let hasConsent = applicationContext["hasConsent"] as? Bool {
             TelemetryManager.shared.hasConsent = hasConsent
@@ -266,6 +356,21 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     DispatchQueue.main.async {
       if let action = userInfo["action"] as? String {
         switch action {
+        case "updateChecklist":
+          if let dataString = userInfo["data"] as? String,
+            let data = Data(base64Encoded: dataString)
+          {
+            let forceOverwrite = userInfo["forceOverwrite"] as? Bool ?? false
+            self.checklistManager.updateChecklistData(from: data, forceOverwrite: forceOverwrite)
+
+            if let imageData = userInfo["imageData"] as? [String: String] {
+              self.galleryManager.saveGalleryImages(imageData)
+            }
+
+            #if DEBUG
+              ErrorLogger.log("✅ Checklist updated via background transfer (userInfo)")
+            #endif
+          }
         case "updateTelemetry":
           if let hasConsent = userInfo["hasConsent"] as? Bool {
             TelemetryManager.shared.hasConsent = hasConsent
