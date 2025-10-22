@@ -27,11 +27,11 @@ struct CalendarEntryTriggerConsent: View {
 
       if let appIndex = event.appIndex {
         #if DEBUG
-        Text("App Index: \(appIndex)")
-          .font(.caption2)
-          .foregroundColor(.orange)
+          Text("App Index: \(appIndex)")
+            .font(.caption2)
+            .foregroundColor(.orange)
         #endif
-        
+
         Button("Starten") {
           watchConnector.currentView = .app(appIndex)
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
