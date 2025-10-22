@@ -26,7 +26,7 @@ struct Provider: AppIntentTimelineProvider {
     let sharedDefaults = UserDefaults(suiteName: "group.fokus.w")
     let uuid = sharedDefaults?.string(forKey: "deviceUUID")
     #if DEBUG
-    print("📱 Widget reading deviceUUID: \(uuid ?? "nil")")
+      print("📱 Widget reading deviceUUID: \(uuid ?? "nil")")
     #endif
     return uuid?.prefix(6).uppercased() ?? "NO ID"
   }
