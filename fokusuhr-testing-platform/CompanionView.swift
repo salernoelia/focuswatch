@@ -24,7 +24,7 @@ struct CompanionView: View {
           Text("Kalender")
         }
 
-      JournalView()
+      FeedbackView()
         .tabItem {
           Image(systemName: "book")
           Text("Feedback")

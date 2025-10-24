@@ -95,9 +95,6 @@
     "App" : {
 
     },
-    "App Index: %lld" : {
-
-    },
     "App not found" : {
 
     },
@@ -105,6 +102,9 @@
 
     },
     "Apps" : {
+
+    },
+    "Apps werden geladen..." : {
 
     },
     "Are you sure you want to delete '%@'? This action cannot be undone." : {
@@ -156,6 +156,12 @@
 
     },
     "Date" : {
+
+    },
+    "Dein Feedback" : {
+
+    },
+    "Dein Feedback wurde gesendet." : {
 
     },
     "Delete" : {
@@ -233,6 +239,15 @@
     "Feedback" : {
 
     },
+    "Feedback gesendet!" : {
+
+    },
+    "Feedback konnte nicht gesendet werden." : {
+
+    },
+    "Fehler" : {
+
+    },
     "Female" : {
 
     },
@@ -252,6 +267,9 @@
 
     },
     "Gender" : {
+
+    },
+    "Generell" : {
 
     },
     "Get Started" : {
@@ -456,6 +474,9 @@
     "Select User" : {
 
     },
+    "Senden" : {
+
+    },
     "Share your experience, thoughts, or feedback..." : {
 
     },
@@ -487,6 +508,9 @@
 
     },
     "Supervisor: %@" : {
+
+    },
+    "Teile dein Feedback..." : {
 
     },
     "Telemetrie zulassen" : {

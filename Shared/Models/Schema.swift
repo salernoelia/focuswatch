@@ -87,6 +87,48 @@ internal enum PublicSchema {
       case name = "name"
     }
   }
+  internal struct FeedbackSelect: Codable, Hashable, Sendable {
+    internal let appName: String?
+    internal let createdAt: String
+    internal let description: String?
+    internal let id: Int32
+    internal let implemented: Bool
+    internal enum CodingKeys: String, CodingKey {
+      case appName = "app_name"
+      case createdAt = "created_at"
+      case description = "description"
+      case id = "id"
+      case implemented = "implemented"
+    }
+  }
+  internal struct FeedbackInsert: Codable, Hashable, Sendable {
+    internal let appName: String?
+    internal let createdAt: String?
+    internal let description: String?
+    internal let id: Int32?
+    internal let implemented: Bool?
+    internal enum CodingKeys: String, CodingKey {
+      case appName = "app_name"
+      case createdAt = "created_at"
+      case description = "description"
+      case id = "id"
+      case implemented = "implemented"
+    }
+  }
+  internal struct FeedbackUpdate: Codable, Hashable, Sendable {
+    internal let appName: String?
+    internal let createdAt: String?
+    internal let description: String?
+    internal let id: Int32?
+    internal let implemented: Bool?
+    internal enum CodingKeys: String, CodingKey {
+      case appName = "app_name"
+      case createdAt = "created_at"
+      case description = "description"
+      case id = "id"
+      case implemented = "implemented"
+    }
+  }
   internal struct JournalsSelect: Codable, Hashable, Sendable {
     internal let appId: Int64?
     internal let appName: String?
