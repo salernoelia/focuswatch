@@ -34,7 +34,7 @@ enum VibrationIntensity: String, Codable, CaseIterable {
     switch self {
     case .light: return .start
     case .medium: return .directionUp
-    case .strong: return .notification
+    case .strong: return .success
 
     }
   }

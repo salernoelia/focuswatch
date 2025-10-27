@@ -212,7 +212,6 @@ class PomodoroViewModel: ObservableObject {
   private func startTimer() {
     endDate = Date().addingTimeInterval(TimeInterval(timeRemaining))
     lastTickDate = Date()
-    scheduleTimerNotification()
     scheduleNextVibration()
     scheduleBackgroundVibrations()
 
@@ -300,9 +299,7 @@ class PomodoroViewModel: ObservableObject {
     stopTimer()
     isRunning = false
 
-    if settings.completionVibration {
-      VibrationManager.shared.strongVibration()
-    }
+    scheduleTimerNotification()
 
     switch currentPhase {
     case .work:
@@ -346,7 +343,6 @@ class PomodoroViewModel: ObservableObject {
   }
 
   private func scheduleBackgroundVibrations() {
-    // No-op: Only haptics are used for vibrations during the timer. No notifications scheduled.
     cancelBackgroundVibrations()
   }
 
