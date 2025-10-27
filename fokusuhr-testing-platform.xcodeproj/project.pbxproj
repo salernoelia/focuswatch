@@ -743,6 +743,7 @@
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We require HealthKit to access clinical records for features that support ADHD assistance.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We use HealthKit to read activity and health data to personalize your experience and improve ADHD-related functions.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We use HealthKit to save relevant health information to help track progress and support ADHD assistance.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Required for voice transcription.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "We require motion data, to help the algorithms assess if the user is focussed or not.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
@@ -783,6 +784,7 @@
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We require HealthKit to access clinical records for features that support ADHD assistance.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We use HealthKit to read activity and health data to personalize your experience and improve ADHD-related functions.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We use HealthKit to save relevant health information to help track progress and support ADHD assistance.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Required for voice transcription.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "We require motion data, to help the algorithms assess if the user is focussed or not.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
