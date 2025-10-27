@@ -1,7 +1,6 @@
 import Foundation
 import SwiftData
 
-@MainActor
 class ModelContainerProvider {
   static let shared = ModelContainerProvider()
 

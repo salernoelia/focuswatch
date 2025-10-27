@@ -267,6 +267,9 @@
     "First Name" : {
 
     },
+    "Fokus überspringen" : {
+
+    },
     "Force Sync All Data" : {
 
     },
@@ -291,6 +294,9 @@
     "Grid Size" : {
 
     },
+    "Häufigkeit" : {
+
+    },
     "Heute" : {
 
     },
@@ -301,6 +307,9 @@
 
     },
     "Image Selection" : {
+
+    },
+    "Intensität" : {
 
     },
     "IOS App" : {
@@ -406,6 +415,9 @@
 
     },
     "Password" : {
+
+    },
+    "Pause überspringen" : {
 
     },
     "Photo label" : {
@@ -569,6 +581,12 @@
 
     },
     "Upload Files" : {
+
+    },
+    "Vibration bei Abschluss" : {
+
+    },
+    "Vibrationen" : {
 
     },
     "Watch Status" : {

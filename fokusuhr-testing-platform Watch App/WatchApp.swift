@@ -70,7 +70,13 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
   ) {
     let userInfo = response.notification.request.content.userInfo
 
-    if let eventIdString = userInfo["eventId"] as? String,
+    if response.notification.request.identifier == "pomodoroTimer" {
+      Task { @MainActor in
+        if PomodoroViewModel.shared.timeRemaining <= 0 {
+          await PomodoroViewModel.shared.handleTimerCompletion()
+        }
+      }
+    } else if let eventIdString = userInfo["eventId"] as? String,
       let eventId = UUID(uuidString: eventIdString),
       let reminderIdString = userInfo["reminderId"] as? String,
       let reminderId = UUID(uuidString: reminderIdString)

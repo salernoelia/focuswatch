@@ -5,7 +5,7 @@ import WatchConnectivity
 extension WatchConnector {
 
   func syncCalendarToWatch() {
-    Task { @MainActor in
+    Task { [weak self] in
       let descriptor = FetchDescriptor<Event>()
       let context = ModelContext(ModelContainerProvider.shared.container)
 
@@ -15,6 +15,8 @@ extension WatchConnector {
         #endif
         return
       }
+
+      guard let self = self else { return }
 
       let transfers = events.map { EventTransfer(from: $0) }
       let newHash = computeCalendarHash(transfers)
@@ -57,7 +59,7 @@ extension WatchConnector {
           ErrorLogger.log(appError)
           print("❌ iOS: Failed to update application context: \(error)")
         #endif
-        DispatchQueue.main.async {
+        await MainActor.run {
           self.lastError = appError
         }
       }

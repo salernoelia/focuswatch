@@ -20,9 +20,12 @@ class PomodoroViewModel: ObservableObject {
   @Published var completedRounds = 0
 
   private var timerTask: Task<Void, Never>?
+  private var extendedRuntimeSession: WKExtendedRuntimeSession?
   private var totalTime: Int = 1500
   private var endDate: Date?
   private var lastTickDate: Date?
+  private var nextVibrationTime: Date?
+  private var vibrationNotificationIds: [String] = []
 
   private let defaults = UserDefaults.standard
 
@@ -162,12 +165,12 @@ class PomodoroViewModel: ObservableObject {
 
   private func scheduleTimerNotification() {
     let center = UNUserNotificationCenter.current()
-    center.removeAllPendingNotificationRequests()
 
     let content = UNMutableNotificationContent()
     content.title = currentPhase.title
     content.body = currentPhase == .work ? "Zeit für eine Pause!" : "Zurück zur Arbeit!"
     content.sound = .default
+    content.interruptionLevel = .timeSensitive
 
     let trigger = UNTimeIntervalNotificationTrigger(
       timeInterval: TimeInterval(timeRemaining),
@@ -210,6 +213,15 @@ class PomodoroViewModel: ObservableObject {
     endDate = Date().addingTimeInterval(TimeInterval(timeRemaining))
     lastTickDate = Date()
     scheduleTimerNotification()
+    scheduleNextVibration()
+    scheduleBackgroundVibrations()
+
+    if extendedRuntimeSession == nil || extendedRuntimeSession?.state != .running {
+      let session = WKExtendedRuntimeSession()
+      session.delegate = PomodoroExtendedRuntimeSessionDelegate.shared
+      extendedRuntimeSession = session
+      session.start()
+    }
 
     timerTask = Task {
       while !Task.isCancelled {
@@ -233,7 +245,16 @@ class PomodoroViewModel: ObservableObject {
     timerTask = nil
     endDate = nil
     lastTickDate = nil
-    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+    nextVibrationTime = nil
+    cancelBackgroundVibrations()
+
+    if let session = extendedRuntimeSession {
+      session.invalidate()
+      extendedRuntimeSession = nil
+    }
+
+    let center = UNUserNotificationCenter.current()
+    center.removePendingNotificationRequests(withIdentifiers: ["pomodoroTimer"])
   }
 
   private func tick() async {
@@ -257,6 +278,8 @@ class PomodoroViewModel: ObservableObject {
       timeRemaining = max(0, timeRemaining - 1)
     }
 
+    checkRandomVibration()
+
     if timeRemaining % 10 == 0 {
       saveState()
     }
@@ -265,6 +288,10 @@ class PomodoroViewModel: ObservableObject {
   private func phaseCompleted() async {
     stopTimer()
     isRunning = false
+
+    if settings.completionVibration {
+      VibrationManager.shared.strongVibration()
+    }
 
     switch currentPhase {
     case .work:
@@ -280,7 +307,120 @@ class PomodoroViewModel: ObservableObject {
 
     updateTotalTime()
     saveState()
-    WKInterfaceDevice.current().play(.notification)
+  }
+
+  func handleTimerCompletion() async {
+    await phaseCompleted()
+  }
+
+  func skipToBreak() {
+    guard currentPhase == .work else { return }
+    stopTimer()
+    completedRounds += 1
+    if completedRounds % settings.roundsUntilLongBreak == 0 {
+      currentPhase = .longBreak
+    } else {
+      currentPhase = .shortBreak
+    }
+    updateTotalTime()
+    saveState()
+  }
+
+  func skipToWork() {
+    guard currentPhase != .work else { return }
+    stopTimer()
+    currentPhase = .work
+    updateTotalTime()
+    saveState()
+  }
+
+  private func scheduleBackgroundVibrations() {
+    guard currentPhase == .work, settings.vibrationFrequency != .never else {
+      return
+    }
+
+    cancelBackgroundVibrations()
+
+    let frequencyRange = settings.vibrationFrequency.intervalRange
+    let totalTime = timeRemaining
+
+    Task.detached(priority: .background) {
+      let center = UNUserNotificationCenter.current()
+      var currentTime = 0
+      let maxNotifications = 20
+      var notificationCount = 0
+      let notificationIds = UnsafeMutablePointer<[String]>.allocate(capacity: 1)
+      notificationIds.pointee = []
+
+      while currentTime < totalTime - 5 && notificationCount < maxNotifications {
+        let randomInterval = Int.random(in: frequencyRange)
+        currentTime += randomInterval
+
+        if currentTime >= totalTime - 5 {
+          break
+        }
+
+        let content = UNMutableNotificationContent()
+        content.title = "⏱️"
+        content.body = ""
+        content.sound = .default
+        content.interruptionLevel = .timeSensitive
+
+        let trigger = UNTimeIntervalNotificationTrigger(
+          timeInterval: TimeInterval(currentTime),
+          repeats: false
+        )
+
+        let id = "pomodoroVibration_\(UUID().uuidString)"
+        let request = UNNotificationRequest(
+          identifier: id,
+          content: content,
+          trigger: trigger
+        )
+
+        notificationIds.pointee.append(id)
+        notificationCount += 1
+
+        try? await center.add(request)
+      }
+
+      let finalIds = notificationIds.pointee
+      notificationIds.deallocate()
+
+      await MainActor.run {
+        PomodoroViewModel.shared.vibrationNotificationIds = finalIds
+      }
+    }
+  }
+
+  private func cancelBackgroundVibrations() {
+    let center = UNUserNotificationCenter.current()
+    center.removePendingNotificationRequests(withIdentifiers: vibrationNotificationIds)
+    vibrationNotificationIds.removeAll()
+  }
+
+  private func scheduleNextVibration() {
+    guard currentPhase == .work, settings.vibrationFrequency != .never else {
+      nextVibrationTime = nil
+      return
+    }
+
+    let range = settings.vibrationFrequency.intervalRange
+    let randomInterval = Int.random(in: range)
+    nextVibrationTime = Date().addingTimeInterval(TimeInterval(randomInterval))
+  }
+
+  private func checkRandomVibration() {
+    guard currentPhase == .work,
+      settings.vibrationFrequency != .never,
+      let nextTime = nextVibrationTime,
+      Date() >= nextTime
+    else {
+      return
+    }
+
+    VibrationManager.shared.playHaptic(settings.vibrationIntensity.hapticType)
+    scheduleNextVibration()
   }
 
   private func updateTotalTime() {
