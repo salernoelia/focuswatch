@@ -1,8 +1,10 @@
 import SwiftUI
+import WatchKit
+
+
 
 struct ColorBreathingView: View {
-  @State private var scale: CGFloat = 0.5
-  @State private var isInhaling = true
+  @StateObject private var viewModel = ColorBreathingViewModel()
 
   var body: some View {
     ZStack {
@@ -23,28 +25,26 @@ struct ColorBreathingView: View {
                 endRadius: 80
               )
             )
-            .scaleEffect(scale)
+            .scaleEffect(viewModel.scale)
             .animation(
               .easeInOut(duration: 4)
                 .repeatForever(autoreverses: true),
-              value: scale
+              value: viewModel.scale
             )
-
         }
         .frame(width: 120, height: 120)
 
-        Text(isInhaling ? "Einatmen" : "Ausatmen")
+        Text(viewModel.isInhaling ? "Einatmen" : "Ausatmen")
           .font(.caption)
           .foregroundColor(.white.opacity(0.8))
-          .animation(.easeInOut(duration: 4), value: isInhaling)
+          .animation(.easeInOut(duration: 1), value: viewModel.isInhaling)
       }
     }
     .onAppear {
-      scale = 1.2
-
-      Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true) { _ in
-        isInhaling.toggle()
-      }
+      viewModel.startBreathing()
+    }
+    .onDisappear {
+      viewModel.stopBreathing()
     }
   }
 }
