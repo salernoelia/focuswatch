@@ -216,11 +216,19 @@ class PomodoroViewModel: ObservableObject {
     scheduleNextVibration()
     scheduleBackgroundVibrations()
 
+    if settings.vibrationFrequency != .never && currentPhase == .work {
+      VibrationManager.shared.startPomodoroRandomVibrations(
+        intervalRange: settings.vibrationFrequency.intervalRange,
+        intensity: settings.vibrationIntensity.hapticType
+      )
+    }
+
     if extendedRuntimeSession == nil || extendedRuntimeSession?.state != .running {
-      let session = WKExtendedRuntimeSession()
-      session.delegate = PomodoroExtendedRuntimeSessionDelegate.shared
-      extendedRuntimeSession = session
-      session.start()
+      extendedRuntimeSession = WKExtendedRuntimeSession()
+      extendedRuntimeSession?.delegate = PomodoroExtendedRuntimeSessionDelegate.shared
+      if extendedRuntimeSession?.state == .notStarted {
+        extendedRuntimeSession?.start()
+      }
     }
 
     timerTask = Task {
@@ -247,9 +255,12 @@ class PomodoroViewModel: ObservableObject {
     lastTickDate = nil
     nextVibrationTime = nil
     cancelBackgroundVibrations()
+    VibrationManager.shared.stopPomodoroRandomVibrations()
 
     if let session = extendedRuntimeSession {
-      session.invalidate()
+      if session.state == .running {
+        session.invalidate()
+      }
       extendedRuntimeSession = nil
     }
 
@@ -335,62 +346,8 @@ class PomodoroViewModel: ObservableObject {
   }
 
   private func scheduleBackgroundVibrations() {
-    guard currentPhase == .work, settings.vibrationFrequency != .never else {
-      return
-    }
-
+    // No-op: Only haptics are used for vibrations during the timer. No notifications scheduled.
     cancelBackgroundVibrations()
-
-    let frequencyRange = settings.vibrationFrequency.intervalRange
-    let totalTime = timeRemaining
-
-    Task.detached(priority: .background) {
-      let center = UNUserNotificationCenter.current()
-      var currentTime = 0
-      let maxNotifications = 20
-      var notificationCount = 0
-      let notificationIds = UnsafeMutablePointer<[String]>.allocate(capacity: 1)
-      notificationIds.pointee = []
-
-      while currentTime < totalTime - 5 && notificationCount < maxNotifications {
-        let randomInterval = Int.random(in: frequencyRange)
-        currentTime += randomInterval
-
-        if currentTime >= totalTime - 5 {
-          break
-        }
-
-        let content = UNMutableNotificationContent()
-        content.title = "⏱️"
-        content.body = ""
-        content.sound = .default
-        content.interruptionLevel = .timeSensitive
-
-        let trigger = UNTimeIntervalNotificationTrigger(
-          timeInterval: TimeInterval(currentTime),
-          repeats: false
-        )
-
-        let id = "pomodoroVibration_\(UUID().uuidString)"
-        let request = UNNotificationRequest(
-          identifier: id,
-          content: content,
-          trigger: trigger
-        )
-
-        notificationIds.pointee.append(id)
-        notificationCount += 1
-
-        try? await center.add(request)
-      }
-
-      let finalIds = notificationIds.pointee
-      notificationIds.deallocate()
-
-      await MainActor.run {
-        PomodoroViewModel.shared.vibrationNotificationIds = finalIds
-      }
-    }
   }
 
   private func cancelBackgroundVibrations() {

@@ -7,6 +7,35 @@ class VibrationManager: ObservableObject {
   private var lastVibrationTime: TimeInterval = 0
   private var vibrationFrameCounter: Int = 0
   private let device = WKInterfaceDevice.current()
+  private var pomodoroVibrationTimer: DispatchSourceTimer?
+  func startPomodoroRandomVibrations(intervalRange: ClosedRange<Int>, intensity: WKHapticType) {
+    stopPomodoroRandomVibrations()
+    let timer = DispatchSource.makeTimerSource()
+    scheduleNextRandomVibration(timer: timer, intervalRange: intervalRange, intensity: intensity)
+    pomodoroVibrationTimer = timer
+    timer.resume()
+  }
+
+  private func scheduleNextRandomVibration(
+    timer: DispatchSourceTimer, intervalRange: ClosedRange<Int>, intensity: WKHapticType
+  ) {
+    let randomInterval = Int.random(in: intervalRange)
+    timer.schedule(deadline: .now() + .seconds(randomInterval))
+    timer.setEventHandler { [weak self] in
+      DispatchQueue.main.async {
+        self?.device.play(intensity)
+        if let strongSelf = self {
+          strongSelf.scheduleNextRandomVibration(
+            timer: timer, intervalRange: intervalRange, intensity: intensity)
+        }
+      }
+    }
+  }
+
+  func stopPomodoroRandomVibrations() {
+    pomodoroVibrationTimer?.cancel()
+    pomodoroVibrationTimer = nil
+  }
 
   private init() {}
 
@@ -19,7 +48,7 @@ class VibrationManager: ObservableObject {
   }
 
   func mediumVibration() {
-      device.play(.start)
+    device.play(.start)
   }
 
   func strongVibration() {
