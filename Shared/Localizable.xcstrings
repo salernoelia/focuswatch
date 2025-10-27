@@ -17,6 +17,16 @@
     "%lld" : {
 
     },
+    "%lld %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld %2$@"
+          }
+        }
+      }
+    },
     "%lld items" : {
 
     },
@@ -93,6 +103,9 @@
 
     },
     "App" : {
+
+    },
+    "App Index: %lld" : {
 
     },
     "App not found" : {
@@ -571,6 +584,9 @@
 
     },
     "Wie fühlst du dich?" : {
+
+    },
+    "Wische für Einstellungen →" : {
 
     },
     "Wizard" : {

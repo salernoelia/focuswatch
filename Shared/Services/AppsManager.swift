@@ -41,6 +41,7 @@ class AppsManager: ObservableObject {
     let builtInApps = [
       ("Tachometer", "Wie fühlst du dich gerade?", Color.yellow),
       ("Schreiben", "Fokushilfe beim Schreiben.", Color.blue),
+      ("Pomodoro", "Timer zur Zeiteinteilung", Color.red),
       ("Farbatmung", "Beruhigende Atemübungen", Color.green),
       ("Calendar", "Tägliche Aufgaben", Color.purple),
     ]

@@ -740,6 +740,7 @@
 				INFOPLIST_FILE = "fokusuhr-testing-platform-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "FokusUhr Platform";
 				INFOPLIST_KEY_CLKComplicationPrincipalClass = fokusuhr_testing_platform_Watch_App.ComplicationsManager;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We require the";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Required for voice transcription.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "We require motion data, to help the algorithms assess if the user is focussed or not.";
@@ -778,6 +779,7 @@
 				INFOPLIST_FILE = "fokusuhr-testing-platform-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "FokusUhr Platform";
 				INFOPLIST_KEY_CLKComplicationPrincipalClass = fokusuhr_testing_platform_Watch_App.ComplicationsManager;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We require the";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Required for voice transcription.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "We require motion data, to help the algorithms assess if the user is focussed or not.";
