@@ -42,6 +42,7 @@ class AppsManager: ObservableObject {
       ("Tachometer", "Wie fühlst du dich gerade?", Color.yellow),
       ("Schreiben", "Fokushilfe beim Schreiben.", Color.blue),
       ("Pomodoro", "Timer zur Zeiteinteilung", Color.red),
+      ("Fidget", "Figet spielzeug", Color.gray),
       ("Farbatmung", "Beruhigende Atemübungen", Color.green),
       ("Kalender", "Routineaufgaben und Termine", Color.purple),
     ]
