@@ -1,10 +1,3 @@
-//
-//  FidgetSpinnerView.swift
-//  fokusuhr-testing-platform Watch App
-//
-//  Created by Elia Salerno on 27.10.2025.
-//
-
 import SwiftUI
 
 struct FidgetSpinnerView: View {

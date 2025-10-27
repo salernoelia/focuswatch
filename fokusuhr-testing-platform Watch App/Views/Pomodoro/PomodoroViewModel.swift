@@ -9,9 +9,7 @@ class PomodoroViewModel: ObservableObject {
   @Published var settings = PomodoroConfig() {
     didSet {
       saveSettings()
-      if !isRunning {
-        updateTotalTime()
-      }
+      reset()
     }
   }
   @Published var timeRemaining: Int = 1500
@@ -215,6 +213,8 @@ class PomodoroViewModel: ObservableObject {
     scheduleNextVibration()
     scheduleBackgroundVibrations()
 
+    scheduleTimerNotification()
+
     if settings.vibrationFrequency != .never && currentPhase == .work {
       VibrationManager.shared.startPomodoroRandomVibrations(
         intervalRange: settings.vibrationFrequency.intervalRange,
@@ -298,9 +298,6 @@ class PomodoroViewModel: ObservableObject {
   private func phaseCompleted() async {
     stopTimer()
     isRunning = false
-
-    scheduleTimerNotification()
-
     switch currentPhase {
     case .work:
       completedRounds += 1
