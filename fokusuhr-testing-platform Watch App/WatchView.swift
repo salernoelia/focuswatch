@@ -44,12 +44,11 @@ struct WatchView: View {
         ColorBreathingView()
       case "Pomodoro":
         PomodoroView()
-
       case "Fidget":
         FidgetToyView()
       case "Anne (Beta)":
         AnneView()
-      case "Calendar":
+      case "Kalender":
         CalendarView()
       default:
         if let checklist = checklistForApp(app) {
