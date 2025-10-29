@@ -31,6 +31,11 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
   @State private var hasExistingProgress = false
 
   private let progressManager = ChecklistProgressManager.shared
+  private let telemetryManager = TelemetryManager.shared
+  private let appLogger = AppLogger.shared
+  private var appName: String {
+    TelemetryManager.appName(from: title)
+  }
 
   var body: some View {
     switch state {
@@ -53,6 +58,8 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
       .transition(.opacity)
       .onAppear {
         checkForExistingProgress()
+        // Log when instructions view appears
+        logEventSafely(eventType: "instructions_viewed")
       }
     case .resumePrompt:
       ChecklistResumePromptView(
@@ -79,10 +86,11 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
           state = .completed
         }
       )
-      .transition(.opacity)
       .onDisappear {
         if state == .checklist {
           saveProgress()
+          // Log app closed event safely
+          logEventSafely(eventType: "app_closed")
         }
       }
     case .completed:
@@ -92,6 +100,8 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
   }
 
   private func checkForExistingProgress() {
+    guard !items.isEmpty else { return }
+    
     if let progress = progressManager.loadProgress(for: checklistId) {
       let collectedIds = Set(progress.collectedItemIds)
       let remaining = items.filter { !collectedIds.contains($0.id) }
@@ -99,29 +109,44 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
       if !remaining.isEmpty && !collectedIds.isEmpty {
         collectedItems = items.filter { collectedIds.contains($0.id) }
         remainingItems = remaining
-        currentIndex = min(progress.currentIndex, max(0, remainingItems.count - 1))
+        // Safe bounds checking for currentIndex
+        currentIndex = max(0, min(progress.currentIndex, remainingItems.count - 1))
         state = .resumePrompt
       }
     }
   }
 
   private func checkAndLoadProgress() {
+    // Guard against empty items array to prevent crashes
+    guard !items.isEmpty else {
+      #if DEBUG
+      print("Warning: Checklist has no items, cannot start")
+      #endif
+      return
+    }
+    
     if let progress = progressManager.loadProgress(for: checklistId) {
       let collectedIds = Set(progress.collectedItemIds)
       collectedItems = items.filter { collectedIds.contains($0.id) }
       remainingItems = items.filter { !collectedIds.contains($0.id) }
-      currentIndex = min(progress.currentIndex, max(0, remainingItems.count - 1))
-
+      
+      // Safe bounds checking for currentIndex
       if remainingItems.isEmpty {
         remainingItems = items
         collectedItems = []
         currentIndex = 0
+      } else {
+        currentIndex = max(0, min(progress.currentIndex, remainingItems.count - 1))
       }
     } else {
       remainingItems = items
       collectedItems = []
       currentIndex = 0
     }
+    
+    // Log app opened event safely
+    logEventSafely(eventType: "app_opened")
+    
     state = .checklist
   }
 
@@ -132,5 +157,38 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
       collectedItemIds: collectedIds,
       currentIndex: currentIndex
     )
+  }
+  
+  /// Safely log events without crashing the app
+  private func logEventSafely(eventType: String) {
+    guard telemetryManager.hasConsent else { return }
+    
+    // Capture values needed for logging to avoid retaining self
+    let appNameForLogging = appName
+    let hasConsent = telemetryManager.hasConsent
+    
+    // Run logging in a background task to ensure it never crashes the app
+    Task { @MainActor in
+      // Double-check consent
+      guard hasConsent, telemetryManager.hasConsent else { return }
+      
+      // Safely get watch ID
+      let watchId = TelemetryManager.watchId()
+      
+      // Safely prepare telemetry data
+      guard let data = telemetryManager.prepareTelemetryData(eventType: eventType) else {
+        return
+      }
+      
+      // Log the event - wrap in additional error handling for extra safety
+      do {
+        await appLogger.logEvent(appName: appNameForLogging, watchId: watchId, data: data)
+      } catch {
+        // Silently fail - logging should never crash the app
+        #if DEBUG
+        print("Failed to log checklist event: \(error.localizedDescription)")
+        #endif
+      }
+    }
   }
 }

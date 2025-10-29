@@ -20,5 +20,65 @@
             landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F965E26F-419F-4C1B-AB1F-7BB757C4F66E"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "fokusuhr-testing-platform Watch App/Views/Checklist/ChecklistView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "86"
+            endingLineNumber = "86"
+            landmarkName = "body"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "F965E26F-419F-4C1B-AB1F-7BB757C4F66E - 1aea180f6d4580c0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "fokusuhr_testing_platform_Watch_App.UniversalChecklistView.body.getter : some"
+                  moduleName = "fokusuhr-testing-platform Watch App.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/eliasalerno/Github/fokusuhr-platform/fokusuhr-testing-platform%20Watch%20App/Views/Checklist/ChecklistView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "87"
+                  endingLineNumber = "87">
+               </Location>
+               <Location
+                  uuid = "F965E26F-419F-4C1B-AB1F-7BB757C4F66E - 5f85b55ca99be6dd"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #7 () -&gt; () in fokusuhr_testing_platform_Watch_App.UniversalChecklistView.body.getter : some"
+                  moduleName = "fokusuhr-testing-platform Watch App.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/eliasalerno/Github/fokusuhr-platform/fokusuhr-testing-platform%20Watch%20App/Views/Checklist/ChecklistView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "88"
+                  endingLineNumber = "88">
+               </Location>
+               <Location
+                  uuid = "F965E26F-419F-4C1B-AB1F-7BB757C4F66E - f78d02dbb35f5c20"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #6 () -&gt; () in fokusuhr_testing_platform_Watch_App.UniversalChecklistView.body.getter : some"
+                  moduleName = "fokusuhr-testing-platform Watch App.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/eliasalerno/Github/fokusuhr-platform/fokusuhr-testing-platform%20Watch%20App/Views/Checklist/ChecklistView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "86"
+                  endingLineNumber = "86">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

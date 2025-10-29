@@ -26,7 +26,7 @@ struct AnneView: View {
             Button(recorder.isRecording ? "Stop" : "Sprich zu Anne") {
                 if telemetryManager.hasConsent {
                     Task {
-                        await appLogger.logSimpleEvent(appName: "anne", eventType: "voice_recording_triggered")
+                        await appLogger.logSimpleEvent(appName: "anne", watchId: TelemetryManager.watchId(), eventType: "voice_recording_triggered")
                     }
                 }
               
@@ -40,6 +40,20 @@ struct AnneView: View {
             }
             .foregroundColor(recorder.isRecording ? .red : .blue)
             .buttonStyle(.bordered)
+        }
+        .onAppear {
+            if let data = telemetryManager.prepareTelemetryData(eventType: "app_opened") {
+                Task {
+                    await appLogger.logEvent(appName: "anne", watchId: TelemetryManager.watchId(), data: data)
+                }
+            }
+        }
+        .onDisappear {
+            if let data = telemetryManager.prepareTelemetryData(eventType: "app_closed") {
+                Task {
+                    await appLogger.logEvent(appName: "anne", watchId: TelemetryManager.watchId(), data: data)
+                }
+            }
         }
     }
 

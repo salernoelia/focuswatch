@@ -51,4 +51,49 @@ class TelemetryManager: ObservableObject {
         }
     }
     #endif
+    
+    #if os(watchOS)
+    static func deviceID() -> String {
+        let sharedDefaults = UserDefaults(suiteName: "group.net.com.fokusuhr")
+        return sharedDefaults?.string(forKey: "deviceUUID") ?? UUID().uuidString
+    }
+    
+    static func watchId() -> UUID {
+        let deviceUUIDString = Self.deviceID()
+        return UUID(uuidString: deviceUUIDString) ?? UUID()
+    }
+    
+    func prepareTelemetryData(eventType: String) -> [String: Any]? {
+        guard hasConsent else { return nil }
+        
+        return [
+            "event_type": eventType,
+            "device_id": Self.deviceID(),
+            "timestamp": ISO8601DateFormatter().string(from: Date())
+        ]
+    }
+    
+
+    static func appName(from appTitle: String) -> String {
+        switch appTitle.lowercased() {
+        case "tachometer":
+            return "speedometer"
+        case "schreiben":
+            return "writing"
+        case "farbatmung":
+            return "color_breathing"
+        case "pomodoro":
+            return "pomodoro"
+        case "fidget":
+            return "fidget_toy"
+        case "kalender":
+            return "calendar"
+        case "anne (beta)", "anne":
+            return "anne"
+        default:
+            // For checklists, use lowercase and replace spaces with underscores
+            return appTitle.lowercased().replacingOccurrences(of: " ", with: "_")
+        }
+    }
+    #endif
 }

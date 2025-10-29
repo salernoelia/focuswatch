@@ -6,7 +6,10 @@ class AuthManager: ObservableObject {
     
     static let shared = AuthManager()
     
-    private var client: SupabaseClient?
+    private var client: SupabaseClient = SupabaseClient(
+        supabaseURL: SupabaseConfig.url,
+        supabaseKey: SupabaseConfig.anonKey
+    )
     
     private init() {
         loadAuthState()
@@ -27,7 +30,9 @@ class AuthManager: ObservableObject {
         UserDefaults.standard.removeObject(forKey: AppConstants.StorageKeys.authToken)
         UserDefaults.standard.removeObject(forKey: AppConstants.StorageKeys.refreshToken)
         isLoggedIn = false
-        client = nil
+        Task {
+            try? await client.auth.signOut()
+        }
     }
     
     private func loadAuthState() {
@@ -42,14 +47,9 @@ class AuthManager: ObservableObject {
     }
     
     private func initializeClient(accessToken: String, refreshToken: String) {
-        client = SupabaseClient(
-            supabaseURL: SupabaseConfig.url,
-            supabaseKey: SupabaseConfig.anonKey
-        )
-        
         Task {
             do {
-                try await client?.auth.setSession(accessToken: accessToken, refreshToken: refreshToken)
+                try await client.auth.setSession(accessToken: accessToken, refreshToken: refreshToken)
             } catch {
                 #if DEBUG
                 print("Failed to restore session: \(error.localizedDescription)")
@@ -61,7 +61,7 @@ class AuthManager: ObservableObject {
         }
     }
     
-    func getClient() -> SupabaseClient? {
+    func getClient() -> SupabaseClient {
         return client
     }
     

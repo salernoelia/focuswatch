@@ -14,7 +14,9 @@ struct ChecklistMainView<Item: ChecklistItemProtocol>: View {
       VStack {
         Spacer()
 
-        if !remainingItems.isEmpty, currentIndex < remainingItems.count {
+        if !remainingItems.isEmpty, 
+           currentIndex >= 0,
+           currentIndex < remainingItems.count {
           ChecklistCard(
             item: remainingItems[currentIndex],
             onAdd: addCurrentItem,
@@ -35,7 +37,15 @@ struct ChecklistMainView<Item: ChecklistItemProtocol>: View {
   }
 
   private func addCurrentItem() {
-    guard !remainingItems.isEmpty, currentIndex < remainingItems.count else { return }
+    guard !remainingItems.isEmpty, 
+          currentIndex >= 0,
+          currentIndex < remainingItems.count else { 
+      #if DEBUG
+      print("Warning: Invalid state for addCurrentItem - remainingItems: \(remainingItems.count), currentIndex: \(currentIndex)")
+      #endif
+      return 
+    }
+    
     let item = remainingItems[currentIndex]
     collectedItems.append(item)
     remainingItems.remove(at: currentIndex)
@@ -47,14 +57,20 @@ struct ChecklistMainView<Item: ChecklistItemProtocol>: View {
         onComplete()
       }
     } else {
+      // Ensure currentIndex is within bounds after removal
       if currentIndex >= remainingItems.count {
         currentIndex = 0
       }
+      // Additional safety check
+      currentIndex = max(0, min(currentIndex, remainingItems.count - 1))
     }
   }
 
   private func skipCurrentItem() {
     guard !remainingItems.isEmpty else { return }
+    // Safe modulo operation with bounds checking
     currentIndex = (currentIndex + 1) % remainingItems.count
+    // Additional bounds check to ensure index is always valid
+    currentIndex = max(0, min(currentIndex, remainingItems.count - 1))
   }
 }
