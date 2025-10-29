@@ -94,7 +94,7 @@ struct CalendarView: View {
       appLogger.logViewLifecycle(appName: "kalender", event: "open")
     }
     .onDisappear {
-      appLogger.logViewLifecycle(appName: "kalender", event: "closed")
+      appLogger.logViewLifecycle(appName: "kalender", event: "close")
     }
   }
 

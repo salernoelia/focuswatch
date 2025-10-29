@@ -38,7 +38,7 @@ struct ChecklistMainView<Item: ChecklistItemProtocol>: View {
             appLogger.logViewLifecycle(appName: "checklist", event: "open")
         }
         .onDisappear {
-            appLogger.logViewLifecycle(appName: "checklist", event: "closed")
+            appLogger.logViewLifecycle(appName: "checklist", event: "close")
         }
 
     }

@@ -45,7 +45,7 @@ struct AnneView: View {
             appLogger.logViewLifecycle(appName: "anne", event: "open")
         }
         .onDisappear {
-            appLogger.logViewLifecycle(appName: "anne", event: "closed")
+            appLogger.logViewLifecycle(appName: "anne", event: "close")
         }
     }
 

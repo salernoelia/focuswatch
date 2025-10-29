@@ -56,7 +56,7 @@ struct SpeedometerView: View {
       appLogger.logViewLifecycle(appName: "tachometer", event: "open")
     }
     .onDisappear {
-      appLogger.logViewLifecycle(appName: "tachometer", event: "closed")
+      appLogger.logViewLifecycle(appName: "tachometer", event: "close")
     }
   }
 

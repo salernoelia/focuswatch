@@ -17,7 +17,7 @@ struct PomodoroView: View {
       appLogger.logViewLifecycle(appName: "pomodoro", event: "open")
     }
     .onDisappear {
-      appLogger.logViewLifecycle(appName: "pomodoro", event: "closed")
+      appLogger.logViewLifecycle(appName: "pomodoro", event: "close")
     }
   }
 }

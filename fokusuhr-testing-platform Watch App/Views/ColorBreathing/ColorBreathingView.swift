@@ -47,7 +47,7 @@ struct ColorBreathingView: View {
     }
     .onDisappear {
       viewModel.stopBreathing()
-      appLogger.logViewLifecycle(appName: "farbatmung", event: "closed")
+      appLogger.logViewLifecycle(appName: "farbatmung", event: "close")
     }
   }
 }

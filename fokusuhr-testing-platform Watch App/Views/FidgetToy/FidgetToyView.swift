@@ -27,7 +27,7 @@ struct FidgetToyView: View {
       appLogger.logViewLifecycle(appName: "fidget", event: "open")
     }
     .onDisappear {
-      appLogger.logViewLifecycle(appName: "fidget", event: "closed")
+      appLogger.logViewLifecycle(appName: "fidget", event: "close")
     }
   }
 }
