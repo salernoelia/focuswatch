@@ -5,9 +5,6 @@ import WatchKit
 
 struct ColorBreathingView: View {
   @StateObject private var viewModel = ColorBreathingViewModel()
-  private let telemetryManager = TelemetryManager.shared
-  private let appLogger = AppLogger.shared
-  private let appName = "color_breathing"
 
   var body: some View {
     ZStack {
@@ -45,19 +42,9 @@ struct ColorBreathingView: View {
     }
     .onAppear {
       viewModel.startBreathing()
-      if let data = telemetryManager.prepareTelemetryData(eventType: "app_opened") {
-        Task {
-          await appLogger.logEvent(appName: appName, watchId: TelemetryManager.watchId(), data: data)
-        }
-      }
     }
     .onDisappear {
       viewModel.stopBreathing()
-      if let data = telemetryManager.prepareTelemetryData(eventType: "app_closed") {
-        Task {
-          await appLogger.logEvent(appName: appName, watchId: TelemetryManager.watchId(), data: data)
-        }
-      }
     }
   }
 }

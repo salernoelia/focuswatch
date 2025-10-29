@@ -9,9 +9,6 @@ struct CalendarView: View {
   @StateObject private var calendarManager = CalendarManager.shared
   @StateObject private var appsManager = AppsManager.shared
   @State private var viewMode: CalendarViewMode = .today
-  private let telemetryManager = TelemetryManager.shared
-  private let appLogger = AppLogger.shared
-  private let appName = "calendar"
 
   private var todayEvents: [EventTransfer] {
     calendarManager.events(on: Date())
@@ -91,20 +88,6 @@ struct CalendarView: View {
     }
     .navigationTitle("Kalender")
     .navigationBarTitleDisplayMode(.inline)
-    .onAppear {
-      if let data = telemetryManager.prepareTelemetryData(eventType: "app_opened") {
-        Task {
-          await appLogger.logEvent(appName: appName, watchId: TelemetryManager.watchId(), data: data)
-        }
-      }
-    }
-    .onDisappear {
-      if let data = telemetryManager.prepareTelemetryData(eventType: "app_closed") {
-        Task {
-          await appLogger.logEvent(appName: appName, watchId: TelemetryManager.watchId(), data: data)
-        }
-      }
-    }
   }
 
   private var todayView: some View {

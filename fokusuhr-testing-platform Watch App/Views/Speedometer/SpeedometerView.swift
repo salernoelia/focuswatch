@@ -2,9 +2,6 @@ import SwiftUI
 
 struct SpeedometerView: View {
   @State private var moodValue: Double = 0.5
-  private let telemetryManager = TelemetryManager.shared
-  private let appLogger = AppLogger.shared
-  private let appName = "speedometer"
 
   var body: some View {
     GeometryReader { geometry in
@@ -49,23 +46,9 @@ struct SpeedometerView: View {
             }
         )
         .focusable()
-          .digitalCrownRotation(
+        .digitalCrownRotation(
           $moodValue, from: 0.0, through: 1.0, by: 0.01,
           sensitivity: .low)
-      }
-    }
-    .onAppear {
-      if let data = telemetryManager.prepareTelemetryData(eventType: "app_opened") {
-        Task {
-          await appLogger.logEvent(appName: appName, watchId: TelemetryManager.watchId(), data: data)
-        }
-      }
-    }
-    .onDisappear {
-      if let data = telemetryManager.prepareTelemetryData(eventType: "app_closed") {
-        Task {
-          await appLogger.logEvent(appName: appName, watchId: TelemetryManager.watchId(), data: data)
-        }
       }
     }
   }

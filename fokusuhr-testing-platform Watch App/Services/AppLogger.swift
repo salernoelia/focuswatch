@@ -2,24 +2,31 @@ import Foundation
 import Supabase
 
 class AppLogger: NSObject, ObservableObject {
-    // Use a dedicated anonymous client for logging that doesn't require authentication
-    private let client: SupabaseClient
+    private var authManager = AuthManager.shared
     
     static let shared = AppLogger()
     
     private override init() {
-        // Create a client that uses only the anon key, ensuring logging works without authentication
-        self.client = SupabaseClient(
-            supabaseURL: SupabaseConfig.url,
-            supabaseKey: SupabaseConfig.anonKey
-        )
         super.init()
     }
     
-    func logEvent(appName: String, watchId: UUID, data: [String: Any]? = nil) async {
+    func logEvent(appName: String, appId: Int64? = nil, data: [String: Any]? = nil) async {
+        guard authManager.isLoggedIn else {
+            #if DEBUG
+            print("Cannot log event: Not authenticated")
+            #endif
+            return
+        }
+        
+        guard let client = authManager.getClient() else {
+            #if DEBUG
+            print("Cannot log event: No client available")
+            #endif
+            return
+        }
         
         let logEntry = PublicSchema.AppLogsInsert(
-            appId: nil,
+            appId: appId,
             appName: appName,
             createdAt: nil,
             data: data.flatMap { dict in
@@ -29,8 +36,7 @@ class AppLogger: NSObject, ObservableObject {
                 }
                 return anyJSON
             },
-            id: nil,
-            watchId: watchId
+            id: nil
         )
         
         do {
@@ -49,12 +55,12 @@ class AppLogger: NSObject, ObservableObject {
         }
     }
     
-    func logSimpleEvent(appName: String, watchId: UUID, eventType: String, details: String? = nil) async {
+    func logSimpleEvent(appName: String, eventType: String, details: String? = nil) async {
         var data: [String: Any] = ["event_type": eventType]
         if let details = details {
             data["details"] = details
         }
-        await logEvent(appName: appName, watchId: watchId, data: data)
+        await logEvent(appName: appName, data: data)
     }
 }
 
