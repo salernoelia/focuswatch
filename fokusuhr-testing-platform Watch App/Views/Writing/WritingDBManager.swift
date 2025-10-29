@@ -6,15 +6,15 @@
 
 import CoreMotion
 import Foundation
+import Supabase
 
 // MARK: - Upload Service Protocol
 /// Protocol to abstract upload functionality for easier testing.
 protocol UploadService {
-  func uploadDataToGoogleDrive(
+  func uploadDataToSupabaseStorage(
     binaryData: Data,
     filename: String,
-    folderid: String,
-    completion: @escaping (Result<URL, Error>) -> Void
+    completion: @escaping (Result<String, Error>) -> Void
   )
 }
 
@@ -60,11 +60,9 @@ class DataStorageManager: UploadService {
     self.uploadService = self  // ✅ Jetzt geht es
   }
 
-  // MARK: - Constants for Folder IDs
-  /// The Google Drive folder ID for storing binary (.bin) sensor data files.
-  private let folderIDBin = GoogleDB.data_folder
-  /// The Google Drive folder ID for storing JSON session log and configuration files.
-  private let folderIDJSON = GoogleDB.config_log_folder
+  // MARK: - Constants
+  /// The Supabase Storage bucket name for storing binary (.bin) sensor data files.
+  private let storageBucketName = "writing-binaries"
 
   // MARK: - FailedUpload Struct
   /// A struct to represent a file that failed to upload, allowing it to be retried later.
@@ -151,13 +149,13 @@ class DataStorageManager: UploadService {
   /// 1. Loads and validates the session JSON file
   /// 2. Extracts start and end dates from the session data
   /// 3. Fetches and converts accelerometer data into a binary format
-  /// 4. Uploads the binary data to Google Drive
+  /// 4. Uploads the binary data to Supabase Storage
   ///
   /// - Parameters:
   ///   - sessionFilename: The filename of the session's JSON file, used to extract start/end dates.
-  ///   - completion: A result handler returning the URL of the uploaded binary file or an error.
+  ///   - completion: A result handler returning the path of the uploaded binary file or an error.
   func fetchAndStoreAccelerometerData(
-    sessionFilename: String, completion: @escaping (Result<URL, Error>) -> Void
+    sessionFilename: String, completion: @escaping (Result<String, Error>) -> Void
   ) {
     DispatchQueue.global(qos: .userInitiated).async {
 
@@ -179,10 +177,15 @@ class DataStorageManager: UploadService {
             return self.completeOnMainQueue(completion, with: .failure(error))
           case .success(let binaryData):
 
-            // 4. Upload
-            self.uploadBinaryData(binaryData, sessionFilename: sessionFilename) { result in
-              self.completeOnMainQueue(completion, with: result)
+          // 4. Upload
+          self.uploadBinaryData(binaryData, sessionFilename: sessionFilename) { result in
+            switch result {
+            case .success(let path):
+              self.completeOnMainQueue(completion, with: .success(path))
+            case .failure(let error):
+              self.completeOnMainQueue(completion, with: .failure(error))
             }
+          }
           }
         }
       }
@@ -250,17 +253,17 @@ class DataStorageManager: UploadService {
     return .success(binaryData)
   }
 
-  /// Uploads binary accelerometer data to Google Drive.
+  /// Uploads binary accelerometer data to Supabase Storage.
   /// - Parameters:
   ///   - binaryData: The binary accelerometer data to upload.
   ///   - sessionFilename: The original session JSON filename (used to derive the .bin filename).
-  ///   - completion: A result handler with the uploaded file URL or an error.
+  ///   - completion: A result handler with the uploaded file path or an error.
   internal func uploadBinaryData(
-    _ binaryData: Data, sessionFilename: String, completion: @escaping (Result<URL, Error>) -> Void
+    _ binaryData: Data, sessionFilename: String, completion: @escaping (Result<String, Error>) -> Void
   ) {
     let filename = (sessionFilename as NSString).deletingPathExtension + ".bin"
-    uploadService.uploadDataToGoogleDrive(
-      binaryData: binaryData, filename: filename, folderid: folderIDBin, completion: completion)
+    uploadService.uploadDataToSupabaseStorage(
+      binaryData: binaryData, filename: filename, completion: completion)
   }
 
   // MARK: - Data Uploading
@@ -299,8 +302,8 @@ class DataStorageManager: UploadService {
           dispatchGroup.enter()
           self.fetchAndStoreAccelerometerData(sessionFilename: sessionFilename) { result in
             switch result {
-            case .success(let url):
-              print("Successfully fetched and stored accelerometer data: \(url.lastPathComponent)")
+            case .success(let path):
+              print("Successfully fetched and stored accelerometer data: \(path)")
             case .failure(let error):
               if uploadError == nil {
                 uploadError = error
@@ -336,201 +339,182 @@ class DataStorageManager: UploadService {
     }
   }
 
-  /// Uploads data to a specific Google Drive folder. Handles both success and failure by logging the attempt.
-  internal func uploadDataToGoogleDrive(
-    binaryData: Data, filename: String, folderid: String,
-    completion: @escaping (Result<URL, Error>) -> Void
+  /// Uploads data to Supabase Storage. Handles both success and failure by logging the attempt.
+  internal func uploadDataToSupabaseStorage(
+    binaryData: Data, filename: String,
+    completion: @escaping (Result<String, Error>) -> Void
   ) {
-    self.uploadToGoogleDrive(
-      data: binaryData,
-      filename: filename,
-      folderID: folderid
-    ) { result in
-      switch result {
-      case .success:
-        print("Binary data uploaded successfully to Google Drive.")
-        self.storeSuccessUpload(data: binaryData, filename: filename)
-        // Create a placeholder URL for success.
-        if let url = URL(string: "https://drive.google.com/file/d/\(filename)") {
-          completion(.success(url))
-        } else {
-          completion(.failure(self.error(with: "Failed to create URL for uploaded file.")))
-        }
-      case .failure(let error):
-        print("Failed to upload binary data to Google Drive: \(error.localizedDescription)")
-        self.storeFailedUpload(data: binaryData, filename: filename)
-        completion(.failure(error))
-      }
-    }
-  }
-
-  /// Performs the multipart form upload request to the Google Drive API.
-  func uploadToGoogleDrive(
-    data: Data, filename: String, folderID: String,
-    completion: @escaping (Result<Void, Error>) -> Void
-  ) {
-    UserConfigs.getAccessToken { result in
-      switch result {
-      case .success(let accessToken):
-        print("Received access token")
-        guard
-          let uploadURL = URL(
-            string: "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart")
-        else {
-          completion(
-            .failure(
-              NSError(
-                domain: "GoogleDriveUploadError", code: -1,
-                userInfo: [NSLocalizedDescriptionKey: "Invalid upload URL"])))
-          return
-        }
-
-        let boundary = UUID().uuidString
-        var request = URLRequest(url: uploadURL)
-        request.httpMethod = "POST"
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        request.setValue(
-          "multipart/related; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-
-        var body = Data()
-
-        // Metadata part of the request body
-        let metadata: [String: Any] = [
-          "name": filename,
-          "parents": [folderID],  // Specify the target folder
-        ]
-
-        if let metadataPart = try? JSONSerialization.data(withJSONObject: metadata, options: []) {
-          body.append("--\(boundary)\r\n".data(using: .utf8)!)
-          body.append("Content-Type: application/json; charset=UTF-8\r\n\r\n".data(using: .utf8)!)
-          body.append(metadataPart)
-          body.append("\r\n".data(using: .utf8)!)
-        }
-
-        // File content part of the request body
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Type: application/octet-stream\r\n\r\n".data(using: .utf8)!)
-        body.append(data)
-        body.append("\r\n".data(using: .utf8)!)
-
-        // End boundary
-        body.append("--\(boundary)--".data(using: .utf8)!)
-
-        request.httpBody = body
-
-        // Perform the URLSession task
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-          if let error = error {
-            completion(.failure(error))
-            return
-          }
-
-          if let httpResponse = response as? HTTPURLResponse,
-            (200...299).contains(httpResponse.statusCode)
-          {
-            completion(.success(()))
-          } else {
-            let error = NSError(
-              domain: "GoogleDriveUploadError", code: -1,
-              userInfo: [NSLocalizedDescriptionKey: "Failed to upload data to Google Drive"])
-            completion(.failure(error))
-          }
-        }
-        task.resume()
-
-      case .failure(let error):
-        print("Failed to get access token for Google Drive: \(error.localizedDescription)")
-        completion(.failure(error))
-      }
-    }
-  }
-
-  /// Uploads JSON data to a specified webhook endpoint.
-  func uploadDataToWebhook(jsonData: Data, completion: @escaping (Result<Void, Error>) -> Void) {
-    guard
-      let uploadURL = URL(
-        string: "https://europe-west6-schlautech001.cloudfunctions.net/focuswatch2doc")
-    else {
-      completion(
-        .failure(
-          NSError(
-            domain: "WebhookUploadError", code: -1,
-            userInfo: [NSLocalizedDescriptionKey: "Invalid webhook URL"])))
+    // Check telemetry consent before uploading
+    guard TelemetryManager.shared.hasConsent else {
+      print("Telemetry consent not given, skipping upload")
+      completion(.failure(self.error(with: "Telemetry consent not given")))
       return
     }
-
-    var request = URLRequest(url: uploadURL)
-    request.httpMethod = "POST"
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.httpBody = jsonData
-
-    let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-      if let error = error {
-        completion(.failure(error))
-        return
-      }
-
-      if let httpResponse = response as? HTTPURLResponse,
-        (200...299).contains(httpResponse.statusCode)
-      {
-        completion(.success(()))
-      } else {
-        let error = NSError(
-          domain: "WebhookUploadError", code: -1,
-          userInfo: [NSLocalizedDescriptionKey: "Failed to upload JSON payload to webhook"])
-        completion(.failure(error))
+    
+    Task {
+      do {
+        let supabaseClient = SupabaseClient(
+          supabaseURL: SupabaseConfig.url,
+          supabaseKey: SupabaseConfig.anonKey
+        )
+        
+        let _ = try await supabaseClient.storage.from(storageBucketName)
+          .upload(filename, data: binaryData, options: FileOptions(contentType: "application/octet-stream", upsert: false))
+        
+        print("Binary data uploaded successfully to Supabase Storage.")
+        self.storeSuccessUpload(data: binaryData, filename: filename)
+        
+        await MainActor.run {
+          completion(.success(filename))
+        }
+      } catch {
+        print("Failed to upload binary data to Supabase Storage: \(error.localizedDescription)")
+        self.storeFailedUpload(data: binaryData, filename: filename)
+        await MainActor.run {
+          completion(.failure(error))
+        }
       }
     }
-    task.resume()
   }
 
-  /// Uploads a live state update to the webhook for real-time tracking.
+
+  /// Inserts session JSON data into Supabase database.
+  func insertSessionToSupabase(sessionData: [String: Any], binaryFilePath: String?, completion: @escaping (Result<Void, Error>) -> Void) {
+    // Check telemetry consent before uploading
+    guard TelemetryManager.shared.hasConsent else {
+      print("Telemetry consent not given, skipping database insert")
+      completion(.failure(self.error(with: "Telemetry consent not given")))
+      return
+    }
+    
+    Task {
+      do {
+        let supabaseClient = SupabaseClient(
+          supabaseURL: SupabaseConfig.url,
+          supabaseKey: SupabaseConfig.anonKey
+        )
+        
+        // Extract key fields from sessionData
+        let deviceId = sessionData["ID"] as? String ?? ""
+        let sessionDate = sessionData["date"] as? String ?? ""
+        let sessionFilename = sessionData["sessionFilename"] as? String ?? ""
+        
+        // Build the insert payload with all values as AnyJSON
+        var insertPayload: [String: AnyJSON] = [
+          "device_id": AnyJSON.string(deviceId),
+          "session_date": AnyJSON.string(sessionDate),
+          "session_filename": AnyJSON.string(sessionFilename)
+        ]
+        
+        // Add optional string fields
+        if let appVersion = sessionData["AppVersion"] as? String {
+          insertPayload["app_version"] = AnyJSON.string(appVersion)
+        }
+        if let sessionEndDate = sessionData["SessionEndDate"] as? String {
+          insertPayload["session_end_date"] = AnyJSON.string(sessionEndDate)
+        }
+        if let binaryPath = binaryFilePath {
+          insertPayload["binary_file_path"] = AnyJSON.string(binaryPath)
+        }
+        
+        // Convert JSONB fields using AnyJSON (similar to AppLogger)
+        if let config = sessionData["config"] as? [String: Any],
+           let jsonData = try? JSONSerialization.data(withJSONObject: config),
+           let anyJSON = try? JSONDecoder().decode(AnyJSON.self, from: jsonData) {
+          insertPayload["config"] = anyJSON
+        }
+        
+        if let location = sessionData["location"] as? [String: Any],
+           let jsonData = try? JSONSerialization.data(withJSONObject: location),
+           let anyJSON = try? JSONDecoder().decode(AnyJSON.self, from: jsonData) {
+          insertPayload["location"] = anyJSON
+        }
+        
+        if let stateHistory = sessionData["stateHistory"] as? [[String: Any]],
+           let jsonData = try? JSONSerialization.data(withJSONObject: stateHistory),
+           let anyJSON = try? JSONDecoder().decode(AnyJSON.self, from: jsonData) {
+          insertPayload["state_history"] = anyJSON
+        }
+        
+        if let modelResult = sessionData["modelResult"] as? [[String: Any]],
+           let jsonData = try? JSONSerialization.data(withJSONObject: modelResult),
+           let anyJSON = try? JSONDecoder().decode(AnyJSON.self, from: jsonData) {
+          insertPayload["model_result"] = anyJSON
+        }
+        
+        let _ = try await supabaseClient
+          .from("writing_sessions")
+          .insert(insertPayload)
+          .execute()
+        
+        print("Session data inserted successfully to Supabase.")
+        await MainActor.run {
+          completion(.success(()))
+        }
+      } catch {
+        print("Failed to insert session data to Supabase: \(error.localizedDescription)")
+        await MainActor.run {
+          completion(.failure(error))
+        }
+      }
+    }
+  }
+
+  /// Updates the session in Supabase with live state changes.
   ///
-  /// - Serializes the provided `stateEntries` to JSON.
-  /// - Combines the JSON with the device ID and date string to form a single payload.
-  /// - Sends the payload as a POST request to the live-tracking webhook.
-  /// - Calls the completion handler with `.success` or `.failure` depending on the response.
+  /// - Updates the state_history and updated_at fields for the given session.
+  /// - Only proceeds if telemetry consent is given.
   ///
   /// - Parameters:
   ///   - stateEntries: An array of recorded state history entries to send.
   ///   - deviceID: A unique identifier for the device sending the live update.
-  ///   - dateString: A formatted timestamp string for the live update.
+  ///   - sessionDate: A formatted timestamp string for the session.
   ///   - completion: A result handler with `Void` on success or an `Error` on failure.
-  func uploadLive(
-    stateEntries: [WritingExerciseManager.StateHistoryEntry], deviceID: String, dateString: String,
+  func updateSessionStateHistory(
+    stateEntries: [WritingExerciseManager.StateHistoryEntry], deviceID: String, sessionDate: String,
     completion: @escaping (Result<Void, Error>) -> Void
   ) {
-    print("Live upload called")
-    do {
-      let encoder = JSONEncoder()
-      encoder.dateEncodingStrategy = .iso8601
-      let stateEntryJSON = try encoder.encode(stateEntries)
-      let stateEntryObject = try JSONSerialization.jsonObject(with: stateEntryJSON, options: [])
-
-      // Create the payload for the live upload.
-      let combinedData: [String: Any] = [
-        "ID": deviceID,
-        "date": dateString,
-        "stateHistory": stateEntryObject,
-      ]
-
-      let jsonData = try JSONSerialization.data(withJSONObject: combinedData, options: [])
-      print(combinedData)
-
-      // Upload the data to the webhook.
-      self.uploadDataToWebhook(jsonData: jsonData) { result in
-        switch result {
-        case .success:
-          print("Live upload succeeded for state change.")
+    // Check telemetry consent before updating
+    guard TelemetryManager.shared.hasConsent else {
+      print("Telemetry consent not given, skipping live update")
+      completion(.failure(self.error(with: "Telemetry consent not given")))
+      return
+    }
+    
+    Task {
+      do {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let stateEntryJSON = try encoder.encode(stateEntries)
+        let stateEntryArray = try JSONSerialization.jsonObject(with: stateEntryJSON, options: []) as? [[String: Any]] ?? []
+        
+        let supabaseClient = SupabaseClient(
+          supabaseURL: SupabaseConfig.url,
+          supabaseKey: SupabaseConfig.anonKey
+        )
+        
+        // Convert state history to AnyJSON for update
+        let stateHistoryJsonData = try JSONSerialization.data(withJSONObject: stateEntryArray)
+        let stateHistoryAnyJSON = try JSONDecoder().decode(AnyJSON.self, from: stateHistoryJsonData)
+        
+        // Update the session with new state history
+        let _ = try await supabaseClient
+          .from("writing_sessions")
+          .update(["state_history": stateHistoryAnyJSON])
+          .eq("device_id", value: deviceID)
+          .eq("session_date", value: sessionDate)
+          .execute()
+        
+        print("Live state update succeeded.")
+        await MainActor.run {
           completion(.success(()))
-        case .failure(let error):
-          print("Live upload failed: \(error.localizedDescription)")
+        }
+      } catch {
+        print("Failed to update session state history: \(error.localizedDescription)")
+        await MainActor.run {
           completion(.failure(error))
         }
       }
-    } catch {
-      print("Failed to serialize state entry to JSON: \(error.localizedDescription)")
-      completion(.failure(error))
     }
   }
 
@@ -584,40 +568,27 @@ class DataStorageManager: UploadService {
         // Determine where to upload based on file extension.
         switch fileExtension {
         case "bin":
-          self.uploadDataToGoogleDrive(
-            binaryData: data, filename: filename, folderid: self.folderIDBin
+          self.uploadDataToSupabaseStorage(
+            binaryData: data, filename: filename
           ) { result in
             syncQueue.async {
               switch result {
-              case .success(let url):
-                retryUploadedURLs.append(url)
-                print("Successfully re-uploaded .bin file to Google Drive: \(filename)")
+              case .success(let path):
+                retryUploadedURLs.append(URL(string: path) ?? fileURL)
+                print("Successfully re-uploaded .bin file to Supabase Storage: \(filename)")
                 self.removeFailedUpload(fileURL: fileURL)
               case .failure(let error):
-                print("Failed to re-upload .bin file to Google Drive: \(filename), error: \(error)")
+                print("Failed to re-upload .bin file to Supabase Storage: \(filename), error: \(error)")
                 if retryError == nil { retryError = error }
               }
               dispatchGroup.leave()
             }
           }
         case "json":
-          self.uploadDataToGoogleDrive(
-            binaryData: data, filename: filename, folderid: self.folderIDJSON
-          ) { result in
-            syncQueue.async {
-              switch result {
-              case .success(let url):
-                retryUploadedURLs.append(url)
-                print("Successfully re-uploaded .json file to Google Drive: \(filename)")
-                self.removeFailedUpload(fileURL: fileURL)
-              case .failure(let error):
-                print(
-                  "Failed to re-upload .json file to Google Drive: \(filename), error: \(error)")
-                if retryError == nil { retryError = error }
-              }
-              dispatchGroup.leave()
-            }
-          }
+          // JSON files should now be handled by insertSessionToSupabase
+          // But we can still store them if needed for local reference
+          print("JSON file upload skipped - use insertSessionToSupabase instead: \(filename)")
+          dispatchGroup.leave()
         default:
           print("Unsupported file type for file: \(filename). Skipping.")
           dispatchGroup.leave()

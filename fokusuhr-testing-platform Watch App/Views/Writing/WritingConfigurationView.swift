@@ -438,8 +438,8 @@ struct FileUploadView: View {
             let sessionFilename = selectedFile.lastPathComponent
             dbManager.fetchAndStoreAccelerometerData(sessionFilename: sessionFilename) { result in
               switch result {
-              case .success(let url):
-                print("Successfully restored bin file: \(url.lastPathComponent)")
+              case .success(let path):
+                print("Successfully restored bin file: \(path)")
                 alertTitle = "Restoration Completed"
                 alertMessage = "Bin file restored successfully for \(sessionFilename)."
               case .failure(let error):
@@ -496,20 +496,23 @@ struct FileUploadView: View {
       let filename = fileURL.lastPathComponent
       let fileExtension = fileURL.pathExtension.lowercased()
 
-      // Upload to the correct Google Drive folder based on file type.
+      // Upload to Supabase Storage based on file type.
       switch fileExtension {
       case "bin":
-        dbManager.uploadToGoogleDrive(
-          data: data, filename: filename, folderID: GoogleDB.data_folder
+        dbManager.uploadDataToSupabaseStorage(
+          binaryData: data, filename: filename
         ) { result in
-          handleUploadResult(result, filename: filename)
+          switch result {
+          case .success(_):
+            self.handleUploadResult(.success(()), filename: filename)
+          case .failure(let error):
+            self.handleUploadResult(.failure(error), filename: filename)
+          }
         }
       case "json":
-        dbManager.uploadToGoogleDrive(
-          data: data, filename: filename, folderID: GoogleDB.config_log_folder
-        ) { result in
-          handleUploadResult(result, filename: filename)
-        }
+        // JSON files are now inserted into database, not uploaded as files
+        print("JSON files should be inserted via insertSessionToSupabase, not uploaded directly")
+        isLoading = false
       default:
         print("Unsupported file type: \(filename)")
         isLoading = false

@@ -9,6 +9,7 @@ import CoreMotion
 import Foundation
 import SwiftUI
 import WidgetKit
+import Supabase
 
 // MARK: - WritingExerciseManager Class
 /// Manages the state, timers, and data logging for an exercise session.
@@ -365,6 +366,7 @@ class WritingExerciseManager: NSObject, ObservableObject {
     hapticManager.playHaptic(type: .stop)
 
     let dispatchGroup = DispatchGroup()
+    let dataStorageManager = DataStorageManager()
 
     // Stop all timers and set state to ended.
     stopTimers()
@@ -391,12 +393,98 @@ class WritingExerciseManager: NSObject, ObservableObject {
       dispatchGroup.leave()
     }
 
-    // After all saving tasks are done, upload the data and reset.
+    // After all saving tasks are done, upload binary data and update session in Supabase.
     dispatchGroup.notify(queue: .main) {
-      print("All tasks completed, waiting 3 seconds before uploading data to DB.")
-      DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-        self.uploadExDataToDB {
+      print("All tasks completed, uploading binary data and updating session in Supabase.")
+      
+      // Upload binary data and then update session with binary file path
+      guard let sessionFilename = self.sessionFilename else {
+        // Still update session even without binary
+        self.updateSessionInSupabase(binaryFilePath: nil, dataStorageManager: dataStorageManager) {
           self.resetExercise()
+          completion()
+        }
+        return
+      }
+      
+      dispatchGroup.enter()
+      dataStorageManager.fetchAndStoreAccelerometerData(sessionFilename: sessionFilename) { result in
+        switch result {
+        case .success(let binaryPath):
+          print("Binary data uploaded: \(binaryPath)")
+          self.updateSessionInSupabase(binaryFilePath: binaryPath, dataStorageManager: dataStorageManager) {
+            dispatchGroup.leave()
+          }
+        case .failure(let error):
+          print("Failed to upload binary data: \(error.localizedDescription)")
+          // Still update session without binary path
+          self.updateSessionInSupabase(binaryFilePath: nil, dataStorageManager: dataStorageManager) {
+            dispatchGroup.leave()
+          }
+        }
+      }
+      
+      dispatchGroup.notify(queue: .main) {
+        self.resetExercise()
+        completion()
+      }
+    }
+  }
+  
+  /// Updates the session in Supabase with final data including binary file path.
+  private func updateSessionInSupabase(binaryFilePath: String?, dataStorageManager: DataStorageManager, completion: @escaping () -> Void) {
+    // Update session data with final state
+    self.sessionData["binary_file_path"] = binaryFilePath as Any
+    
+    guard let deviceId = sessionData["ID"] as? String,
+          let sessionDate = sessionData["date"] as? String else {
+      print("Missing device ID or session date for Supabase update")
+      completion()
+      return
+    }
+    
+    Task {
+      do {
+        let supabaseClient = SupabaseClient(
+          supabaseURL: SupabaseConfig.url,
+          supabaseKey: SupabaseConfig.anonKey
+        )
+        
+        // Build update payload with proper types
+        var updatePayload: [String: AnyJSON] = [:]
+        
+        if let sessionEndDate = self.sessionData["SessionEndDate"] as? String {
+            updatePayload["session_end_date"] = AnyJSON.string(sessionEndDate)
+        }
+        
+        if let modelResult = self.sessionData["modelResult"] as? [[String: Any]] {
+            // Convert nested dictionaries to AnyJSON (same approach as insert)
+            if let jsonData = try? JSONSerialization.data(withJSONObject: modelResult),
+               let anyJSON = try? JSONDecoder().decode(AnyJSON.self, from: jsonData) {
+                updatePayload["model_result"] = anyJSON
+            }
+        }
+        
+        if let binaryPath = binaryFilePath {
+            updatePayload["binary_file_path"] = AnyJSON.string(binaryPath)
+        } else {
+            updatePayload["binary_file_path"] = AnyJSON.null
+        }
+        
+        let _ = try await supabaseClient
+          .from("writing_sessions")
+          .update(updatePayload)
+          .eq("device_id", value: deviceId)
+          .eq("session_date", value: sessionDate)
+          .execute()
+        
+        print("Session updated successfully in Supabase.")
+        await MainActor.run {
+          completion()
+        }
+      } catch {
+        print("Failed to update session in Supabase: \(error.localizedDescription)")
+        await MainActor.run {
           completion()
         }
       }
@@ -435,11 +523,10 @@ class WritingExerciseManager: NSObject, ObservableObject {
   }
 
   /// Initiates the upload of all collected exercise data to the database.
+  /// Note: This method is kept for backward compatibility but data is now uploaded directly to Supabase.
   func uploadExDataToDB(completion: @escaping () -> Void) {
-    let manager = DataStorageManager()
-    manager.uploadToDB { _ in
-      completion()
-    }
+    // Data is now uploaded directly during stopExercise, this method is a no-op
+    completion()
   }
 
   /// Updates the value for the home screen widget.
@@ -519,21 +606,17 @@ class WritingExerciseManager: NSObject, ObservableObject {
 
       print("Session Data: \(self.sessionData)")
       // Create and upload the initial session JSON.
+      self.sessionData["sessionFilename"] = filename
       dataStorageManager.createSessionJSON(data: self.sessionData, filename: filename) { _ in
-        do {
-          let jsonData = try JSONSerialization.data(withJSONObject: self.sessionData, options: [])
-
-          dataStorageManager.uploadDataToWebhook(jsonData: jsonData) { result in
-            switch result {
-            case .success:
-              print("Session JSON uploaded to Elastic.")
-            case .failure(let error):
-              print(self.sessionData)
-              print("Failed to upload session JSON: \(error.localizedDescription)")
-            }
+        // Upload session data to Supabase (binary will be uploaded separately when available)
+        dataStorageManager.insertSessionToSupabase(sessionData: self.sessionData, binaryFilePath: nil) { result in
+          switch result {
+          case .success:
+            print("Session JSON inserted to Supabase.")
+          case .failure(let error):
+            print(self.sessionData)
+            print("Failed to insert session JSON to Supabase: \(error.localizedDescription)")
           }
-        } catch {
-          print("Failed to serialize sessionData to JSON: \(error.localizedDescription)")
         }
       }
     }
@@ -682,9 +765,9 @@ extension WritingExerciseManager {
     dateFormatter.timeZone = TimeZone(identifier: "Europe/Zurich")
     let dateString = dateFormatter.string(from: self.recordStartDate ?? Date())
 
-    // Upload the latest state change for live tracking.
-    dataStorageManager.uploadLive(
-      stateEntries: [entry], deviceID: String(deviceID), dateString: dateString
+    // Update the session state history in Supabase for live tracking.
+    dataStorageManager.updateSessionStateHistory(
+      stateEntries: self.stateHistory, deviceID: String(deviceID), sessionDate: dateString
     ) { _ in }
   }
 
