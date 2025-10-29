@@ -15,12 +15,14 @@ internal enum PublicSchema {
     internal let createdAt: String
     internal let data: AnyJSON?
     internal let id: Int64
+    internal let watchId: UUID
     internal enum CodingKeys: String, CodingKey {
       case appId = "app_id"
       case appName = "app_name"
       case createdAt = "created_at"
       case data = "data"
       case id = "id"
+      case watchId = "watch_id"
     }
   }
   internal struct AppLogsInsert: Codable, Hashable, Sendable, Identifiable {
@@ -29,12 +31,14 @@ internal enum PublicSchema {
     internal let createdAt: String?
     internal let data: AnyJSON?
     internal let id: Int64?
+    internal let watchId: UUID
     internal enum CodingKeys: String, CodingKey {
       case appId = "app_id"
       case appName = "app_name"
       case createdAt = "created_at"
       case data = "data"
       case id = "id"
+      case watchId = "watch_id"
     }
   }
   internal struct AppLogsUpdate: Codable, Hashable, Sendable, Identifiable {
@@ -43,12 +47,14 @@ internal enum PublicSchema {
     internal let createdAt: String?
     internal let data: AnyJSON?
     internal let id: Int64?
+    internal let watchId: UUID?
     internal enum CodingKeys: String, CodingKey {
       case appId = "app_id"
       case appName = "app_name"
       case createdAt = "created_at"
       case data = "data"
       case id = "id"
+      case watchId = "watch_id"
     }
   }
   internal struct AppsSelect: Codable, Hashable, Sendable, Identifiable {
