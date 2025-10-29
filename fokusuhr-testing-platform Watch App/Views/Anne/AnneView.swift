@@ -41,6 +41,12 @@ struct AnneView: View {
             .foregroundColor(recorder.isRecording ? .red : .blue)
             .buttonStyle(.bordered)
         }
+        .onAppear {
+            appLogger.logViewLifecycle(appName: "anne", event: "opened")
+        }
+        .onDisappear {
+            appLogger.logViewLifecycle(appName: "anne", event: "closed")
+        }
     }
 
     private func startAnimation() {

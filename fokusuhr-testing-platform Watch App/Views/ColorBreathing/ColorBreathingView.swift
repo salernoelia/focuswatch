@@ -5,6 +5,7 @@ import WatchKit
 
 struct ColorBreathingView: View {
   @StateObject private var viewModel = ColorBreathingViewModel()
+  private let appLogger = AppLogger.shared
 
   var body: some View {
     ZStack {
@@ -42,9 +43,11 @@ struct ColorBreathingView: View {
     }
     .onAppear {
       viewModel.startBreathing()
+      appLogger.logViewLifecycle(appName: "farbatmung", event: "opened")
     }
     .onDisappear {
       viewModel.stopBreathing()
+      appLogger.logViewLifecycle(appName: "farbatmung", event: "closed")
     }
   }
 }

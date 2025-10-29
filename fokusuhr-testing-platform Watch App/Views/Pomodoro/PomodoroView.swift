@@ -4,6 +4,7 @@ import WatchKit
 
 struct PomodoroView: View {
   @ObservedObject var viewModel = PomodoroViewModel.shared
+  private let appLogger = AppLogger.shared
 
   var body: some View {
     TabView {
@@ -13,6 +14,10 @@ struct PomodoroView: View {
     .tabViewStyle(.page)
     .onAppear {
       viewModel.restoreState()
+      appLogger.logViewLifecycle(appName: "pomodoro", event: "opened")
+    }
+    .onDisappear {
+      appLogger.logViewLifecycle(appName: "pomodoro", event: "closed")
     }
   }
 }

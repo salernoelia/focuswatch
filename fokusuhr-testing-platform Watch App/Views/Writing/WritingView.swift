@@ -4,6 +4,7 @@ struct WritingView: View {
   @StateObject private var configs = UserConfigs.shared
   @EnvironmentObject var WritingExerciseManager: WritingExerciseManager
   @State private var configsLoaded = false
+  private let appLogger = AppLogger.shared
 
   var body: some View {
     TabView {
@@ -27,7 +28,12 @@ struct WritingView: View {
         Label("Upload Files", systemImage: "arrow.up.circle")
       }
     }
-
+    .onAppear {
+      appLogger.logViewLifecycle(appName: "schreiben", event: "opened")
+    }
+    .onDisappear {
+      appLogger.logViewLifecycle(appName: "schreiben", event: "closed")
+    }
   }
 }
 

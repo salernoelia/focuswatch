@@ -2,6 +2,7 @@ import SwiftUI
 
 struct FidgetToyView: View {
   @StateObject private var viewModel = FidgetToyViewModel()
+  private let appLogger = AppLogger.shared
 
   var body: some View {
     ZStack {
@@ -21,6 +22,12 @@ struct FidgetToyView: View {
             }
         )
         .animation(.spring(), value: viewModel.position)
+    }
+    .onAppear {
+      appLogger.logViewLifecycle(appName: "fidget", event: "opened")
+    }
+    .onDisappear {
+      appLogger.logViewLifecycle(appName: "fidget", event: "closed")
     }
   }
 }

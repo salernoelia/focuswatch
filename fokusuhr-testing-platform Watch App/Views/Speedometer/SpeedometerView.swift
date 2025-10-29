@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SpeedometerView: View {
   @State private var moodValue: Double = 0.5
+  private let appLogger = AppLogger.shared
 
   var body: some View {
     GeometryReader { geometry in
@@ -46,10 +47,16 @@ struct SpeedometerView: View {
             }
         )
         .focusable()
-        .digitalCrownRotation(
+          .digitalCrownRotation(
           $moodValue, from: 0.0, through: 1.0, by: 0.01,
           sensitivity: .low)
       }
+    }
+    .onAppear {
+      appLogger.logViewLifecycle(appName: "tachometer", event: "opened")
+    }
+    .onDisappear {
+      appLogger.logViewLifecycle(appName: "tachometer", event: "closed")
     }
   }
 

@@ -1,10 +1,3 @@
-//
-//  WatchConfig.swift
-//  fokusuhr-testing-platform Watch App
-//
-//  Created by Elias on 22.10.25.
-//
-
 import Foundation
 import KeychainAccess
 

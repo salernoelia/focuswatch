@@ -9,6 +9,8 @@ struct CalendarView: View {
   @StateObject private var calendarManager = CalendarManager.shared
   @StateObject private var appsManager = AppsManager.shared
   @State private var viewMode: CalendarViewMode = .today
+  
+  private let appLogger = AppLogger.shared
 
   private var todayEvents: [EventTransfer] {
     calendarManager.events(on: Date())
@@ -88,6 +90,12 @@ struct CalendarView: View {
     }
     .navigationTitle("Kalender")
     .navigationBarTitleDisplayMode(.inline)
+    .onAppear {
+      appLogger.logViewLifecycle(appName: "kalender", event: "opened")
+    }
+    .onDisappear {
+      appLogger.logViewLifecycle(appName: "kalender", event: "closed")
+    }
   }
 
   private var todayView: some View {

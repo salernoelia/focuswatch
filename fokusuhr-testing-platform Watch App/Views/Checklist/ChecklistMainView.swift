@@ -1,60 +1,70 @@
 import SwiftUI
 
 struct ChecklistMainView<Item: ChecklistItemProtocol>: View {
-  @Binding var remainingItems: [Item]
-  @Binding var collectedItems: [Item]
-  @Binding var currentIndex: Int
-  let totalItems: Int
-  let onComplete: () -> Void
+    @Binding var remainingItems: [Item]
+    @Binding var collectedItems: [Item]
+    @Binding var currentIndex: Int
+    let totalItems: Int
+    private let appLogger = AppLogger.shared
+    let onComplete: () -> Void
 
-  var body: some View {
-    ZStack {
-      Color.black.ignoresSafeArea()
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
 
-      VStack {
-        Spacer()
+            VStack {
+                Spacer()
 
-        if !remainingItems.isEmpty, currentIndex < remainingItems.count {
-          ChecklistCard(
-            item: remainingItems[currentIndex],
-            onAdd: addCurrentItem,
-            onSkip: skipCurrentItem
-          )
-          .id(remainingItems[currentIndex].id)
+                if !remainingItems.isEmpty, currentIndex < remainingItems.count
+                {
+                    ChecklistCard(
+                        item: remainingItems[currentIndex],
+                        onAdd: addCurrentItem,
+                        onSkip: skipCurrentItem
+                    )
+                    .id(remainingItems[currentIndex].id)
+                }
+
+                Spacer()
+
+                ChecklistProgressIndicator(
+                    totalItems: totalItems,
+                    collectedCount: collectedItems.count
+                )
+                .padding(.bottom, 8)
+            }
+        }
+        .onAppear {
+            appLogger.logViewLifecycle(appName: "checklist", event: "opened")
+        }
+        .onDisappear {
+            appLogger.logViewLifecycle(appName: "checklist", event: "closed")
         }
 
-        Spacer()
-
-        ChecklistProgressIndicator(
-          totalItems: totalItems,
-          collectedCount: collectedItems.count
-        )
-        .padding(.bottom, 8)
-      }
     }
-  }
 
-  private func addCurrentItem() {
-    guard !remainingItems.isEmpty, currentIndex < remainingItems.count else { return }
-    let item = remainingItems[currentIndex]
-    collectedItems.append(item)
-    remainingItems.remove(at: currentIndex)
-    VibrationManager.shared.mediumVibration()
+    private func addCurrentItem() {
+        guard !remainingItems.isEmpty, currentIndex < remainingItems.count
+        else { return }
+        let item = remainingItems[currentIndex]
+        collectedItems.append(item)
+        remainingItems.remove(at: currentIndex)
+        VibrationManager.shared.mediumVibration()
 
-    if remainingItems.isEmpty {
-      VibrationManager.shared.strongVibration()
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-        onComplete()
-      }
-    } else {
-      if currentIndex >= remainingItems.count {
-        currentIndex = 0
-      }
+        if remainingItems.isEmpty {
+            VibrationManager.shared.strongVibration()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                onComplete()
+            }
+        } else {
+            if currentIndex >= remainingItems.count {
+                currentIndex = 0
+            }
+        }
     }
-  }
 
-  private func skipCurrentItem() {
-    guard !remainingItems.isEmpty else { return }
-    currentIndex = (currentIndex + 1) % remainingItems.count
-  }
+    private func skipCurrentItem() {
+        guard !remainingItems.isEmpty else { return }
+        currentIndex = (currentIndex + 1) % remainingItems.count
+    }
 }
