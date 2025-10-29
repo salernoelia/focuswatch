@@ -90,6 +90,13 @@ class CalendarViewModel: ObservableObject {
   }
 
   func add(_ event: Event) {
+    // Validate that end time is after start time
+    guard event.endTime > event.startTime else {
+      #if DEBUG
+        print("⚠️ Invalid event: end time (\(event.endTime)) must be after start time (\(event.startTime))")
+      #endif
+      return
+    }
     modelContext.insert(event)
     save()
   }
@@ -123,20 +130,21 @@ class CalendarViewModel: ObservableObject {
 
     guard let event = events.first else {
       #if DEBUG
-        print("❌ Event not found! Creating new event instead")
+        print("❌ Event not found with ID: \(eventId)")
       #endif
-      let newEvent = Event(
-        title: title,
-        date: date,
-        startTime: startTime,
-        endTime: endTime,
-        repeatRule: repeatRule,
-        customWeekdays: customWeekdays,
-        appIndex: appIndex,
-        reminders: reminders
+      lastError = AppError.recordNotFound(type: "Event", id: eventId.uuidString)
+      return
+    }
+
+    // Validate that end time is after start time
+    guard endTime > startTime else {
+      #if DEBUG
+        print("⚠️ Invalid update: end time (\(endTime)) must be after start time (\(startTime))")
+      #endif
+      lastError = AppError.invalidInput(
+        field: "endTime",
+        reason: "End time must be after start time"
       )
-      modelContext.insert(newEvent)
-      save()
       return
     }
 

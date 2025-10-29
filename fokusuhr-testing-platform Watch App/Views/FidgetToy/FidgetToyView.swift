@@ -24,7 +24,7 @@ struct FidgetToyView: View {
         .animation(.spring(), value: viewModel.position)
     }
     .onAppear {
-      appLogger.logViewLifecycle(appName: "fidget", event: "opened")
+      appLogger.logViewLifecycle(appName: "fidget", event: "open")
     }
     .onDisappear {
       appLogger.logViewLifecycle(appName: "fidget", event: "closed")

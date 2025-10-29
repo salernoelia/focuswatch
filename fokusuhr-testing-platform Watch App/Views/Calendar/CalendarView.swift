@@ -91,7 +91,7 @@ struct CalendarView: View {
     .navigationTitle("Kalender")
     .navigationBarTitleDisplayMode(.inline)
     .onAppear {
-      appLogger.logViewLifecycle(appName: "kalender", event: "opened")
+      appLogger.logViewLifecycle(appName: "kalender", event: "open")
     }
     .onDisappear {
       appLogger.logViewLifecycle(appName: "kalender", event: "closed")

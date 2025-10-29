@@ -42,7 +42,7 @@ struct AnneView: View {
             .buttonStyle(.bordered)
         }
         .onAppear {
-            appLogger.logViewLifecycle(appName: "anne", event: "opened")
+            appLogger.logViewLifecycle(appName: "anne", event: "open")
         }
         .onDisappear {
             appLogger.logViewLifecycle(appName: "anne", event: "closed")

@@ -14,7 +14,7 @@ struct PomodoroView: View {
     .tabViewStyle(.page)
     .onAppear {
       viewModel.restoreState()
-      appLogger.logViewLifecycle(appName: "pomodoro", event: "opened")
+      appLogger.logViewLifecycle(appName: "pomodoro", event: "open")
     }
     .onDisappear {
       appLogger.logViewLifecycle(appName: "pomodoro", event: "closed")

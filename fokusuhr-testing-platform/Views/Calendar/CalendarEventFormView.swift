@@ -74,11 +74,43 @@ struct CalendarEventFormView: View {
             selection: $startTime,
             displayedComponents: .hourAndMinute
           )
+          .onChange(of: startTime) { _, newStartTime in
+            // Ensure end time is never before start time
+            let combinedStart = combineDateTime(date: date, time: newStartTime)
+            let combinedEnd = combineDateTime(date: date, time: endTime)
+            if combinedEnd <= combinedStart {
+              // Auto-adjust end time to be 1 hour after start time
+              if let adjustedEnd = Calendar.current.date(byAdding: .hour, value: 1, to: combinedStart) {
+                endTime = adjustedEnd
+              }
+            }
+          }
           DatePicker(
             "End",
             selection: $endTime,
             displayedComponents: .hourAndMinute
           )
+          .onChange(of: endTime) { _, newEndTime in
+            // Ensure end time is never before start time
+            let combinedStart = combineDateTime(date: date, time: startTime)
+            let combinedEnd = combineDateTime(date: date, time: newEndTime)
+            if combinedEnd <= combinedStart {
+              // Auto-adjust end time to be 1 hour after start time
+              if let adjustedEnd = Calendar.current.date(byAdding: .hour, value: 1, to: combinedStart) {
+                endTime = adjustedEnd
+              }
+            }
+          }
+          .onChange(of: date) { _, _ in
+            // Ensure end time is never before start time when date changes
+            let combinedStart = combineDateTime(date: date, time: startTime)
+            let combinedEnd = combineDateTime(date: date, time: endTime)
+            if combinedEnd <= combinedStart {
+              if let adjustedEnd = Calendar.current.date(byAdding: .hour, value: 1, to: combinedStart) {
+                endTime = adjustedEnd
+              }
+            }
+          }
         }
 
         Section("Repeat") {
@@ -209,6 +241,43 @@ struct CalendarEventFormView: View {
               date: date,
               time: endTime
             )
+
+            // Validate that end time is after start time
+            guard combinedEndTime > combinedStartTime else {
+              // If end time is not after start time, adjust it to 1 hour after start
+              let adjustedEndTime = Calendar.current.date(
+                byAdding: .hour, value: 1, to: combinedStartTime
+              ) ?? combinedStartTime.addingTimeInterval(3600)
+              
+              if let editingEvent = editingEvent {
+                vm.update(
+                  eventId: editingEvent.sourceEventId
+                    ?? editingEvent.id,
+                  title: title,
+                  date: date,
+                  startTime: combinedStartTime,
+                  endTime: adjustedEndTime,
+                  repeatRule: repeatRule,
+                  customWeekdays: customWeekdays,
+                  appIndex: selectedAppIndex,
+                  reminders: reminders
+                )
+              } else {
+                let ev = Event(
+                  title: title,
+                  date: date,
+                  startTime: combinedStartTime,
+                  endTime: adjustedEndTime,
+                  repeatRule: repeatRule,
+                  customWeekdays: customWeekdays,
+                  appIndex: selectedAppIndex,
+                  reminders: reminders
+                )
+                vm.add(ev)
+              }
+              dismiss()
+              return
+            }
 
             if let editingEvent = editingEvent {
               vm.update(

@@ -29,7 +29,7 @@ struct WritingView: View {
       }
     }
     .onAppear {
-      appLogger.logViewLifecycle(appName: "schreiben", event: "opened")
+      appLogger.logViewLifecycle(appName: "schreiben", event: "open")
     }
     .onDisappear {
       appLogger.logViewLifecycle(appName: "schreiben", event: "closed")
