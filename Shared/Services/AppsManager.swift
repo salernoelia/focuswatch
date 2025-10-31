@@ -39,12 +39,12 @@ class AppsManager: ObservableObject {
     var currentIndex = 0
 
     let builtInApps = [
-      ("Tachometer", "Wie fühlst du dich gerade?", Color.yellow),
-      ("Schreiben", "Fokushilfe beim Schreiben.", Color.blue),
-      ("Pomodoro", "Timer zur Zeiteinteilung", Color.red),
-      ("Fidget", "Interaktives Vibrationsspielzeug", Color.gray),
-      ("Farbatmung", "Beruhigende Atemübungen", Color.green),
-      ("Kalender", "Routineaufgaben und Termine", Color.purple),
+      (String(localized: "Tachometer"), String(localized: "Wie fühlst du dich gerade?"), Color.yellow),
+      (String(localized: "Schreiben"), String(localized: "Fokushilfe beim Schreiben."), Color.blue),
+      (String(localized: "Pomodoro"), String(localized: "Timer zur Zeiteinteilung"), Color.red),
+      (String(localized: "Fidget"), String(localized: "Interaktives Vibrationsspielzeug"), Color.gray),
+      (String(localized: "Farbatmung"), String(localized: "Beruhigende Atemübungen"), Color.green),
+      (String(localized: "Kalender"), String(localized: "Routineaufgaben und Termine"), Color.purple),
     ]
 
     builtInAppCount = builtInApps.count
@@ -65,7 +65,7 @@ class AppsManager: ObservableObject {
       appsList.append(
         AppInfo(
           title: checklist.name,
-          description: "Interaktive Checkliste",
+          description: String(localized: "Interaktive Checkliste"),
           color: .blue,
           index: currentIndex
         ))

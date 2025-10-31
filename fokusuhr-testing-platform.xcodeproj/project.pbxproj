@@ -369,7 +369,7 @@
 				};
 			};
 			buildConfigurationList = 0E9D8CBA2E0D6C22002B7989 /* Build configuration list for PBXProject "fokusuhr-testing-platform" */;
-			developmentRegion = en;
+			developmentRegion = de;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -822,6 +822,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "fokusuhr-testing-platform/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "FokusUhr Platform";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.medical";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to take photos.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Required for voice transcription.";
@@ -861,6 +862,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "fokusuhr-testing-platform/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "FokusUhr Platform";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.medical";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to take photos.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Required for voice transcription.";

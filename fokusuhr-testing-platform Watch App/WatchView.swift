@@ -34,23 +34,30 @@ struct WatchView: View {
   }
 
   private func destinationView(for app: AppInfo) -> some View {
-    Group {
-      switch app.title {
-      case "Tachometer":
+    let localizedTachometer = String(localized: "Tachometer")
+    let localizedSchreiben = String(localized: "Schreiben")
+    let localizedFarbatmung = String(localized: "Farbatmung")
+    let localizedPomodoro = String(localized: "Pomodoro")
+    let localizedFidget = String(localized: "Fidget")
+    let localizedAnneBeta = String(localized: "Anne (Beta)")
+    let localizedKalender = String(localized: "Kalender")
+    
+    return Group {
+      if app.title == localizedTachometer {
         SpeedometerView()
-      case "Schreiben":
+      } else if app.title == localizedSchreiben {
         WritingView()
-      case "Farbatmung":
+      } else if app.title == localizedFarbatmung {
         ColorBreathingView()
-      case "Pomodoro":
+      } else if app.title == localizedPomodoro {
         PomodoroView()
-      case "Fidget":
+      } else if app.title == localizedFidget {
         FidgetToyView()
-      case "Anne (Beta)":
+      } else if app.title == localizedAnneBeta {
         AnneView()
-      case "Kalender":
+      } else if app.title == localizedKalender {
         CalendarView()
-      default:
+      } else {
         if let checklist = checklistForApp(app) {
           UniversalChecklistView(
             title: checklist.name,
@@ -60,7 +67,7 @@ struct WatchView: View {
             checklistId: checklist.id
           )
         } else {
-          Text("App not found")
+          Text(String(localized: "App not found"))
         }
       }
     }
@@ -130,7 +137,7 @@ struct WatchView: View {
       .padding(.horizontal, 8)
       .padding(.top, 8)
     }
-    .navigationTitle("Apps")
+    .navigationTitle(String(localized: "Apps"))
     .navigationBarTitleDisplayMode(.inline)
   }
 
