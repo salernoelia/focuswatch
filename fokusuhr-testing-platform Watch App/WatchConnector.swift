@@ -5,9 +5,9 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
   @Published var currentView: WatchViewState = .mainMenu
 
   private var authManager = AuthManager.shared
-  private var checklistManager = ChecklistManager.shared
+  private var checklistManager = ChecklistViewModel.shared
   private var galleryManager = GalleryManager.shared
-  private var calendarManager = CalendarManager.shared
+  private var calendarManager = CalendarViewModel.shared
   private var connectionMonitorTimer: Timer?
   private var isMonitoringConnection = false
 

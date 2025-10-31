@@ -3,7 +3,7 @@ import WatchConnectivity
 
 struct WizardView: View {
   @EnvironmentObject private var watchConnector: WatchConnector
-  @StateObject private var checklistManager = ChecklistManager(
+  @StateObject private var checklistManager = ChecklistViewModel(
     watchConnector: WatchConnector.shared)
   @StateObject private var testUsersManager = TestUsersManager.shared
   @StateObject private var supervisorManager = SupervisorManager.shared
@@ -207,7 +207,7 @@ struct WizardView: View {
       }
       .onAppear {
         checklistManager.watchConnector = watchConnector
-        watchConnector.checklistData = ChecklistManager.loadSharedData()
+        watchConnector.checklistData = ChecklistViewModel.loadSharedData()
         tryInitialWatchConnect()
       }
 

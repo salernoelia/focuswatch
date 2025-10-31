@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-class ChecklistManager: ObservableObject {
+class ChecklistViewModel: ObservableObject {
   @Published var data: ChecklistData
   @Published var lastError: AppError?
   var watchConnector: WatchConnector

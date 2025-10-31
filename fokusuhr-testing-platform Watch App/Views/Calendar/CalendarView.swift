@@ -6,7 +6,7 @@ enum CalendarViewMode {
 }
 
 struct CalendarView: View {
-  @StateObject private var calendarManager = CalendarManager.shared
+  @StateObject private var calendarManager = CalendarViewModel.shared
   @StateObject private var appsManager = AppsManager.shared
   @State private var viewMode: CalendarViewMode = .today
   

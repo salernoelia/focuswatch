@@ -5,7 +5,7 @@ import UserNotifications
 struct WatchApp: App {
   @StateObject private var watchConnector = WatchConnector()
   @StateObject private var writingExerciseManager = WritingExerciseManager()
-  @StateObject private var calendarManager = CalendarManager.shared
+  @StateObject private var calendarManager = CalendarViewModel.shared
   @Environment(\.scenePhase) private var scenePhase
 
   init() {
@@ -83,7 +83,7 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
     {
       DispatchQueue.main.async {
         let shouldLaunch = response.actionIdentifier == UNNotificationDefaultActionIdentifier
-        CalendarManager.shared.handleReminderResponse(
+        CalendarViewModel.shared.handleReminderResponse(
           eventId: eventId,
           reminderId: reminderId,
           shouldLaunch: shouldLaunch

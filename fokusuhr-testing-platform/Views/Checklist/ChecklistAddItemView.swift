@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ChecklistAddItemView: View {
   @Binding var checklist: Checklist
-  @ObservedObject var checklistManager: ChecklistManager
+  @ObservedObject var checklistManager: ChecklistViewModel
   @ObservedObject var galleryStorage: GalleryStorage
   @State private var title = ""
   @State private var selectedImage = ""

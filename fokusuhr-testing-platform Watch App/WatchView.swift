@@ -16,7 +16,7 @@ struct PrototypeApp {
 struct WatchView: View {
   @EnvironmentObject var watchConnector: WatchConnector
   @StateObject private var appsManager = AppsManager.shared
-  @StateObject private var checklistManager = ChecklistManager.shared
+  @StateObject private var checklistManager = ChecklistViewModel.shared
   @State private var currentView: WatchViewState = .mainMenu
   @State private var navigationPath = NavigationPath()
   @State private var selectedTab = 0

@@ -1,13 +1,13 @@
 import Foundation
 import UserNotifications
 
-class CalendarManager: ObservableObject {
+class CalendarViewModel: ObservableObject {
   @Published var events: [EventTransfer] = []
   @Published var pendingReminder: (event: EventTransfer, reminder: Reminder)?
 
   private var lastSyncedHash: Int?
 
-  static let shared = CalendarManager()
+  static let shared = CalendarViewModel()
 
   private init() {
     loadEvents()
@@ -18,7 +18,7 @@ class CalendarManager: ObservableObject {
     let newHash = computeEventsHash(newEvents)
 
     #if DEBUG
-      print("📅 CalendarManager: updateEvents called")
+      print("📅 CalendarViewModel: updateEvents called")
       print("   → New events count: \(newEvents.count)")
       print("   → Old events count: \(self.events.count)")
       print("   → New hash: \(newHash)")
@@ -27,7 +27,7 @@ class CalendarManager: ObservableObject {
 
     if let lastHash = lastSyncedHash, lastHash == newHash {
       #if DEBUG
-        print("⏭️ CalendarManager: Events unchanged (hash match), skipping schedule")
+        print("⏭️ CalendarViewModel: Events unchanged (hash match), skipping schedule")
       #endif
       return
     }
@@ -38,8 +38,8 @@ class CalendarManager: ObservableObject {
       self.saveEvents()
 
       #if DEBUG
-        print("💾 CalendarManager: Events saved to UserDefaults")
-        print("🔔 CalendarManager: Starting to schedule reminders...")
+        print("💾 CalendarViewModel: Events saved to UserDefaults")
+        print("🔔 CalendarViewModel: Starting to schedule reminders...")
       #endif
 
       self.scheduleAllReminders()
@@ -95,13 +95,13 @@ class CalendarManager: ObservableObject {
 
   func scheduleAllReminders() {
     #if DEBUG
-      print("🗑️ CalendarManager: Removing all pending notifications")
+      print("🗑️ CalendarViewModel: Removing all pending notifications")
     #endif
 
     UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
 
     #if DEBUG
-      print("🔄 CalendarManager: Scheduling reminders for \(events.count) events")
+      print("🔄 CalendarViewModel: Scheduling reminders for \(events.count) events")
     #endif
 
     for event in events {
@@ -110,7 +110,7 @@ class CalendarManager: ObservableObject {
 
     #if DEBUG
       UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
-        print("✅ CalendarManager: Total pending notifications: \(requests.count)")
+        print("✅ CalendarViewModel: Total pending notifications: \(requests.count)")
         for request in requests {
           if let trigger = request.trigger as? UNCalendarNotificationTrigger,
             let nextTriggerDate = trigger.nextTriggerDate()

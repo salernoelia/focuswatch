@@ -2,7 +2,7 @@ import PhotosUI
 import SwiftUI
 
 struct ChecklistEditorView: View {
-  @ObservedObject var checklistManager: ChecklistManager
+  @ObservedObject var checklistManager: ChecklistViewModel
   @StateObject private var galleryStorage = GalleryStorage.shared
   @Environment(\.presentationMode) var presentationMode
 

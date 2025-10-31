@@ -1,5 +1,5 @@
 ---
-applyTo: '**'
+applyTo: "**"
 ---
 
 - iOS (16+) companion app and watchOS (10+) project.
@@ -19,7 +19,7 @@ applyTo: '**'
 │   │   └── Gallery.swift
 │   ├── Services
 │   │   ├── AuthManager.swift
-│   │   ├── ChecklistManager.swift
+│   │   ├── ChecklistViewModel.swift
 │   │   ├── GalleryStorage.swift
 │   │   ├── JournalManager.swift
 │   │   ├── WatchConnectorCalendar.swift
@@ -65,8 +65,8 @@ applyTo: '**'
 │   │   ├── AppLogger.swift
 │   │   ├── AudioRecorder.swift
 │   │   ├── AuthManager.swift
-│   │   ├── CalendarManager.swift
-│   │   ├── ChecklistManager.swift
+│   │   ├── CalendarViewModel.swift
+│   │   ├── ChecklistViewModel.swift
 │   │   ├── GalleryManager.swift
 │   │   ├── VibrationManager.swift
 │   │   └── Writing

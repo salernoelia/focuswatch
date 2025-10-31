@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ChecklistDetailView: View {
   @State var checklist: Checklist
-  @ObservedObject var checklistManager: ChecklistManager
+  @ObservedObject var checklistManager: ChecklistViewModel
   @ObservedObject var galleryStorage: GalleryStorage
   @State private var showingAddItem = false
 

@@ -1,12 +1,12 @@
 import Combine
 import Foundation
 
-class ChecklistManager: ObservableObject {
+class ChecklistViewModel: ObservableObject {
   @Published var checklistData = ChecklistData.default
   private var galleryManager = GalleryManager.shared
   private var lastSyncedHash: Int?
 
-  static let shared = ChecklistManager()
+  static let shared = ChecklistViewModel()
 
   func saveChecklistData(silent: Bool = false) {
     do {

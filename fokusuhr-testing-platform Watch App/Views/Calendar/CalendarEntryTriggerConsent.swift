@@ -4,7 +4,7 @@ struct CalendarEntryTriggerConsent: View {
   let event: EventTransfer
   let reminder: Reminder
   @StateObject private var appsManager = AppsManager.shared
-  @StateObject private var calendarManager = CalendarManager.shared
+  @StateObject private var calendarManager = CalendarViewModel.shared
   @Environment(\.dismiss) private var dismiss
   @ObservedObject var watchConnector: WatchConnector
 

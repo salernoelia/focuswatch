@@ -4,7 +4,7 @@ import SwiftUI
 struct ChecklistItemEditRow: View {
   @State var item: ChecklistItem
   @Binding var checklist: Checklist
-  @ObservedObject var checklistManager: ChecklistManager
+  @ObservedObject var checklistManager: ChecklistViewModel
   @ObservedObject var galleryStorage: GalleryStorage
 
   var body: some View {
