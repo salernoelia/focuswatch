@@ -1,53 +1,48 @@
 import SwiftUI
 
 struct SettingsView: View {
-  @StateObject private var authManager = AuthManager.shared
-  @StateObject private var telemetryManager = TelemetryManager.shared
-  @StateObject private var testUsersManager = TestUsersManager.shared
-  @StateObject private var supervisorManager = SupervisorManager.shared
-  @State private var showingAddUser = false
-  @State private var showingLogin = false
-  @State private var searchText = ""
-
-  private var filteredUsers: [TestUser] {
-    if searchText.isEmpty {
-      return testUsersManager.testUsers
-    }
-    return testUsersManager.testUsers.filter { user in
-      user.fullName.localizedCaseInsensitiveContains(searchText)
-    }
-  }
-
+  @StateObject private var viewModel = SettingsViewModel()
+  
   var body: some View {
     NavigationView {
       List {
         Section("Authentication") {
-          if authManager.isLoggedIn {
+          if viewModel.isLoggedIn {
             VStack(alignment: .leading, spacing: 4) {
               Text("Logged in as:")
                 .font(.caption)
                 .foregroundColor(.secondary)
-              Text(authManager.currentUserEmail)
+              Text(viewModel.currentUserEmail)
                 .font(.body)
             }
-
+            
             Button("Sign Out") {
               Task {
-                await authManager.signOut()
+                await viewModel.signOut()
               }
             }
             .foregroundColor(.red)
-            .disabled(authManager.isLoading)
+            .disabled(viewModel.isLoading)
           } else {
             Button("Login") {
-              showingLogin = true
+              viewModel.showingLogin = true
             }
-
           }
         }
-
+        
+        Section("Device Information") {
+          HStack {
+            Text("Watch ID:")
+              .font(.body)
+            Spacer()
+            Text(String(viewModel.watchUUID.prefix(8)))
+              .font(.system(.body, design: .monospaced))
+              .foregroundColor(.secondary)
+          }
+        }
+        
         Section("Telemetry") {
-          Toggle(isOn: $telemetryManager.hasConsent) {
+          Toggle(isOn: viewModel.hasTelemetryConsent) {
             Text("Allow Telemetry")
           }
           Text(
@@ -57,11 +52,11 @@ struct SettingsView: View {
           .foregroundColor(.secondary)
           .padding(3)
         }
-
-        if authManager.isLoggedIn {
+        
+        if viewModel.isLoggedIn {
           Section("Active Testuser") {
-            if !testUsersManager.testUsers.isEmpty {
-              if let selectedUser = testUsersManager.selectedUser {
+            if !viewModel.testUsers.isEmpty {
+              if let selectedUser = viewModel.selectedUser {
                 HStack {
                   VStack(alignment: .leading, spacing: 4) {
                     Text(selectedUser.fullName)
@@ -70,9 +65,7 @@ struct SettingsView: View {
                     Text("Age: \(selectedUser.age)")
                       .font(.subheadline)
                       .foregroundColor(.secondary)
-                    if let supervisor = supervisorManager
-                      .currentSupervisor
-                    {
+                    if let supervisor = viewModel.currentSupervisor {
                       Text(
                         "Supervisor: \(supervisor.fullName)"
                       )
@@ -102,19 +95,15 @@ struct SettingsView: View {
                 .padding(.vertical, 4)
               }
             }
-
+            
             Button("Add new Test User") {
-              showingAddUser = true
+              viewModel.showingAddUser = true
             }
-            .disabled(
-              !authManager.isLoggedIn
-                || testUsersManager.isLoading)
+            .disabled(!viewModel.isLoggedIn || viewModel.isLoading)
           }
         }
       }
-
     }
-
     .listStyle(.insetGrouped)
     .navigationTitle("Einstellungen")
     .navigationBarTitleDisplayMode(.large)
@@ -122,37 +111,33 @@ struct SettingsView: View {
       ToolbarItem(placement: .navigationBarTrailing) {
         Button("Refresh") {
           Task {
-            await supervisorManager.fetchCurrentSupervisor()
-            await testUsersManager.fetchTestUsers()
+            await viewModel.refresh()
           }
         }
-        .disabled(testUsersManager.isLoading || authManager.isLoading)
+        .disabled(viewModel.isLoading)
       }
     }
     .task {
-      await supervisorManager.fetchCurrentSupervisor()
-      await testUsersManager.fetchTestUsers()
+      await viewModel.refresh()
     }
     .refreshable {
-      await supervisorManager.fetchCurrentSupervisor()
-      await testUsersManager.fetchTestUsers()
+      await viewModel.refresh()
     }
-    .sheet(isPresented: $showingLogin) {
+    .sheet(isPresented: $viewModel.showingLogin) {
       LoginView()
         .onDisappear {
-          authManager.checkAuthStatus()
+          viewModel.checkAuthStatus()
         }
     }
-
-    .sheet(isPresented: $showingAddUser) {
+    .sheet(isPresented: $viewModel.showingAddUser) {
       UserAddView { user in
         Task {
-          await testUsersManager.addTestUser(user)
+          await viewModel.addTestUser(user)
         }
       }
     }
     .overlay {
-      if testUsersManager.isLoading || authManager.isLoading {
+      if viewModel.isLoading {
         ProgressView("Loading...")
           .frame(maxWidth: .infinity, maxHeight: .infinity)
           .background(Color.black.opacity(0.1))
