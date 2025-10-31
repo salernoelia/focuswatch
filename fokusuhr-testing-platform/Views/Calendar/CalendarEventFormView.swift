@@ -120,23 +120,59 @@ struct CalendarEventFormView: View {
             }
           }
           if repeatRule == .custom {
-            HStack {
-              ForEach(1...7, id: \.self) { day in
-                let symbol = Calendar.current
-                  .veryShortWeekdaySymbols[(day - 1) % 7]
-                Button(symbol) {
-                  if customWeekdays.contains(day) {
-                    customWeekdays.removeAll {
-                      $0 == day
+            VStack(spacing: 12) {
+              HStack {
+                Spacer()
+                ForEach(1...7, id: \.self) { day in
+                  let symbol = Calendar.current
+                    .veryShortWeekdaySymbols[(day - 1) % 7]
+                  Button {
+                    var updated = customWeekdays
+                    if updated.contains(day) {
+                      updated.removeAll { $0 == day }
+                    } else {
+                      updated.append(day)
                     }
-                  } else {
-                    customWeekdays.append(day)
+                    customWeekdays = updated.sorted()
+                  } label: {
+                    Text(symbol)
+                      .font(.system(size: 16, weight: .medium))
+                      .frame(width: 36, height: 36)
+                      .background(
+                        Circle()
+                          .fill(customWeekdays.contains(day) ? Color.accentColor : Color.clear)
+                      )
+                      .foregroundColor(
+                        customWeekdays.contains(day)
+                          ? .white : .primary
+                      )
+                      .overlay(
+                        Circle()
+                          .stroke(
+                            customWeekdays.contains(day) ? Color.clear : Color.secondary.opacity(0.3),
+                            lineWidth: 1
+                          )
+                      )
+                  }
+                  .buttonStyle(.plain)
+                  if day < 7 {
+                    Spacer()
                   }
                 }
-                .foregroundColor(
-                  customWeekdays.contains(day)
-                    ? .accentColor : .primary
-                )
+                Spacer()
+              }
+              
+              if customWeekdays.isEmpty {
+                Text("Select at least one weekday")
+                  .font(.caption)
+                  .foregroundStyle(.secondary)
+              }
+            }
+            .padding(.vertical, 8)
+            .onChange(of: repeatRule) { _, newRule in
+              if newRule == .custom && customWeekdays.isEmpty && editingEvent == nil {
+                let weekday = Calendar.current.component(.weekday, from: date)
+                customWeekdays = [weekday]
               }
             }
           }
@@ -233,6 +269,10 @@ struct CalendarEventFormView: View {
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
           Button("Save") {
+            if repeatRule == .custom && customWeekdays.isEmpty {
+              return
+            }
+            
             let combinedStartTime = combineDateTime(
               date: date,
               time: startTime
@@ -307,7 +347,9 @@ struct CalendarEventFormView: View {
             }
             dismiss()
           }
-          .disabled(title.isEmpty)
+          .disabled(
+            title.isEmpty || (repeatRule == .custom && customWeekdays.isEmpty)
+          )
         }
         ToolbarItem(placement: .cancellationAction) {
           Button("Cancel") {

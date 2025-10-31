@@ -9,3 +9,5 @@ alwaysApply: true
 - Work without code comments
 - never hallucinate and work professionally
 - dont break things
+- Dont check for linting errors as i dont have any as this is an xcode project
+- Dont reate entitlements and info.plist as the are managed by xcode -> instead tell me to do it in the xcode project

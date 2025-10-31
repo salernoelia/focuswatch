@@ -98,12 +98,7 @@ class AppLogger: NSObject, ObservableObject {
                 ]
                 await self.logEvent(appName: appName, appId: self.versionToAppId(self.appVersion), data: data)
             }
-        } catch {
-            // Silently fail - logging should never break the app
-            #if DEBUG
-            print("View lifecycle logging failed (non-critical): \(error.localizedDescription)")
-            #endif
-        }
+        } 
     }
     
     /// Converts app version string to an Int64 for app_id column

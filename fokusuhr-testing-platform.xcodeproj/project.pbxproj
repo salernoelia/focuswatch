@@ -18,6 +18,7 @@
 		0E078E032E6E2C5100D74BDA /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 0E078E022E6E2C5100D74BDA /* PostgREST */; };
 		0E078E052E6E2C5100D74BDA /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 0E078E042E6E2C5100D74BDA /* Storage */; };
 		0E078E072E6E2C5100D74BDA /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 0E078E062E6E2C5100D74BDA /* Supabase */; };
+		0E3AFF112EB518BD008B1321 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 0E3AFF102EB518BD008B1321 /* KeychainAccess */; };
 		0E43798F2E9804C9000B2941 /* watch-notification.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0E4379882E9804C9000B2941 /* watch-notification.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0E43799C2E9804D3000B2941 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E43799B2E9804D3000B2941 /* WidgetKit.framework */; };
 		0E43799E2E9804D3000B2941 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E43799D2E9804D3000B2941 /* SwiftUI.framework */; };
@@ -173,6 +174,7 @@
 			files = (
 				0E078DF72E6E2C3100D74BDA /* PostgREST in Frameworks */,
 				0E078DF52E6E2C3100D74BDA /* Functions in Frameworks */,
+				0E3AFF112EB518BD008B1321 /* KeychainAccess in Frameworks */,
 				0E078DFD2E6E2C3100D74BDA /* Supabase in Frameworks */,
 				0E078DF32E6E2C3100D74BDA /* Auth in Frameworks */,
 				0E078DFB2E6E2C3100D74BDA /* Storage in Frameworks */,
@@ -306,6 +308,7 @@
 				0E078DF82E6E2C3100D74BDA /* Realtime */,
 				0E078DFA2E6E2C3100D74BDA /* Storage */,
 				0E078DFC2E6E2C3100D74BDA /* Supabase */,
+				0E3AFF102EB518BD008B1321 /* KeychainAccess */,
 			);
 			productName = "fokusuhr-testing-platform";
 			productReference = 0E9D8CBF2E0D6C23002B7989 /* fokusuhr-testing-platform.app */;
@@ -1020,6 +1023,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0E078DF12E6E2C3100D74BDA /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;
+		};
+		0E3AFF102EB518BD008B1321 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0E437AA12E981D24000B2941 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
 		};
 		0E437A882E981ABC000B2941 /* StatKit */ = {
 			isa = XCSwiftPackageProductDependency;

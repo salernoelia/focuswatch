@@ -965,6 +965,9 @@
         }
       }
     },
+    "Device Information" : {
+
+    },
     "Done" : {
       "localizations" : {
         "de" : {
@@ -2655,6 +2658,9 @@
         }
       }
     },
+    "Select at least one weekday" : {
+
+    },
     "Select User" : {
       "localizations" : {
         "de" : {
@@ -3182,6 +3188,9 @@
           }
         }
       }
+    },
+    "Watch ID:" : {
+
     },
     "Watch Status" : {
       "localizations" : {

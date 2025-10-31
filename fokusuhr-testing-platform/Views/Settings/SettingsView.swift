@@ -30,16 +30,16 @@ struct SettingsView: View {
           }
         }
         
-        Section("Device Information") {
-          HStack {
-            Text("Watch ID:")
-              .font(.body)
-            Spacer()
-            Text(String(viewModel.watchUUID.prefix(8)))
-              .font(.system(.body, design: .monospaced))
-              .foregroundColor(.secondary)
-          }
-        }
+        // Section("Device Information") {
+        //   HStack {
+        //     Text("Watch ID:")
+        //       .font(.body)
+        //     Spacer()
+        //     Text(String(viewModel.watchUUID.prefix(8)))
+        //       .font(.system(.body, design: .monospaced))
+        //       .foregroundColor(.secondary)
+        //   }
+        // }
         
         Section("Telemetry") {
           Toggle(isOn: viewModel.hasTelemetryConsent) {

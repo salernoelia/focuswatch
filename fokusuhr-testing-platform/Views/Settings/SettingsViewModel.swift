@@ -7,6 +7,7 @@ class SettingsViewModel: ObservableObject {
   @Published var searchText = ""
   @Published var showingAddUser = false
   @Published var showingLogin = false
+  @Published private(set) var watchUUID = ""
   
   // MARK: - Managers
   
@@ -15,6 +16,7 @@ class SettingsViewModel: ObservableObject {
   private let testUsersManager = TestUsersManager.shared
   private let supervisorManager = SupervisorManager.shared
   private let watchConfig = WatchConfig.shared
+  private var cancellables = Set<AnyCancellable>()
   
   // MARK: - Computed Properties
   
@@ -58,8 +60,23 @@ class SettingsViewModel: ObservableObject {
     supervisorManager.currentSupervisor
   }
   
-  var watchUUID: String {
-    watchConfig.uuid
+  init() {
+    loadWatchUUID()
+    observeUserDefaultsChanges()
+  }
+  
+  private func loadWatchUUID() {
+    watchUUID = watchConfig.uuid
+  }
+  
+  private func observeUserDefaultsChanges() {
+    NotificationCenter.default.publisher(
+      for: UserDefaults.didChangeNotification
+    )
+    .sink { [weak self] _ in
+      self?.loadWatchUUID()
+    }
+    .store(in: &cancellables)
   }
   
   // MARK: - Methods
@@ -69,6 +86,7 @@ class SettingsViewModel: ObservableObject {
   }
   
   func refresh() async {
+    loadWatchUUID()
     await supervisorManager.fetchCurrentSupervisor()
     await testUsersManager.fetchTestUsers()
   }
