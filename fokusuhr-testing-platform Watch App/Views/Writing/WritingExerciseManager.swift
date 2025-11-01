@@ -415,12 +415,14 @@ class WritingExerciseManager: NSObject, ObservableObject {
 
   /// Resets the manager to its initial state, ready for a new session.
   func resetExercise() {
-    changeState(to: .ready)
+    DispatchQueue.main.async {
+      self.changeState(to: .ready)
+      self.showRunView = false
+    }
     writingManager.resetThinkCount()
     stateHistory = []
     workingHistory = []
     emaResHistory = []
-    showRunView = false
     extendedRuntimeSession?.invalidate()
   }
 
@@ -658,8 +660,10 @@ extension WritingExerciseManager: WKExtendedRuntimeSessionDelegate {
 extension WritingExerciseManager {
   /// Changes the current exercise state and logs the change.
   func changeState(to newState: ExerciseState, completion: (() -> Void)? = nil) {
-    exerciseState = newState
-    completion?()
+    DispatchQueue.main.async {
+      self.exerciseState = newState
+      completion?()
+    }
   }
 
   /// Logs a state change to the history, updates the session JSON, and uploads the live state.
