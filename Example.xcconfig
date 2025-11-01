@@ -1,2 +1,4 @@
 SUPABASE_URL = https:/$()/<url>.supabase.co
 SUPABASE_ANON_KEY = <key>
+GOOGLE_DRIVE_USERNAME = <username>
+GOOGLE_DRIVE_PASSWORD = <password>
