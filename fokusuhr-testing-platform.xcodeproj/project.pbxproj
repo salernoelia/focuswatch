@@ -372,7 +372,7 @@
 				};
 			};
 			buildConfigurationList = 0E9D8CBA2E0D6C22002B7989 /* Build configuration list for PBXProject "fokusuhr-testing-platform" */;
-			developmentRegion = de;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,

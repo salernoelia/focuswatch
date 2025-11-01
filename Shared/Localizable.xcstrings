@@ -1,5 +1,5 @@
 {
-  "sourceLanguage" : "de",
+  "sourceLanguage" : "en",
   "strings" : {
     "" : {
       "localizations" : {
@@ -964,9 +964,6 @@
           }
         }
       }
-    },
-    "Device Information" : {
-
     },
     "Done" : {
       "localizations" : {
@@ -2543,6 +2540,12 @@
             "state" : "translated",
             "value" : "S: %1$@, P: %2$lld, A: %3$lld"
           }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S: %1$@, P: %2$lld, A: %3$lld"
+          }
         }
       }
     },
@@ -2659,7 +2662,20 @@
       }
     },
     "Select at least one weekday" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle mindestens einen Wochentag"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select at least one weekday"
+          }
+        }
+      }
     },
     "Select User" : {
       "localizations" : {
@@ -3188,9 +3204,6 @@
           }
         }
       }
-    },
-    "Watch ID:" : {
-
     },
     "Watch Status" : {
       "localizations" : {

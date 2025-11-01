@@ -100,12 +100,27 @@ struct GoogleDB {
     static let statehistory_folder: String = "1mC2HiVRhur-Txt9MY-Ph4ToeS8-YCHvl"
 }
 
-// MARK: - AccessServer Struct
-/// A container for static credentials used to access a token-providing server.
-struct AccessServer {
-    static let username = "julama"
-    static let password = "xm7f5aqxoRmFgFutM1mw9sf93QtQoA5"
+// MARK: - GoogleDriveConfig Enum
+/// A container for Google Drive credentials loaded from xcconfig via Info.plist.
+enum GoogleDriveConfig {
+    static let username: String = {
+        guard let username = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_DRIVE_USERNAME") as? String else {
+            fatalError("Missing GOOGLE_DRIVE_USERNAME in Info.plist")
+        }
+        return username
+    }()
+    
+    static let password: String = {
+        guard let password = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_DRIVE_PASSWORD") as? String else {
+            fatalError("Missing GOOGLE_DRIVE_PASSWORD in Info.plist")
+        }
+        return password
+    }()
 }
+
+
+
+
 
 // MARK: - UserConfigs Class
 /// An observable object that manages the lifecycle of the user's configuration (`Config`).
@@ -294,8 +309,8 @@ class UserConfigs: ObservableObject {
         }
         
         // Use Basic Authentication to get the token.
-        let username = AccessServer.username
-        let password = AccessServer.password
+        let username = GoogleDriveConfig.username
+        let password = GoogleDriveConfig.password
         let loginString = "\(username):\(password)"
         
         guard let loginData = loginString.data(using: .utf8) else {
