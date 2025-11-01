@@ -18,8 +18,20 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
   override init() {
     super.init()
     loadChecklistData()
+    loadWatchUUIDFromContext()
     setupWatchConnectivity()
     startConnectionMonitoring()
+  }
+  
+  public func loadWatchUUIDFromContext() {
+    guard WCSession.isSupported() else { return }
+    let context = WCSession.default.receivedApplicationContext
+    if let watchUUID = context["watchUUID"] as? String {
+      WatchConfig.shared.setConnectedWatchUUID(watchUUID)
+      #if DEBUG
+        print("📱 iOS: Loaded Watch UUID from context: \(String(watchUUID.prefix(8)))")
+      #endif
+    }
   }
 
   deinit {

@@ -9,7 +9,6 @@ struct WatchApp: App {
   @Environment(\.scenePhase) private var scenePhase
 
   init() {
-    WatchConfig.shared.storeDeviceIDInUserDefaults(WatchConfig.shared.uuid)
     setupNotifications()
   }
 

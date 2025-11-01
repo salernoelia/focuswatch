@@ -965,6 +965,9 @@
         }
       }
     },
+    "Device Information" : {
+
+    },
     "Done" : {
       "localizations" : {
         "de" : {
@@ -3204,6 +3207,9 @@
           }
         }
       }
+    },
+    "Watch ID:" : {
+
     },
     "Watch Status" : {
       "localizations" : {

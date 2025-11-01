@@ -62,17 +62,33 @@ class SettingsViewModel: ObservableObject {
   
   init() {
     loadWatchUUID()
-    observeUserDefaultsChanges()
+    observeWatchUUIDChanges()
   }
   
   private func loadWatchUUID() {
     watchUUID = watchConfig.uuid
+    #if DEBUG
+      print("📱 SettingsViewModel: Loaded Watch UUID: \(watchUUID)")
+    #endif
   }
   
-  private func observeUserDefaultsChanges() {
+  private func observeWatchUUIDChanges() {
+    NotificationCenter.default.publisher(
+      for: WatchConfig.watchUUIDDidChangeNotification
+    )
+    .receive(on: DispatchQueue.main)
+    .sink { [weak self] notification in
+      #if DEBUG
+        print("📱 SettingsViewModel: Received Watch UUID change notification")
+      #endif
+      self?.loadWatchUUID()
+    }
+    .store(in: &cancellables)
+    
     NotificationCenter.default.publisher(
       for: UserDefaults.didChangeNotification
     )
+    .receive(on: DispatchQueue.main)
     .sink { [weak self] _ in
       self?.loadWatchUUID()
     }

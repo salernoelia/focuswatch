@@ -81,6 +81,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
       #endif
       session.activate()
     } else {
+      sendWatchUUIDToiOS()
       loadLatestApplicationContext()
     }
   }
@@ -133,8 +134,50 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
         #endif
 
         if activationState == .activated {
+          self.sendWatchUUIDToiOS()
           self.loadLatestApplicationContext()
         }
+      }
+    }
+  }
+  
+  private func sendWatchUUIDToiOS() {
+    let watchUUID = WatchConfig.shared.uuid
+    let message: [String: Any] = [
+      "action": "updateWatchUUID",
+      "watchUUID": watchUUID
+    ]
+    
+    #if DEBUG
+      print("⌚ Watch: Sending UUID to iOS: \(String(watchUUID.prefix(8)))")
+    #endif
+    
+    if WCSession.default.isReachable {
+      WCSession.default.sendMessage(message, replyHandler: nil) { error in
+        #if DEBUG
+          print("⌚ Watch: Failed to send UUID via message: \(error.localizedDescription)")
+        #endif
+        do {
+          try WCSession.default.updateApplicationContext(message)
+          #if DEBUG
+            print("⌚ Watch: UUID sent via background context instead")
+          #endif
+        } catch {
+          #if DEBUG
+            print("⌚ Watch: Failed to send UUID via context: \(error.localizedDescription)")
+          #endif
+        }
+      }
+    } else {
+      do {
+        try WCSession.default.updateApplicationContext(message)
+        #if DEBUG
+          print("⌚ Watch: UUID sent via background context")
+        #endif
+      } catch {
+        #if DEBUG
+          print("⌚ Watch: Failed to send UUID: \(error.localizedDescription)")
+        #endif
       }
     }
   }
@@ -146,6 +189,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
 
     if session.isReachable {
       DispatchQueue.main.async {
+        self.sendWatchUUIDToiOS()
         self.loadLatestApplicationContext()
       }
     }

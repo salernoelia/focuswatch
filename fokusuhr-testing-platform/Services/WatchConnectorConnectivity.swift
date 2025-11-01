@@ -39,6 +39,7 @@ extension WatchConnector {
 
       if self.isConnected {
         self.reconnectAttempts = 0
+        self.loadWatchUUIDFromContext()
         self.syncChecklistToWatch()
         self.syncCalendarToWatch()
         self.syncTelemetryToWatch()

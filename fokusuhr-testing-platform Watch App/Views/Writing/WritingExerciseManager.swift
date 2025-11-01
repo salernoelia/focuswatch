@@ -454,7 +454,6 @@ class WritingExerciseManager: NSObject, ObservableObject {
       let totalTime = Double(self.currentSetting.learn * 60)
       let percentage = totalTime > 0 ? Double(self.currentTime) / totalTime : 0
       let endDate = Date().addingTimeInterval(Double(self.currentTime))
-        WatchConfig.shared.storeDeviceIDInUserDefaults(WatchConfig.shared.uuid)
       sharedDefaults.set(percentage, forKey: "remainingTimePercentage")
       sharedDefaults.set(self.exerciseState.rawValue, forKey: "widgetState")
       sharedDefaults.set(endDate, forKey: "endDate")
