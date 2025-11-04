@@ -5,6 +5,7 @@ struct ChecklistEditorView: View {
   @ObservedObject var checklistManager: ChecklistViewModel
   @StateObject private var galleryStorage = GalleryStorage.shared
   @Environment(\.presentationMode) var presentationMode
+  @State private var newChecklistId: UUID?
 
   var body: some View {
     NavigationView {
@@ -32,26 +33,43 @@ struct ChecklistEditorView: View {
           }
         }
         .onDelete(perform: deleteChecklists)
-
-        Button {
-          checklistManager.addChecklist(name: "New Checklist")
-        } label: {
-          HStack {
-            Image(systemName: "plus.circle.fill")
-              .foregroundColor(.accentColor)
-            Text("Add Checklist")
-              .foregroundColor(.accentColor)
-          }
-        }
       }
       .navigationTitle("Checklists")
       .toolbar {
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem(placement: .topBarLeading) {
           NavigationLink(destination: GalleryView()) {
-            Text("Photos")
+            Label("Photos", systemImage: "photo.stack")
+          }
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+          Button {
+            let newChecklist = checklistManager.addChecklist(name: "New Checklist")
+            newChecklistId = newChecklist.id
+          } label: {
+            Label("New Checklist", systemImage: "plus")
           }
         }
       }
+      .background(
+        NavigationLink(
+          destination: newChecklistId.flatMap { id in
+            checklistManager.data.checklists.first(where: { $0.id == id })
+          }.map { checklist in
+            ChecklistDetailView(
+              checklist: checklist,
+              checklistManager: checklistManager,
+              galleryStorage: galleryStorage
+            )
+          },
+          isActive: Binding(
+            get: { newChecklistId != nil },
+            set: { if !$0 { newChecklistId = nil } }
+          )
+        ) {
+          EmptyView()
+        }
+        .hidden()
+      )
     }
   }
 

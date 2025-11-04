@@ -10,7 +10,10 @@ struct LevelView: View {
         currentLevelSection
         milestonesSection
       }
-      .navigationTitle("Level System")
+      .navigationTitle("Levels")
+      .refreshable {
+        await viewModel.refresh()
+      }
       .toolbar {
         ToolbarItem(placement: .primaryAction) {
           Button("Add Milestone") {
@@ -163,6 +166,12 @@ class LevelViewModel: ObservableObject {
 
   private func save() {
     watchConnector.saveLevelData(levelData)
+    watchConnector.syncLevelToWatch()
+  }
+
+  func refresh() async {
+    levelData = watchConnector.loadLevelData()
+    watchConnector.syncLevelToWatch()
   }
 }
 

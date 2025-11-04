@@ -36,9 +36,11 @@ class ChecklistViewModel: ObservableObject {
     }
   }
 
-  func addChecklist(name: String) {
-    data.checklists.append(Checklist(name: name))
+  func addChecklist(name: String) -> Checklist {
+    let newChecklist = Checklist(name: name)
+    data.checklists.append(newChecklist)
     saveData()
+    return newChecklist
   }
 
   func deleteChecklist(_ checklist: Checklist) {

@@ -293,6 +293,7 @@
       }
     },
     "Add Checklist" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -307,6 +308,9 @@
           }
         }
       }
+    },
+    "Add Entry" : {
+
     },
     "Add Item" : {
       "localizations" : {
@@ -323,6 +327,9 @@
           }
         }
       }
+    },
+    "Add Milestone" : {
+
     },
     "Add new Test User" : {
       "localizations" : {
@@ -1521,6 +1528,7 @@
       }
     },
     "Galerie" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1919,9 +1927,6 @@
     "Level Debug" : {
 
     },
-    "Level System" : {
-
-    },
     "Levels" : {
 
     },
@@ -2155,6 +2160,9 @@
         }
       }
     },
+    "New Checklist" : {
+
+    },
     "New Event" : {
       "localizations" : {
         "de" : {
@@ -2207,6 +2215,9 @@
       }
     },
     "No milestones configured" : {
+
+    },
+    "No milestones yet" : {
 
     },
     "No Photos" : {

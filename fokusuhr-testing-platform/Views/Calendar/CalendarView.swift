@@ -26,94 +26,16 @@ struct CalendarView: View {
   var body: some View {
     NavigationView {
       VStack(spacing: 0) {
-
-        VStack(spacing: 0) {
-
-          Button {
-            withAnimation(.easeInOut(duration: 0.3)) {
-              isCalendarCollapsed.toggle()
-            }
-          } label: {
-            HStack {
-              Text("Kalender")
-                .font(.title2)
-                .fontWeight(.semibold)
-                .foregroundColor(.primary)
-              Spacer()
-              Image(systemName: isCalendarCollapsed ? "chevron.down" : "chevron.up")
-                .foregroundColor(.secondary)
-            }
-            .padding(.horizontal)
-            .padding(.vertical, 12)
-            .background(Color(.systemGray6))
-          }
-
-          if !isCalendarCollapsed {
-
-            DatePicker(
-              "",
-              selection: $selectedDate,
-              displayedComponents: [.date]
-            )
-            .datePickerStyle(GraphicalDatePickerStyle())
-            .padding(.horizontal)
-
-          }
-        }
-
-        List {
-
-          if events.isEmpty {
-            Text("No events scheduled")
-              .foregroundColor(.secondary)
-              .font(.subheadline)
-          } else {
-            ForEach(events, id: \.id) { event in
-              Button {
-                editingEvent = event
-              } label: {
-                CalendarEventRowView(event: event)
-              }
-              .contextMenu {
-                Button {
-                  editingEvent = event
-                } label: {
-                  Label("Edit", systemImage: "pencil")
-                }
-
-                Button(role: .destructive) {
-                  vm?.delete(event)
-                  DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    loadEvents()
-                  }
-                } label: {
-                  Label("Delete", systemImage: "trash")
-                }
-              }
-              .swipeActions(edge: .trailing) {
-                Button(role: .destructive) {
-                  vm?.delete(event)
-                  DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    loadEvents()
-                  }
-                } label: {
-                  Label("Delete", systemImage: "trash")
-                }
-              }
-            }
-          }
-        }
-        .listStyle(.insetGrouped)
+        calendarSection
+        eventsList
       }
       .navigationTitle(selectedDateString)
       .navigationBarTitleDisplayMode(.large)
       .toolbar {
         ToolbarItem(placement: .navigationBarTrailing) {
-          Button {
+          Button("Add Entry") {
             editingEvent = nil
             showingForm = true
-          } label: {
-            Image(systemName: "plus")
           }
         }
       }
@@ -149,6 +71,88 @@ struct CalendarView: View {
           vm = CalendarViewModel(modelContext: modelContext)
         }
         loadEvents()
+      }
+    }
+  }
+
+  private var calendarSection: some View {
+    VStack(spacing: 0) {
+      Button {
+        withAnimation(.easeInOut(duration: 0.3)) {
+          isCalendarCollapsed.toggle()
+        }
+      } label: {
+        HStack {
+          Text("Kalender")
+            .font(.title2)
+            .fontWeight(.semibold)
+            .foregroundColor(.primary)
+          Spacer()
+          Image(systemName: isCalendarCollapsed ? "chevron.down" : "chevron.up")
+            .foregroundColor(.secondary)
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 12)
+        .background(Color(.systemGray6))
+      }
+
+      if !isCalendarCollapsed {
+        DatePicker(
+          "",
+          selection: $selectedDate,
+          displayedComponents: [.date]
+        )
+        .datePickerStyle(GraphicalDatePickerStyle())
+        .padding(.horizontal)
+      }
+    }
+  }
+
+  private var eventsList: some View {
+    List {
+      if events.isEmpty {
+        Text("No events scheduled")
+          .foregroundColor(.secondary)
+          .font(.subheadline)
+      } else {
+        ForEach(events, id: \.id) { event in
+          eventRow(event)
+        }
+      }
+    }
+    .listStyle(.insetGrouped)
+  }
+
+  private func eventRow(_ event: Event) -> some View {
+    Button {
+      editingEvent = event
+    } label: {
+      CalendarEventRowView(event: event)
+    }
+    .contextMenu {
+      Button {
+        editingEvent = event
+      } label: {
+        Label("Edit", systemImage: "pencil")
+      }
+
+      Button(role: .destructive) {
+        vm?.delete(event)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+          loadEvents()
+        }
+      } label: {
+        Label("Delete", systemImage: "trash")
+      }
+    }
+    .swipeActions(edge: .trailing) {
+      Button(role: .destructive) {
+        vm?.delete(event)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+          loadEvents()
+        }
+      } label: {
+        Label("Delete", systemImage: "trash")
       }
     }
   }

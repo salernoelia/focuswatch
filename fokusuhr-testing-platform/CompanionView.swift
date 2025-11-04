@@ -36,7 +36,7 @@ struct CompanionView: View {
             GalleryView()
                 .tabItem {
                     Image(systemName: "photo.on.rectangle.angled")
-                    Text("Galerie")
+                    Text("Photos")
                 }
 
             FeedbackView()

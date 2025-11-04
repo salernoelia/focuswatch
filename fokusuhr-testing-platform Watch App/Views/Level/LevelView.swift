@@ -4,15 +4,21 @@ struct LevelView: View {
   @StateObject private var viewModel = LevelViewModel.shared
 
   var body: some View {
+    TabView {
+      mainPage
+      milestonesPage
+    }
+    .tabViewStyle(.page)
+  }
+
+  private var mainPage: some View {
     ScrollView {
       VStack(spacing: AppConstants.UI.mediumSpacing) {
         levelHeader
         progressBar
         xpInfo
-        
-        if let nextMilestone = viewModel.nextMilestone {
-          nextMilestoneCard(nextMilestone)
-        }
+
+ 
 
         #if DEBUG
           NavigationLink(destination: LevelDebugView()) {
@@ -27,15 +33,74 @@ struct LevelView: View {
       }
       .padding(.horizontal, AppConstants.UI.horizontalPadding)
     }
-    .navigationTitle("Level")
+  }
+
+  private var milestonesPage: some View {
+    ScrollView {
+      VStack(spacing: 8) {
+        Text("Milestones")
+          .font(.headline)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding(.horizontal, AppConstants.UI.horizontalPadding)
+
+        if viewModel.milestones.isEmpty {
+          Text("No milestones yet")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .padding()
+        } else {
+          ForEach(viewModel.milestones) { milestone in
+            milestoneRow(milestone)
+          }
+        }
+      }
+      .padding(.top, 8)
+    }
+  }
+
+  private func milestoneRow(_ milestone: LevelMilestone) -> some View {
+    let isUnlocked = viewModel.currentLevel >= milestone.levelRequired
+
+    return VStack(alignment: .leading, spacing: 6) {
+      HStack {
+        Text("\(milestone.levelRequired)")
+          .font(.title3.bold())
+          .foregroundStyle(isUnlocked ? .blue : .secondary)
+          .frame(width: 35)
+
+        VStack(alignment: .leading, spacing: 2) {
+          Text(milestone.title)
+            .font(.footnote.weight(.semibold))
+
+          if !milestone.description.isEmpty {
+            Text(milestone.description)
+              .font(.caption2)
+              .foregroundStyle(.secondary)
+              .lineLimit(2)
+          }
+        }
+
+        Spacer()
+
+        if isUnlocked {
+          Image(systemName: "checkmark.circle.fill")
+            .foregroundStyle(.blue)
+            .font(.caption)
+        }
+      }
+      .padding(10)
+      .background(isUnlocked ? Color.blue.opacity(0.1) : Color(.gray))
+      .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+    .padding(.horizontal, AppConstants.UI.horizontalPadding)
+    .opacity(milestone.isEnabled ? 1.0 : 0.4)
   }
 
   private var levelHeader: some View {
-    
 
-      Text("\(viewModel.currentLevel)")
-        .font(.system(size: 60, weight: .bold, design: .rounded))
-        .contentTransition(.numericText())
+    Text("\(viewModel.currentLevel)")
+      .font(.system(size: 60, weight: .bold, design: .rounded))
+      .contentTransition(.numericText())
 
   }
 
@@ -76,40 +141,8 @@ struct LevelView: View {
         .foregroundStyle(.secondary)
     }
   }
-  
-  private func nextMilestoneCard(_ milestone: LevelMilestone) -> some View {
-    VStack(alignment: .leading, spacing: 6) {
-      HStack {
-        Image(systemName: "flag.fill")
-          .foregroundStyle(.yellow)
-        Text("Next Milestone")
-          .font(.caption2.weight(.semibold))
-          .foregroundStyle(.secondary)
-      }
-      
-      HStack {
-        Text("Level \(milestone.levelRequired)")
-          .font(.headline.weight(.bold))
-          .foregroundStyle(.blue)
-        
-        Spacer()
-        
-        Text(milestone.title)
-          .font(.caption)
-          .lineLimit(1)
-      }
-      
-      if !milestone.description.isEmpty {
-        Text(milestone.description)
-          .font(.caption2)
-          .foregroundStyle(.secondary)
-          .lineLimit(2)
-      }
-    }
-    .padding(12)
-    .background(.quaternary)
-    .clipShape(RoundedRectangle(cornerRadius: 12))
-  }
+
+ 
 }
 
 #Preview {

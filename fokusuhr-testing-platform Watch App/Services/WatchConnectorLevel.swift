@@ -14,6 +14,9 @@ extension WatchConnector {
 
       saveLevelMilestones(levelData.milestones)
 
+      NotificationCenter.default.post(
+        name: NSNotification.Name("LevelMilestonesUpdated"), object: nil)
+
     } catch {
       #if DEBUG
         ErrorLogger.log(AppError.decodingFailed(type: "level data", underlying: error))

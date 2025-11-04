@@ -10,6 +10,7 @@ class LevelViewModel: ObservableObject {
   @Published var xpNeeded: Int = 200
   @Published var progress: Double = 0
   @Published var nextMilestone: LevelMilestone?
+  @Published var milestones: [LevelMilestone] = []
 
   private var cancellables = Set<AnyCancellable>()
   private let levelService = LevelService.shared
@@ -25,13 +26,19 @@ class LevelViewModel: ObservableObject {
         self?.updateFromService()
       }
       .store(in: &cancellables)
+
+    NotificationCenter.default.publisher(for: NSNotification.Name("LevelMilestonesUpdated"))
+      .sink { [weak self] _ in
+        self?.updateMilestones()
+      }
+      .store(in: &cancellables)
   }
 
   private func updateFromService() {
     if let progress = levelService.currentProgress {
       updateFromProgress(progress)
     }
-    updateNextMilestone()
+    updateMilestones()
   }
 
   private func updateFromProgress(_ progress: LevelProgress) {
@@ -40,13 +47,32 @@ class LevelViewModel: ObservableObject {
     xpNeeded = progress.xpNeededForNextLevel
     self.progress = progress.progressToNextLevel
   }
-  
-  private func updateNextMilestone() {
-    let milestones = WatchConnector.shared.loadLevelData().milestones
-      .filter { $0.isEnabled && $0.levelRequired > currentLevel }
+
+  private func updateMilestones() {
+    let allMilestones = loadLevelMilestones()
       .sorted { $0.levelRequired < $1.levelRequired }
-    
-    nextMilestone = milestones.first
+
+    milestones = allMilestones
+
+    nextMilestone =
+      allMilestones
+      .filter { $0.isEnabled && $0.levelRequired > currentLevel }
+      .first
+  }
+
+  private func loadLevelMilestones() -> [LevelMilestone] {
+    guard let data = UserDefaults.standard.data(forKey: "levelMilestones") else {
+      return []
+    }
+
+    do {
+      return try JSONDecoder().decode([LevelMilestone].self, from: data)
+    } catch {
+      #if DEBUG
+        ErrorLogger.log(AppError.decodingFailed(type: "level milestones", underlying: error))
+      #endif
+      return []
+    }
   }
 
   var progressPercentage: String {
