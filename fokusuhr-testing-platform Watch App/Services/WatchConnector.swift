@@ -140,18 +140,18 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
       }
     }
   }
-  
+
   private func sendWatchUUIDToiOS() {
     let watchUUID = WatchConfig.shared.uuid
     let message: [String: Any] = [
       "action": "updateWatchUUID",
-      "watchUUID": watchUUID
+      "watchUUID": watchUUID,
     ]
-    
+
     #if DEBUG
       print("⌚ Watch: Sending UUID to iOS: \(String(watchUUID.prefix(8)))")
     #endif
-    
+
     if WCSession.default.isReachable {
       WCSession.default.sendMessage(message, replyHandler: nil) { error in
         #if DEBUG
@@ -252,6 +252,13 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             self.calendarManager.updateEvents(events)
           }
           replyHandler(["status": "success"])
+        case "updateLevel":
+          if let dataString = message["data"] as? String,
+            let data = Data(base64Encoded: dataString)
+          {
+            self.handleLevelUpdate(data: data)
+          }
+          replyHandler(["status": "success"])
         default:
           replyHandler(["status": "unknown_action"])
         }
@@ -308,6 +315,12 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             let events = try? JSONDecoder().decode([EventTransfer].self, from: data)
           {
             self.calendarManager.updateEvents(events)
+          }
+        case "updateLevel":
+          if let dataString = message["data"] as? String,
+            let data = Data(base64Encoded: dataString)
+          {
+            self.handleLevelUpdate(data: data)
           }
         default:
           break

@@ -9,6 +9,7 @@ class LevelViewModel: ObservableObject {
   @Published var currentXP: Int = 0
   @Published var xpNeeded: Int = 200
   @Published var progress: Double = 0
+  @Published var nextMilestone: LevelMilestone?
 
   private var cancellables = Set<AnyCancellable>()
   private let levelService = LevelService.shared
@@ -30,6 +31,7 @@ class LevelViewModel: ObservableObject {
     if let progress = levelService.currentProgress {
       updateFromProgress(progress)
     }
+    updateNextMilestone()
   }
 
   private func updateFromProgress(_ progress: LevelProgress) {
@@ -37,6 +39,14 @@ class LevelViewModel: ObservableObject {
     currentXP = progress.currentXP
     xpNeeded = progress.xpNeededForNextLevel
     self.progress = progress.progressToNextLevel
+  }
+  
+  private func updateNextMilestone() {
+    let milestones = WatchConnector.shared.loadLevelData().milestones
+      .filter { $0.isEnabled && $0.levelRequired > currentLevel }
+      .sorted { $0.levelRequired < $1.levelRequired }
+    
+    nextMilestone = milestones.first
   }
 
   var progressPercentage: String {

@@ -82,6 +82,10 @@ class LevelService: ObservableObject {
     saveProgress()
     objectWillChange.send()
 
+    #if os(watchOS)
+      notifyiOSOfLevelChange()
+    #endif
+
     #if DEBUG
       let logReason = reason.isEmpty ? "" : " (\(reason))"
       ErrorLogger.log(
@@ -89,6 +93,14 @@ class LevelService: ObservableObject {
       )
     #endif
   }
+
+  #if os(watchOS)
+    private func notifyiOSOfLevelChange() {
+      Task {
+        await WatchConnector().syncLevelToiOS()
+      }
+    }
+  #endif
 
   private func handleLevelUp(newLevel: Int) {
     #if os(watchOS)

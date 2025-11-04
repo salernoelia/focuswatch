@@ -101,6 +101,9 @@
         }
       }
     },
+    "%lld XP" : {
+
+    },
     "•" : {
       "localizations" : {
         "de" : {
@@ -837,6 +840,9 @@
         }
       }
     },
+    "Current Level" : {
+
+    },
     "Current Progress" : {
 
     },
@@ -1065,6 +1071,7 @@
       }
     },
     "Edit Checklists" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1207,6 +1214,9 @@
           }
         }
       }
+    },
+    "Enabled" : {
+
     },
     "End" : {
       "localizations" : {
@@ -1903,7 +1913,16 @@
         }
       }
     },
+    "Level %lld" : {
+
+    },
     "Level Debug" : {
+
+    },
+    "Level System" : {
+
+    },
+    "Levels" : {
 
     },
     "Links = Später" : {
@@ -2082,6 +2101,12 @@
         }
       }
     },
+    "Milestone" : {
+
+    },
+    "Milestones" : {
+
+    },
     "Negative Feedback is on" : {
       "localizations" : {
         "de" : {
@@ -2146,6 +2171,9 @@
         }
       }
     },
+    "New Milestone" : {
+
+    },
     "No Entries" : {
       "localizations" : {
         "de" : {
@@ -2177,6 +2205,9 @@
           }
         }
       }
+    },
+    "No milestones configured" : {
+
     },
     "No Photos" : {
       "localizations" : {
@@ -2353,6 +2384,9 @@
           }
         }
       }
+    },
+    "Photos" : {
+
     },
     "Please log in to access your journal entries" : {
       "localizations" : {
@@ -3126,6 +3160,9 @@
     "Total XP" : {
 
     },
+    "Total: %lld XP" : {
+
+    },
     "Try to Reconnect" : {
       "localizations" : {
         "de" : {
@@ -3361,6 +3398,7 @@
       }
     },
     "Wizard of Oz" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

@@ -47,8 +47,8 @@ struct ChecklistEditorView: View {
       .navigationTitle("Checklists")
       .toolbar {
         ToolbarItem(placement: .navigationBarTrailing) {
-          Button("Done") {
-            presentationMode.wrappedValue.dismiss()
+          NavigationLink(destination: GalleryView()) {
+            Text("Photos")
           }
         }
       }

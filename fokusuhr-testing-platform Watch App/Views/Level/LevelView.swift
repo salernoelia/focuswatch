@@ -9,6 +9,10 @@ struct LevelView: View {
         levelHeader
         progressBar
         xpInfo
+        
+        if let nextMilestone = viewModel.nextMilestone {
+          nextMilestoneCard(nextMilestone)
+        }
 
         #if DEBUG
           NavigationLink(destination: LevelDebugView()) {
@@ -71,6 +75,40 @@ struct LevelView: View {
         .font(.caption2)
         .foregroundStyle(.secondary)
     }
+  }
+  
+  private func nextMilestoneCard(_ milestone: LevelMilestone) -> some View {
+    VStack(alignment: .leading, spacing: 6) {
+      HStack {
+        Image(systemName: "flag.fill")
+          .foregroundStyle(.yellow)
+        Text("Next Milestone")
+          .font(.caption2.weight(.semibold))
+          .foregroundStyle(.secondary)
+      }
+      
+      HStack {
+        Text("Level \(milestone.levelRequired)")
+          .font(.headline.weight(.bold))
+          .foregroundStyle(.blue)
+        
+        Spacer()
+        
+        Text(milestone.title)
+          .font(.caption)
+          .lineLimit(1)
+      }
+      
+      if !milestone.description.isEmpty {
+        Text(milestone.description)
+          .font(.caption2)
+          .foregroundStyle(.secondary)
+          .lineLimit(2)
+      }
+    }
+    .padding(12)
+    .background(.quaternary)
+    .clipShape(RoundedRectangle(cornerRadius: 12))
   }
 }
 

@@ -22,7 +22,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     setupWatchConnectivity()
     startConnectionMonitoring()
   }
-  
+
   public func loadWatchUUIDFromContext() {
     guard WCSession.isSupported() else { return }
     let context = WCSession.default.receivedApplicationContext
@@ -111,6 +111,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     syncAuthToWatch()
     syncTelemetryToWatch()
     syncCalendarToWatch()
+    syncLevelToWatch()
   }
 
   private func startConnectionMonitoring() {
@@ -150,6 +151,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
           self.syncChecklistToWatch()
           self.syncCalendarToWatch()
           self.syncTelemetryToWatch()
+          self.syncLevelToWatch()
         }
       }
     }
@@ -196,6 +198,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
         self.syncChecklistToWatch()
         self.syncCalendarToWatch()
         self.syncTelemetryToWatch()
+        self.syncLevelToWatch()
       }
     }
   }

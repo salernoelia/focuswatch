@@ -54,7 +54,7 @@ class AppsManager: ObservableObject {
         String(localized: "Calendar"), String(localized: "Routine tasks and appointments"),
         Color.purple
       ),
-      (String(localized: "Level"), String(localized: "See your focus points"), Color.purple),
+      (String(localized: "Level"), String(localized: "See your focus points"), Color.teal),
     ]
 
     builtInAppCount = builtInApps.count

@@ -9,7 +9,6 @@ struct WizardView: View {
   @StateObject private var supervisorManager = SupervisorManager.shared
   @StateObject private var authManager = AuthManager.shared
   @StateObject private var appsManager = AppsManager.shared
-  @State private var showingEditor = false
   @State private var isReconnecting = false
   @State private var isSyncing = false
 
@@ -168,9 +167,6 @@ struct WizardView: View {
           }
           .disabled(connectionStatus != .connected)
 
-          Button("Edit Checklists") {
-            showingEditor = true
-          }
         }
 
         Button(action: forceSyncToWatch) {
@@ -201,10 +197,8 @@ struct WizardView: View {
         }
         reconnectToWatch()
       }
-      .navigationTitle("Wizard of Oz")
-      .sheet(isPresented: $showingEditor) {
-        ChecklistEditorView(checklistManager: checklistManager)
-      }
+      .navigationTitle("Wizard")
+
       .onAppear {
         checklistManager.watchConnector = watchConnector
         watchConnector.checklistData = ChecklistViewModel.loadSharedData()
