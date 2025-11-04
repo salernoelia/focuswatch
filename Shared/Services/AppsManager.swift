@@ -39,12 +39,22 @@ class AppsManager: ObservableObject {
     var currentIndex = 0
 
     let builtInApps = [
-      (String(localized: "Tachometer"), String(localized: "Wie fühlst du dich gerade?"), Color.yellow),
-      (String(localized: "Schreiben"), String(localized: "Fokushilfe beim Schreiben."), Color.blue),
-      (String(localized: "Pomodoro"), String(localized: "Timer zur Zeiteinteilung"), Color.red),
-      (String(localized: "Fidget"), String(localized: "Interaktives Vibrationsspielzeug"), Color.gray),
-      (String(localized: "Farbatmung"), String(localized: "Beruhigende Atemübungen"), Color.green),
-      (String(localized: "Kalender"), String(localized: "Routineaufgaben und Termine"), Color.purple),
+      (
+        String(localized: "Fokus Meter"), String(localized: "How do you feel right now?"),
+        Color.yellow
+      ),
+      (String(localized: "Writing"), String(localized: "Focus aid for writing."), Color.blue),
+      (String(localized: "Pomodoro"), String(localized: "Timer for time management"), Color.red),
+      (String(localized: "Fidget Toy"), String(localized: "Interactive vibration toy"), Color.gray),
+      (
+        String(localized: "Color Breathing"), String(localized: "Calming breathing exercises"),
+        Color.green
+      ),
+      (
+        String(localized: "Calendar"), String(localized: "Routine tasks and appointments"),
+        Color.purple
+      ),
+      (String(localized: "Level"), String(localized: "See your focus points"), Color.purple),
     ]
 
     builtInAppCount = builtInApps.count

@@ -34,14 +34,15 @@ struct WatchView: View {
   }
 
   private func destinationView(for app: AppInfo) -> some View {
-    let localizedTachometer = String(localized: "Tachometer")
-    let localizedSchreiben = String(localized: "Schreiben")
-    let localizedFarbatmung = String(localized: "Farbatmung")
+    let localizedTachometer = String(localized: "Fokus Meter")
+    let localizedSchreiben = String(localized: "Writing")
+    let localizedFarbatmung = String(localized: "Color Breathing")
     let localizedPomodoro = String(localized: "Pomodoro")
-    let localizedFidget = String(localized: "Fidget")
+    let localizedFidget = String(localized: "Fidget Toy")
     let localizedAnneBeta = String(localized: "Anne (Beta)")
-    let localizedKalender = String(localized: "Kalender")
-    
+    let localizedKalender = String(localized: "Calendar")
+    let localizedLevel = String(localized: "Level")
+
     return Group {
       if app.title == localizedTachometer {
         SpeedometerView()
@@ -57,6 +58,8 @@ struct WatchView: View {
         AnneView()
       } else if app.title == localizedKalender {
         CalendarView()
+      } else if app.title == localizedLevel {
+        LevelView()
       } else {
         if let checklist = checklistForApp(app) {
           UniversalChecklistView(

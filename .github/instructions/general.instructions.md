@@ -10,26 +10,48 @@ applyTo: "**"
 
 ```
 .
+├── Development.xcconfig
+├── docs
+│   ├── documentation__WatchConnectivity__WCSession.json
+│   ├── SwiftData.json
+│   ├── technologies.json
+│   └── WatchConnectivity.json
+├── Example.xcconfig
+├── examples
+│   └── logging_format.json
 ├── fokusuhr-testing-platform
+│   ├── Assets.xcassets
+│   │   ├── AccentColor.colorset
+│   │   │   └── Contents.json
+│   │   ├── AppIcon.appiconset
+│   │   │   ├── 1024.png
+│   │   │   ├── AppIcon1024x1024 1.png
+│   │   │   ├── AppIcon1024x1024.png
+│   │   │   └── Contents.json
+│   │   └── Contents.json
 │   ├── CompanionApp.swift
 │   ├── CompanionView.swift
 │   ├── Constants
 │   │   └── CodingKeys.swift
+│   ├── fokusuhr-testing-platform.entitlements
+│   ├── Info.plist
 │   ├── Models
 │   │   └── Gallery.swift
+│   ├── Preview Content
+│   │   └── Preview Assets.xcassets
+│   │       └── Contents.json
 │   ├── Services
-│   │   ├── AuthManager.swift
-│   │   ├── ChecklistViewModel.swift
 │   │   ├── GalleryStorage.swift
-│   │   ├── JournalManager.swift
 │   │   ├── WatchConnectorCalendar.swift
 │   │   ├── WatchConnectorCommands.swift
 │   │   ├── WatchConnectorConnectivity.swift
-│   │   └── WatchConnectorData.swift
+│   │   ├── WatchConnectorData.swift
+│   │   └── WatchConnectorMessages.swift
 │   ├── Utils
 │   │   └── PhotoPicker.swift
 │   ├── Views
 │   │   ├── Auth
+│   │   │   ├── AuthManager.swift
 │   │   │   ├── LoginRequiredView.swift
 │   │   │   └── LoginView.swift
 │   │   ├── Calendar
@@ -41,7 +63,11 @@ applyTo: "**"
 │   │   │   ├── ChecklistAddItemView.swift
 │   │   │   ├── ChecklistDetailView.swift
 │   │   │   ├── ChecklistEditorView.swift
-│   │   │   └── ChecklistItemEditRow.swift
+│   │   │   ├── ChecklistItemEditRow.swift
+│   │   │   └── ChecklistViewModel.swift
+│   │   ├── Feedback
+│   │   │   ├── FeedbackManager.swift
+│   │   │   └── FeedbackView.swift
 │   │   ├── Gallery
 │   │   │   ├── GalleryItemCard.swift
 │   │   │   └── GalleryView.swift
@@ -49,43 +75,113 @@ applyTo: "**"
 │   │   │   ├── JournalContentView.swift
 │   │   │   ├── JournalHistoryEntryRow.swift
 │   │   │   ├── JournalHistoryView.swift
+│   │   │   ├── JournalManager.swift
 │   │   │   └── JournalView.swift
-│   │   ├── SettingsView.swift
+│   │   ├── Onboarding
+│   │   │   └── OnboardingView.swift
+│   │   ├── Settings
+│   │   │   ├── SettingsView.swift
+│   │   │   └── SettingsViewModel.swift
 │   │   ├── Testuser
 │   │   │   ├── UserAddView.swift
 │   │   │   ├── UserRow.swift
 │   │   │   └── UserSelectionView.swift
-│   │   └── WizardView.swift
+│   │   └── Wizard
+│   │       └── WizardView.swift
 │   └── WatchConnector.swift
 ├── fokusuhr-testing-platform Watch App
-│   ├── Models
-│   │   ├── EmaModel.swift
-│   │   └── WritingConfigManager.swift
+│   ├── Assets.xcassets
+│   │   ├── AccentColor.colorset
+│   │   │   └── Contents.json
+│   │   ├── AppIcon.appiconset
+│   │   │   ├── 1024.png
+│   │   │   └── Contents.json
+│   │   ├── Backblech.imageset
+│   │   │   ├── Backblech.png
+│   │   │   └── Contents.json
+│   │   ├── Backpapier.imageset
+│   │   │   ├── Backpapier.png
+│   │   │   └── Contents.json
+│   │   ├── Bleistift.imageset
+│   │   │   ├── Bleistift.png
+│   │   │   └── Contents.json
+│   │   ├── Buntes Papier.imageset
+│   │   │   ├── Buntes Papier.png
+│   │   │   └── Contents.json
+│   │   ├── Contents.json
+│   │   ├── Ei.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Ei.png
+│   │   ├── Haselnüsse.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Haselnüsse 1.png
+│   │   ├── Kelle.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Kelle.png
+│   │   ├── Leimstift.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Leimstift.png
+│   │   ├── Lineal.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Lineal.png
+│   │   ├── Locher.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Locher.png
+│   │   ├── Maizena.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Maizena.png
+│   │   ├── Messlöffel.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Messlöffel.png
+│   │   ├── Schere.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Schere.png
+│   │   ├── Schokoladenpulver.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Schokoladenpulver.png
+│   │   ├── Schüssel.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Schüssel.png
+│   │   ├── Topflappen.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Topflappen.png
+│   │   ├── Waage.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Waage.png
+│   │   ├── Wackelaugen.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Wackelaugen.png
+│   │   ├── Wolle.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Wolle.png
+│   │   └── Zucker.imageset
+│   │       ├── Contents.json
+│   │       └── Zucker.png
+│   ├── Classifiers
+│   │   └── MultiClassifier.mlmodel
+│   ├── FokusUhr Watch App.entitlements
+│   ├── fokusuhr-testing-platform Watch App.entitlements
+│   ├── Preview Content
+│   │   └── Preview Assets.xcassets
+│   │       └── Contents.json
 │   ├── Services
 │   │   ├── AppLogger.swift
 │   │   ├── AudioRecorder.swift
 │   │   ├── AuthManager.swift
-│   │   ├── CalendarViewModel.swift
-│   │   ├── ChecklistViewModel.swift
 │   │   ├── GalleryManager.swift
-│   │   ├── VibrationManager.swift
-│   │   └── Writing
-│   │       ├── WritingDBManager.swift
-│   │       ├── WritingExerciseManager.swift
-│   │       ├── WritingHapticFeedbackManager.swift
-│   │       ├── WritingLocationManager.swift
-│   │       ├── WritingManager.swift
-│   │       ├── WritingMotionManager.swift
-│   │       └── WritingTimeManager.swift
+│   │   └── VibrationManager.swift
 │   ├── Utils
 │   │   ├── ActivityPredictor.swift
 │   │   ├── FeatureCalculator.swift
 │   │   └── RingBuffer.swift
 │   ├── Views
-│   │   ├── AnneView.swift
+│   │   ├── Anne
+│   │   │   └── AnneView.swift
 │   │   ├── AppCardView.swift
-│   │   ├── CalendarEntryTriggerConsent.swift
-│   │   ├── CalendarView.swift
+│   │   ├── Calendar
+│   │   │   ├── CalendarEntryTriggerConsent.swift
+│   │   │   ├── CalendarView.swift
+│   │   │   └── CalendarViewModel.swift
 │   │   ├── Checklist
 │   │   │   ├── ChecklistCard.swift
 │   │   │   ├── ChecklistCompletionView.swift
@@ -94,24 +190,74 @@ applyTo: "**"
 │   │   │   ├── ChecklistMainView.swift
 │   │   │   ├── ChecklistProgressIndicator.swift
 │   │   │   ├── ChecklistResumePromptView.swift
-│   │   │   └── ChecklistView.swift
-│   │   ├── ColorBreathingView.swift
-│   │   ├── FidgetSpinnerView.swift
+│   │   │   ├── ChecklistView.swift
+│   │   │   └── ChecklistViewModel.swift
+│   │   ├── ColorBreathing
+│   │   │   ├── ColorBreathingView.swift
+│   │   │   └── ColorBreathingViewModel.swift
+│   │   ├── FidgetToy
+│   │   │   ├── FidgetToyView.swift
+│   │   │   └── FidgetToyViewModel.swift
+│   │   ├── Pomodoro
+│   │   │   ├── PomodoroConfig.swift
+│   │   │   ├── PomodoroConfigRow.swift
+│   │   │   ├── PomodoroConfigView.swift
+│   │   │   ├── PomodoroExtendedRuntimeSessionDelegate.swift
+│   │   │   ├── PomodoroPhase.swift
+│   │   │   ├── PomodoroTimerView.swift
+│   │   │   ├── PomodoroView.swift
+│   │   │   └── PomodoroViewModel.swift
 │   │   ├── Speedometer
 │   │   │   ├── SpeedometerNeedleView.swift
 │   │   │   └── SpeedometerView.swift
 │   │   └── Writing
+│   │       ├── EmaModel.swift
 │   │       ├── WritingColorView.swift
+│   │       ├── WritingConfigManager.swift
 │   │       ├── WritingConfigurationView.swift
+│   │       ├── WritingDBManager.swift
+│   │       ├── WritingExerciseManager.swift
+│   │       ├── WritingHapticFeedbackManager.swift
+│   │       ├── WritingLocationManager.swift
+│   │       ├── WritingManager.swift
+│   │       ├── WritingMotionManager.swift
+│   │       ├── WritingTimeManager.swift
 │   │       └── WritingView.swift
 │   ├── WatchApp.swift
 │   ├── WatchConnector.swift
 │   └── WatchView.swift
+├── fokusuhr-testing-platform-Watch-App-Info.plist
+├── fokusuhr-testing-platform.xcodeproj
+│   ├── project.pbxproj
+│   ├── project.xcworkspace
+│   │   ├── contents.xcworkspacedata
+│   │   ├── xcshareddata
+│   │   │   └── swiftpm
+│   │   │       ├── configuration
+│   │   │       └── Package.resolved
+│   │   └── xcuserdata
+│   │       └── eliasalerno.xcuserdatad
+│   │           ├── IDEFindNavigatorScopes.plist
+│   │           └── UserInterfaceState.xcuserstate
+│   ├── xcshareddata
+│   │   └── xcschemes
+│   │       ├── fokusuhr-testing-platform Watch App.xcscheme
+│   │       └── fokusuhr-testing-platform.xcscheme
+│   └── xcuserdata
+│       └── eliasalerno.xcuserdatad
+│           ├── xcdebugger
+│           │   └── Breakpoints_v2.xcbkptlist
+│           └── xcschemes
+│               └── xcschememanagement.plist
+├── Production.xcconfig
+├── README.md
 ├── Shared
 │   ├── Configs
-│   │   └── SupabaseConfig.swift
+│   │   ├── SupabaseConfig.swift
+│   │   └── WatchConfig.swift
 │   ├── Constants
 │   │   └── AppConstants.swift
+│   ├── Localizable.xcstrings
 │   ├── Models
 │   │   ├── AppInfo.swift
 │   │   ├── Calendar.swift
@@ -129,11 +275,64 @@ applyTo: "**"
 │       ├── ModelContainerProvider.swift
 │       ├── Supabase.swift
 │       └── ValidationHelper.swift
+├── supabase
+│   ├── config.toml
+│   ├── functions
+│   │   ├── invite_supervisor
+│   │   │   ├── deno.json
+│   │   │   ├── deno.lock
+│   │   │   └── index.ts
+│   │   └── publishBugToNotionTickets
+│   │       ├── deno.json
+│   │       └── index.ts
+│   ├── migrations
+│   │   ├── 20250902224853_init.sql
+│   │   ├── 20250903221741_add_rls.sql
+│   │   ├── 20250903221928_add_policies.sql
+│   │   ├── 20250903222153_user_id_to_test_user_id.sql
+│   │   ├── 20250903222613_test_user_table_changes.sql
+│   │   ├── 20250904173029_user_id_col_for_supervisors.sql
+│   │   ├── 20250904173722_better_intergation_with_auth_uid.sql
+│   │   ├── 20250904174106_journals_for_your_own_id_only.sql
+│   │   ├── 20250904174538_apps_table.sql
+│   │   ├── 20250923195343_apps_table.sql
+│   │   ├── 20250923200855_rm_experiences_table.sql
+│   │   ├── 20250923200922_add_pgvector.sql
+│   │   ├── 20250923201429_add_app_logs_table_and_rls.sql
+│   │   ├── 20250923215438_function_automatic_supervisor_creation.sql
+│   │   ├── 20250924102830_change_journal_rls.sql
+│   │   ├── 20250924103355_return_of_app_name_for_convenience.sql
+│   │   ├── 20250924120000_fix_supervisor_trigger.sql
+│   │   ├── 20250924120001_add_email_column_to_supervisors.sql
+│   │   ├── 20250924120002_fix_supervisor_trigger_with_logging.sql
+│   │   ├── 20250928202215_add timestamptz col to journals.sql
+│   │   ├── 20251024133238_add_feedback_table.sql
+│   │   ├── 20251024134448_add_implemented_bool_to_feedback_table.sql
+│   │   ├── 20251024140110_fix_rls_for_inserting_feedback_as_anon.sql
+│   │   ├── 20251024141330_fix_rls_updateable.sql
+│   │   ├── 20251029112446_add_watch_id.sql
+│   │   ├── 20251029124805_remote_schema.sql
+│   │   └── 20251029124945_rm_app_id_ref.sql
+│   ├── schema.sql
+│   └── seed.sql
 ├── version-complication
 │   ├── AppIntent.swift
-│   └── widget.swift
+│   ├── Assets.xcassets
+│   │   ├── AccentColor.colorset
+│   │   │   └── Contents.json
+│   │   ├── AppIcon.appiconset
+│   │   │   └── Contents.json
+│   │   ├── Contents.json
+│   │   └── WidgetBackground.colorset
+│   │       └── Contents.json
+│   ├── Info.plist
+│   ├── widget.swift
+│   └── widgetExtension.entitlements
 └── watch-notification
+    ├── Info.plist
     └── NotificationService.swift
+
+92 directories, 230 files
 ```
 
 - Never write any code comments, nor ever be verbose unless asked.

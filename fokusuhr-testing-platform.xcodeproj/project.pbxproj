@@ -26,6 +26,8 @@
 		0E437A892E981ABC000B2941 /* StatKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0E437A882E981ABC000B2941 /* StatKit */; };
 		0E437AA32E981D24000B2941 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 0E437AA22E981D24000B2941 /* KeychainAccess */; };
 		0E9D8CD02E0D6C24002B7989 /* fokusuhr-testing-platform Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0E9D8CCF2E0D6C24002B7989 /* fokusuhr-testing-platform Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0EE769C02EBA915900B8A22C /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0EE769BF2EBA915900B8A22C /* Localizable.xcstrings */; };
+		0EE769E32EBA915900B8A22C /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0EE769BF2EBA915900B8A22C /* Localizable.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,6 +90,7 @@
 		0E43799D2E9804D3000B2941 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		0E9D8CBF2E0D6C23002B7989 /* fokusuhr-testing-platform.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fokusuhr-testing-platform.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E9D8CCF2E0D6C24002B7989 /* fokusuhr-testing-platform Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fokusuhr-testing-platform Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0EE769BF2EBA915900B8A22C /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -221,6 +224,7 @@
 				0E43799F2E9804D3000B2941 /* version-complication */,
 				0E43799A2E9804D2000B2941 /* Frameworks */,
 				0E9D8CC02E0D6C23002B7989 /* Products */,
+				0EE769BF2EBA915900B8A22C /* Localizable.xcstrings */,
 			);
 			sourceTree = "<group>";
 		};
@@ -418,6 +422,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0EE769C02EBA915900B8A22C /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,6 +430,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0EE769E32EBA915900B8A22C /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

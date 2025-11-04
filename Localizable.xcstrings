@@ -486,7 +486,6 @@
       }
     },
     "App Index: %lld" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -646,22 +645,6 @@
         }
       }
     },
-    "Beruhigende Atemübungen" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Beruhigende Atemübungen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Calming breathing exercises"
-          }
-        }
-      }
-    },
     "Bild Ersetzen" : {
       "localizations" : {
         "de" : {
@@ -690,6 +673,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Images"
+          }
+        }
+      }
+    },
+    "Calendar" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kalender"
+          }
+        }
+      }
+    },
+    "Calming breathing exercises" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beruhigende Atemübungen"
           }
         }
       }
@@ -754,6 +757,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Checklists"
+          }
+        }
+      }
+    },
+    "Color Breathing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbatmung"
           }
         }
       }
@@ -967,7 +980,14 @@
       }
     },
     "Device Information" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geräteinformationen"
+          }
+        }
+      }
     },
     "Done" : {
       "localizations" : {
@@ -1273,22 +1293,6 @@
         }
       }
     },
-    "Farbatmung" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Farbatmung"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Color Breathing"
-          }
-        }
-      }
-    },
     "Feedback" : {
       "localizations" : {
         "de" : {
@@ -1369,18 +1373,12 @@
         }
       }
     },
-    "Fidget" : {
+    "Fidget Toy" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fidget"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fidget"
+            "value" : "Fidget Toy"
           }
         }
       }
@@ -1401,6 +1399,26 @@
         }
       }
     },
+    "Focus aid for writing." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fokushilfe beim Schreiben"
+          }
+        }
+      }
+    },
+    "Fokus Meter" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fokusmeter"
+          }
+        }
+      }
+    },
     "Fokus überspringen" : {
       "localizations" : {
         "de" : {
@@ -1413,22 +1431,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Skip focus"
-          }
-        }
-      }
-    },
-    "Fokushilfe beim Schreiben." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fokushilfe beim Schreiben."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Focus aid for writing."
           }
         }
       }
@@ -1577,6 +1579,16 @@
         }
       }
     },
+    "Hello, World!" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hallo, Welt!"
+          }
+        }
+      }
+    },
     "Heute" : {
       "localizations" : {
         "de" : {
@@ -1605,6 +1617,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "History"
+          }
+        }
+      }
+    },
+    "How do you feel right now?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wie fühlst du dich gerade?"
           }
         }
       }
@@ -1657,6 +1679,16 @@
         }
       }
     },
+    "Interactive vibration toy" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vibrationsspielzeug"
+          }
+        }
+      }
+    },
     "Interaktive Checkliste" : {
       "localizations" : {
         "de" : {
@@ -1669,22 +1701,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Interactive checklist"
-          }
-        }
-      }
-    },
-    "Interaktives Vibrationsspielzeug" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Interaktives Vibrationsspielzeug"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Interactive vibration toy"
           }
         }
       }
@@ -1845,6 +1861,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Launches app"
+          }
+        }
+      }
+    },
+    "Level" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level"
           }
         }
       }
@@ -2521,18 +2547,12 @@
         }
       }
     },
-    "Routineaufgaben und Termine" : {
+    "Routine tasks and appointments" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Routineaufgaben und Termine"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Routine tasks and appointments"
+            "value" : "Routinen und Termine"
           }
         }
       }
@@ -2601,22 +2621,6 @@
         }
       }
     },
-    "Schreiben" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schreiben"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Writing"
-          }
-        }
-      }
-    },
     "Search entries..." : {
       "localizations" : {
         "de" : {
@@ -2661,6 +2665,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Search users"
+          }
+        }
+      }
+    },
+    "See your focus points" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sehe deine Fokuspunkte"
           }
         }
       }
@@ -2889,22 +2903,6 @@
         }
       }
     },
-    "Tachometer" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tachometer"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Speedometer"
-          }
-        }
-      }
-    },
     "Teile dein Feedback..." : {
       "localizations" : {
         "de" : {
@@ -3049,18 +3047,12 @@
         }
       }
     },
-    "Timer zur Zeiteinteilung" : {
+    "Timer for time management" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Timer zur Zeiteinteilung"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Timer for time management"
+            "value" : "Timer fürs Zeitmanagement"
           }
         }
       }
@@ -3210,7 +3202,14 @@
       }
     },
     "Watch ID:" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uhr ID:"
+          }
+        }
+      }
     },
     "Watch Status" : {
       "localizations" : {
@@ -3272,22 +3271,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "When"
-          }
-        }
-      }
-    },
-    "Wie fühlst du dich gerade?" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wie fühlst du dich gerade?"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "How are you feeling right now?"
           }
         }
       }
@@ -3368,6 +3351,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Week"
+          }
+        }
+      }
+    },
+    "Writing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schreiben"
           }
         }
       }
