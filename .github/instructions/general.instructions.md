@@ -335,4 +335,4 @@ applyTo: "**"
 92 directories, 230 files
 ```
 
-- Never write any code comments, nor ever be verbose unless asked.
+- Never write any code comments OR SUMMARIES, nor ever be verbose unless asked.

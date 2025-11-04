@@ -8,7 +8,10 @@ class ModelContainerProvider {
 
   private init() {
     let schema = Schema([
-      Event.self
+      Event.self,
+      LevelProgress.self,
+      ActivityStats.self,
+      LevelReward.self,
     ])
 
     let configuration = ModelConfiguration(

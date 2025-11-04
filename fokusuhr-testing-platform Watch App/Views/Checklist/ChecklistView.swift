@@ -32,7 +32,6 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
 
   private let progressManager = ChecklistProgressManager.shared
 
-
   var body: some View {
     switch state {
     case .description:
@@ -77,6 +76,7 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
         totalItems: items.count,
         onComplete: {
           progressManager.clearProgress(for: checklistId)
+          LevelService.shared.awardXP(for: .checklistCompleted)
           state = .completed
         }
       )
@@ -92,9 +92,6 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
     }
   }
 
-
-    
- 
   private func checkForExistingProgress() {
     if let progress = progressManager.loadProgress(for: checklistId) {
       let collectedIds = Set(progress.collectedItemIds)
