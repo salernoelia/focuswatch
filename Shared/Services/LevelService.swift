@@ -97,7 +97,7 @@ class LevelService: ObservableObject {
   #if os(watchOS)
     private func notifyiOSOfLevelChange() {
       Task {
-        await WatchConnector().syncLevelToiOS()
+        WatchConnector().syncLevelToiOS()
       }
     }
   #endif

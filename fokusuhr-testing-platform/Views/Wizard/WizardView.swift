@@ -4,7 +4,8 @@ import WatchConnectivity
 struct WizardView: View {
   @EnvironmentObject private var watchConnector: WatchConnector
   @StateObject private var checklistManager = ChecklistViewModel(
-    watchConnector: WatchConnector.shared)
+    watchConnector: WatchConnector.shared
+  )
   @StateObject private var testUsersManager = TestUsersManager.shared
   @StateObject private var supervisorManager = SupervisorManager.shared
   @StateObject private var authManager = AuthManager.shared
@@ -67,7 +68,8 @@ struct WizardView: View {
       case .notPaired:
         return "Please pair an Apple Watch with this iPhone"
       case .appNotInstalled:
-        return "Please install the Watch App from the Watch app on your iPhone"
+        return
+          "Please install the Watch App from the Watch app on your iPhone"
       case .notReachable:
         return "Open the Watch App to control it directly"
       case .connected:
@@ -198,10 +200,21 @@ struct WizardView: View {
         reconnectToWatch()
       }
       .navigationTitle("Wizard")
+      .toolbar {
+        ToolbarItem(placement: .navigationBarTrailing) {
+          HStack {
+            Text("Watch ID:")
+            Text(String(WatchConfig.shared.uuid.prefix(8)))
+              .font(.system(.body, design: .monospaced))
+              .foregroundColor(.secondary)
+          }
+        }
+      }
 
       .onAppear {
         checklistManager.watchConnector = watchConnector
-        watchConnector.checklistData = ChecklistViewModel.loadSharedData()
+        watchConnector.checklistData =
+          ChecklistViewModel.loadSharedData()
         tryInitialWatchConnect()
       }
 
