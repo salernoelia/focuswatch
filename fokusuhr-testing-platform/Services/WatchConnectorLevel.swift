@@ -5,59 +5,101 @@ extension WatchConnector {
   func syncLevelToWatch() {
     guard WCSession.default.activationState == .activated else {
       #if DEBUG
-        print("Session not activated, skipping level sync")
+        print("⚠️ iOS: Session not activated, will retry in 1 second")
       #endif
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+        self?.syncLevelToWatch()
+      }
       return
     }
 
     guard !isSyncing else {
       #if DEBUG
-        print("Sync already in progress, skipping level sync")
+        print("⚠️ iOS: Sync already in progress")
       #endif
       return
     }
 
-    do {
-      let levelData = loadLevelData()
-      let data = try JSONEncoder().encode(levelData)
+    isSyncing = true
 
-      let message: [String: Any] = [
-        "action": "updateLevel",
-        "data": data.base64EncodedString(),
-        "timestamp": Date().timeIntervalSince1970,
-      ]
+    DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+      guard let self = self else { return }
 
-      #if DEBUG
-        print(
-          "Syncing level data to watch: Level \(levelData.currentLevel), \(levelData.milestones.count) milestones"
-        )
-      #endif
+      do {
+        let levelData = self.loadLevelData()
+        let data = try JSONEncoder().encode(levelData)
 
-      if WCSession.default.isReachable {
-        WCSession.default.sendMessage(
-          message,
-          replyHandler: { response in
+        let message: [String: Any] = [
+          "action": "updateLevel",
+          "data": data.base64EncodedString(),
+          "timestamp": Date().timeIntervalSince1970,
+        ]
+
+        #if DEBUG
+          DispatchQueue.main.async {
+            print(
+              "📱 iOS: Syncing level to Watch: Level \(levelData.currentLevel), \(levelData.milestones.count) milestones"
+            )
+          }
+        #endif
+
+        // 1. Application Context (persists across restarts)
+        do {
+          try WCSession.default.updateApplicationContext(message)
+          #if DEBUG
+            DispatchQueue.main.async {
+              print("✅ iOS: Level synced via application context")
+            }
+          #endif
+        } catch {
+          #if DEBUG
+            DispatchQueue.main.async {
+              print("⚠️ iOS: Application context failed: \(error.localizedDescription)")
+            }
+          #endif
+        }
+
+        // 2. Immediate message if reachable
+        if WCSession.default.isReachable {
+          WCSession.default.sendMessage(
+            message,
+            replyHandler: { response in
+              #if DEBUG
+                DispatchQueue.main.async {
+                  print("✅ iOS: Level sync immediate message delivered")
+                }
+              #endif
+            }
+          ) { error in
             #if DEBUG
-              print("Level sync successful: \(response)")
+              DispatchQueue.main.async {
+                print("⚠️ iOS: Immediate message failed: \(error.localizedDescription)")
+              }
             #endif
           }
-        ) { error in
-          #if DEBUG
-            print("Level sync failed, using background transfer: \(error.localizedDescription)")
-          #endif
-          self.fallbackLevelSync(message)
         }
-      } else {
-        fallbackLevelSync(message)
-      }
 
-      try WCSession.default.updateApplicationContext(message)
-    } catch {
-      let appError = AppError.encodingFailed(type: "level data", underlying: error)
-      #if DEBUG
-        ErrorLogger.log(appError)
-      #endif
-      lastError = appError
+        // 3. Background transfer as backup
+        WCSession.default.transferUserInfo(message)
+        #if DEBUG
+          DispatchQueue.main.async {
+            print("✅ iOS: Level queued for background transfer")
+          }
+        #endif
+
+        DispatchQueue.main.async {
+          self.isSyncing = false
+        }
+      } catch {
+        DispatchQueue.main.async {
+          self.isSyncing = false
+          let appError = AppError.encodingFailed(type: "level data", underlying: error)
+          #if DEBUG
+            ErrorLogger.log(appError)
+          #endif
+          self.lastError = appError
+        }
+      }
     }
   }
 
@@ -82,7 +124,10 @@ extension WatchConnector {
     do {
       let data = try JSONEncoder().encode(levelData)
       UserDefaults.standard.set(data, forKey: "levelData")
-      syncLevelToWatch()
+
+      #if DEBUG
+        print("💾 iOS: Saved level data to UserDefaults - triggering immediate sync")
+      #endif
     } catch {
       let appError = AppError.encodingFailed(type: "level data", underlying: error)
       #if DEBUG

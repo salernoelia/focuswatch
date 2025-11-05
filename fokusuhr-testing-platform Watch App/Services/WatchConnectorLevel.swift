@@ -14,6 +14,10 @@ extension WatchConnector {
 
       saveLevelMilestones(levelData.milestones)
 
+      #if DEBUG
+        ErrorLogger.log("📢 Watch: Posting LevelMilestonesUpdated notification")
+      #endif
+
       NotificationCenter.default.post(
         name: NSNotification.Name("LevelMilestonesUpdated"), object: nil)
 
@@ -28,6 +32,9 @@ extension WatchConnector {
     do {
       let data = try JSONEncoder().encode(milestones)
       UserDefaults.standard.set(data, forKey: "levelMilestones")
+      #if DEBUG
+        ErrorLogger.log("💾 Watch: Saved \(milestones.count) milestones to UserDefaults")
+      #endif
     } catch {
       #if DEBUG
         ErrorLogger.log(AppError.encodingFailed(type: "level milestones", underlying: error))
@@ -52,7 +59,12 @@ extension WatchConnector {
 
   func syncLevelToiOS() {
     Task { @MainActor in
-      guard let progress = LevelService.shared.currentProgress else { return }
+      guard let progress = LevelService.shared.currentProgress else {
+        #if DEBUG
+          ErrorLogger.log("⚠️ Watch: No progress to sync")
+        #endif
+        return
+      }
 
       let levelData = LevelData(
         currentLevel: progress.currentLevel,
@@ -70,19 +82,91 @@ extension WatchConnector {
           "timestamp": Date().timeIntervalSince1970,
         ]
 
-        if WCSession.default.activationState == .activated {
-          if WCSession.default.isReachable {
-            WCSession.default.sendMessage(message, replyHandler: nil) { error in
+        #if DEBUG
+          ErrorLogger.log(
+            "⌚ Watch: Syncing level to iOS: Level \(levelData.currentLevel), XP: \(levelData.currentXP)"
+          )
+        #endif
+
+        guard WCSession.default.activationState == .activated else {
+          #if DEBUG
+            ErrorLogger.log("⚠️ Watch: Session not activated")
+          #endif
+          return
+        }
+
+        // Triple-redundant sync approach
+
+        // 1. Application context (persists)
+        do {
+          try WCSession.default.updateApplicationContext(message)
+          #if DEBUG
+            ErrorLogger.log("✅ Watch: Level synced via application context")
+          #endif
+        } catch {
+          #if DEBUG
+            ErrorLogger.log("⚠️ Watch: Application context failed: \(error.localizedDescription)")
+          #endif
+        }
+
+        // 2. Immediate message if reachable
+        if WCSession.default.isReachable {
+          WCSession.default.sendMessage(
+            message,
+            replyHandler: { response in
               #if DEBUG
-                ErrorLogger.log(AppError.watchMessageFailed(underlying: error))
+                ErrorLogger.log("✅ Watch: Level sync immediate message delivered")
               #endif
             }
+          ) { error in
+            #if DEBUG
+              ErrorLogger.log("⚠️ Watch: Immediate message failed: \(error.localizedDescription)")
+            #endif
           }
-          try? WCSession.default.updateApplicationContext(message)
         }
+
+        // 3. Background transfer
+        WCSession.default.transferUserInfo(message)
+        #if DEBUG
+          ErrorLogger.log("✅ Watch: Level queued for background transfer")
+        #endif
+
       } catch {
         #if DEBUG
           ErrorLogger.log(AppError.encodingFailed(type: "level data", underlying: error))
+        #endif
+      }
+    }
+  }
+
+  func requestLevelDataFromiOS() {
+    guard WCSession.default.activationState == .activated else {
+      #if DEBUG
+        ErrorLogger.log("⚠️ Watch: Session not activated, cannot request level data")
+      #endif
+      return
+    }
+
+    let message: [String: Any] = [
+      "action": "requestLevelData",
+      "timestamp": Date().timeIntervalSince1970,
+    ]
+
+    #if DEBUG
+      ErrorLogger.log("⌚ Watch: Requesting level data from iOS")
+    #endif
+
+    if WCSession.default.isReachable {
+      WCSession.default.sendMessage(
+        message,
+        replyHandler: { response in
+          #if DEBUG
+            ErrorLogger.log("✅ Watch: Level data request sent")
+          #endif
+        }
+      ) { error in
+        #if DEBUG
+          ErrorLogger.log("⚠️ Watch: Level data request failed: \(error.localizedDescription)")
         #endif
       }
     }

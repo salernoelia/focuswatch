@@ -61,6 +61,7 @@ struct MilestoneDetailView: View {
   @State private var title: String
   @State private var description: String
   @State private var isEnabled: Bool
+  @State private var saveTask: Task<Void, Never>?
 
   init(milestone: LevelMilestone, viewModel: LevelViewModel) {
     self.milestone = milestone
@@ -75,28 +76,51 @@ struct MilestoneDetailView: View {
     Form {
       Section {
         Stepper("Level \(levelRequired)", value: $levelRequired, in: 1...100)
-          .onChange(of: levelRequired) { _, _ in saveChanges() }
+          .onChange(of: levelRequired) { _, _ in
+            debouncedSave()
+          }
       }
 
       Section {
         TextField("Title", text: $title)
-          .onChange(of: title) { _, _ in saveChanges() }
+          .onChange(of: title) { _, _ in
+            debouncedSave()
+          }
 
         TextField("Description", text: $description, axis: .vertical)
           .lineLimit(2...4)
-          .onChange(of: description) { _, _ in saveChanges() }
+          .onChange(of: description) { _, _ in
+            debouncedSave()
+          }
       }
 
       Section {
         Toggle("Enabled", isOn: $isEnabled)
-          .onChange(of: isEnabled) { _, _ in saveChanges() }
+          .onChange(of: isEnabled) { _, _ in
+            saveChanges()
+          }
       }
     }
     .navigationTitle("Milestone")
     .navigationBarTitleDisplayMode(.inline)
   }
 
+  private func debouncedSave() {
+    saveTask?.cancel()
+    saveTask = Task {
+      try? await Task.sleep(nanoseconds: 300_000_000)
+      if !Task.isCancelled {
+        await MainActor.run {
+          saveChanges()
+        }
+      }
+    }
+  }
+
   private func saveChanges() {
+    #if DEBUG
+      print("💾 Saving milestone changes: \(title)")
+    #endif
     let updated = LevelMilestone(
       id: milestone.id,
       levelRequired: levelRequired,

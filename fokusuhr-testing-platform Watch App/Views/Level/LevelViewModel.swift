@@ -28,7 +28,11 @@ class LevelViewModel: ObservableObject {
       .store(in: &cancellables)
 
     NotificationCenter.default.publisher(for: NSNotification.Name("LevelMilestonesUpdated"))
+      .receive(on: DispatchQueue.main)
       .sink { [weak self] _ in
+        #if DEBUG
+          ErrorLogger.log("🔔 Watch ViewModel: Received LevelMilestonesUpdated notification")
+        #endif
         self?.updateMilestones()
       }
       .store(in: &cancellables)
@@ -52,12 +56,18 @@ class LevelViewModel: ObservableObject {
     let allMilestones = loadLevelMilestones()
       .sorted { $0.levelRequired < $1.levelRequired }
 
+    #if DEBUG
+      ErrorLogger.log("🔄 Watch: Updating milestones - loaded \(allMilestones.count) milestones")
+    #endif
+
     milestones = allMilestones
 
     nextMilestone =
       allMilestones
       .filter { $0.isEnabled && $0.levelRequired > currentLevel }
       .first
+
+    objectWillChange.send()
   }
 
   private func loadLevelMilestones() -> [LevelMilestone] {
@@ -84,12 +94,15 @@ class LevelViewModel: ObservableObject {
   }
 
   func syncFromiOS() async {
-    let connector = WatchConnector()
-    let milestones = connector.loadLevelMilestones()
-    if !milestones.isEmpty {
-      await MainActor.run {
-        updateMilestones()
-      }
+    #if DEBUG
+      ErrorLogger.log("⌚ Watch: Requesting level data from iOS")
+    #endif
+    WatchConnector.shared.requestLevelDataFromiOS()
+
+    try? await Task.sleep(nanoseconds: 500_000_000)
+
+    await MainActor.run {
+      updateMilestones()
     }
   }
 }

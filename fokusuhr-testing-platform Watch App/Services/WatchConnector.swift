@@ -2,6 +2,8 @@ import Foundation
 import WatchConnectivity
 
 class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
+  static let shared = WatchConnector()
+
   @Published var currentView: WatchViewState = .mainMenu
 
   private var authManager = AuthManager.shared
@@ -11,7 +13,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
   private var connectionMonitorTimer: Timer?
   private var isMonitoringConnection = false
 
-  override init() {
+  private override init() {
     super.init()
     checklistManager.loadChecklistData()
     setupWatchConnectivity()
@@ -391,6 +393,15 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
               ErrorLogger.log("Telemetry consent updated via background transfer: \(hasConsent)")
             #endif
           }
+        case "updateLevel":
+          if let dataString = applicationContext["data"] as? String,
+            let data = Data(base64Encoded: dataString)
+          {
+            self.handleLevelUpdate(data: data)
+            #if DEBUG
+              print("✅ Watch: Level updated from background context")
+            #endif
+          }
         default:
           #if DEBUG
             ErrorLogger.log("Unknown action in application context: \(action)")
@@ -433,6 +444,15 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
             TelemetryManager.shared.hasConsent = hasConsent
             #if DEBUG
               ErrorLogger.log("Telemetry consent updated via background transfer: \(hasConsent)")
+            #endif
+          }
+        case "updateLevel":
+          if let dataString = userInfo["data"] as? String,
+            let data = Data(base64Encoded: dataString)
+          {
+            self.handleLevelUpdate(data: data)
+            #if DEBUG
+              ErrorLogger.log("✅ Level updated via background transfer (userInfo)")
             #endif
           }
         default:

@@ -92,7 +92,7 @@ struct LevelView: View {
     }
     .padding(12)
     .background(isUnlocked ? Color.blue.opacity(0.15) : Color(.darkGray).opacity(0.3))
-    .clipShape(RoundedRectangle(cornerRadius: 12))
+    .clipShape(RoundedRectangle(cornerRadius: 12)) 
     .padding(.horizontal, AppConstants.UI.horizontalPadding)
     .opacity(milestone.isEnabled ? 1.0 : 0.4)
   }

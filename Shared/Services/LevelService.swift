@@ -95,9 +95,8 @@ class LevelService: ObservableObject {
 
   #if os(watchOS)
     private func notifyiOSOfLevelChange() {
-      Task {
-        WatchConnector().syncLevelToiOS()
-      }
+      // Immediate sync on every change
+      WatchConnector.shared.syncLevelToiOS()
     }
   #endif
 
@@ -116,24 +115,25 @@ class LevelService: ObservableObject {
     #if DEBUG
       ErrorLogger.log("🎉 Level Up! Now Level \(newLevel)")
       if !unlockedMilestones.isEmpty {
-        ErrorLogger.log("🏆 Milestones unlocked: \(unlockedMilestones.map { $0.title }.joined(separator: ", "))")
+        ErrorLogger.log(
+          "🏆 Milestones unlocked: \(unlockedMilestones.map { $0.title }.joined(separator: ", "))")
       }
     #endif
   }
 
   private func checkUnlockedMilestones(at level: Int) -> [LevelMilestone] {
     #if os(watchOS)
-      let milestones = WatchConnector().loadLevelMilestones()
+      let milestones = WatchConnector.shared.loadLevelMilestones()
     #else
       let milestones = WatchConnector.shared.loadLevelData().milestones
     #endif
-    
+
     return milestones.filter { $0.isEnabled && $0.levelRequired == level }
   }
 
   private func sendLevelUpNotification(level: Int, milestones: [LevelMilestone]) {
     let content = UNMutableNotificationContent()
-    
+
     if !milestones.isEmpty {
       // Milestone notification
       if milestones.count == 1 {
@@ -149,7 +149,7 @@ class LevelService: ObservableObject {
       content.title = String(localized: "Level \(level) erreicht!")
       content.body = String(localized: "Du hast ein neues Level freigeschaltet!")
     }
-    
+
     content.sound = .default
     content.categoryIdentifier = milestones.isEmpty ? "LEVEL_UP" : "MILESTONE"
 

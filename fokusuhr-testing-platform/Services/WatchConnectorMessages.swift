@@ -55,11 +55,32 @@ extension WatchConnector {
             existingData.currentXP = levelData.currentXP
             existingData.totalXP = levelData.totalXP
             existingData.lastUpdated = levelData.lastUpdated
-            self.saveLevelData(existingData)
-            #if DEBUG
-              print("📱 iOS: Updated level from Watch: Level \(levelData.currentLevel)")
-            #endif
+
+            do {
+              let updatedData = try JSONEncoder().encode(existingData)
+              UserDefaults.standard.set(updatedData, forKey: "levelData")
+
+              NotificationCenter.default.post(
+                name: NSNotification.Name("LevelDataUpdated"),
+                object: nil,
+                userInfo: ["levelData": existingData]
+              )
+
+              #if DEBUG
+                print("📱 iOS: Updated level from Watch: Level \(levelData.currentLevel)")
+                print("📱 iOS: Posted LevelDataUpdated notification")
+              #endif
+            } catch {
+              #if DEBUG
+                print("📱 iOS: Failed to encode updated level data: \(error)")
+              #endif
+            }
           }
+        case "requestLevelData":
+          #if DEBUG
+            print("📱 iOS: Watch requested level data, sending...")
+          #endif
+          self.syncLevelToWatch()
         default:
           #if DEBUG
             print("📱 iOS: Unknown action: \(action)")

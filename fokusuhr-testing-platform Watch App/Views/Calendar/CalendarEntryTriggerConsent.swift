@@ -66,6 +66,6 @@ struct CalendarEntryTriggerConsent: View {
       reminders: []
     ),
     reminder: Reminder(minutesBefore: 10),
-    watchConnector: WatchConnector()
+    watchConnector: WatchConnector.shared
   )
 }

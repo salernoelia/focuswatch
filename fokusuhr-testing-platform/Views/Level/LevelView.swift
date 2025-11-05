@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 struct LevelView: View {
@@ -19,7 +20,7 @@ struct LevelView: View {
           Button {
             showingAddMilestone = true
           } label: {
-            Image(systemName: "plus")
+            Text("Add Milestone")
           }
         }
       }
@@ -130,9 +131,25 @@ class LevelViewModel: ObservableObject {
   @Published var levelData: LevelData
 
   private let watchConnector = WatchConnector.shared
+  private var cancellables = Set<AnyCancellable>()
 
   init() {
     self.levelData = watchConnector.loadLevelData()
+    setupObservers()
+  }
+
+  private func setupObservers() {
+    NotificationCenter.default.publisher(for: NSNotification.Name("LevelDataUpdated"))
+      .sink { [weak self] notification in
+        if let updatedData = notification.userInfo?["levelData"] as? LevelData {
+          self?.levelData = updatedData
+          self?.objectWillChange.send()
+        } else {
+          self?.levelData = self?.watchConnector.loadLevelData() ?? LevelData.default
+          self?.objectWillChange.send()
+        }
+      }
+      .store(in: &cancellables)
   }
 
   var sortedMilestones: [LevelMilestone] {
@@ -172,12 +189,18 @@ class LevelViewModel: ObservableObject {
   }
 
   private func save() {
+    #if DEBUG
+      print("💾 iOS: LevelViewModel saving changes")
+    #endif
     watchConnector.saveLevelData(levelData)
     watchConnector.syncLevelToWatch()
     objectWillChange.send()
   }
 
   func refresh() async {
+    #if DEBUG
+      print("🔄 iOS: LevelViewModel refreshing")
+    #endif
     levelData = watchConnector.loadLevelData()
     watchConnector.syncLevelToWatch()
     objectWillChange.send()

@@ -162,5 +162,5 @@ struct WatchView: View {
 
 #Preview {
   WatchView()
-    .environmentObject(WatchConnector())
+    .environmentObject(WatchConnector.shared)
 }

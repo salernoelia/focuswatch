@@ -3,7 +3,7 @@ import UserNotifications
 
 @main
 struct WatchApp: App {
-  @StateObject private var watchConnector = WatchConnector()
+  @StateObject private var watchConnector = WatchConnector.shared
   @StateObject private var writingExerciseManager = WritingExerciseManager()
   @StateObject private var calendarManager = CalendarViewModel.shared
   @Environment(\.scenePhase) private var scenePhase
