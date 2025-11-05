@@ -29,6 +29,7 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
   @State private var currentIndex = 0
   @State private var state: ChecklistState = .description
   @State private var hasExistingProgress = false
+  @State private var isViewActive = true
 
   private let progressManager = ChecklistProgressManager.shared
 
@@ -81,8 +82,14 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
         }
       )
       .transition(.opacity)
+      .onAppear {
+        isViewActive = true
+      }
       .onDisappear {
-        if state == .checklist {
+        guard isViewActive else { return }
+        isViewActive = false
+
+        if state == .checklist && !remainingItems.isEmpty {
           saveProgress()
         }
       }
@@ -93,6 +100,8 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
   }
 
   private func checkForExistingProgress() {
+    guard !items.isEmpty else { return }
+
     if let progress = progressManager.loadProgress(for: checklistId) {
       let collectedIds = Set(progress.collectedItemIds)
       let remaining = items.filter { !collectedIds.contains($0.id) }
@@ -100,20 +109,28 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
       if !remaining.isEmpty && !collectedIds.isEmpty {
         collectedItems = items.filter { collectedIds.contains($0.id) }
         remainingItems = remaining
-        currentIndex = min(progress.currentIndex, max(0, remainingItems.count - 1))
+        let validIndex = min(progress.currentIndex, remainingItems.count - 1)
+        currentIndex = max(0, validIndex)
         state = .resumePrompt
       }
     }
   }
 
   private func checkAndLoadProgress() {
+    guard !items.isEmpty else {
+      state = .checklist
+      return
+    }
+
     if let progress = progressManager.loadProgress(for: checklistId) {
       let collectedIds = Set(progress.collectedItemIds)
       collectedItems = items.filter { collectedIds.contains($0.id) }
       remainingItems = items.filter { !collectedIds.contains($0.id) }
-      currentIndex = min(progress.currentIndex, max(0, remainingItems.count - 1))
 
-      if remainingItems.isEmpty {
+      if !remainingItems.isEmpty {
+        currentIndex = min(progress.currentIndex, remainingItems.count - 1)
+        currentIndex = max(0, currentIndex)
+      } else {
         remainingItems = items
         collectedItems = []
         currentIndex = 0
@@ -127,6 +144,14 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
   }
 
   private func saveProgress() {
+    guard !collectedItems.isEmpty || currentIndex > 0 else {
+      return
+    }
+
+    guard currentIndex >= 0 && currentIndex < max(1, remainingItems.count) else {
+      return
+    }
+
     let collectedIds = collectedItems.map { $0.id }
     progressManager.saveProgress(
       for: checklistId,

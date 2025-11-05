@@ -24,7 +24,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "F965E26F-419F-4C1B-AB1F-7BB757C4F66E"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "fokusuhr-testing-platform Watch App/Views/Checklist/ChecklistView.swift"
