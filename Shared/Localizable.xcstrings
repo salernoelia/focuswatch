@@ -292,25 +292,15 @@
         }
       }
     },
-    "Add Checklist" : {
-      "extractionState" : "stale",
+    "Add Entry" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Checkliste hinzufügen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add Checklist"
+            "value" : "Eintrag Hinzufügen"
           }
         }
       }
-    },
-    "Add Entry" : {
-
     },
     "Add Item" : {
       "localizations" : {
@@ -329,7 +319,14 @@
       }
     },
     "Add Milestone" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meilenstein Hinzufügen"
+          }
+        }
+      }
     },
     "Add new Test User" : {
       "localizations" : {
@@ -412,7 +409,14 @@
       }
     },
     "Add XP" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "XP Hinzufügen"
+          }
+        }
+      }
     },
     "Age" : {
       "localizations" : {
@@ -703,7 +707,15 @@
       }
     },
     "bis Level %lld" : {
-
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "until Level %lld"
+          }
+        }
+      }
     },
     "Calendar" : {
       "localizations" : {
@@ -848,10 +860,24 @@
       }
     },
     "Current Level" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetziges Level"
+          }
+        }
+      }
     },
     "Current Progress" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bisheriger Fortschritt"
+          }
+        }
+      }
     },
     "Current user" : {
       "localizations" : {
@@ -870,7 +896,14 @@
       }
     },
     "Current XP" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzige XP"
+          }
+        }
+      }
     },
     "Current: %@" : {
       "localizations" : {
@@ -1046,7 +1079,14 @@
       }
     },
     "Early Bird" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Early Bird"
+          }
+        }
+      }
     },
     "Edit" : {
       "localizations" : {
@@ -1076,23 +1116,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Edit Checklist"
-          }
-        }
-      }
-    },
-    "Edit Checklists" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Checklisten bearbeiten"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Edit Checklists"
           }
         }
       }
@@ -1226,7 +1249,14 @@
       }
     },
     "Enabled" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eingeschaltet"
+          }
+        }
+      }
     },
     "End" : {
       "localizations" : {
@@ -1457,16 +1487,44 @@
       }
     },
     "Focus Champion" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fokuschampion"
+          }
+        }
+      }
     },
     "Focus Legend" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fokuslegende"
+          }
+        }
+      }
     },
     "Focus Master" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fokusmeister"
+          }
+        }
+      }
     },
     "Focus Trainee" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fokuslehrling"
+          }
+        }
+      }
     },
     "Fokus Meter" : {
       "localizations" : {
@@ -1542,23 +1600,6 @@
         }
       }
     },
-    "Galerie" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Galerie"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gallery"
-          }
-        }
-      }
-    },
     "Gender" : {
       "localizations" : {
         "de" : {
@@ -1624,7 +1665,14 @@
       }
     },
     "Hard Working" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hart arbeitend"
+          }
+        }
+      }
     },
     "Häufigkeit" : {
       "localizations" : {
@@ -1638,17 +1686,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Frequency"
-          }
-        }
-      }
-    },
-    "Hello, World!" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hallo, Welt!"
           }
         }
       }
@@ -1940,13 +1977,34 @@
       }
     },
     "Level %lld" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level %lld"
+          }
+        }
+      }
     },
     "Level Debug" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level Debug"
+          }
+        }
+      }
     },
     "Levels" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Levels"
+          }
+        }
+      }
     },
     "Links = Später" : {
       "localizations" : {
@@ -2125,10 +2183,24 @@
       }
     },
     "Milestone" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meilenstein"
+          }
+        }
+      }
     },
     "Milestones" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meilensteine"
+          }
+        }
+      }
     },
     "Negative Feedback is on" : {
       "localizations" : {
@@ -2179,7 +2251,14 @@
       }
     },
     "New Checklist" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neue Checkliste"
+          }
+        }
+      }
     },
     "New Event" : {
       "localizations" : {
@@ -2198,7 +2277,14 @@
       }
     },
     "New Milestone" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neuer Meilenstein"
+          }
+        }
+      }
     },
     "No Entries" : {
       "localizations" : {
@@ -2233,10 +2319,24 @@
       }
     },
     "No milestones configured" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Meilenstein konfiguriert"
+          }
+        }
+      }
     },
     "No milestones yet" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Meilensteine"
+          }
+        }
+      }
     },
     "No Photos" : {
       "localizations" : {
@@ -2415,7 +2515,14 @@
       }
     },
     "Photos" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotos"
+          }
+        }
+      }
     },
     "Please log in to access your journal entries" : {
       "localizations" : {
@@ -2514,7 +2621,14 @@
       }
     },
     "Reached Level 5" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level 5 erreicht"
+          }
+        }
+      }
     },
     "Rechts = Hab ich!" : {
       "localizations" : {
@@ -2629,7 +2743,14 @@
       }
     },
     "Reset Progress" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fortschritt zurücksetzen"
+          }
+        }
+      }
     },
     "Restore" : {
       "localizations" : {
@@ -3190,10 +3311,24 @@
       }
     },
     "Total XP" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Totale XP"
+          }
+        }
+      }
     },
     "Total: %lld XP" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total: %lld XP"
+          }
+        }
+      }
     },
     "Try to Reconnect" : {
       "localizations" : {
@@ -3226,6 +3361,9 @@
           }
         }
       }
+    },
+    "until level %lld" : {
+
     },
     "Upload" : {
       "localizations" : {
@@ -3425,23 +3563,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wizard"
-          }
-        }
-      }
-    },
-    "Wizard of Oz" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wizard of Oz"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wizard of Oz"
           }
         }
       }

@@ -136,7 +136,7 @@ struct LevelView: View {
       Text(viewModel.xpText)
         .font(.headline)
 
-      Text("bis Level \(viewModel.currentLevel + 1)")
+      Text("until level \(viewModel.currentLevel + 1)")
         .font(.caption2)
         .foregroundStyle(.secondary)
     }
