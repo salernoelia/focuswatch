@@ -9,6 +9,11 @@ struct LevelView: View {
       milestonesPage
     }
     .tabViewStyle(.page)
+    .onAppear {
+      Task {
+        await viewModel.syncFromiOS()
+      }
+    }
   }
 
   private var mainPage: some View {
@@ -17,8 +22,6 @@ struct LevelView: View {
         levelHeader
         progressBar
         xpInfo
-
- 
 
         #if DEBUG
           NavigationLink(destination: LevelDebugView()) {
@@ -37,11 +40,12 @@ struct LevelView: View {
 
   private var milestonesPage: some View {
     ScrollView {
-      VStack(spacing: 8) {
+      VStack(spacing: 10) {
         Text("Milestones")
-          .font(.headline)
+          .font(.title3.bold())
           .frame(maxWidth: .infinity, alignment: .leading)
           .padding(.horizontal, AppConstants.UI.horizontalPadding)
+          .padding(.top, 4)
 
         if viewModel.milestones.isEmpty {
           Text("No milestones yet")
@@ -54,7 +58,6 @@ struct LevelView: View {
           }
         }
       }
-      .padding(.top, 8)
     }
   }
 
@@ -62,46 +65,42 @@ struct LevelView: View {
     let isUnlocked = viewModel.currentLevel >= milestone.levelRequired
 
     return VStack(alignment: .leading, spacing: 6) {
-      HStack {
+      HStack(alignment: .top) {
         Text("\(milestone.levelRequired)")
           .font(.title3.bold())
           .foregroundStyle(isUnlocked ? .blue : .secondary)
-          .frame(width: 35)
-
-        VStack(alignment: .leading, spacing: 2) {
-          Text(milestone.title)
-            .font(.footnote.weight(.semibold))
-
-          if !milestone.description.isEmpty {
-            Text(milestone.description)
-              .font(.caption2)
-              .foregroundStyle(.secondary)
-              .lineLimit(2)
-          }
-        }
 
         Spacer()
 
-        if isUnlocked {
-          Image(systemName: "checkmark.circle.fill")
-            .foregroundStyle(.blue)
-            .font(.caption)
-        }
+        Image(systemName: isUnlocked ? "checkmark.circle.fill" : "circle")
+          .foregroundStyle(isUnlocked ? .blue : .secondary)
+          .font(.body)
       }
-      .padding(10)
-      .background(isUnlocked ? Color.blue.opacity(0.1) : Color(.gray))
-      .clipShape(RoundedRectangle(cornerRadius: 10))
+
+      Text(milestone.title)
+        .font(.caption.weight(.semibold))
+        .lineLimit(2)
+        .frame(maxWidth: .infinity, alignment: .leading)
+
+      if !milestone.description.isEmpty {
+        Text(milestone.description)
+          .font(.caption2)
+          .foregroundStyle(.secondary)
+          .lineLimit(3)
+          .frame(maxWidth: .infinity, alignment: .leading)
+      }
     }
+    .padding(12)
+    .background(isUnlocked ? Color.blue.opacity(0.15) : Color(.darkGray).opacity(0.3))
+    .clipShape(RoundedRectangle(cornerRadius: 12))
     .padding(.horizontal, AppConstants.UI.horizontalPadding)
     .opacity(milestone.isEnabled ? 1.0 : 0.4)
   }
 
   private var levelHeader: some View {
-
     Text("\(viewModel.currentLevel)")
-      .font(.system(size: 60, weight: .bold, design: .rounded))
+      .font(.system(size: 48, weight: .bold, design: .rounded))
       .contentTransition(.numericText())
-
   }
 
   private var progressBar: some View {
@@ -142,9 +141,58 @@ struct LevelView: View {
     }
   }
 
- 
 }
 
-#Preview {
-  LevelView()
-}
+#if DEBUG
+  extension LevelViewModel {
+    static var previewWithMilestones: LevelViewModel {
+      let vm = LevelViewModel.shared
+      vm.milestones = [
+        LevelMilestone(
+          id: UUID(),
+          levelRequired: 1,
+          title: "First Steps",
+          description: "Complete your first activity",
+          isEnabled: true
+        ),
+        LevelMilestone(
+          id: UUID(),
+          levelRequired: 5,
+          title: "Getting Started",
+          description: "Reach level 5 and unlock new features",
+          isEnabled: true
+        ),
+        LevelMilestone(
+          id: UUID(),
+          levelRequired: 10,
+          title: "Halfway There",
+          description: "You're making great progress!",
+          isEnabled: true
+        ),
+        LevelMilestone(
+          id: UUID(),
+          levelRequired: 15,
+          title: "Advanced User",
+          description: "Unlock advanced customization options",
+          isEnabled: false
+        ),
+        LevelMilestone(
+          id: UUID(),
+          levelRequired: 20,
+          title: "Expert Level",
+          description: "You've mastered the basics and more",
+          isEnabled: true
+        ),
+      ]
+      vm.currentLevel = 7
+      vm.currentXP = 1250
+
+      return vm
+    }
+  }
+
+  #Preview("With Milestones") {
+    LevelView()
+      .environmentObject(LevelViewModel.previewWithMilestones)
+  }
+#endif

@@ -21,6 +21,7 @@ applyTo: "**"
 - Logging via `/Shared/Services/TelemetryManager.swift`, toggle in `SettingsViewModel.swift` (iOS)
 - Use clean, minimal SwiftUI, no emojis, symbols only if beneficial, prefer Localized text
 - Ask apple-docs mcp for API documentation
+- if you do edits, check if something exists already, and if you delete something cleanup after yourself
 
 ```
 .

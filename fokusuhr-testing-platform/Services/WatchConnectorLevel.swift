@@ -50,6 +50,8 @@ extension WatchConnector {
       } else {
         fallbackLevelSync(message)
       }
+
+      try WCSession.default.updateApplicationContext(message)
     } catch {
       let appError = AppError.encodingFailed(type: "level data", underlying: error)
       #if DEBUG

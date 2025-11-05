@@ -23,7 +23,6 @@ class LevelService: ObservableObject {
     let schema = Schema([
       LevelProgress.self,
       ActivityStats.self,
-      LevelReward.self,
     ])
     let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -111,30 +110,48 @@ class LevelService: ObservableObject {
       }
     #endif
 
-    let newRewards = checkForNewRewards(at: newLevel)
-    sendLevelUpNotification(level: newLevel, rewards: newRewards)
+    let unlockedMilestones = checkUnlockedMilestones(at: newLevel)
+    sendLevelUpNotification(level: newLevel, milestones: unlockedMilestones)
 
     #if DEBUG
       ErrorLogger.log("🎉 Level Up! Now Level \(newLevel)")
-      if !newRewards.isEmpty {
-        ErrorLogger.log("🎁 New rewards unlocked: \(newRewards.count)")
+      if !unlockedMilestones.isEmpty {
+        ErrorLogger.log("🏆 Milestones unlocked: \(unlockedMilestones.map { $0.title }.joined(separator: ", "))")
       }
     #endif
   }
 
-  private func sendLevelUpNotification(level: Int, rewards: [RewardType] = []) {
+  private func checkUnlockedMilestones(at level: Int) -> [LevelMilestone] {
+    #if os(watchOS)
+      let milestones = WatchConnector().loadLevelMilestones()
+    #else
+      let milestones = WatchConnector.shared.loadLevelData().milestones
+    #endif
+    
+    return milestones.filter { $0.isEnabled && $0.levelRequired == level }
+  }
+
+  private func sendLevelUpNotification(level: Int, milestones: [LevelMilestone]) {
     let content = UNMutableNotificationContent()
-    content.title = "Level \(level) erreicht!"
-
-    if !rewards.isEmpty {
-      let rewardNames = rewards.map { $0.title }.joined(separator: ", ")
-      content.body = "Neue Belohnungen: \(rewardNames)"
+    
+    if !milestones.isEmpty {
+      // Milestone notification
+      if milestones.count == 1 {
+        content.title = String(localized: "🏆 \(milestones[0].title)")
+        content.body = String(localized: "Level \(level) erreicht!")
+      } else {
+        content.title = String(localized: "🏆 Level \(level) - \(milestones.count) Milestones!")
+        let milestoneNames = milestones.map { $0.title }.joined(separator: ", ")
+        content.body = milestoneNames
+      }
     } else {
-      content.body = "Du hast ein neues Level freigeschaltet!"
+      // Regular level-up notification
+      content.title = String(localized: "Level \(level) erreicht!")
+      content.body = String(localized: "Du hast ein neues Level freigeschaltet!")
     }
-
+    
     content.sound = .default
-    content.categoryIdentifier = "LEVEL_UP"
+    content.categoryIdentifier = milestones.isEmpty ? "LEVEL_UP" : "MILESTONE"
 
     let request = UNNotificationRequest(
       identifier: "levelUp_\(UUID().uuidString)",

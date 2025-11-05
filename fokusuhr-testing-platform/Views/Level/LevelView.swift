@@ -16,13 +16,20 @@ struct LevelView: View {
       }
       .toolbar {
         ToolbarItem(placement: .primaryAction) {
-          Button("Add Milestone") {
+          Button {
             showingAddMilestone = true
+          } label: {
+            Image(systemName: "plus")
           }
         }
       }
       .sheet(isPresented: $showingAddMilestone) {
         MilestoneEditView(viewModel: viewModel)
+      }
+      .onAppear {
+        Task {
+          await viewModel.refresh()
+        }
       }
     }
   }
@@ -167,11 +174,13 @@ class LevelViewModel: ObservableObject {
   private func save() {
     watchConnector.saveLevelData(levelData)
     watchConnector.syncLevelToWatch()
+    objectWillChange.send()
   }
 
   func refresh() async {
     levelData = watchConnector.loadLevelData()
     watchConnector.syncLevelToWatch()
+    objectWillChange.send()
   }
 }
 

@@ -11,7 +11,6 @@ class ModelContainerProvider {
       Event.self,
       LevelProgress.self,
       ActivityStats.self,
-      LevelReward.self,
     ])
 
     let configuration = ModelConfiguration(

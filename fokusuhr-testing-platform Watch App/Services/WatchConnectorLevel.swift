@@ -70,10 +70,15 @@ extension WatchConnector {
           "timestamp": Date().timeIntervalSince1970,
         ]
 
-        WCSession.default.sendMessage(message, replyHandler: nil) { error in
-          #if DEBUG
-            ErrorLogger.log(AppError.watchMessageFailed(underlying: error))
-          #endif
+        if WCSession.default.activationState == .activated {
+          if WCSession.default.isReachable {
+            WCSession.default.sendMessage(message, replyHandler: nil) { error in
+              #if DEBUG
+                ErrorLogger.log(AppError.watchMessageFailed(underlying: error))
+              #endif
+            }
+          }
+          try? WCSession.default.updateApplicationContext(message)
         }
       } catch {
         #if DEBUG

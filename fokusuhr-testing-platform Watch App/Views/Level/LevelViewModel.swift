@@ -82,4 +82,14 @@ class LevelViewModel: ObservableObject {
   var xpText: String {
     "\(currentXP) / \(xpNeeded) XP"
   }
+
+  func syncFromiOS() async {
+    let connector = WatchConnector()
+    let milestones = connector.loadLevelMilestones()
+    if !milestones.isEmpty {
+      await MainActor.run {
+        updateMilestones()
+      }
+    }
+  }
 }
