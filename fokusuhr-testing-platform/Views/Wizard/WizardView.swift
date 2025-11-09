@@ -140,56 +140,89 @@ struct WizardView: View {
           }
         }
 
-        Section("Applications") {
+        Section("Focus Tools") {
           ForEach(appsManager.apps, id: \.id) { app in
             Button {
               watchConnector.switchToApp(index: app.index)
             } label: {
-              Label {
+              HStack(spacing: 12) {
+                Circle()
+                  .fill(app.color)
+                  .frame(width: 10, height: 10)
+
                 VStack(alignment: .leading, spacing: 2) {
                   Text(app.title)
+                    .foregroundColor(.primary)
                   Text(app.description)
                     .font(.caption)
                     .foregroundColor(.secondary)
                 }
-              } icon: {
-                Circle()
-                  .fill(app.color)
-                  .frame(
-                    width: AppConstants.UI.cornerRadius,
-                    height: AppConstants.UI.cornerRadius
-                  )
               }
             }
             .disabled(connectionStatus != .connected)
           }
+        }
 
-          Button("Put Watch into Menu State") {
-            watchConnector.returnToMainMenu()
+        Section("Progress") {
+          Button {
+            watchConnector.switchToApp(index: -1)
+          } label: {
+            HStack(spacing: 12) {
+              Circle()
+                .fill(Color.blue)
+                .frame(width: 10, height: 10)
+
+              VStack(alignment: .leading, spacing: 2) {
+                Text(String(localized: "Level"))
+                  .foregroundColor(.primary)
+                Text(String(localized: "See your focus points"))
+                  .font(.caption)
+                  .foregroundColor(.secondary)
+              }
+            }
           }
           .disabled(connectionStatus != .connected)
 
+          Button {
+            watchConnector.switchToApp(index: -2)
+          } label: {
+            HStack(spacing: 12) {
+              Circle()
+                .fill(Color.teal)
+                .frame(width: 10, height: 10)
+
+              VStack(alignment: .leading, spacing: 2) {
+                Text(String(localized: "Milestones"))
+                  .foregroundColor(.primary)
+                Text(String(localized: "Track your achievements"))
+                  .font(.caption)
+                  .foregroundColor(.secondary)
+              }
+            }
+          }
+          .disabled(connectionStatus != .connected)
         }
 
-        Button(action: forceSyncToWatch) {
-          HStack {
-            if isSyncing {
-              ProgressView()
-                .scaleEffect(
-                  AppConstants.UI.progressScaleFactor
-                )
-            } else {
-              Image(systemName: "arrow.triangle.2.circlepath")
-                .foregroundColor(.red)
-            }
-            Text(
-              isSyncing
-                ? "Force Syncing..." : "Force Sync All Data"
-            )
-            .foregroundColor(.red)
+        Section("Navigation") {
+          Button("Return to Dashboard") {
+            watchConnector.returnToMainMenu()
           }
+          .disabled(connectionStatus != .connected)
         }
-        .disabled(!watchConnector.isConnected || isSyncing)
+
+        Section("Advanced") {
+          Button(action: forceSyncToWatch) {
+            HStack {
+              if isSyncing {
+                ProgressView()
+                  .scaleEffect(AppConstants.UI.progressScaleFactor)
+              }
+              Text(isSyncing ? "Force Syncing..." : "Force Sync All Data")
+                .foregroundColor(isSyncing ? .secondary : .red)
+            }
+          }
+          .disabled(!watchConnector.isConnected || isSyncing)
+        }
       }
       .listStyle(.insetGrouped)
       .refreshable {

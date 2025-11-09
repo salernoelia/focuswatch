@@ -10,6 +10,7 @@ struct WatchApp: App {
 
   init() {
     setupNotifications()
+    syncWatchIdToWidget()
   }
 
   var body: some Scene {
@@ -44,6 +45,49 @@ struct WatchApp: App {
 
   private func setupNotifications() {
     UNUserNotificationCenter.current().delegate = NotificationHandler.shared
+
+    let launchAction = UNNotificationAction(
+      identifier: "LAUNCH_ACTION",
+      title: String(localized: "Start"),
+      options: [.foreground]
+    )
+
+    let dismissAction = UNNotificationAction(
+      identifier: "DISMISS_ACTION",
+      title: String(localized: "Later"),
+      options: []
+    )
+
+    let launchCategory = UNNotificationCategory(
+      identifier: "CALENDAR_REMINDER_LAUNCH",
+      actions: [launchAction, dismissAction],
+      intentIdentifiers: [],
+      options: []
+    )
+
+    let reminderCategory = UNNotificationCategory(
+      identifier: "CALENDAR_REMINDER",
+      actions: [dismissAction],
+      intentIdentifiers: [],
+      options: []
+    )
+
+    UNUserNotificationCenter.current().setNotificationCategories([launchCategory, reminderCategory])
+
+    #if DEBUG
+      print("🔔 Notification categories registered")
+    #endif
+  }
+
+  private func syncWatchIdToWidget() {
+    let sharedDefaults = UserDefaults(suiteName: "group.net.com.fokusuhr")
+    let uuid = WatchConfig.shared.uuid
+    sharedDefaults?.set(uuid, forKey: "deviceUUID")
+    sharedDefaults?.synchronize()
+
+    #if DEBUG
+      print("⌚ WatchApp: Synced UUID to widget: \(String(uuid.prefix(8)))")
+    #endif
   }
 }
 
@@ -81,7 +125,17 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
       let reminderId = UUID(uuidString: reminderIdString)
     {
       DispatchQueue.main.async {
-        let shouldLaunch = response.actionIdentifier == UNNotificationDefaultActionIdentifier
+        let shouldLaunch =
+          response.actionIdentifier == UNNotificationDefaultActionIdentifier
+          || response.actionIdentifier == "LAUNCH_ACTION"
+
+        #if DEBUG
+          print("🔔 Calendar notification tapped")
+          print("   → Action: \(response.actionIdentifier)")
+          print("   → Should launch: \(shouldLaunch)")
+          print("   → Event ID: \(eventId)")
+        #endif
+
         CalendarViewModel.shared.handleReminderResponse(
           eventId: eventId,
           reminderId: reminderId,

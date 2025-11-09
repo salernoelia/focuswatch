@@ -50,11 +50,6 @@ class AppsManager: ObservableObject {
         String(localized: "Color Breathing"), String(localized: "Calming breathing exercises"),
         Color.green
       ),
-      (
-        String(localized: "Calendar"), String(localized: "Routine tasks and appointments"),
-        Color.purple
-      ),
-      (String(localized: "Level"), String(localized: "See your focus points"), Color.teal),
     ]
 
     builtInAppCount = builtInApps.count

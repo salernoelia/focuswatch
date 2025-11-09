@@ -24,11 +24,27 @@ struct Provider: AppIntentTimelineProvider {
 
   private var deviceId: String {
     let sharedDefaults = UserDefaults(suiteName: "group.net.com.fokusuhr")
-    let uuid = sharedDefaults?.string(forKey: "deviceUUID")
+
     #if DEBUG
-      print("📱 Widget reading deviceUUID: \(uuid ?? "nil")")
+      print("📱 Widget: Attempting to read deviceUUID from shared container")
     #endif
-    return uuid?.prefix(6).uppercased() ?? "NO ID"
+
+    if let uuid = sharedDefaults?.string(forKey: "deviceUUID") {
+      let shortId = String(uuid.prefix(6)).uppercased()
+      #if DEBUG
+        print("📱 Widget: Found deviceUUID: \(shortId)")
+      #endif
+      return shortId
+    }
+
+    #if DEBUG
+      print("📱 Widget: No deviceUUID found in shared container")
+      if let allKeys = sharedDefaults?.dictionaryRepresentation().keys {
+        print("📱 Widget: Available keys: \(allKeys)")
+      }
+    #endif
+
+    return "NO ID"
   }
 
   func placeholder(in context: Context) -> SimpleEntry {

@@ -44,7 +44,7 @@ extension WatchConnector {
       return
     }
 
-    let message = ["action": "returnToMainMenu"]
+    let message = ["action": "returnToDashboard"]
     WCSession.default.sendMessage(message, replyHandler: nil) { error in
       let appError = AppError.watchMessageFailed(underlying: error)
       #if DEBUG

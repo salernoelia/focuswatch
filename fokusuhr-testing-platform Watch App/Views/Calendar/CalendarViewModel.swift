@@ -148,6 +148,12 @@ class CalendarViewModel: ObservableObject {
       "shouldLaunchApp": reminder.shouldLaunchApp,
     ]
 
+    if reminder.shouldLaunchApp && event.appIndex != nil {
+      content.categoryIdentifier = "CALENDAR_REMINDER_LAUNCH"
+    } else {
+      content.categoryIdentifier = "CALENDAR_REMINDER"
+    }
+
     let triggerDate = Calendar.current.date(
       byAdding: .minute, value: -reminder.minutesBefore, to: event.startTime)
 

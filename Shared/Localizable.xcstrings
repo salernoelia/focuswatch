@@ -437,6 +437,9 @@
         }
       }
     },
+    "Advanced" : {
+
+    },
     "Age" : {
       "localizations" : {
         "de" : {
@@ -484,6 +487,9 @@
           }
         }
       }
+    },
+    "All unlocked" : {
+
     },
     "Allow Telemetry" : {
       "localizations" : {
@@ -565,7 +571,11 @@
         }
       }
     },
+    "App Version" : {
+
+    },
     "Applications" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1973,6 +1983,9 @@
         }
       }
     },
+    "Later" : {
+
+    },
     "Launch App" : {
       "localizations" : {
         "de" : {
@@ -2243,6 +2256,9 @@
           }
         }
       }
+    },
+    "Navigation" : {
+
     },
     "Negative Feedback is on" : {
       "localizations" : {
@@ -2689,7 +2705,11 @@
         }
       }
     },
+    "Progress" : {
+
+    },
     "Put Watch into Menu State" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2853,7 +2873,11 @@
         }
       }
     },
+    "Return to Dashboard" : {
+
+    },
     "Routine tasks and appointments" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3032,6 +3056,9 @@
           }
         }
       }
+    },
+    "Settings" : {
+
     },
     "Share your experience, thoughts, or feedback..." : {
       "localizations" : {
@@ -3416,6 +3443,9 @@
         }
       }
     },
+    "Track your achievements" : {
+
+    },
     "Try to Reconnect" : {
       "localizations" : {
         "de" : {
@@ -3530,6 +3560,9 @@
           }
         }
       }
+    },
+    "Watch ID" : {
+
     },
     "Watch ID:" : {
       "localizations" : {

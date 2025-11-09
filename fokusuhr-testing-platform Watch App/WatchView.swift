@@ -14,6 +14,14 @@ struct WatchView: View {
   @State private var navigationPath = NavigationPath()
 
   private func destinationView(for index: Int) -> some View {
+    if index == -1 {
+      return AnyView(LevelView())
+    } else if index == -2 {
+      return AnyView(MilestonesView())
+    } else if index == -3 {
+      return AnyView(ProgressListView())
+    }
+
     guard index < appsManager.apps.count else {
       return AnyView(Text(String(localized: "App not found")))
     }
@@ -26,7 +34,6 @@ struct WatchView: View {
     let localizedFidget = String(localized: "Fidget Toy")
     let localizedAnneBeta = String(localized: "Anne (Beta)")
     let localizedKalender = String(localized: "Calendar")
-    let localizedLevel = String(localized: "Level")
 
     return AnyView(
       Group {
@@ -44,8 +51,6 @@ struct WatchView: View {
           AnneView()
         } else if app.title == localizedKalender {
           CalendarView()
-        } else if app.title == localizedLevel {
-          LevelView()
         } else {
           if let checklist = checklistForApp(app) {
             UniversalChecklistView(
@@ -83,11 +88,23 @@ struct WatchView: View {
         CalendarView()
         FocusToolsListView()
         ChecklistsListView()
+        SettingsView()
       }
       .tabViewStyle(.page)
       .navigationDestination(for: Int.self) { index in
         destinationView(for: index)
           .navigationBarTitleDisplayMode(.inline)
+          .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+              Button {
+                if !navigationPath.isEmpty {
+                  navigationPath.removeLast()
+                }
+              } label: {
+                Image(systemName: "chevron.left")
+              }
+            }
+          }
       }
     }
     .onAppear {
