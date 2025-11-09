@@ -23,6 +23,18 @@ struct ChecklistDetailView: View {
           .onChange(of: checklist.description, initial: false) { _, _ in
             checklistManager.updateChecklist(checklist)
           }
+
+        Stepper(value: $checklist.xpReward, in: 0...500, step: 10) {
+          HStack {
+            Text("XP Reward")
+            Spacer()
+            Text("\(checklist.xpReward) XP")
+              .foregroundColor(.secondary)
+          }
+        }
+        .onChange(of: checklist.xpReward, initial: false) { _, _ in
+          checklistManager.updateChecklist(checklist)
+        }
       }
 
       Section {

@@ -43,6 +43,16 @@
         }
       }
     },
+    "%lld / %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld / %2$lld"
+          }
+        }
+      }
+    },
     "%lld %@" : {
       "localizations" : {
         "de" : {
@@ -130,6 +140,9 @@
 
     },
     "+ 500 XP" : {
+
+    },
+    "+%lld XP" : {
 
     },
     "✓" : {
@@ -3078,6 +3091,7 @@
       }
     },
     "Super gemacht!" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3593,6 +3607,9 @@
           }
         }
       }
+    },
+    "XP Reward" : {
+
     },
     "Your Entry (Supervisor)" : {
       "localizations" : {

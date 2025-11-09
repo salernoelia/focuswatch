@@ -49,8 +49,18 @@ struct ChecklistEditorView: View {
 
   private func checklistRow(_ checklist: Checklist) -> some View {
     VStack(alignment: .leading, spacing: 4) {
-      Text(checklist.name)
-        .font(.headline)
+      HStack {
+        Text(checklist.name)
+          .font(.headline)
+        Spacer()
+        Text("+\(checklist.xpReward) XP")
+          .font(.caption)
+          .foregroundColor(.green)
+          .padding(.horizontal, 8)
+          .padding(.vertical, 4)
+          .background(Color.green.opacity(0.1))
+          .cornerRadius(8)
+      }
       if !checklist.description.isEmpty {
         Text(checklist.description)
           .font(.caption)

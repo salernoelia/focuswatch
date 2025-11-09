@@ -22,6 +22,7 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
   let instructionTitle: String
   let items: [Item]
   let checklistId: UUID
+  let xpReward: Int
 
   @EnvironmentObject var watchConnector: WatchConnector
   @State private var remainingItems: [Item] = []
@@ -77,7 +78,7 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
         totalItems: items.count,
         onComplete: {
           progressManager.clearProgress(for: checklistId)
-          LevelService.shared.awardXP(for: .checklistCompleted)
+          LevelService.shared.addXP(xpReward, reason: "Checklist completed: \(title)")
           state = .completed
         }
       )
@@ -94,8 +95,11 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
         }
       }
     case .completed:
-      ChecklistCompletionView()
-        .transition(.opacity)
+      ChecklistCompletionView(
+        xpReward: xpReward,
+        checklistName: title
+      )
+      .transition(.opacity)
     }
   }
 

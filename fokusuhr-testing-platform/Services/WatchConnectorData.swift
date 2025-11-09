@@ -150,6 +150,7 @@ extension WatchConnector {
       hasher.combine(checklist.id)
       hasher.combine(checklist.name)
       hasher.combine(checklist.items.count)
+      hasher.combine(checklist.xpReward)
     }
     return hasher.finalize()
   }

@@ -17,11 +17,13 @@ struct Checklist: Identifiable, Codable {
   var name: String
   var description: String
   var items: [ChecklistItem]
+  var xpReward: Int
 
-  init(name: String, description: String = "", items: [ChecklistItem] = []) {
+  init(name: String, description: String = "", items: [ChecklistItem] = [], xpReward: Int = 50) {
     self.name = name
     self.description = description
     self.items = items
+    self.xpReward = xpReward
   }
 }
 

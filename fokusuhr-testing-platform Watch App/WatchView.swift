@@ -67,7 +67,8 @@ struct WatchView: View {
             description: checklist.description,
             instructionTitle: checklist.name,
             items: checklist.items,
-            checklistId: checklist.id
+            checklistId: checklist.id,
+            xpReward: checklist.xpReward
           )
         } else {
           Text(String(localized: "App not found"))
