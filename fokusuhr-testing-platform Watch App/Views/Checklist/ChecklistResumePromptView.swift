@@ -12,20 +12,22 @@ struct ChecklistResumePromptView: View {
 
       VStack(spacing: 12) {
         Button(action: onResume) {
-          Text("Weitermachen")
+          Text(String(localized: "Weitermachen"))
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 8)
+            .padding(.vertical, 10)
             .background(Color.green)
-            .cornerRadius(8)
+            .foregroundColor(.white)
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
         .buttonStyle(.plain)
 
         Button(action: onRestart) {
-          Text("Neu anfangen")
+          Text(String(localized: "Neu anfangen"))
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 8)
-            .background(Color.orange)
-            .cornerRadius(8)
+            .padding(.vertical, 10)
+            .background(Color.red)
+            .foregroundColor(.white)
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
         .buttonStyle(.plain)
       }

@@ -70,6 +70,11 @@ class ChecklistViewModel: ObservableObject {
   }
 
   private func saveData() {
+    #if DEBUG
+      print("📝 iOS ChecklistViewModel: saveData called")
+      print("   → \(data.checklists.count) checklists")
+    #endif
+
     do {
       let encoded = try JSONEncoder().encode(data)
       UserDefaults.standard.set(encoded, forKey: "checklistData")

@@ -103,6 +103,7 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
   }
 
   private func performAction(isAdd: Bool) {
+    guard !isProcessing else { return }
     isProcessing = true
 
     let targetOffset: CGFloat = isAdd ? 200 : -200
@@ -113,20 +114,25 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
       opacity = 0.0
     }
 
-    DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) {
+    DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [self] in
       if isAdd {
         onAdd()
       } else {
         onSkip()
       }
-      dragOffset = 0
-      scale = 1.0
-      opacity = 1.0
-      isProcessing = false
+
+      DispatchQueue.main.async {
+        dragOffset = 0
+        scale = 1.0
+        opacity = 1.0
+        isProcessing = false
+      }
     }
   }
 
   private func resetCard() {
+    guard !isProcessing else { return }
+
     withAnimation(.easeOut(duration: 0.2)) {
       dragOffset = 0
       scale = 1.0

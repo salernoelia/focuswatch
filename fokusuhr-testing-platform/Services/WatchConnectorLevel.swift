@@ -29,9 +29,9 @@ extension WatchConnector {
         let levelData = self.loadLevelData()
         let data = try JSONEncoder().encode(levelData)
 
-        let message: [String: Any] = [
-          "action": "updateLevel",
-          "data": data.base64EncodedString(),
+        // Use dedicated key like calendar, not "action"
+        let applicationContext: [String: Any] = [
+          "levelData": data.base64EncodedString(),
           "timestamp": Date().timeIntervalSince1970,
         ]
 
@@ -43,47 +43,12 @@ extension WatchConnector {
           }
         #endif
 
-        // 1. Application Context (persists across restarts)
-        do {
-          try WCSession.default.updateApplicationContext(message)
-          #if DEBUG
-            DispatchQueue.main.async {
-              print("✅ iOS: Level synced via application context")
-            }
-          #endif
-        } catch {
-          #if DEBUG
-            DispatchQueue.main.async {
-              print("⚠️ iOS: Application context failed: \(error.localizedDescription)")
-            }
-          #endif
-        }
+        try WCSession.default.updateApplicationContext(applicationContext)
 
-        // 2. Immediate message if reachable
-        if WCSession.default.isReachable {
-          WCSession.default.sendMessage(
-            message,
-            replyHandler: { response in
-              #if DEBUG
-                DispatchQueue.main.async {
-                  print("✅ iOS: Level sync immediate message delivered")
-                }
-              #endif
-            }
-          ) { error in
-            #if DEBUG
-              DispatchQueue.main.async {
-                print("⚠️ iOS: Immediate message failed: \(error.localizedDescription)")
-              }
-            #endif
-          }
-        }
-
-        // 3. Background transfer as backup
-        WCSession.default.transferUserInfo(message)
         #if DEBUG
           DispatchQueue.main.async {
-            print("✅ iOS: Level queued for background transfer")
+            print("✅ iOS: Level synced via application context")
+            print("   → Watch will receive even if app not running")
           }
         #endif
 
@@ -96,6 +61,7 @@ extension WatchConnector {
           let appError = AppError.encodingFailed(type: "level data", underlying: error)
           #if DEBUG
             ErrorLogger.log(appError)
+            print("❌ iOS: Failed to update application context: \(error)")
           #endif
           self.lastError = appError
         }

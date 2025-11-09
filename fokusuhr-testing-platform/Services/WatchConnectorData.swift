@@ -9,6 +9,10 @@ extension WatchConnector {
   }
 
   func forceSyncToWatch() {
+    #if DEBUG
+      print("🔄 iOS: forceSyncToWatch called")
+    #endif
+
     guard WCSession.default.activationState == .activated else {
       #if DEBUG
         print("Session not activated, cannot sync")
@@ -21,6 +25,12 @@ extension WatchConnector {
   }
 
   func syncChecklistToWatch() {
+    #if DEBUG
+      print("🔄 iOS: syncChecklistToWatch called")
+      print("   → Session state: \(WCSession.default.activationState.rawValue)")
+      print("   → Is syncing: \(isSyncing)")
+    #endif
+
     guard WCSession.default.activationState == .activated else {
       #if DEBUG
         print("Session not activated, skipping sync")
@@ -124,14 +134,8 @@ extension WatchConnector {
         )
       #endif
 
-      if WCSession.default.isReachable {
-        sendMessageWithRetry(message: message, retryCount: 3, hashToSet: currentHash)
-      } else {
-        #if DEBUG
-          print("Watch not reachable, using background sync")
-        #endif
-        syncChecklistViaBackgroundTransfer(message: message, hashToSet: currentHash)
-      }
+      // Always use background sync like calendar does
+      syncChecklistViaBackgroundTransfer(data: data, imageData: imageData, hashToSet: currentHash)
     } catch {
       let appError = AppError.encodingFailed(
         type: "checklist", underlying: error)
@@ -155,53 +159,18 @@ extension WatchConnector {
     return hasher.finalize()
   }
 
-  private func sendMessageWithRetry(message: [String: Any], retryCount: Int, hashToSet: Int? = nil)
-  {
-    guard retryCount > 0 else {
-      #if DEBUG
-        print("Max retries reached, falling back to background sync")
-      #endif
-      syncChecklistViaBackgroundTransfer(message: message, hashToSet: hashToSet)
-      return
-    }
-
-    guard WCSession.default.isReachable else {
-      #if DEBUG
-        print("Watch not reachable during retry, using background sync")
-      #endif
-      syncChecklistViaBackgroundTransfer(message: message, hashToSet: hashToSet)
-      return
-    }
-
-    WCSession.default.sendMessage(
-      message,
-      replyHandler: { response in
-        DispatchQueue.main.async {
-          self.isSyncing = false
-          if let hash = hashToSet {
-            self.lastSyncedHash = hash
-          }
-        }
-        #if DEBUG
-          print("Checklist sync successful via live message: \(response)")
-        #endif
-      }
-    ) { error in
-      #if DEBUG
-        print("Sync failed, retrying... (\(retryCount - 1) left)")
-        ErrorLogger.log(AppError.watchMessageFailed(underlying: error))
-      #endif
-
-      DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-        self.sendMessageWithRetry(
-          message: message, retryCount: retryCount - 1, hashToSet: hashToSet)
-      }
-    }
-  }
-
-  private func syncChecklistViaBackgroundTransfer(message: [String: Any], hashToSet: Int?) {
+  private func syncChecklistViaBackgroundTransfer(
+    data: Data, imageData: [String: String], hashToSet: Int?
+  ) {
     do {
-      try WCSession.default.updateApplicationContext(message)
+      let applicationContext: [String: Any] = [
+        "checklistData": data.base64EncodedString(),
+        "checklistImageData": imageData,
+        "forceOverwrite": true,
+        "timestamp": Date().timeIntervalSince1970,
+      ]
+
+      try WCSession.default.updateApplicationContext(applicationContext)
 
       DispatchQueue.main.async {
         self.isSyncing = false
@@ -211,17 +180,14 @@ extension WatchConnector {
       }
 
       #if DEBUG
-        print("✅ Checklist synced via background context")
-        print("   → Watch will receive when app launches")
+        print("✅ iOS: Checklist synced via background context")
+        print("   → \(self.checklistData.checklists.count) checklists sent")
+        print("   → Watch will receive even if app not running")
       #endif
     } catch {
       #if DEBUG
-        print(
-          "Failed to update application context, trying transferUserInfo: \(error.localizedDescription)"
-        )
+        print("❌ iOS: Failed to update application context: \(error.localizedDescription)")
       #endif
-
-      WCSession.default.transferUserInfo(message)
 
       DispatchQueue.main.async {
         self.isSyncing = false
@@ -229,10 +195,6 @@ extension WatchConnector {
           self.lastSyncedHash = hash
         }
       }
-
-      #if DEBUG
-        print("✅ Checklist queued for background transfer via transferUserInfo")
-      #endif
     }
   }
 
