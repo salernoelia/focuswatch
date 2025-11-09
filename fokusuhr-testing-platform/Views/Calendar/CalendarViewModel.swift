@@ -31,6 +31,7 @@ class CalendarViewModel: ObservableObject {
         let repeatedEvent = Event(
           id: UUID(),
           title: event.title,
+          eventDescription: event.eventDescription,
           date: day,
           startTime: combineDateTime(date: day, time: event.startTime),
           endTime: combineDateTime(date: day, time: event.endTime),
@@ -93,7 +94,9 @@ class CalendarViewModel: ObservableObject {
     // Validate that end time is after start time
     guard event.endTime > event.startTime else {
       #if DEBUG
-        print("⚠️ Invalid event: end time (\(event.endTime)) must be after start time (\(event.startTime))")
+        print(
+          "⚠️ Invalid event: end time (\(event.endTime)) must be after start time (\(event.startTime))"
+        )
       #endif
       return
     }
@@ -102,7 +105,8 @@ class CalendarViewModel: ObservableObject {
   }
 
   func update(
-    eventId: UUID, title: String, date: Date, startTime: Date, endTime: Date,
+    eventId: UUID, title: String, eventDescription: String?, date: Date, startTime: Date,
+    endTime: Date,
     repeatRule: RepeatRule, customWeekdays: [Int], appIndex: Int?, reminders: [Reminder]
   ) {
     #if DEBUG
@@ -153,6 +157,7 @@ class CalendarViewModel: ObservableObject {
     #endif
 
     event.title = title
+    event.eventDescription = eventDescription
     event.date = date
     event.startTime = startTime
     event.endTime = endTime

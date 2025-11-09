@@ -25,6 +25,7 @@ struct Reminder: Codable, Identifiable {
 final class Event {
   @Attribute(.unique) var id: UUID
   var title: String
+  var eventDescription: String?
   var date: Date
   var startTime: Date
   var endTime: Date
@@ -52,12 +53,14 @@ final class Event {
   }
 
   init(
-    id: UUID = UUID(), title: String, date: Date, startTime: Date, endTime: Date,
+    id: UUID = UUID(), title: String, eventDescription: String? = nil, date: Date, startTime: Date,
+    endTime: Date,
     repeatRule: RepeatRule, customWeekdays: [Int] = [], appIndex: Int? = nil,
     reminders: [Reminder] = [], sourceEventId: UUID? = nil
   ) {
     self.id = id
     self.title = title
+    self.eventDescription = eventDescription
     self.date = date
     self.startTime = startTime
     self.endTime = endTime
@@ -68,9 +71,10 @@ final class Event {
     self.sourceEventId = sourceEventId
   }
 }
-struct EventTransfer: Codable {
+struct EventTransfer: Codable, Identifiable {
   let id: UUID
   let title: String
+  let eventDescription: String?
   let date: Date
   let startTime: Date
   let endTime: Date
@@ -80,11 +84,13 @@ struct EventTransfer: Codable {
   let reminders: [Reminder]
 
   init(
-    id: UUID, title: String, date: Date, startTime: Date, endTime: Date, repeatRule: RepeatRule,
+    id: UUID, title: String, eventDescription: String? = nil, date: Date, startTime: Date,
+    endTime: Date, repeatRule: RepeatRule,
     customWeekdays: [Int], appIndex: Int? = nil, reminders: [Reminder] = []
   ) {
     self.id = id
     self.title = title
+    self.eventDescription = eventDescription
     self.date = date
     self.startTime = startTime
     self.endTime = endTime
@@ -97,6 +103,7 @@ struct EventTransfer: Codable {
   init(from event: Event) {
     self.id = event.id
     self.title = event.title
+    self.eventDescription = event.eventDescription
     self.date = event.date
     self.startTime = event.startTime
     self.endTime = event.endTime
@@ -110,6 +117,7 @@ struct EventTransfer: Codable {
     Event(
       id: id,
       title: title,
+      eventDescription: eventDescription,
       date: date,
       startTime: startTime,
       endTime: endTime,

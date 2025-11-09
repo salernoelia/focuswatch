@@ -52,22 +52,22 @@ struct WatchApp: App {
       options: [.foreground]
     )
 
-    let dismissAction = UNNotificationAction(
-      identifier: "DISMISS_ACTION",
-      title: String(localized: "Later"),
+    let snoozeAction = UNNotificationAction(
+      identifier: "SNOOZE_ACTION",
+      title: String(localized: "In 5 minutes"),
       options: []
     )
 
     let launchCategory = UNNotificationCategory(
       identifier: "CALENDAR_REMINDER_LAUNCH",
-      actions: [launchAction, dismissAction],
+      actions: [launchAction, snoozeAction],
       intentIdentifiers: [],
       options: []
     )
 
     let reminderCategory = UNNotificationCategory(
       identifier: "CALENDAR_REMINDER",
-      actions: [dismissAction],
+      actions: [snoozeAction],
       intentIdentifiers: [],
       options: []
     )
@@ -125,25 +125,89 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
       let reminderId = UUID(uuidString: reminderIdString)
     {
       DispatchQueue.main.async {
-        let shouldLaunch =
-          response.actionIdentifier == UNNotificationDefaultActionIdentifier
-          || response.actionIdentifier == "LAUNCH_ACTION"
+        if response.actionIdentifier == "SNOOZE_ACTION" {
+          #if DEBUG
+            print("⏰ Snoozing calendar notification for 5 minutes")
+          #endif
 
-        #if DEBUG
-          print("🔔 Calendar notification tapped")
-          print("   → Action: \(response.actionIdentifier)")
-          print("   → Should launch: \(shouldLaunch)")
-          print("   → Event ID: \(eventId)")
-        #endif
+          self.scheduleSnoozeNotification(
+            eventId: eventId,
+            reminderId: reminderId,
+            userInfo: userInfo
+          )
+        } else {
+          let shouldLaunch =
+            response.actionIdentifier == UNNotificationDefaultActionIdentifier
+            || response.actionIdentifier == "LAUNCH_ACTION"
 
-        CalendarViewModel.shared.handleReminderResponse(
-          eventId: eventId,
-          reminderId: reminderId,
-          shouldLaunch: shouldLaunch
-        )
+          #if DEBUG
+            print("🔔 Calendar notification tapped")
+            print("   → Action: \(response.actionIdentifier)")
+            print("   → Should launch: \(shouldLaunch)")
+            print("   → Event ID: \(eventId)")
+          #endif
+
+          CalendarViewModel.shared.handleReminderResponse(
+            eventId: eventId,
+            reminderId: reminderId,
+            shouldLaunch: shouldLaunch
+          )
+        }
       }
     }
 
     completionHandler()
+  }
+
+  private func scheduleSnoozeNotification(
+    eventId: UUID,
+    reminderId: UUID,
+    userInfo: [AnyHashable: Any]
+  ) {
+    guard let event = CalendarViewModel.shared.events.first(where: { $0.id == eventId }),
+      let reminder = event.reminders.first(where: { $0.id == reminderId })
+    else {
+      #if DEBUG
+        print("❌ Could not find event or reminder for snooze")
+      #endif
+      return
+    }
+
+    let content = UNMutableNotificationContent()
+    content.title = event.title
+
+    if let description = event.eventDescription, !description.isEmpty {
+      content.body = description
+    } else if let message = reminder.message, !message.isEmpty {
+      content.body = message
+    } else {
+      content.body = String(localized: "Reminder")
+    }
+
+    content.sound = .default
+    content.userInfo = userInfo
+
+    if reminder.shouldLaunchApp && event.appIndex != nil {
+      content.categoryIdentifier = "CALENDAR_REMINDER_LAUNCH"
+    } else {
+      content.categoryIdentifier = "CALENDAR_REMINDER"
+    }
+
+    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 300, repeats: false)
+    let identifier =
+      "snooze-\(eventId.uuidString)-\(reminderId.uuidString)-\(Date().timeIntervalSince1970)"
+    let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+
+    UNUserNotificationCenter.current().add(request) { error in
+      if let error = error {
+        #if DEBUG
+          print("❌ Failed to schedule snooze notification: \(error)")
+        #endif
+      } else {
+        #if DEBUG
+          print("✅ Snoozed notification scheduled for 5 minutes")
+        #endif
+      }
+    }
   }
 }

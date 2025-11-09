@@ -51,7 +51,8 @@
             "value" : "%1$lld / %2$lld"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "%lld %@" : {
       "localizations" : {
@@ -112,7 +113,7 @@
       }
     },
     "%lld XP" : {
-
+      "shouldTranslate" : false
     },
     "•" : {
       "localizations" : {
@@ -131,19 +132,19 @@
       }
     },
     "+ 10 XP" : {
-
+      "shouldTranslate" : false
     },
     "+ 50 XP" : {
-
+      "shouldTranslate" : false
     },
     "+ 100 XP" : {
-
+      "shouldTranslate" : false
     },
     "+ 500 XP" : {
-
+      "shouldTranslate" : false
     },
     "+%lld XP" : {
-
+      "shouldTranslate" : false
     },
     "✓" : {
       "localizations" : {
@@ -178,10 +179,16 @@
       }
     },
     "🏆 %@" : {
-
+      "shouldTranslate" : false
     },
     "🏆 Level %lld - %lld Milestones!" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🏆 Level %1$lld - %2$lld Meilensteine!"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
@@ -345,7 +352,14 @@
       }
     },
     "Add Milestone" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meilenstein Hinzufügen"
+          }
+        }
+      }
     },
     "Add new Test User" : {
       "localizations" : {
@@ -438,7 +452,14 @@
       }
     },
     "Advanced" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erweitert"
+          }
+        }
+      }
     },
     "Age" : {
       "localizations" : {
@@ -489,7 +510,14 @@
       }
     },
     "All unlocked" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Freigeschaltet"
+          }
+        }
+      }
     },
     "Allow Telemetry" : {
       "localizations" : {
@@ -572,38 +600,11 @@
       }
     },
     "App Version" : {
-
-    },
-    "Applications" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Anwendungen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Applications"
-          }
-        }
-      }
-    },
-    "Apps" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apps"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apps"
+            "value" : "App Version"
           }
         }
       }
@@ -940,19 +941,22 @@
         }
       }
     },
-    "Dashboard" : {
-      "extractionState" : "stale",
+    "Custom" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Übersicht"
+            "value" : "Individuell"
           }
-        },
-        "en" : {
+        }
+      }
+    },
+    "Daily" : {
+      "localizations" : {
+        "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dashboard"
+            "value" : "Täglich"
           }
         }
       }
@@ -974,7 +978,7 @@
       }
     },
     "Debug Tools" : {
-
+      "shouldTranslate" : false
     },
     "Dein Feedback" : {
       "localizations" : {
@@ -1084,6 +1088,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Description"
+          }
+        }
+      }
+    },
+    "Description (optional)" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beschreibung (Optional)"
           }
         }
       }
@@ -1392,6 +1406,9 @@
           }
         }
       }
+    },
+    "Event Details" : {
+
     },
     "Failed Uploads:\n%@" : {
       "localizations" : {
@@ -1813,6 +1830,12 @@
         }
       }
     },
+    "In 5 Minuten" : {
+
+    },
+    "In 5 minutes" : {
+
+    },
     "Intensität" : {
       "localizations" : {
         "de" : {
@@ -1983,9 +2006,6 @@
         }
       }
     },
-    "Later" : {
-
-    },
     "Launch App" : {
       "localizations" : {
         "de" : {
@@ -2060,6 +2080,9 @@
           }
         }
       }
+    },
+    "Linked App" : {
+
     },
     "Links = Später" : {
       "localizations" : {
@@ -2360,16 +2383,8 @@
         }
       }
     },
-    "No checklists" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine Checklisten"
-          }
-        }
-      }
+    "No app" : {
+
     },
     "No checklists available" : {
       "localizations" : {
@@ -2470,6 +2485,9 @@
           }
         }
       }
+    },
+    "No repeat" : {
+
     },
     "No user selected" : {
       "localizations" : {
@@ -2708,23 +2726,6 @@
     "Progress" : {
 
     },
-    "Put Watch into Menu State" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Uhr in Menüzustand versetzen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Put Watch into Menu State"
-          }
-        }
-      }
-    },
     "Reached Level 5" : {
       "localizations" : {
         "de" : {
@@ -2875,17 +2876,6 @@
     },
     "Return to Dashboard" : {
 
-    },
-    "Routine tasks and appointments" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Routinen und Termine"
-          }
-        }
-      }
     },
     "S: %@, P: %lld, A: %lld" : {
       "localizations" : {
@@ -3108,22 +3098,6 @@
         }
       }
     },
-    "Später" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Später"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Later"
-          }
-        }
-      }
-    },
     "Sprich zu Anne" : {
       "localizations" : {
         "de" : {
@@ -3156,6 +3130,9 @@
         }
       }
     },
+    "Start App" : {
+
+    },
     "Starten" : {
       "localizations" : {
         "de" : {
@@ -3184,23 +3161,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stop"
-          }
-        }
-      }
-    },
-    "Super gemacht!" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Super gemacht!"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Well done!"
           }
         }
       }
@@ -3589,6 +3549,12 @@
           }
         }
       }
+    },
+    "Weekdays" : {
+
+    },
+    "Weekly" : {
+
     },
     "Weiter" : {
       "localizations" : {

@@ -52,6 +52,7 @@ class CalendarViewModel: ObservableObject {
     for event in events {
       hasher.combine(event.id)
       hasher.combine(event.title)
+      hasher.combine(event.eventDescription)
       hasher.combine(event.startTime)
       hasher.combine(event.reminders.count)
     }
@@ -229,6 +230,7 @@ class CalendarViewModel: ObservableObject {
         let repeatedEvent = EventTransfer(
           id: event.id,
           title: event.title,
+          eventDescription: event.eventDescription,
           date: day,
           startTime: combineDateTime(date: day, time: event.startTime),
           endTime: combineDateTime(date: day, time: event.endTime),

@@ -8,8 +8,10 @@ enum CalendarViewMode {
 struct CalendarView: View {
   @StateObject private var calendarManager = CalendarViewModel.shared
   @StateObject private var appsManager = AppsManager.shared
+  @EnvironmentObject var watchConnector: WatchConnector
   @State private var viewMode: CalendarViewMode = .today
-  
+  @State private var selectedEvent: EventTransfer?
+
   private let appLogger = AppLogger.shared
 
   private var todayEvents: [EventTransfer] {
@@ -90,6 +92,11 @@ struct CalendarView: View {
     }
     .navigationTitle("Kalender")
     .navigationBarTitleDisplayMode(.inline)
+    .sheet(item: $selectedEvent) { event in
+      NavigationStack {
+        CalendarDetailView(event: event, watchConnector: watchConnector)
+      }
+    }
     .onAppear {
       appLogger.logViewLifecycle(appName: "kalender", event: "open")
     }
@@ -149,43 +156,48 @@ struct CalendarView: View {
   }
 
   private func eventCard(_ event: EventTransfer) -> some View {
-    VStack(alignment: .leading, spacing: 4) {
-      HStack {
-        Circle()
-          .fill(colorForApp(event.appIndex))
-          .frame(width: 6, height: 6)
-        Text(event.title)
-          .font(.headline)
-          .lineLimit(1)
-      }
+    Button {
+      selectedEvent = event
+    } label: {
+      VStack(alignment: .leading, spacing: 4) {
+        HStack {
+          Circle()
+            .fill(colorForApp(event.appIndex))
+            .frame(width: 6, height: 6)
+          Text(event.title)
+            .font(.headline)
+            .lineLimit(1)
+        }
 
-      HStack {
-        Text("\(timeString(event.startTime)) – \(timeString(event.endTime))")
-          .font(.caption2)
-          .foregroundColor(.secondary)
-        Spacer()
-        HStack(spacing: 4) {
-          if event.repeatRule != .none {
-            Image(systemName: "repeat")
-              .font(.caption2)
-              .foregroundColor(.secondary)
-          }
-          if !event.reminders.isEmpty {
-            Image(systemName: "bell.fill")
-              .font(.caption2)
-              .foregroundColor(.secondary)
-          }
-          if event.appIndex != nil {
-            Image(systemName: "app.fill")
-              .font(.caption2)
-              .foregroundColor(.secondary)
+        HStack {
+          Text("\(timeString(event.startTime)) – \(timeString(event.endTime))")
+            .font(.caption2)
+            .foregroundColor(.secondary)
+          Spacer()
+          HStack(spacing: 4) {
+            if event.repeatRule != .none {
+              Image(systemName: "repeat")
+                .font(.caption2)
+                .foregroundColor(.secondary)
+            }
+            if !event.reminders.isEmpty {
+              Image(systemName: "bell.fill")
+                .font(.caption2)
+                .foregroundColor(.secondary)
+            }
+            if event.appIndex != nil {
+              Image(systemName: "app.fill")
+                .font(.caption2)
+                .foregroundColor(.secondary)
+            }
           }
         }
       }
+      .padding(8)
+      .background(Color(.darkGray).opacity(0.3))
+      .cornerRadius(8)
     }
-    .padding(8)
-    .background(Color(.darkGray).opacity(0.3))
-    .cornerRadius(8)
+    .buttonStyle(.plain)
   }
 
   private func dateHeaderString(_ date: Date) -> String {

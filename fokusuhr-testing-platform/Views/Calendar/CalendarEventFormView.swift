@@ -8,6 +8,7 @@ struct CalendarEventFormView: View {
   private let defaultDate: Date?
 
   @State private var title = ""
+  @State private var eventDescription = ""
   @State private var date: Date
   @State private var startTime: Date
   @State private var endTime: Date
@@ -30,6 +31,7 @@ struct CalendarEventFormView: View {
     if let event = editingEvent {
       _ = event.date
       _title = State(initialValue: event.title)
+      _eventDescription = State(initialValue: event.eventDescription ?? "")
       _date = State(initialValue: event.date)
       _startTime = State(initialValue: event.startTime)
       _endTime = State(initialValue: event.endTime)
@@ -54,6 +56,13 @@ struct CalendarEventFormView: View {
       Form {
         Section("Event") {
           TextField("Title", text: $title)
+
+          TextField(
+            "Description (optional)",
+            text: $eventDescription,
+            axis: .vertical
+          )
+          .lineLimit(2...5)
 
           Picker("Launch App", selection: $selectedAppIndex) {
             Text("None").tag(nil as Int?)
@@ -80,7 +89,9 @@ struct CalendarEventFormView: View {
             let combinedEnd = combineDateTime(date: date, time: endTime)
             if combinedEnd <= combinedStart {
               // Auto-adjust end time to be 1 hour after start time
-              if let adjustedEnd = Calendar.current.date(byAdding: .hour, value: 1, to: combinedStart) {
+              if let adjustedEnd = Calendar.current.date(
+                byAdding: .hour, value: 1, to: combinedStart)
+              {
                 endTime = adjustedEnd
               }
             }
@@ -96,7 +107,9 @@ struct CalendarEventFormView: View {
             let combinedEnd = combineDateTime(date: date, time: newEndTime)
             if combinedEnd <= combinedStart {
               // Auto-adjust end time to be 1 hour after start time
-              if let adjustedEnd = Calendar.current.date(byAdding: .hour, value: 1, to: combinedStart) {
+              if let adjustedEnd = Calendar.current.date(
+                byAdding: .hour, value: 1, to: combinedStart)
+              {
                 endTime = adjustedEnd
               }
             }
@@ -106,7 +119,9 @@ struct CalendarEventFormView: View {
             let combinedStart = combineDateTime(date: date, time: startTime)
             let combinedEnd = combineDateTime(date: date, time: endTime)
             if combinedEnd <= combinedStart {
-              if let adjustedEnd = Calendar.current.date(byAdding: .hour, value: 1, to: combinedStart) {
+              if let adjustedEnd = Calendar.current.date(
+                byAdding: .hour, value: 1, to: combinedStart)
+              {
                 endTime = adjustedEnd
               }
             }
@@ -149,7 +164,8 @@ struct CalendarEventFormView: View {
                       .overlay(
                         Circle()
                           .stroke(
-                            customWeekdays.contains(day) ? Color.clear : Color.secondary.opacity(0.3),
+                            customWeekdays.contains(day)
+                              ? Color.clear : Color.secondary.opacity(0.3),
                             lineWidth: 1
                           )
                       )
@@ -161,7 +177,7 @@ struct CalendarEventFormView: View {
                 }
                 Spacer()
               }
-              
+
               if customWeekdays.isEmpty {
                 Text("Select at least one weekday")
                   .font(.caption)
@@ -272,7 +288,7 @@ struct CalendarEventFormView: View {
             if repeatRule == .custom && customWeekdays.isEmpty {
               return
             }
-            
+
             let combinedStartTime = combineDateTime(
               date: date,
               time: startTime
@@ -285,15 +301,17 @@ struct CalendarEventFormView: View {
             // Validate that end time is after start time
             guard combinedEndTime > combinedStartTime else {
               // If end time is not after start time, adjust it to 1 hour after start
-              let adjustedEndTime = Calendar.current.date(
-                byAdding: .hour, value: 1, to: combinedStartTime
-              ) ?? combinedStartTime.addingTimeInterval(3600)
-              
+              let adjustedEndTime =
+                Calendar.current.date(
+                  byAdding: .hour, value: 1, to: combinedStartTime
+                ) ?? combinedStartTime.addingTimeInterval(3600)
+
               if let editingEvent = editingEvent {
                 vm.update(
                   eventId: editingEvent.sourceEventId
                     ?? editingEvent.id,
                   title: title,
+                  eventDescription: eventDescription.isEmpty ? nil : eventDescription,
                   date: date,
                   startTime: combinedStartTime,
                   endTime: adjustedEndTime,
@@ -305,6 +323,7 @@ struct CalendarEventFormView: View {
               } else {
                 let ev = Event(
                   title: title,
+                  eventDescription: eventDescription.isEmpty ? nil : eventDescription,
                   date: date,
                   startTime: combinedStartTime,
                   endTime: adjustedEndTime,
@@ -324,6 +343,7 @@ struct CalendarEventFormView: View {
                 eventId: editingEvent.sourceEventId
                   ?? editingEvent.id,
                 title: title,
+                eventDescription: eventDescription.isEmpty ? nil : eventDescription,
                 date: date,
                 startTime: combinedStartTime,
                 endTime: combinedEndTime,
@@ -335,6 +355,7 @@ struct CalendarEventFormView: View {
             } else {
               let ev = Event(
                 title: title,
+                eventDescription: eventDescription.isEmpty ? nil : eventDescription,
                 date: date,
                 startTime: combinedStartTime,
                 endTime: combinedEndTime,

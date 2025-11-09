@@ -369,3 +369,4 @@ applyTo: "**"
 - Use the command "tree" in the commandline to see the latest directory tree if you need it
 - Never write any code comments OR SUMMARIES, or lists of what you did except you were asked for it, nor ever be verbose unless asked.
 - Use apple-doc and supabase mcp server for reference
+- Localization main is English

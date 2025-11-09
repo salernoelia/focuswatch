@@ -72,6 +72,7 @@ extension WatchConnector {
     for event in events {
       hasher.combine(event.id)
       hasher.combine(event.title)
+      hasher.combine(event.eventDescription)
       hasher.combine(event.startTime)
       hasher.combine(event.reminders.count)
     }
