@@ -3,7 +3,8 @@ import UserNotifications
 
 class CalendarViewModel: ObservableObject {
   @Published var events: [EventTransfer] = []
-  @Published var pendingReminder: (event: EventTransfer, reminder: Reminder)?
+  @Published var pendingReminder:
+    (event: EventTransfer, reminder: Reminder, shouldAutoLaunch: Bool)?
 
   private var lastSyncedHash: Int?
 
@@ -214,9 +215,7 @@ class CalendarViewModel: ObservableObject {
       let reminder = event.reminders.first(where: { $0.id == reminderId })
     else { return }
 
-    if shouldLaunch {
-      pendingReminder = (event, reminder)
-    }
+    pendingReminder = (event, reminder, shouldLaunch)
   }
 
   func events(on day: Date) -> [EventTransfer] {

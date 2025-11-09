@@ -28,6 +28,7 @@ struct WatchApp: App {
             CalendarEntryTriggerConsent(
               event: pending.event,
               reminder: pending.reminder,
+              shouldAutoLaunch: pending.shouldAutoLaunch,
               watchConnector: watchConnector
             )
           }

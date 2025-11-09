@@ -4,6 +4,7 @@ import UserNotifications
 struct CalendarEntryTriggerConsent: View {
   let event: EventTransfer
   let reminder: Reminder
+  let shouldAutoLaunch: Bool
   @StateObject private var appsManager = AppsManager.shared
   @StateObject private var calendarManager = CalendarViewModel.shared
   @Environment(\.dismiss) private var dismiss
@@ -43,11 +44,13 @@ struct CalendarEntryTriggerConsent: View {
             .foregroundColor(.orange)
         #endif
 
-        Button("Starten") {
+        Button {
           guard !isLaunching else { return }
           isLaunching = true
           watchConnector.currentView = .app(appIndex)
           dismiss()
+        } label: {
+          Text("Starten")
         }
         .tint(.green)
         .buttonStyle(.borderedProminent)
@@ -62,6 +65,13 @@ struct CalendarEntryTriggerConsent: View {
       }
       .buttonStyle(.bordered)
       .disabled(isLaunching)
+    }
+    .onAppear {
+      if shouldAutoLaunch, let appIndex = event.appIndex {
+        isLaunching = true
+        watchConnector.currentView = .app(appIndex)
+        dismiss()
+      }
     }
   }
 
@@ -124,6 +134,7 @@ struct CalendarEntryTriggerConsent: View {
       reminders: []
     ),
     reminder: Reminder(minutesBefore: 10),
+    shouldAutoLaunch: false,
     watchConnector: WatchConnector.shared
   )
 }

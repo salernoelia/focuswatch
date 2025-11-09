@@ -568,6 +568,7 @@
       }
     },
     "App Index: %lld" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -976,9 +977,6 @@
           }
         }
       }
-    },
-    "Debug Tools" : {
-      "shouldTranslate" : false
     },
     "Dein Feedback" : {
       "localizations" : {
