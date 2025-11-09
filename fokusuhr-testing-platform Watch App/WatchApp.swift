@@ -136,9 +136,7 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
             userInfo: userInfo
           )
         } else {
-          let shouldLaunch =
-            response.actionIdentifier == UNNotificationDefaultActionIdentifier
-            || response.actionIdentifier == "LAUNCH_ACTION"
+          let shouldLaunch = response.actionIdentifier == "LAUNCH_ACTION"
 
           #if DEBUG
             print("🔔 Calendar notification tapped")

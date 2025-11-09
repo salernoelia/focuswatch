@@ -138,7 +138,7 @@ class LevelService: ObservableObject {
       // Milestone notification
       if milestones.count == 1 {
         content.title = String(localized: "🏆 \(milestones[0].title)")
-        content.body = String(localized: "Level \(level) erreicht!")
+        content.body = String(localized: "Level \(level) reached!")
       } else {
         content.title = String(localized: "🏆 Level \(level) - \(milestones.count) Milestones!")
         let milestoneNames = milestones.map { $0.title }.joined(separator: ", ")
@@ -146,8 +146,8 @@ class LevelService: ObservableObject {
       }
     } else {
       // Regular level-up notification
-      content.title = String(localized: "Level \(level) erreicht!")
-      content.body = String(localized: "Du hast ein neues Level freigeschaltet!")
+      content.title = String(localized: "Level \(level) reached!")
+      content.body = String(localized: "You have unlocked a new Level!")
     }
 
     content.sound = .default

@@ -1835,7 +1835,14 @@
       }
     },
     "In 5 minutes" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In 5 Minuten"
+          }
+        }
+      }
     },
     "Intensität" : {
       "localizations" : {
@@ -2059,8 +2066,15 @@
         }
       }
     },
-    "Level %lld erreicht!" : {
-
+    "Level %lld reached!" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level %lld erreicht!"
+          }
+        }
+      }
     },
     "Level Debug" : {
       "localizations" : {
@@ -2083,7 +2097,14 @@
       }
     },
     "Linked App" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verlinkte App"
+          }
+        }
+      }
     },
     "Links = Später" : {
       "localizations" : {
@@ -2282,7 +2303,14 @@
       }
     },
     "Navigation" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigation"
+          }
+        }
+      }
     },
     "Negative Feedback is on" : {
       "localizations" : {
@@ -2385,7 +2413,14 @@
       }
     },
     "No app" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine App"
+          }
+        }
+      }
     },
     "No checklists available" : {
       "localizations" : {
@@ -2488,7 +2523,14 @@
       }
     },
     "No repeat" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Wiederholung"
+          }
+        }
+      }
     },
     "No user selected" : {
       "localizations" : {
@@ -2725,7 +2767,14 @@
       }
     },
     "Progress" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fortschritt"
+          }
+        }
+      }
     },
     "Reached Level 5" : {
       "localizations" : {
@@ -2876,7 +2925,14 @@
       }
     },
     "Return to Dashboard" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zurück zur Übersicht"
+          }
+        }
+      }
     },
     "S: %@, P: %lld, A: %lld" : {
       "localizations" : {
@@ -3049,7 +3105,14 @@
       }
     },
     "Settings" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen"
+          }
+        }
+      }
     },
     "Share your experience, thoughts, or feedback..." : {
       "localizations" : {
@@ -3132,7 +3195,14 @@
       }
     },
     "Start App" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App starten"
+          }
+        }
+      }
     },
     "Starten" : {
       "localizations" : {
@@ -3405,7 +3475,14 @@
       }
     },
     "Track your achievements" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verfolge deine Errungenschaften"
+          }
+        }
+      }
     },
     "Try to Reconnect" : {
       "localizations" : {
@@ -3440,7 +3517,14 @@
       }
     },
     "until level %lld" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bis level %lld"
+          }
+        }
+      }
     },
     "Upload" : {
       "localizations" : {
@@ -3523,7 +3607,7 @@
       }
     },
     "Watch ID" : {
-
+      "shouldTranslate" : false
     },
     "Watch ID:" : {
       "localizations" : {
@@ -3552,10 +3636,24 @@
       }
     },
     "Weekdays" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wochentage"
+          }
+        }
+      }
     },
     "Weekly" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wöchentlich"
+          }
+        }
+      }
     },
     "Weiter" : {
       "localizations" : {
@@ -3680,10 +3778,24 @@
       }
     },
     "XP Reward" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "XP Belohnung"
+          }
+        }
+      }
     },
     "You have unlocked a new Level!" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du hast ein neues Level freigeschaltet!"
+          }
+        }
+      }
     },
     "Your Entry (Supervisor)" : {
       "localizations" : {

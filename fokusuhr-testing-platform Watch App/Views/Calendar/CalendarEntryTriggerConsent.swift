@@ -58,7 +58,7 @@ struct CalendarEntryTriggerConsent: View {
         scheduleSnoozeNotification()
         dismiss()
       } label: {
-        Text("In 5 Minuten")
+        Text("In 5 minutes")
       }
       .buttonStyle(.bordered)
       .disabled(isLaunching)
