@@ -3,7 +3,6 @@ applyTo: "**"
 ---
 
 - Point out bad patterns before continuing
-- Use apple-doc and supabase mcp server for reference
 - No code comments
 - No hallucination, work professionally
 - Do not break existing functionality
@@ -224,6 +223,7 @@ applyTo: "**"
 │   │   │   └── FidgetToyViewModel.swift
 │   │   ├── Level
 │   │   │   ├── LevelDebugView.swift
+│   │   │   ├── LevelRewardView.swift
 │   │   │   ├── LevelView.swift
 │   │   │   └── LevelViewModel.swift
 │   │   ├── Pomodoro
@@ -293,13 +293,11 @@ applyTo: "**"
 │   │   ├── ChecklistProgress.swift
 │   │   ├── LevelMilestone.swift
 │   │   ├── LevelProgress.swift
-│   │   ├── LevelReward.swift
 │   │   └── Schema.swift
 │   ├── Services
 │   │   ├── AppsManager.swift
 │   │   ├── LevelService.swift
 │   │   ├── LevelService+Activities.swift
-│   │   ├── LevelService+Rewards.swift
 │   │   ├── LevelService+Stats.swift
 │   │   ├── SupervisorManager.swift
 │   │   ├── TelemetryManager.swift
@@ -366,9 +364,8 @@ applyTo: "**"
 └── watch-notification
     ├── Info.plist
     └── NotificationService.swift
-
-94 directories, 248 files
 ```
 
 - Use the command "tree" in the commandline to see the latest directory tree if you need it
 - Never write any code comments OR SUMMARIES, or lists of what you did except you were asked for it, nor ever be verbose unless asked.
+- Use apple-doc and supabase mcp server for reference

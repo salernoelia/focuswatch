@@ -1527,6 +1527,17 @@
         }
       }
     },
+    "Focus Tools" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fokus-Apps"
+          }
+        }
+      }
+    },
     "Focus Trainee" : {
       "localizations" : {
         "de" : {
@@ -2296,6 +2307,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Neuer Meilenstein"
+          }
+        }
+      }
+    },
+    "No checklists" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Checklisten"
           }
         }
       }
