@@ -7,6 +7,7 @@ struct CalendarEntryTriggerConsent: View {
   @StateObject private var calendarManager = CalendarViewModel.shared
   @Environment(\.dismiss) private var dismiss
   @ObservedObject var watchConnector: WatchConnector
+  @State private var isLaunching = false
 
   private var appTitle: String {
     if let appIndex = event.appIndex,
@@ -33,13 +34,14 @@ struct CalendarEntryTriggerConsent: View {
         #endif
 
         Button("Starten") {
+          guard !isLaunching else { return }
+          isLaunching = true
+          watchConnector.currentView = .app(appIndex)
           dismiss()
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            watchConnector.currentView = .app(appIndex)
-          }
         }
         .tint(.green)
         .buttonStyle(.borderedProminent)
+        .disabled(isLaunching)
       }
 
       Button {
@@ -48,6 +50,7 @@ struct CalendarEntryTriggerConsent: View {
         Text("Später")
       }
       .buttonStyle(.bordered)
+      .disabled(isLaunching)
     }
   }
 }

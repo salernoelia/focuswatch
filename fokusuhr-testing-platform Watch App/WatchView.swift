@@ -94,17 +94,6 @@ struct WatchView: View {
       .navigationDestination(for: Int.self) { index in
         destinationView(for: index)
           .navigationBarTitleDisplayMode(.inline)
-          .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-              Button {
-                if !navigationPath.isEmpty {
-                  navigationPath.removeLast()
-                }
-              } label: {
-                Image(systemName: "chevron.left")
-              }
-            }
-          }
       }
     }
     .onAppear {
