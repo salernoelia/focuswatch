@@ -582,6 +582,7 @@
       }
     },
     "Apps" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -925,6 +926,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Current: %@"
+          }
+        }
+      }
+    },
+    "Dashboard" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Übersicht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dashboard"
           }
         }
       }
@@ -1528,7 +1546,6 @@
       }
     },
     "Focus Tools" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2311,6 +2328,22 @@
         }
       }
     },
+    "Next Milestone" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nächster Meilenstein"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next Milestone"
+          }
+        }
+      }
+    },
     "No checklists" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2318,6 +2351,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Keine Checklisten"
+          }
+        }
+      }
+    },
+    "No checklists available" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Checklisten verfügbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No checklists available"
           }
         }
       }

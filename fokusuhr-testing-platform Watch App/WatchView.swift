@@ -6,34 +6,19 @@ enum WatchViewState {
   case app(Int)
 }
 
-struct PrototypeApp {
-  let title: String
-  let description: String
-  let color: Color
-  let destination: AnyView
-}
-
 struct WatchView: View {
   @EnvironmentObject var watchConnector: WatchConnector
   @StateObject private var appsManager = AppsManager.shared
   @StateObject private var checklistManager = ChecklistViewModel.shared
   @State private var currentView: WatchViewState = .mainMenu
   @State private var navigationPath = NavigationPath()
-  @State private var selectedTab = 0
 
-  private var prototypeApps: [PrototypeApp] {
-    appsManager.apps.map { app in
-      let destination = destinationView(for: app)
-      return PrototypeApp(
-        title: app.title,
-        description: app.description,
-        color: app.color,
-        destination: AnyView(destination)
-      )
+  private func destinationView(for index: Int) -> some View {
+    guard index < appsManager.apps.count else {
+      return AnyView(Text(String(localized: "App not found")))
     }
-  }
 
-  private func destinationView(for app: AppInfo) -> some View {
+    let app = appsManager.apps[index]
     let localizedTachometer = String(localized: "Fokus Meter")
     let localizedSchreiben = String(localized: "Writing")
     let localizedFarbatmung = String(localized: "Color Breathing")
@@ -43,38 +28,40 @@ struct WatchView: View {
     let localizedKalender = String(localized: "Calendar")
     let localizedLevel = String(localized: "Level")
 
-    return Group {
-      if app.title == localizedTachometer {
-        SpeedometerView()
-      } else if app.title == localizedSchreiben {
-        WritingView()
-      } else if app.title == localizedFarbatmung {
-        ColorBreathingView()
-      } else if app.title == localizedPomodoro {
-        PomodoroView()
-      } else if app.title == localizedFidget {
-        FidgetToyView()
-      } else if app.title == localizedAnneBeta {
-        AnneView()
-      } else if app.title == localizedKalender {
-        CalendarView()
-      } else if app.title == localizedLevel {
-        LevelView()
-      } else {
-        if let checklist = checklistForApp(app) {
-          UniversalChecklistView(
-            title: checklist.name,
-            description: checklist.description,
-            instructionTitle: checklist.name,
-            items: checklist.items,
-            checklistId: checklist.id,
-            xpReward: checklist.xpReward
-          )
+    return AnyView(
+      Group {
+        if app.title == localizedTachometer {
+          SpeedometerView()
+        } else if app.title == localizedSchreiben {
+          WritingView()
+        } else if app.title == localizedFarbatmung {
+          ColorBreathingView()
+        } else if app.title == localizedPomodoro {
+          PomodoroView()
+        } else if app.title == localizedFidget {
+          FidgetToyView()
+        } else if app.title == localizedAnneBeta {
+          AnneView()
+        } else if app.title == localizedKalender {
+          CalendarView()
+        } else if app.title == localizedLevel {
+          LevelView()
         } else {
-          Text(String(localized: "App not found"))
+          if let checklist = checklistForApp(app) {
+            UniversalChecklistView(
+              title: checklist.name,
+              description: checklist.description,
+              instructionTitle: checklist.name,
+              items: checklist.items,
+              checklistId: checklist.id,
+              xpReward: checklist.xpReward
+            )
+          } else {
+            Text(String(localized: "App not found"))
+          }
         }
       }
-    }
+    )
   }
 
   private func checklistForApp(_ app: AppInfo) -> Checklist? {
@@ -91,27 +78,19 @@ struct WatchView: View {
 
   var body: some View {
     NavigationStack(path: $navigationPath) {
-      mainMenuView
-        .navigationDestination(for: Int.self) { index in
-          if index < prototypeApps.count {
-            prototypeApps[index].destination
-              .navigationBarTitleDisplayMode(.inline)
-            //   .toolbar {
-            //     ToolbarItem(placement: .cancellationAction) {
-            //       Button("Zurück") {
-            //         if !navigationPath.isEmpty {
-            //           navigationPath.removeLast()
-            //         }
-            //       }
-            //     }
-            //   }
-          }
-        }
+      TabView {
+        DashboardView()
+        CalendarView()
+        FocusToolsListView()
+        ChecklistsListView()
+      }
+      .tabViewStyle(.page)
+      .navigationDestination(for: Int.self) { index in
+        destinationView(for: index)
+          .navigationBarTitleDisplayMode(.inline)
+      }
     }
-    .tag(1)
-
     .onAppear {
-      selectedTab = 0
       checklistManager.loadChecklistData()
     }
     .onReceive(watchConnector.$currentView) { newView in
@@ -122,42 +101,9 @@ struct WatchView: View {
           navigationPath.removeLast(navigationPath.count)
         }
       case .app(let index):
-        if index < prototypeApps.count {
-          navigationPath.append(index)
-        }
+        navigationPath.append(index)
       }
     }
-  }
-
-  private var mainMenuView: some View {
-    ScrollView {
-      LazyVStack(spacing: 12) {
-        ForEach(Array(prototypeApps.enumerated()), id: \.offset) {
-          index,
-          app in
-          appNavigationLink(for: app, at: index)
-        }
-      }
-      .padding(.horizontal, 8)
-      .padding(.top, 8)
-    }
-    .navigationTitle(String(localized: "Apps"))
-    .navigationBarTitleDisplayMode(.inline)
-  }
-
-  private func appNavigationLink(for app: PrototypeApp, at index: Int)
-    -> some View
-  {
-    NavigationLink(value: index) {
-      AppCardView(
-        app: AppInfo(
-          title: app.title,
-          description: app.description,
-          color: app.color
-        )
-      )
-    }
-    .buttonStyle(PlainButtonStyle())
   }
 }
 
