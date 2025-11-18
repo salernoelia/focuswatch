@@ -1,19 +1,21 @@
-//
-//  PomodoroConfig.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 27.10.2025.
-//
-
 import SwiftUI
 import UserNotifications
 import WatchKit
 
 enum VibrationFrequency: String, Codable, CaseIterable {
-  case never = "Nie"
-  case rare = "Selten"
-  case normal = "Normal"
-  case frequent = "Häufig"
+  case never
+  case rare
+  case normal
+  case frequent
+
+  var localizedName: String {
+    switch self {
+    case .never: return String(localized: "Never")
+    case .rare: return String(localized: "Rare")
+    case .normal: return String(localized: "Normal")
+    case .frequent: return String(localized: "Often")
+    }
+  }
 
   var intervalRange: ClosedRange<Int> {
     switch self {
@@ -26,16 +28,23 @@ enum VibrationFrequency: String, Codable, CaseIterable {
 }
 
 enum VibrationIntensity: String, Codable, CaseIterable {
-  case light = "Leicht"
-  case medium = "Mittel"
-  case strong = "Stark"
+  case light
+  case medium
+  case strong
+
+  var localizedName: String {
+    switch self {
+    case .light: return String(localized: "Light")
+    case .medium: return String(localized: "Medium")
+    case .strong: return String(localized: "Strong")
+    }
+  }
 
   var hapticType: WKHapticType {
     switch self {
     case .light: return .start
     case .medium: return .directionUp
     case .strong: return .success
-
     }
   }
 }

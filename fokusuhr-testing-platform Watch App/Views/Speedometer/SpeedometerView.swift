@@ -73,13 +73,13 @@ struct SemicircleSegments: View {
   var body: some View {
     ZStack {
       SemicircleSegment(startAngle: 180, endAngle: 240)
-        .fill(Color.red)
-
-      SemicircleSegment(startAngle: 240, endAngle: 300)
         .fill(Color.orange)
 
-      SemicircleSegment(startAngle: 300, endAngle: 360)
+      SemicircleSegment(startAngle: 240, endAngle: 300)
         .fill(Color.green)
+
+      SemicircleSegment(startAngle: 300, endAngle: 360)
+        .fill(Color.orange)
     }
   }
 }

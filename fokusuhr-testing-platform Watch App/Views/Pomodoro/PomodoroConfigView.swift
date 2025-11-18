@@ -54,7 +54,7 @@ struct PomodoroConfigView: View {
                     viewModel.settings.vibrationFrequency = frequency
                   } label: {
                     HStack {
-                      Text(frequency.rawValue)
+                      Text(frequency.localizedName)
                       Spacer()
                       if viewModel.settings.vibrationFrequency == frequency {
                         Image(systemName: "checkmark")
@@ -62,7 +62,6 @@ struct PomodoroConfigView: View {
                       }
                     }
                   }
-                  .buttonStyle(.plain)
                 }
               }
               .navigationTitle("Häufigkeit")
@@ -71,7 +70,7 @@ struct PomodoroConfigView: View {
                 Text("Häufigkeit")
                   .font(.caption)
                 Spacer()
-                Text(viewModel.settings.vibrationFrequency.rawValue)
+                Text(viewModel.settings.vibrationFrequency.localizedName)
                   .foregroundStyle(.secondary)
                   .font(.caption)
               }
@@ -85,7 +84,7 @@ struct PomodoroConfigView: View {
                     VibrationManager.shared.playHaptic(intensity.hapticType)
                   } label: {
                     HStack {
-                      Text(intensity.rawValue)
+                      Text(intensity.localizedName)
                       Spacer()
                       if viewModel.settings.vibrationIntensity == intensity {
                         Image(systemName: "checkmark")
@@ -93,7 +92,6 @@ struct PomodoroConfigView: View {
                       }
                     }
                   }
-                  .buttonStyle(.plain)
                 }
               }
               .navigationTitle("Intensität")
@@ -102,7 +100,7 @@ struct PomodoroConfigView: View {
                 Text("Intensität")
                   .font(.caption)
                 Spacer()
-                Text(viewModel.settings.vibrationIntensity.rawValue)
+                Text(viewModel.settings.vibrationIntensity.localizedName)
                   .foregroundStyle(.secondary)
                   .font(.caption)
               }
@@ -111,7 +109,6 @@ struct PomodoroConfigView: View {
             Toggle("Vibration bei Abschluss", isOn: $viewModel.settings.completionVibration)
               .font(.caption)
           }
-
           Divider()
 
           VStack(spacing: 8) {

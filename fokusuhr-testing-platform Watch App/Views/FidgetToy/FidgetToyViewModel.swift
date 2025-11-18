@@ -9,7 +9,7 @@ class FidgetToyViewModel: ObservableObject {
   func startVibration() {
     guard feedbackTimer == nil else { return }
     feedbackTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
-      WKInterfaceDevice.current().play(.success)
+      WKInterfaceDevice.current().play(.directionUp)  // .directionDown .success .click
     }
   }
 

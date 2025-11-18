@@ -13,6 +13,8 @@ struct DashboardView: View {
       }
       .padding()
     }
+    .navigationTitle(String(localized: "Overview"))
+
   }
 
   private var levelSection: some View {
