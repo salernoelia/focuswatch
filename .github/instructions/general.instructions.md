@@ -24,6 +24,8 @@ applyTo: "**"
 
 ```
 .
+├── assets
+│   └── template.af
 ├── Development.xcconfig
 ├── docs
 │   ├── documentation__WatchConnectivity__WCSession.json
@@ -109,75 +111,9 @@ applyTo: "**"
 │       │   ├── UserRow.swift
 │       │   └── UserSelectionView.swift
 │       └── Wizard
+│           ├── WizardConfigView.swift
 │           └── WizardView.swift
 ├── fokusuhr-testing-platform Watch App
-│   ├── Assets.xcassets
-│   │   ├── AccentColor.colorset
-│   │   │   └── Contents.json
-│   │   ├── AppIcon.appiconset
-│   │   │   ├── 1024.png
-│   │   │   └── Contents.json
-│   │   ├── Backblech.imageset
-│   │   │   ├── Backblech.png
-│   │   │   └── Contents.json
-│   │   ├── Backpapier.imageset
-│   │   │   ├── Backpapier.png
-│   │   │   └── Contents.json
-│   │   ├── Bleistift.imageset
-│   │   │   ├── Bleistift.png
-│   │   │   └── Contents.json
-│   │   ├── Buntes Papier.imageset
-│   │   │   ├── Buntes Papier.png
-│   │   │   └── Contents.json
-│   │   ├── Contents.json
-│   │   ├── Ei.imageset
-│   │   │   ├── Contents.json
-│   │   │   └── Ei.png
-│   │   ├── Haselnüsse.imageset
-│   │   │   ├── Contents.json
-│   │   │   └── Haselnüsse 1.png
-│   │   ├── Kelle.imageset
-│   │   │   ├── Contents.json
-│   │   │   └── Kelle.png
-│   │   ├── Leimstift.imageset
-│   │   │   ├── Contents.json
-│   │   │   └── Leimstift.png
-│   │   ├── Lineal.imageset
-│   │   │   ├── Contents.json
-│   │   │   └── Lineal.png
-│   │   ├── Locher.imageset
-│   │   │   ├── Contents.json
-│   │   │   └── Locher.png
-│   │   ├── Maizena.imageset
-│   │   │   ├── Contents.json
-│   │   │   └── Maizena.png
-│   │   ├── Messlöffel.imageset
-│   │   │   ├── Contents.json
-│   │   │   └── Messlöffel.png
-│   │   ├── Schere.imageset
-│   │   │   ├── Contents.json
-│   │   │   └── Schere.png
-│   │   ├── Schokoladenpulver.imageset
-│   │   │   ├── Contents.json
-│   │   │   └── Schokoladenpulver.png
-│   │   ├── Schüssel.imageset
-│   │   │   ├── Contents.json
-│   │   │   └── Schüssel.png
-│   │   ├── Topflappen.imageset
-│   │   │   ├── Contents.json
-│   │   │   └── Topflappen.png
-│   │   ├── Waage.imageset
-│   │   │   ├── Contents.json
-│   │   │   └── Waage.png
-│   │   ├── Wackelaugen.imageset
-│   │   │   ├── Contents.json
-│   │   │   └── Wackelaugen.png
-│   │   ├── Wolle.imageset
-│   │   │   ├── Contents.json
-│   │   │   └── Wolle.png
-│   │   └── Zucker.imageset
-│   │       ├── Contents.json
-│   │       └── Zucker.png
 │   ├── Classifiers
 │   │   └── MultiClassifier.mlmodel
 │   ├── FokusUhr Watch App.entitlements
@@ -202,6 +138,7 @@ applyTo: "**"
 │   │   │   └── AnneView.swift
 │   │   ├── AppCardView.swift
 │   │   ├── Calendar
+│   │   │   ├── CalendarDetailView.swift
 │   │   │   ├── CalendarEntryTriggerConsent.swift
 │   │   │   ├── CalendarView.swift
 │   │   │   └── CalendarViewModel.swift
@@ -215,17 +152,24 @@ applyTo: "**"
 │   │   │   ├── ChecklistResumePromptView.swift
 │   │   │   ├── ChecklistView.swift
 │   │   │   └── ChecklistViewModel.swift
+│   │   ├── Checklists
+│   │   │   └── ChecklistsListView.swift
 │   │   ├── ColorBreathing
 │   │   │   ├── ColorBreathingView.swift
 │   │   │   └── ColorBreathingViewModel.swift
+│   │   ├── Dashboard
+│   │   │   └── DashboardView.swift
 │   │   ├── FidgetToy
 │   │   │   ├── FidgetToyView.swift
 │   │   │   └── FidgetToyViewModel.swift
+│   │   ├── FocusTools
+│   │   │   └── FocusToolsListView.swift
 │   │   ├── Level
 │   │   │   ├── LevelDebugView.swift
 │   │   │   ├── LevelRewardView.swift
 │   │   │   ├── LevelView.swift
-│   │   │   └── LevelViewModel.swift
+│   │   │   ├── LevelViewModel.swift
+│   │   │   └── MilestonesView.swift
 │   │   ├── Pomodoro
 │   │   │   ├── PomodoroConfig.swift
 │   │   │   ├── PomodoroConfigRow.swift
@@ -235,6 +179,10 @@ applyTo: "**"
 │   │   │   ├── PomodoroTimerView.swift
 │   │   │   ├── PomodoroView.swift
 │   │   │   └── PomodoroViewModel.swift
+│   │   ├── Progress
+│   │   │   └── ProgressListView.swift
+│   │   ├── Settings
+│   │   │   └── SettingsView.swift
 │   │   ├── Speedometer
 │   │   │   ├── SpeedometerNeedleView.swift
 │   │   │   └── SpeedometerView.swift
@@ -368,5 +316,7 @@ applyTo: "**"
 
 - Use the command "tree" in the commandline to see the latest directory tree if you need it
 - Never write any code comments OR SUMMARIES, or lists of what you did except you were asked for it, nor ever be verbose unless asked.
-- Use apple-doc and supabase mcp server for reference
+- Use apple-doc and supabase mcp server for reference!
 - Localization main is English
+- Don't ever be lazy! Always double check your suggestions and plan well.
+- No sloppy Code

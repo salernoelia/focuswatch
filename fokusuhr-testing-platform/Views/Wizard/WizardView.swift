@@ -141,7 +141,8 @@ struct WizardView: View {
         }
 
         Section("Focus Tools") {
-          ForEach(appsManager.apps, id: \.id) { app in
+          ForEach(appsManager.apps.filter { $0.index < appsManager.builtInAppCount }, id: \.id) {
+            app in
             Button {
               watchConnector.switchToApp(index: app.index)
             } label: {
@@ -160,6 +161,32 @@ struct WizardView: View {
               }
             }
             .disabled(connectionStatus != .connected)
+          }
+        }
+
+        if appsManager.apps.count > appsManager.builtInAppCount {
+          Section("Checklists") {
+            ForEach(appsManager.apps.filter { $0.index >= appsManager.builtInAppCount }, id: \.id) {
+              app in
+              Button {
+                watchConnector.switchToApp(index: app.index)
+              } label: {
+                HStack(spacing: 12) {
+                  Circle()
+                    .fill(app.color)
+                    .frame(width: 10, height: 10)
+
+                  VStack(alignment: .leading, spacing: 2) {
+                    Text(app.title)
+                      .foregroundColor(.primary)
+                    Text(app.description)
+                      .font(.caption)
+                      .foregroundColor(.secondary)
+                  }
+                }
+              }
+              .disabled(connectionStatus != .connected)
+            }
           }
         }
 
