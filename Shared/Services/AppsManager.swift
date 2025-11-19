@@ -43,7 +43,7 @@ class AppsManager: ObservableObject {
         String(localized: "Fokus Meter"), String(localized: "How do you feel right now?"),
         Color.yellow
       ),
-      (String(localized: "Writing"), String(localized: "Focus aid for writing."), Color.blue),
+      (String(localized: "Writing"), String(localized: "Focus aid for writing."), Color.orange),
       (String(localized: "Pomodoro"), String(localized: "Timer for time management"), Color.red),
       (String(localized: "Fidget Toy"), String(localized: "Interactive vibration toy"), Color.gray),
       (
