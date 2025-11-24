@@ -112,6 +112,22 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     syncTelemetryToWatch()
     syncCalendarToWatch()
     syncLevelToWatch()
+    syncAppConfigurationsToWatch()
+  }
+
+  private func syncAppConfigurationsToWatch() {
+    guard let data = UserDefaults.standard.data(forKey: "appConfigurations") else {
+      return
+    }
+
+    do {
+      let configurations = try JSONDecoder().decode(AppConfigurations.self, from: data)
+      syncAppConfigurations(configurations)
+    } catch {
+      #if DEBUG
+        print("Failed to load app configurations for sync: \(error.localizedDescription)")
+      #endif
+    }
   }
 
   private func startConnectionMonitoring() {
@@ -152,6 +168,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
           self.syncCalendarToWatch()
           self.syncTelemetryToWatch()
           self.syncLevelToWatch()
+          self.syncAppConfigurationsToWatch()
         }
       }
     }
@@ -199,6 +216,7 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
         self.syncCalendarToWatch()
         self.syncTelemetryToWatch()
         self.syncLevelToWatch()
+        self.syncAppConfigurationsToWatch()
       }
     }
   }

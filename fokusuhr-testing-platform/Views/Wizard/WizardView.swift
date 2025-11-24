@@ -12,6 +12,8 @@ struct WizardView: View {
   @StateObject private var appsManager = AppsManager.shared
   @State private var isReconnecting = false
   @State private var isSyncing = false
+  @State private var appConfigurations = loadAppConfigurations()
+  @State private var showingConfig: FocusToolType?
 
   private var connectionStatus: ConnectionStatus {
     if !WCSession.isSupported() {
@@ -140,27 +142,46 @@ struct WizardView: View {
           }
         }
 
+        Section("Navigation") {
+          Button("Return to Dashboard") {
+            watchConnector.returnToMainMenu()
+          }
+          .disabled(connectionStatus != .connected)
+        }
+
         Section("Focus Tools") {
           ForEach(appsManager.apps.filter { $0.index < appsManager.builtInAppCount }, id: \.id) {
             app in
-            Button {
-              watchConnector.switchToApp(index: app.index)
-            } label: {
-              HStack(spacing: 12) {
-                Circle()
-                  .fill(app.color)
-                  .frame(width: 10, height: 10)
+            HStack(spacing: 12) {
+              Button {
+                watchConnector.switchToApp(index: app.index)
+              } label: {
+                HStack(spacing: 12) {
+                  Circle()
+                    .fill(app.color)
+                    .frame(width: 10, height: 10)
 
-                VStack(alignment: .leading, spacing: 2) {
-                  Text(app.title)
-                    .foregroundColor(.primary)
-                  Text(app.description)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                  VStack(alignment: .leading, spacing: 2) {
+                    Text(app.title)
+                      .foregroundColor(.primary)
+                    Text(app.description)
+                      .font(.caption)
+                      .foregroundColor(.secondary)
+                  }
+
+                  Spacer()
                 }
               }
+              .disabled(connectionStatus != .connected)
+
+              Button {
+                showingConfig = focusToolType(for: app.index)
+              } label: {
+                Image(systemName: "gear")
+                  .foregroundColor(.secondary)
+              }
+              .buttonStyle(.borderless)
             }
-            .disabled(connectionStatus != .connected)
           }
         }
 
@@ -230,13 +251,6 @@ struct WizardView: View {
           .disabled(connectionStatus != .connected)
         }
 
-        Section("Navigation") {
-          Button("Return to Dashboard") {
-            watchConnector.returnToMainMenu()
-          }
-          .disabled(connectionStatus != .connected)
-        }
-
         Section("Advanced") {
           Button(action: forceSyncToWatch) {
             HStack {
@@ -250,6 +264,7 @@ struct WizardView: View {
           }
           .disabled(!watchConnector.isConnected || isSyncing)
         }
+
       }
       .listStyle(.insetGrouped)
       .refreshable {
@@ -277,7 +292,51 @@ struct WizardView: View {
           ChecklistViewModel.loadSharedData()
         tryInitialWatchConnect()
       }
+      .sheet(item: $showingConfig) { toolType in
+        WizardConfigView(toolType: toolType, configurations: $appConfigurations)
+          .onDisappear {
+            saveAppConfigurations(appConfigurations)
+            watchConnector.syncAppConfigurations(appConfigurations)
+          }
+      }
 
+    }
+  }
+
+  private func focusToolType(for index: Int) -> FocusToolType? {
+    switch index {
+    case 0: return .fokusMeter
+    case 1: return .writing
+    case 2: return .pomodoro
+    case 3: return .fidgetToy
+    case 4: return .colorBreathing
+    default: return nil
+    }
+  }
+
+  private static func loadAppConfigurations() -> AppConfigurations {
+    guard let data = UserDefaults.standard.data(forKey: "appConfigurations") else {
+      return AppConfigurations.default
+    }
+
+    do {
+      return try JSONDecoder().decode(AppConfigurations.self, from: data)
+    } catch {
+      #if DEBUG
+        ErrorLogger.log(AppError.decodingFailed(type: "app configurations", underlying: error))
+      #endif
+      return AppConfigurations.default
+    }
+  }
+
+  private func saveAppConfigurations(_ configurations: AppConfigurations) {
+    do {
+      let data = try JSONEncoder().encode(configurations)
+      UserDefaults.standard.set(data, forKey: "appConfigurations")
+    } catch {
+      #if DEBUG
+        ErrorLogger.log(AppError.encodingFailed(type: "app configurations", underlying: error))
+      #endif
     }
   }
 

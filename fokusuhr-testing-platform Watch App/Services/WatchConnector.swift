@@ -471,6 +471,16 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
         #endif
       }
 
+      // App configurations
+      if let configDataString = applicationContext["appConfigurations"] as? String,
+        let data = Data(base64Encoded: configDataString)
+      {
+        self.handleConfigurationsUpdate(from: applicationContext)
+        #if DEBUG
+          print("✅ Watch: App configurations updated from background context")
+        #endif
+      }
+
       // Legacy action-based handling (for backward compatibility)
       if let action = applicationContext["action"] as? String {
         switch action {

@@ -320,3 +320,4 @@ applyTo: "**"
 - Localization main is English
 - Don't ever be lazy! Always double check your suggestions and plan well.
 - No sloppy Code
+- No Summaries at the end of an implementation unless explicitly asked

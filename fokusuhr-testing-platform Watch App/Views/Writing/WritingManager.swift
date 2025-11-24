@@ -47,6 +47,9 @@ class WritingManager {
   /// The current user configuration for the session.
   var currentSetting: Config?
 
+  /// Shared app configuration from iOS
+  var sharedConfiguration = WatchConnector.loadAppConfigurations().writing
+
   // MARK: - Initializer
 
   /// Initializes the `WritingManager`, loading user settings and calculating the total exercise time based on those settings.
@@ -54,10 +57,52 @@ class WritingManager {
     let currentSetting =
       UserConfigs.loadConfigFromUserDefaults(forKey: "config_\(deviceID)") ?? Config()
     self.currentSetting = currentSetting
+    
     let reps = Double(currentSetting.repetitions)
     let learn = Double(currentSetting.learn * 60)
     let pause = Double(currentSetting.pause * 60)
-    // Calculate total time for Pomodoro-style session by default.
+    self.totalExerciseTime = Double(learn * reps + pause * (reps - 1))
+    
+    setupConfigurationObserver()
+  }
+
+  private func setupConfigurationObserver() {
+    NotificationCenter.default.addObserver(
+      forName: .appConfigurationsUpdated,
+      object: nil,
+      queue: .main
+    ) { [weak self] notification in
+      guard let self = self,
+        let configurations = notification.object as? AppConfigurations
+      else { return }
+
+      self.sharedConfiguration = configurations.writing
+      self.applySharedConfiguration()
+
+      #if DEBUG
+        print("✅ Writing: Applied configuration from iOS")
+      #endif
+    }
+  }
+
+  func applySharedConfiguration() {
+    guard let currentSetting = currentSetting else { return }
+
+    var updatedSetting = currentSetting
+    updatedSetting.learn = sharedConfiguration.workMinutes
+    updatedSetting.think = sharedConfiguration.thinkMinutes
+    updatedSetting.pause = sharedConfiguration.pauseMinutes
+    updatedSetting.repetitions = sharedConfiguration.repetitions
+
+    self.currentSetting = updatedSetting
+    updateTotalExerciseTime()
+  }
+
+  private func updateTotalExerciseTime() {
+    guard let currentSetting = currentSetting else { return }
+    let reps = Double(currentSetting.repetitions)
+    let learn = Double(currentSetting.learn * 60)
+    let pause = Double(currentSetting.pause * 60)
     self.totalExerciseTime = Double(learn * reps + pause * (reps - 1))
   }
 
@@ -68,6 +113,7 @@ class WritingManager {
   ///   - isPomodoro: A boolean indicating if the session is a Pomodoro session, which affects `totalExerciseTime`.
   ///   - completion: A completion handler that returns the start date of the recording.
   func startWritingManager(isPomodoro: Bool, completion: @escaping (Date?) -> Void) {
+    applySharedConfiguration()
     let settingSampleFreq = Double(currentSetting?.modelParams.samplingRateHz ?? 100)
     motionManager.startAccelerometerUpdates(updateInterval: 1 / settingSampleFreq)
 

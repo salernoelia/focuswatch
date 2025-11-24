@@ -27,6 +27,36 @@
         }
       }
     },
+    "%@: %@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@: %2$@ %3$@"
+          }
+        }
+      }
+    },
+    "%@: %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@: %2$lld"
+          }
+        }
+      }
+    },
+    "%@: %lld %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@: %2$lld %3$@"
+          }
+        }
+      }
+    },
     "%lld" : {
       "localizations" : {
         "de" : {
@@ -737,6 +767,9 @@
         }
       }
     },
+    "Breathing Pattern" : {
+
+    },
     "Calendar" : {
       "localizations" : {
         "de" : {
@@ -831,6 +864,9 @@
         }
       }
     },
+    "Completion Vibration" : {
+
+    },
     "Configurations" : {
       "localizations" : {
         "de" : {
@@ -878,6 +914,9 @@
           }
         }
       }
+    },
+    "Continuous Vibration" : {
+
     },
     "Current Level" : {
       "localizations" : {
@@ -951,6 +990,9 @@
         }
       }
     },
+    "Cycles" : {
+
+    },
     "Daily" : {
       "localizations" : {
         "de" : {
@@ -978,7 +1020,7 @@
       }
     },
     "Debug Tools" : {
-      "shouldTranslate" : false
+
     },
     "Dein Feedback" : {
       "localizations" : {
@@ -1298,6 +1340,9 @@
         }
       }
     },
+    "Enable Vibration" : {
+
+    },
     "Enabled" : {
       "localizations" : {
         "de" : {
@@ -1413,6 +1458,9 @@
           }
         }
       }
+    },
+    "Exhale" : {
+
     },
     "Failed Uploads:\n%@" : {
       "localizations" : {
@@ -1760,9 +1808,6 @@
         }
       }
     },
-    "Hello, World!" : {
-
-    },
     "Heute" : {
       "localizations" : {
         "de" : {
@@ -1846,6 +1891,9 @@
           }
         }
       }
+    },
+    "Inhale" : {
+
     },
     "Intensität" : {
       "localizations" : {
@@ -2247,6 +2295,9 @@
         }
       }
     },
+    "Long Break" : {
+
+    },
     "Loslegen" : {
       "localizations" : {
         "de" : {
@@ -2324,6 +2375,9 @@
           }
         }
       }
+    },
+    "min" : {
+
     },
     "Navigation" : {
       "localizations" : {
@@ -2691,6 +2745,9 @@
         }
       }
     },
+    "Pause" : {
+
+    },
     "Pause überspringen" : {
       "localizations" : {
         "de" : {
@@ -2971,6 +3028,9 @@
         }
       }
     },
+    "Repetitions" : {
+
+    },
     "Reset Progress" : {
       "localizations" : {
         "de" : {
@@ -3006,6 +3066,9 @@
           }
         }
       }
+    },
+    "Rounds Until Long Break" : {
+
     },
     "S: %@, P: %lld, A: %lld" : {
       "localizations" : {
@@ -3119,6 +3182,9 @@
         }
       }
     },
+    "sec" : {
+
+    },
     "See your focus points" : {
       "localizations" : {
         "de" : {
@@ -3177,6 +3243,9 @@
         }
       }
     },
+    "Session Intervals" : {
+
+    },
     "Settings" : {
       "localizations" : {
         "de" : {
@@ -3202,6 +3271,9 @@
           }
         }
       }
+    },
+    "Short Break" : {
+
     },
     "Sign In" : {
       "localizations" : {
@@ -3463,6 +3535,9 @@
         }
       }
     },
+    "Think" : {
+
+    },
     "This label will be displayed alongside the image" : {
       "localizations" : {
         "de" : {
@@ -3673,6 +3748,15 @@
         }
       }
     },
+    "Vibration Frequency" : {
+
+    },
+    "Vibration Intensity" : {
+
+    },
+    "Vibration on Transition" : {
+
+    },
     "Vibrationen" : {
       "localizations" : {
         "de" : {
@@ -3849,6 +3933,12 @@
           }
         }
       }
+    },
+    "Work" : {
+
+    },
+    "Work Intervals" : {
+
     },
     "Writing" : {
       "localizations" : {

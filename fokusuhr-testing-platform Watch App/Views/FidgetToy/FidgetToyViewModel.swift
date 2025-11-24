@@ -4,12 +4,45 @@ import SwiftUI
 class FidgetToyViewModel: ObservableObject {
   @Published var position: CGSize = .zero
   @Published var isMoving: Bool = false
+  @Published var configuration = FidgetToyConfiguration()
+
   private var feedbackTimer: Timer?
+
+  init() {
+    loadConfiguration()
+    setupConfigurationObserver()
+  }
+
+  private func loadConfiguration() {
+    let configurations = WatchConnector.loadAppConfigurations()
+    configuration = configurations.fidgetToy
+  }
+
+  private func setupConfigurationObserver() {
+    NotificationCenter.default.addObserver(
+      forName: .appConfigurationsUpdated,
+      object: nil,
+      queue: .main
+    ) { [weak self] notification in
+      guard let self = self,
+        let configurations = notification.object as? AppConfigurations
+      else { return }
+
+      self.configuration = configurations.fidgetToy
+
+      #if DEBUG
+        print("✅ FidgetToy: Applied configuration from iOS")
+      #endif
+    }
+  }
 
   func startVibration() {
     guard feedbackTimer == nil else { return }
-    feedbackTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
-      WKInterfaceDevice.current().play(.directionUp)  // .directionDown .success .click
+    guard configuration.continuousVibration else { return }
+
+    feedbackTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { [weak self] _ in
+      guard let self = self else { return }
+      WKInterfaceDevice.current().play(self.configuration.vibrationIntensity.hapticType)
     }
   }
 

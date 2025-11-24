@@ -1,8 +1,6 @@
 import SwiftUI
 import WatchKit
 
-
-
 struct ColorBreathingView: View {
   @StateObject private var viewModel = ColorBreathingViewModel()
   private let appLogger = AppLogger.shared
@@ -28,17 +26,25 @@ struct ColorBreathingView: View {
             )
             .scaleEffect(viewModel.scale)
             .animation(
-              .easeInOut(duration: 4)
+              .easeInOut(duration: Double(viewModel.configuration.inhaleSeconds))
                 .repeatForever(autoreverses: true),
               value: viewModel.scale
             )
         }
         .frame(width: 120, height: 120)
 
-        Text(viewModel.isInhaling ? "Einatmen" : "Ausatmen")
-          .font(.caption)
-          .foregroundColor(.white.opacity(0.8))
-          .animation(.easeInOut(duration: 1), value: viewModel.isInhaling)
+        VStack(spacing: 4) {
+          Text(viewModel.isInhaling ? "Einatmen" : "Ausatmen")
+            .font(.caption)
+            .foregroundColor(.white.opacity(0.8))
+            .animation(.easeInOut(duration: 1), value: viewModel.isInhaling)
+
+          if viewModel.configuration.cycleCount > 0 {
+            Text("\(viewModel.currentCycle) / \(viewModel.configuration.cycleCount)")
+              .font(.caption2)
+              .foregroundColor(.white.opacity(0.5))
+          }
+        }
       }
     }
     .onAppear {

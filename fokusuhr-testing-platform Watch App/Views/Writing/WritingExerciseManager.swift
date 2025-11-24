@@ -133,6 +133,26 @@ class WritingExerciseManager: NSObject, ObservableObject {
   override init() {
     super.init()
     storeWidgetValue()
+    setupConfigurationObserver()
+  }
+
+  private func setupConfigurationObserver() {
+    NotificationCenter.default.addObserver(
+      forName: .appConfigurationsUpdated,
+      object: nil,
+      queue: .main
+    ) { [weak self] notification in
+      guard let self = self,
+        let configurations = notification.object as? AppConfigurations
+      else { return }
+
+      self.writingManager.sharedConfiguration = configurations.writing
+      self.writingManager.applySharedConfiguration()
+
+      #if DEBUG
+        print("✅ WritingExercise: Applied configuration from iOS")
+      #endif
+    }
   }
 
   // MARK: - Extended Runtime Session

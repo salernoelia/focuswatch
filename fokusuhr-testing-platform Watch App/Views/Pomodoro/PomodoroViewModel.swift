@@ -31,6 +31,7 @@ class PomodoroViewModel: ObservableObject {
     loadSettings()
     updateTotalTime()
     requestNotificationPermission()
+    setupConfigurationObserver()
 
     NotificationCenter.default.addObserver(
       self,
@@ -42,6 +43,40 @@ class PomodoroViewModel: ObservableObject {
 
   deinit {
     NotificationCenter.default.removeObserver(self)
+  }
+
+  private func setupConfigurationObserver() {
+    NotificationCenter.default.addObserver(
+      forName: .appConfigurationsUpdated,
+      object: nil,
+      queue: .main
+    ) { [weak self] notification in
+      guard let self = self,
+        let configurations = notification.object as? AppConfigurations
+      else { return }
+
+      self.applyConfiguration(configurations.pomodoro)
+    }
+  }
+
+  private func applyConfiguration(_ config: PomodoroConfiguration) {
+    settings = PomodoroConfig(
+      workMinutes: config.workMinutes,
+      shortBreakMinutes: config.shortBreakMinutes,
+      longBreakMinutes: config.longBreakMinutes,
+      roundsUntilLongBreak: config.roundsUntilLongBreak,
+      vibrationFrequency: config.vibrationFrequency,
+      vibrationIntensity: config.vibrationIntensity,
+      completionVibration: config.completionVibration
+    )
+
+    if !isRunning {
+      updateTotalTime()
+    }
+
+    #if DEBUG
+      print("✅ Pomodoro: Applied configuration from iOS")
+    #endif
   }
 
   var timeString: String {

@@ -2,6 +2,8 @@ import SwiftUI
 
 struct SpeedometerView: View {
   @State private var moodValue: Double = 0.5
+  @State private var configuration = WatchConnector.loadAppConfigurations().fokusMeter
+
   private let appLogger = AppLogger.shared
 
   var body: some View {
@@ -43,20 +45,41 @@ struct SpeedometerView: View {
               if abs(dx) <= radius {
                 moodValue = (dx + radius) / (2 * radius)
                 moodValue = max(0, min(1, moodValue))
+
+                if configuration.enableVibration {
+                  WKInterfaceDevice.current().play(configuration.vibrationIntensity.hapticType)
+                }
               }
             }
         )
         .focusable()
-          .digitalCrownRotation(
+        .digitalCrownRotation(
           $moodValue, from: 0.0, through: 1.0, by: 0.01,
-          sensitivity: .low)
+          sensitivity: .low,
+          isHapticFeedbackEnabled: configuration.enableVibration)
       }
     }
     .onAppear {
       appLogger.logViewLifecycle(appName: "tachometer", event: "open")
+      setupConfigurationObserver()
     }
     .onDisappear {
       appLogger.logViewLifecycle(appName: "tachometer", event: "close")
+    }
+  }
+
+  private func setupConfigurationObserver() {
+    NotificationCenter.default.addObserver(
+      forName: .appConfigurationsUpdated,
+      object: nil,
+      queue: .main
+    ) { [self] notification in
+      guard let configurations = notification.object as? AppConfigurations else { return }
+      configuration = configurations.fokusMeter
+
+      #if DEBUG
+        print("✅ FokusMeter: Applied configuration from iOS")
+      #endif
     }
   }
 
