@@ -365,84 +365,14 @@ class DataStorageManager: UploadService {
   }
 
   /// Performs the multipart form upload request to the Google Drive API.
+  /// Note: Google Drive upload has been disabled. Data is stored locally only.
   func uploadToGoogleDrive(
     data: Data, filename: String, folderID: String,
     completion: @escaping (Result<Void, Error>) -> Void
   ) {
-    UserConfigs.getAccessToken { result in
-      switch result {
-      case .success(let accessToken):
-        print("Received access token")
-        guard
-          let uploadURL = URL(
-            string: "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart")
-        else {
-          completion(
-            .failure(
-              NSError(
-                domain: "GoogleDriveUploadError", code: -1,
-                userInfo: [NSLocalizedDescriptionKey: "Invalid upload URL"])))
-          return
-        }
-
-        let boundary = UUID().uuidString
-        var request = URLRequest(url: uploadURL)
-        request.httpMethod = "POST"
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        request.setValue(
-          "multipart/related; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-
-        var body = Data()
-
-        // Metadata part of the request body
-        let metadata: [String: Any] = [
-          "name": filename,
-          "parents": [folderID],  // Specify the target folder
-        ]
-
-        if let metadataPart = try? JSONSerialization.data(withJSONObject: metadata, options: []) {
-          body.append("--\(boundary)\r\n".data(using: .utf8)!)
-          body.append("Content-Type: application/json; charset=UTF-8\r\n\r\n".data(using: .utf8)!)
-          body.append(metadataPart)
-          body.append("\r\n".data(using: .utf8)!)
-        }
-
-        // File content part of the request body
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Type: application/octet-stream\r\n\r\n".data(using: .utf8)!)
-        body.append(data)
-        body.append("\r\n".data(using: .utf8)!)
-
-        // End boundary
-        body.append("--\(boundary)--".data(using: .utf8)!)
-
-        request.httpBody = body
-
-        // Perform the URLSession task
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-          if let error = error {
-            completion(.failure(error))
-            return
-          }
-
-          if let httpResponse = response as? HTTPURLResponse,
-            (200...299).contains(httpResponse.statusCode)
-          {
-            completion(.success(()))
-          } else {
-            let error = NSError(
-              domain: "GoogleDriveUploadError", code: -1,
-              userInfo: [NSLocalizedDescriptionKey: "Failed to upload data to Google Drive"])
-            completion(.failure(error))
-          }
-        }
-        task.resume()
-
-      case .failure(let error):
-        print("Failed to get access token for Google Drive: \(error.localizedDescription)")
-        completion(.failure(error))
-      }
-    }
+    print("Google Drive upload disabled - storing locally only: \(filename)")
+    storeSuccessUpload(data: data, filename: filename)
+    completion(.success(()))
   }
 
   /// Uploads JSON data to a specified webhook endpoint.

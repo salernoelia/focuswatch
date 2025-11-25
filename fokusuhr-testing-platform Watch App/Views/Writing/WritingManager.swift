@@ -57,12 +57,12 @@ class WritingManager {
     let currentSetting =
       UserConfigs.loadConfigFromUserDefaults(forKey: "config_\(deviceID)") ?? Config()
     self.currentSetting = currentSetting
-    
+
     let reps = Double(currentSetting.repetitions)
     let learn = Double(currentSetting.learn * 60)
     let pause = Double(currentSetting.pause * 60)
     self.totalExerciseTime = Double(learn * reps + pause * (reps - 1))
-    
+
     setupConfigurationObserver()
   }
 
