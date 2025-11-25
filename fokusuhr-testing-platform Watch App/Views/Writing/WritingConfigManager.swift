@@ -125,7 +125,7 @@ class UserConfigs: ObservableObject {
   init() {
     // Load existing config or fallback to default upon initialization.
     self.loadConfigs()
-    
+
     // Listen for updates from WatchConnector
     NotificationCenter.default.addObserver(
       self,
@@ -134,7 +134,7 @@ class UserConfigs: ObservableObject {
       object: nil
     )
   }
-  
+
   deinit {
     NotificationCenter.default.removeObserver(self)
   }
@@ -185,27 +185,28 @@ class UserConfigs: ObservableObject {
       UserDefaults.standard.set(encoded, forKey: key)
     }
   }
-  
+
   // MARK: - Sync Handling
-  
+
   @objc private func handleAppConfigurationsUpdate(_ notification: Notification) {
     guard let appConfigs = notification.object as? AppConfigurations else { return }
     let writingConfig = appConfigs.writing
-    
+
     DispatchQueue.main.async {
       print("📝 Updating Writing config from AppConfigurations...")
-      
+
       // Update properties from shared configuration
       self.configs.learn = writingConfig.workMinutes
       self.configs.think = writingConfig.thinkMinutes
       self.configs.pause = writingConfig.pauseMinutes
       self.configs.repetitions = writingConfig.repetitions
-      
+
       // Map vibration settings if needed, or keep existing logic
       // For now we only map the main timing parameters as requested
-      
+
       // Save the updated config
-      self.storeConfigInUserDefaults(config: self.configs, forKey: "config_\(self.deviceUUIDPrefix)")
+      self.storeConfigInUserDefaults(
+        config: self.configs, forKey: "config_\(self.deviceUUIDPrefix)")
       print("✅ Writing config updated: \(self.configs)")
     }
   }
