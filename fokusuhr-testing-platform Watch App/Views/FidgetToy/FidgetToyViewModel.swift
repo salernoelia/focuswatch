@@ -38,7 +38,6 @@ class FidgetToyViewModel: ObservableObject {
 
   func startVibration() {
     guard feedbackTimer == nil else { return }
-    guard configuration.continuousVibration else { return }
 
     feedbackTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { [weak self] _ in
       guard let self = self else { return }

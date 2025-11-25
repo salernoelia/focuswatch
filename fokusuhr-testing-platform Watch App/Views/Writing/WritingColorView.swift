@@ -7,34 +7,20 @@
 import Foundation
 import SwiftUI
 
-// MARK: - WritingColorView
-/// The main container view that determines whether to show the start screen or the active run screen.
 struct WritingColorView: View {
-  // MARK: - Properties
-
-  /// The environment object that manages the overall state of the exercise session.
   @EnvironmentObject var WritingExerciseManager: WritingExerciseManager
   let deviceUUIDPrefix = WatchConfig.shared.uuid.prefix(6)
 
-  // MARK: - Body
-
   var body: some View {
     Group {
-      // If the session is running but feedback is disabled, show a simple black screen.
       if WritingExerciseManager.showRunView && !UserConfigs.shared.configs.feedbackEnabled {
         Color.black.edgesIgnoringSafeArea(.all)
-      }
-      // If the session is running and feedback is enabled, show the main run view.
-      else if WritingExerciseManager.showRunView {
+      } else if WritingExerciseManager.showRunView {
         ColorRunView()
       } else {
-        // If the session has not started, show the start button.
         GeometryReader { geometry in
           Button(action: {
-            // Initialize the extended runtime session to allow background execution.
             WritingExerciseManager.initExtendedSession()
-
-            // Delay the state change slightly to allow the button's pressed animation to show.
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
               WritingExerciseManager.showRunView = true
             }
@@ -50,7 +36,7 @@ struct WritingColorView: View {
             }
             .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
           }
-          .buttonStyle(PlainButtonStyle())  // Use plain style to have full control over the button's appearance.
+          .buttonStyle(PlainButtonStyle())
         }
       }
     }
@@ -63,7 +49,7 @@ struct ColorRunView: View {
   // MARK: - Properties
 
   @EnvironmentObject var WritingExerciseManager: WritingExerciseManager
-    private let deviceUUIDPrefix = WatchConfig.shared.uuid.prefix(6)
+  private let deviceUUIDPrefix = WatchConfig.shared.uuid.prefix(6)
   var currentSetting = UserConfigs.shared.configs
 
   /// The state variable that drives the wave animation's phase.
@@ -225,7 +211,7 @@ struct ColorRunViewNoWave: View {
   // MARK: - Properties
 
   @EnvironmentObject var WritingExerciseManager: WritingExerciseManager
-    private let deviceUUIDPrefix = WatchConfig.shared.uuid.prefix(6) 
+  private let deviceUUIDPrefix = WatchConfig.shared.uuid.prefix(6)
   var currentSetting = UserConfigs.shared.configs
 
   // MARK: - Body

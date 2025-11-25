@@ -915,9 +915,6 @@
         }
       }
     },
-    "Continuous Vibration" : {
-
-    },
     "Current Level" : {
       "localizations" : {
         "de" : {
@@ -1339,9 +1336,6 @@
           }
         }
       }
-    },
-    "Enable Vibration" : {
-
     },
     "Enabled" : {
       "localizations" : {

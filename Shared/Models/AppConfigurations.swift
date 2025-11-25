@@ -1,6 +1,7 @@
 import Foundation
+
 #if os(watchOS)
-import WatchKit
+  import WatchKit
 #endif
 
 enum FocusToolType {
@@ -64,9 +65,9 @@ enum VibrationIntensity: String, Codable, CaseIterable {
   #if os(watchOS)
     var hapticType: WKHapticType {
       switch self {
-      case .light: return .start
+      case .light: return .click
       case .medium: return .directionUp
-      case .strong: return .success
+      case .strong: return .notification
       }
     }
   #endif
@@ -84,7 +85,6 @@ struct PomodoroConfiguration: Codable, Hashable {
 
 struct FidgetToyConfiguration: Codable, Hashable {
   var vibrationIntensity: VibrationIntensity = .medium
-  var continuousVibration: Bool = true
 }
 
 struct ColorBreathingConfiguration: Codable, Hashable {
@@ -95,11 +95,7 @@ struct ColorBreathingConfiguration: Codable, Hashable {
   var vibrationIntensity: VibrationIntensity = .light
 }
 
-struct FokusMeterConfiguration: Codable, Hashable {
-  var enableVibration: Bool = true
-  var vibrationIntensity: VibrationIntensity = .medium
-}
-
+struct FokusMeterConfiguration: Codable, Hashable {}
 struct WritingConfiguration: Codable, Hashable {
   var workMinutes: Double = 5.0
   var thinkMinutes: Double = 0.3

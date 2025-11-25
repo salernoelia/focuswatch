@@ -95,8 +95,6 @@ struct FidgetToyConfigSection: View {
           Text(intensity.localizedName).tag(intensity)
         }
       }
-
-      Toggle(String(localized: "Continuous Vibration"), isOn: $config.continuousVibration)
     }
   }
 }
@@ -137,16 +135,7 @@ struct FokusMeterConfigSection: View {
   @Binding var config: FokusMeterConfiguration
 
   var body: some View {
-    Section(String(localized: "Feedback")) {
-      Toggle(String(localized: "Enable Vibration"), isOn: $config.enableVibration)
-
-      Picker(String(localized: "Vibration Intensity"), selection: $config.vibrationIntensity) {
-        ForEach(VibrationIntensity.allCases, id: \.self) { intensity in
-          Text(intensity.localizedName).tag(intensity)
-        }
-      }
-      .disabled(!config.enableVibration)
-    }
+    EmptyView()
   }
 }
 
