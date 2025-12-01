@@ -3,7 +3,6 @@ import SwiftUI
 struct WritingView: View {
   @StateObject private var configs = UserConfigs.shared
   @EnvironmentObject var WritingExerciseManager: WritingExerciseManager
-  @State private var configsLoaded = false
   private let appLogger = AppLogger.shared
 
   var body: some View {

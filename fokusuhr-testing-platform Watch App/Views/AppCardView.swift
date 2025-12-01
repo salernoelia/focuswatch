@@ -18,7 +18,7 @@ struct AppCardView: View {
           .foregroundColor(.white.opacity(0.7))
           .lineLimit(2)
       }
-
+        
       Spacer(minLength: 0)
 
       Image(systemName: "chevron.right")
@@ -33,7 +33,7 @@ struct AppCardView: View {
     )
     .overlay(
       RoundedRectangle(cornerRadius: 16)
-        .stroke(app.color.opacity(0.3), lineWidth: 1)
+        .stroke(app.color.opacity(0.3), lineWidth: 2)
     )
   }
 }

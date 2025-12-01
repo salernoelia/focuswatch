@@ -135,7 +135,7 @@ struct FokusMeterConfigSection: View {
   @Binding var config: FokusMeterConfiguration
 
   var body: some View {
-    EmptyView()
+    Text("No configurations availible for this App.")
   }
 }
 

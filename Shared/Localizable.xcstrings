@@ -193,6 +193,7 @@
       }
     },
     "🏆" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2519,6 +2520,9 @@
         }
       }
     },
+    "No configurations availible for this App." : {
+
+    },
     "No Entries" : {
       "localizations" : {
         "de" : {
@@ -3375,6 +3379,38 @@
         }
       }
     },
+    "stop_exercise_confirm" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Übung stoppen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop Exercise"
+          }
+        }
+      }
+    },
+    "stop_exercise_title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Übung beenden?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop Exercise?"
+          }
+        }
+      }
+    },
     "Strong" : {
       "localizations" : {
         "de" : {
@@ -3653,6 +3689,7 @@
       }
     },
     "Übung stoppen" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
