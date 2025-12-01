@@ -33,7 +33,7 @@ struct AppCardView: View {
     )
     .overlay(
       RoundedRectangle(cornerRadius: 16)
-        .stroke(app.color.opacity(0.3), lineWidth: 2)
+        .stroke(app.color.opacity(0.3), lineWidth: 3)
     )
   }
 }

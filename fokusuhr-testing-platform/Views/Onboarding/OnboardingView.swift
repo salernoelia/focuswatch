@@ -71,6 +71,9 @@ struct OnboardingView: View {
 
               if index == pages.count - 1 {
                 Toggle("Telemetrie zulassen", isOn: $telemetryManager.hasConsent)
+                  .onAppear {
+                    telemetryManager.hasConsent = true
+                  }
                   .padding(.horizontal, 48)
                   .padding(.top, 20)
               }

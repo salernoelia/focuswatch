@@ -84,7 +84,7 @@ extension WatchConnector {
 
         #if DEBUG
           ErrorLogger.log(
-            "⌚ Watch: Syncing level to iOS: Level \(levelData.currentLevel), XP: \(levelData.currentXP)"
+            "⌚ Watch: Syncing level to iOS: Level \(levelData.currentLevel), FocusPoints: \(levelData.currentXP)"
           )
         #endif
 

@@ -30,15 +30,15 @@ struct DashboardView: View {
             .fontWeight(.bold)
         }
 
-        ProgressView(value: levelViewModel.progress)
+        ProgressView(value: min(max(levelViewModel.progress, 0), 1))
           .tint(.blue)
 
         HStack {
-          Text("\(levelViewModel.currentXP) XP")
+          Text("\(levelViewModel.currentXP) FocusPoints")
             .font(.caption2)
             .foregroundStyle(.secondary)
           Spacer()
-          Text("\(levelViewModel.xpNeeded) XP")
+          Text("\(levelViewModel.xpNeeded) FocusPoints")
             .font(.caption2)
             .foregroundStyle(.secondary)
         }

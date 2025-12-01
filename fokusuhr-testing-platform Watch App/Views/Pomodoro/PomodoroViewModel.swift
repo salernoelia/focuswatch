@@ -55,7 +55,9 @@ class PomodoroViewModel: ObservableObject {
         let configurations = notification.object as? AppConfigurations
       else { return }
 
-      self.applyConfiguration(configurations.pomodoro)
+      Task { @MainActor in
+        self.applyConfiguration(configurations.pomodoro)
+      }
     }
   }
 

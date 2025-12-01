@@ -35,7 +35,8 @@
             "value" : "%1$@: %2$@ %3$@"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "%@: %lld" : {
       "localizations" : {
@@ -45,7 +46,8 @@
             "value" : "%1$@: %2$lld"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "%@: %lld %@" : {
       "localizations" : {
@@ -55,7 +57,8 @@
             "value" : "%1$@: %2$lld %3$@"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "%lld" : {
       "localizations" : {
@@ -93,6 +96,9 @@
           }
         }
       }
+    },
+    "%lld FocusPoints" : {
+      "shouldTranslate" : false
     },
     "%lld items" : {
       "localizations" : {
@@ -142,9 +148,6 @@
         }
       }
     },
-    "%lld XP" : {
-      "shouldTranslate" : false
-    },
     "•" : {
       "localizations" : {
         "de" : {
@@ -161,19 +164,19 @@
         }
       }
     },
-    "+ 10 XP" : {
+    "+ 10 FocusPoints" : {
       "shouldTranslate" : false
     },
-    "+ 50 XP" : {
+    "+ 50 FocusPoints" : {
       "shouldTranslate" : false
     },
-    "+ 100 XP" : {
+    "+ 100 FocusPoints" : {
       "shouldTranslate" : false
     },
-    "+ 500 XP" : {
+    "+ 500 FocusPoints" : {
       "shouldTranslate" : false
     },
-    "+%lld XP" : {
+    "+%lld FocusPoints" : {
       "shouldTranslate" : false
     },
     "✓" : {
@@ -188,23 +191,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "✓"
-          }
-        }
-      }
-    },
-    "🏆" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "🏆"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "🏆"
           }
         }
       }
@@ -366,6 +352,16 @@
         }
       }
     },
+    "Add FocusPoints" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FocusPoints Hinzufügen"
+          }
+        }
+      }
+    },
     "Add Item" : {
       "localizations" : {
         "de" : {
@@ -468,16 +464,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Add TestUser"
-          }
-        }
-      }
-    },
-    "Add XP" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "XP Hinzufügen"
           }
         }
       }
@@ -599,6 +585,7 @@
       }
     },
     "App Index: %lld" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -769,7 +756,14 @@
       }
     },
     "Breathing Pattern" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atemmuster"
+          }
+        }
+      }
     },
     "Calendar" : {
       "localizations" : {
@@ -916,6 +910,16 @@
         }
       }
     },
+    "Current FocusPoints" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzige FocusPoints"
+          }
+        }
+      }
+    },
     "Current Level" : {
       "localizations" : {
         "de" : {
@@ -952,16 +956,6 @@
         }
       }
     },
-    "Current XP" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jetzige XP"
-          }
-        }
-      }
-    },
     "Current: %@" : {
       "localizations" : {
         "de" : {
@@ -989,7 +983,14 @@
       }
     },
     "Cycles" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wiederholungen"
+          }
+        }
+      }
     },
     "Daily" : {
       "localizations" : {
@@ -1016,9 +1017,6 @@
           }
         }
       }
-    },
-    "Debug Tools" : {
-
     },
     "Dein Feedback" : {
       "localizations" : {
@@ -1455,7 +1453,14 @@
       }
     },
     "Exhale" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausatmen"
+          }
+        }
+      }
     },
     "Failed Uploads:\n%@" : {
       "localizations" : {
@@ -1635,6 +1640,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fokuslehrling"
+          }
+        }
+      }
+    },
+    "FocusPoints Reward" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FocusPoints Belohnung"
           }
         }
       }
@@ -1888,7 +1903,14 @@
       }
     },
     "Inhale" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einatmen"
+          }
+        }
+      }
     },
     "Intensität" : {
       "localizations" : {
@@ -2291,7 +2313,14 @@
       }
     },
     "Long Break" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lange Pause"
+          }
+        }
+      }
     },
     "Loslegen" : {
       "localizations" : {
@@ -2372,7 +2401,14 @@
       }
     },
     "min" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "minimum"
+          }
+        }
+      }
     },
     "Navigation" : {
       "localizations" : {
@@ -2521,7 +2557,14 @@
       }
     },
     "No configurations availible for this App." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese App hat keine Konfigurationsoptionen."
+          }
+        }
+      }
     },
     "No Entries" : {
       "localizations" : {
@@ -3027,7 +3070,14 @@
       }
     },
     "Repetitions" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wiederholungen"
+          }
+        }
+      }
     },
     "Reset Progress" : {
       "localizations" : {
@@ -3066,7 +3116,14 @@
       }
     },
     "Rounds Until Long Break" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Runden bis zur langen Pause"
+          }
+        }
+      }
     },
     "S: %@, P: %lld, A: %lld" : {
       "localizations" : {
@@ -3181,7 +3238,14 @@
       }
     },
     "sec" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sekunden"
+          }
+        }
+      }
     },
     "See your focus points" : {
       "localizations" : {
@@ -3242,7 +3306,14 @@
       }
     },
     "Session Intervals" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wiederholungen"
+          }
+        }
+      }
     },
     "Settings" : {
       "localizations" : {
@@ -3271,7 +3342,14 @@
       }
     },
     "Short Break" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kurze Pause"
+          }
+        }
+      }
     },
     "Sign In" : {
       "localizations" : {
@@ -3566,7 +3644,14 @@
       }
     },
     "Think" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denken"
+          }
+        }
+      }
     },
     "This label will be displayed alongside the image" : {
       "localizations" : {
@@ -3642,22 +3727,22 @@
         }
       }
     },
-    "Total XP" : {
+    "Total FocusPoints" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Totale XP"
+            "value" : "Totale FocusPoints"
           }
         }
       }
     },
-    "Total: %lld XP" : {
+    "Total: %lld FocusPoints" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Total: %lld XP"
+            "value" : "Total: %lld FocusPoints"
           }
         }
       }
@@ -3684,23 +3769,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Try to Reconnect"
-          }
-        }
-      }
-    },
-    "Übung stoppen" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Übung stoppen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stop exercise"
           }
         }
       }
@@ -3780,13 +3848,34 @@
       }
     },
     "Vibration Frequency" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vibrationshäufigkeit"
+          }
+        }
+      }
     },
     "Vibration Intensity" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vibrationsstärke"
+          }
+        }
+      }
     },
     "Vibration on Transition" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vibration während wechsel"
+          }
+        }
+      }
     },
     "Vibrationen" : {
       "localizations" : {
@@ -3966,10 +4055,24 @@
       }
     },
     "Work" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arbeiten"
+          }
+        }
+      }
     },
     "Work Intervals" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arbeitsphasen"
+          }
+        }
+      }
     },
     "Writing" : {
       "localizations" : {
@@ -3977,16 +4080,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Schreiben"
-          }
-        }
-      }
-    },
-    "XP Reward" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "XP Belohnung"
           }
         }
       }

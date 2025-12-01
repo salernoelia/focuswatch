@@ -88,14 +88,13 @@ class LevelService: ObservableObject {
     #if DEBUG
       let logReason = reason.isEmpty ? "" : " (\(reason))"
       ErrorLogger.log(
-        "✨ +\(amount) XP\(logReason) | Level \(progress.currentLevel) | \(progress.currentXP)/\(progress.xpNeededForNextLevel) XP"
+        "✨ +\(amount) FocusPoints\(logReason) | Level \(progress.currentLevel) | \(progress.currentXP)/\(progress.xpNeededForNextLevel) FocusPoints"
       )
     #endif
   }
 
   #if os(watchOS)
     private func notifyiOSOfLevelChange() {
-      // Immediate sync on every change
       WatchConnector.shared.syncLevelToiOS()
     }
   #endif

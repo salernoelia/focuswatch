@@ -15,34 +15,34 @@ struct LevelDebugView: View {
         }
 
         HStack {
-          Text("Current XP")
+          Text("Current FocusPoints")
           Spacer()
           Text("\(viewModel.currentXP)")
             .foregroundStyle(.secondary)
         }
 
         HStack {
-          Text("Total XP")
+          Text("Total FocusPoints")
           Spacer()
           Text("\(levelService.currentProgress?.totalXP ?? 0)")
             .foregroundStyle(.secondary)
         }
       }
 
-      Section("Add XP") {
-        Button("+ 10 XP") {
+      Section("Add FocusPoints") {
+        Button("+ 10 FocusPoints") {
           levelService.addXP(10, reason: "Debug test")
         }
 
-        Button("+ 50 XP") {
+        Button("+ 50 FocusPoints") {
           levelService.addXP(50, reason: "Debug test")
         }
 
-        Button("+ 100 XP") {
+        Button("+ 100 FocusPoints") {
           levelService.addXP(100, reason: "Debug test")
         }
 
-        Button("+ 500 XP") {
+        Button("+ 500 FocusPoints") {
           levelService.addXP(500, reason: "Debug test")
         }
       }

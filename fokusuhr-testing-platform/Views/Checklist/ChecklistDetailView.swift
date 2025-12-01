@@ -26,9 +26,9 @@ struct ChecklistDetailView: View {
 
         Stepper(value: $checklist.xpReward, in: 0...500, step: 10) {
           HStack {
-            Text("XP Reward")
+            Text("FocusPoints Reward")
             Spacer()
-            Text("\(checklist.xpReward) XP")
+            Text("\(checklist.xpReward) FocusPoints")
               .foregroundColor(.secondary)
           }
         }

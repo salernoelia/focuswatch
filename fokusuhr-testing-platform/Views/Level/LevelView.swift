@@ -49,11 +49,11 @@ struct LevelView: View {
 
         VStack(alignment: .leading, spacing: 4) {
           HStack {
-            Text("\(viewModel.levelData.currentXP) XP")
+            Text("\(viewModel.levelData.currentXP) FocusPoints")
               .font(.caption)
               .foregroundStyle(.secondary)
             Spacer()
-            Text("\(viewModel.xpNeededForNext) XP")
+            Text("\(viewModel.xpNeededForNext) FocusPoints")
               .font(.caption)
               .foregroundStyle(.secondary)
           }
@@ -62,7 +62,7 @@ struct LevelView: View {
             .tint(.blue)
         }
 
-        Text("Total: \(viewModel.levelData.totalXP) XP")
+        Text("Total: \(viewModel.levelData.totalXP) FocusPoints")
           .font(.caption)
           .foregroundStyle(.secondary)
       }

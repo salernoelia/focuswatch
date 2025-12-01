@@ -53,7 +53,7 @@ struct ChecklistEditorView: View {
         Text(checklist.name)
           .font(.headline)
         Spacer()
-        Text("+\(checklist.xpReward) XP")
+        Text("+\(checklist.xpReward) FocusPoints")
           .font(.caption)
           .foregroundColor(.green)
           .padding(.horizontal, 8)

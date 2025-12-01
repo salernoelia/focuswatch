@@ -23,7 +23,7 @@ struct LevelRewardView: View {
       }
       .frame(height: 20)
 
-      Text("+\(animatedXP) XP")
+      Text("+\(animatedXP) FocusPoints")
         .font(.title2)
         .fontWeight(.bold)
         .foregroundColor(.yellow)
