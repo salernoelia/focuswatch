@@ -57,7 +57,7 @@ class DataStorageManager: UploadService {
   /// - In **unit tests**, you can override `uploadService` after initialization
   ///   to inject a mock service for testing.
   init() {
-    self.uploadService = self  // ✅ Jetzt geht es
+    self.uploadService = self  // Jetzt geht es
   }
 
   // MARK: - Constants for Folder IDs

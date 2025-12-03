@@ -3,210 +3,173 @@ import UserNotifications
 
 @main
 struct WatchApp: App {
-  @StateObject private var watchConnector = WatchConnector.shared
-  @StateObject private var writingExerciseManager = WritingExerciseManager()
-  @StateObject private var calendarManager = CalendarViewModel.shared
-  @Environment(\.scenePhase) private var scenePhase
+    @StateObject private var syncCoordinator = SyncCoordinator.shared
+    @StateObject private var writingExerciseManager = WritingExerciseManager()
+    @StateObject private var calendarManager = CalendarViewModel.shared
+    @Environment(\.scenePhase) private var scenePhase
 
-  init() {
-    setupNotifications()
-    syncWatchIdToWidget()
-  }
+    init() {
+        setupNotifications()
+        syncWatchIdToWidget()
+    }
 
-  var body: some Scene {
-    WindowGroup {
-      WatchView()
-        .environmentObject(watchConnector)
-        .environmentObject(writingExerciseManager)
-        .sheet(
-          isPresented: Binding(
-            get: { calendarManager.pendingReminder != nil },
-            set: { if !$0 { calendarManager.pendingReminder = nil } }
-          )
-        ) {
-          if let pending = calendarManager.pendingReminder {
-            CalendarEntryTriggerConsent(
-              event: pending.event,
-              reminder: pending.reminder,
-              shouldAutoLaunch: pending.shouldAutoLaunch,
-              watchConnector: watchConnector
-            )
-          }
-        }
-        .onChange(of: scenePhase, initial: false) { oldPhase, newPhase in
-          if newPhase == .active {
-            #if DEBUG
-              print("🔄 App became active - checking for calendar updates...")
-            #endif
-            watchConnector.forceReconnect()
-          }
+    var body: some Scene {
+        WindowGroup {
+            WatchView()
+                .environmentObject(syncCoordinator)
+                .environmentObject(writingExerciseManager)
+                .sheet(
+                    isPresented: Binding(
+                        get: { calendarManager.pendingReminder != nil },
+                        set: { if !$0 { calendarManager.pendingReminder = nil } }
+                    )
+                ) {
+                    if let pending = calendarManager.pendingReminder {
+                        CalendarEntryTriggerConsent(
+                            event: pending.event,
+                            reminder: pending.reminder,
+                            shouldAutoLaunch: pending.shouldAutoLaunch,
+                            syncCoordinator: syncCoordinator
+                        )
+                    }
+                }
+                .onChange(of: scenePhase, initial: false) { oldPhase, newPhase in
+                    if newPhase == .active {
+                        syncCoordinator.forceReconnect()
+                    }
+                }
         }
     }
-  }
 
-  private func setupNotifications() {
-    UNUserNotificationCenter.current().delegate = NotificationHandler.shared
+    private func setupNotifications() {
+        UNUserNotificationCenter.current().delegate = NotificationHandler.shared
 
-    let launchAction = UNNotificationAction(
-      identifier: "LAUNCH_ACTION",
-      title: String(localized: "Start"),
-      options: [.foreground]
-    )
+        let launchAction = UNNotificationAction(
+            identifier: "LAUNCH_ACTION",
+            title: String(localized: "Start"),
+            options: [.foreground]
+        )
 
-    let snoozeAction = UNNotificationAction(
-      identifier: "SNOOZE_ACTION",
-      title: String(localized: "In 5 minutes"),
-      options: []
-    )
+        let snoozeAction = UNNotificationAction(
+            identifier: "SNOOZE_ACTION",
+            title: String(localized: "In 5 minutes"),
+            options: []
+        )
 
-    let launchCategory = UNNotificationCategory(
-      identifier: "CALENDAR_REMINDER_LAUNCH",
-      actions: [launchAction, snoozeAction],
-      intentIdentifiers: [],
-      options: []
-    )
+        let launchCategory = UNNotificationCategory(
+            identifier: "CALENDAR_REMINDER_LAUNCH",
+            actions: [launchAction, snoozeAction],
+            intentIdentifiers: [],
+            options: []
+        )
 
-    let reminderCategory = UNNotificationCategory(
-      identifier: "CALENDAR_REMINDER",
-      actions: [snoozeAction],
-      intentIdentifiers: [],
-      options: []
-    )
+        let reminderCategory = UNNotificationCategory(
+            identifier: "CALENDAR_REMINDER",
+            actions: [snoozeAction],
+            intentIdentifiers: [],
+            options: []
+        )
 
-    UNUserNotificationCenter.current().setNotificationCategories([launchCategory, reminderCategory])
+        UNUserNotificationCenter.current().setNotificationCategories([launchCategory, reminderCategory])
+    }
 
-    #if DEBUG
-      print("🔔 Notification categories registered")
-    #endif
-  }
-
-  private func syncWatchIdToWidget() {
-    let sharedDefaults = UserDefaults(suiteName: "group.net.com.fokusuhr")
-    let uuid = WatchConfig.shared.uuid
-    sharedDefaults?.set(uuid, forKey: "deviceUUID")
-    sharedDefaults?.synchronize()
-
-    #if DEBUG
-      print("⌚ WatchApp: Synced UUID to widget: \(String(uuid.prefix(8)))")
-    #endif
-  }
+    private func syncWatchIdToWidget() {
+        let sharedDefaults = UserDefaults(suiteName: "group.net.com.fokusuhr")
+        let uuid = WatchConfig.shared.uuid
+        sharedDefaults?.set(uuid, forKey: "deviceUUID")
+        sharedDefaults?.synchronize()
+    }
 }
 
 class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
-  static let shared = NotificationHandler()
+    static let shared = NotificationHandler()
 
-  private override init() {
-    super.init()
-  }
+    private override init() {
+        super.init()
+    }
 
-  func userNotificationCenter(
-    _ center: UNUserNotificationCenter,
-    willPresent notification: UNNotification,
-    withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
-  ) {
-    completionHandler([.banner, .sound])
-  }
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .sound])
+    }
 
-  func userNotificationCenter(
-    _ center: UNUserNotificationCenter,
-    didReceive response: UNNotificationResponse,
-    withCompletionHandler completionHandler: @escaping () -> Void
-  ) {
-    let userInfo = response.notification.request.content.userInfo
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        let userInfo = response.notification.request.content.userInfo
 
-    if response.notification.request.identifier == "pomodoroTimer" {
-      Task { @MainActor in
-        if PomodoroViewModel.shared.timeRemaining <= 0 {
-          await PomodoroViewModel.shared.handleTimerCompletion()
+        if response.notification.request.identifier == "pomodoroTimer" {
+            Task { @MainActor in
+                if PomodoroViewModel.shared.timeRemaining <= 0 {
+                    await PomodoroViewModel.shared.handleTimerCompletion()
+                }
+            }
+        } else if let eventIdString = userInfo["eventId"] as? String,
+                  let eventId = UUID(uuidString: eventIdString),
+                  let reminderIdString = userInfo["reminderId"] as? String,
+                  let reminderId = UUID(uuidString: reminderIdString) {
+            DispatchQueue.main.async {
+                if response.actionIdentifier == "SNOOZE_ACTION" {
+                    self.scheduleSnoozeNotification(
+                        eventId: eventId,
+                        reminderId: reminderId,
+                        userInfo: userInfo
+                    )
+                } else {
+                    let shouldLaunch = response.actionIdentifier == "LAUNCH_ACTION"
+
+                    CalendarViewModel.shared.handleReminderResponse(
+                        eventId: eventId,
+                        reminderId: reminderId,
+                        shouldLaunch: shouldLaunch
+                    )
+                }
+            }
         }
-      }
-    } else if let eventIdString = userInfo["eventId"] as? String,
-      let eventId = UUID(uuidString: eventIdString),
-      let reminderIdString = userInfo["reminderId"] as? String,
-      let reminderId = UUID(uuidString: reminderIdString)
-    {
-      DispatchQueue.main.async {
-        if response.actionIdentifier == "SNOOZE_ACTION" {
-          #if DEBUG
-            print("⏰ Snoozing calendar notification for 5 minutes")
-          #endif
 
-          self.scheduleSnoozeNotification(
-            eventId: eventId,
-            reminderId: reminderId,
-            userInfo: userInfo
-          )
+        completionHandler()
+    }
+
+    private func scheduleSnoozeNotification(
+        eventId: UUID,
+        reminderId: UUID,
+        userInfo: [AnyHashable: Any]
+    ) {
+        guard let event = CalendarViewModel.shared.events.first(where: { $0.id == eventId }),
+              let reminder = event.reminders.first(where: { $0.id == reminderId })
+        else {
+            return
+        }
+
+        let content = UNMutableNotificationContent()
+        content.title = event.title
+
+        if let description = event.eventDescription, !description.isEmpty {
+            content.body = description
+        } else if let message = reminder.message, !message.isEmpty {
+            content.body = message
         } else {
-          let shouldLaunch = response.actionIdentifier == "LAUNCH_ACTION"
-
-          #if DEBUG
-            print("🔔 Calendar notification tapped")
-            print("   → Action: \(response.actionIdentifier)")
-            print("   → Should launch: \(shouldLaunch)")
-            print("   → Event ID: \(eventId)")
-          #endif
-
-          CalendarViewModel.shared.handleReminderResponse(
-            eventId: eventId,
-            reminderId: reminderId,
-            shouldLaunch: shouldLaunch
-          )
+            content.body = String(localized: "Reminder")
         }
-      }
+
+        content.sound = .default
+        content.userInfo = userInfo
+
+        if reminder.shouldLaunchApp && event.appIndex != nil {
+            content.categoryIdentifier = "CALENDAR_REMINDER_LAUNCH"
+        } else {
+            content.categoryIdentifier = "CALENDAR_REMINDER"
+        }
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 300, repeats: false)
+        let identifier = "snooze-\(eventId.uuidString)-\(reminderId.uuidString)-\(Date().timeIntervalSince1970)"
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+
+        UNUserNotificationCenter.current().add(request) { _ in }
     }
-
-    completionHandler()
-  }
-
-  private func scheduleSnoozeNotification(
-    eventId: UUID,
-    reminderId: UUID,
-    userInfo: [AnyHashable: Any]
-  ) {
-    guard let event = CalendarViewModel.shared.events.first(where: { $0.id == eventId }),
-      let reminder = event.reminders.first(where: { $0.id == reminderId })
-    else {
-      #if DEBUG
-        print("❌ Could not find event or reminder for snooze")
-      #endif
-      return
-    }
-
-    let content = UNMutableNotificationContent()
-    content.title = event.title
-
-    if let description = event.eventDescription, !description.isEmpty {
-      content.body = description
-    } else if let message = reminder.message, !message.isEmpty {
-      content.body = message
-    } else {
-      content.body = String(localized: "Reminder")
-    }
-
-    content.sound = .default
-    content.userInfo = userInfo
-
-    if reminder.shouldLaunchApp && event.appIndex != nil {
-      content.categoryIdentifier = "CALENDAR_REMINDER_LAUNCH"
-    } else {
-      content.categoryIdentifier = "CALENDAR_REMINDER"
-    }
-
-    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 300, repeats: false)
-    let identifier =
-      "snooze-\(eventId.uuidString)-\(reminderId.uuidString)-\(Date().timeIntervalSince1970)"
-    let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-
-    UNUserNotificationCenter.current().add(request) { error in
-      if let error = error {
-        #if DEBUG
-          print("❌ Failed to schedule snooze notification: \(error)")
-        #endif
-      } else {
-        #if DEBUG
-          print("✅ Snoozed notification scheduled for 5 minutes")
-        #endif
-      }
-    }
-  }
 }

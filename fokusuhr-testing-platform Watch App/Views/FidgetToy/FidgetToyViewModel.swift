@@ -2,63 +2,59 @@ import Combine
 import SwiftUI
 
 class FidgetToyViewModel: ObservableObject {
-  @Published var position: CGSize = .zero
-  @Published var isMoving: Bool = false
-  @Published var configuration = FidgetToyConfiguration()
+    @Published var position: CGSize = .zero
+    @Published var isMoving: Bool = false
+    @Published var configuration = FidgetToyConfiguration()
 
-  private var feedbackTimer: Timer?
+    private var feedbackTimer: Timer?
 
-  init() {
-    loadConfiguration()
-    setupConfigurationObserver()
-  }
-
-  private func loadConfiguration() {
-    let configurations = WatchConnector.loadAppConfigurations()
-    configuration = configurations.fidgetToy
-  }
-
-  private func setupConfigurationObserver() {
-    NotificationCenter.default.addObserver(
-      forName: .appConfigurationsUpdated,
-      object: nil,
-      queue: .main
-    ) { [weak self] notification in
-      guard let self = self,
-        let configurations = notification.object as? AppConfigurations
-      else { return }
-
-      self.configuration = configurations.fidgetToy
-
-      #if DEBUG
-        print("✅ FidgetToy: Applied configuration from iOS")
-      #endif
+    init() {
+        loadConfiguration()
+        setupConfigurationObserver()
     }
-  }
 
-  func startVibration() {
-    guard feedbackTimer == nil else { return }
-
-    feedbackTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { [weak self] _ in
-      guard let self = self else { return }
-      WKInterfaceDevice.current().play(self.configuration.vibrationIntensity.hapticType)
+    private func loadConfiguration() {
+        let configurations = SyncCoordinator.loadAppConfigurations()
+        configuration = configurations.fidgetToy
     }
-  }
 
-  func stopVibration() {
-    feedbackTimer?.invalidate()
-    feedbackTimer = nil
-  }
+    private func setupConfigurationObserver() {
+        NotificationCenter.default.addObserver(
+            forName: .appConfigurationsUpdated,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            guard let self = self,
+                  let configurations = notification.object as? AppConfigurations
+            else { return }
 
-  func updatePosition(_ value: DragGesture.Value) {
-    position = value.translation
-    isMoving = true
-    startVibration()
-  }
+            self.configuration = configurations.fidgetToy
+        }
+    }
 
-  func endDrag() {
-    isMoving = false
-    position = .zero
-    stopVibration()
-  }
+    func startVibration() {
+        guard feedbackTimer == nil else { return }
+
+        feedbackTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            WKInterfaceDevice.current().play(self.configuration.vibrationIntensity.hapticType)
+        }
+    }
+
+    func stopVibration() {
+        feedbackTimer?.invalidate()
+        feedbackTimer = nil
+    }
+
+    func updatePosition(_ value: DragGesture.Value) {
+        position = value.translation
+        isMoving = true
+        startVibration()
+    }
+
+    func endDrag() {
+        isMoving = false
+        position = .zero
+        stopVibration()
+    }
 }

@@ -34,11 +34,11 @@ struct DashboardView: View {
           .tint(.blue)
 
         HStack {
-          Text("\(levelViewModel.currentXP) FocusPoints")
+          Text("\(levelViewModel.currentXP)")
             .font(.caption2)
             .foregroundStyle(.secondary)
           Spacer()
-          Text("\(levelViewModel.xpNeeded) FocusPoints")
+          Text("\(levelViewModel.xpNeeded)")
             .font(.caption2)
             .foregroundStyle(.secondary)
         }

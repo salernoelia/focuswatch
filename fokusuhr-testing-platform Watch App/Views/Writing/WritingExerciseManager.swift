@@ -150,7 +150,7 @@ class WritingExerciseManager: NSObject, ObservableObject {
       self.writingManager.applySharedConfiguration()
 
       #if DEBUG
-        print("✅ WritingExercise: Applied configuration from iOS")
+        print("WritingExercise: Applied configuration from iOS")
       #endif
     }
   }

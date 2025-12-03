@@ -47,8 +47,7 @@ class WritingManager {
   /// The current user configuration for the session.
   var currentSetting: Config?
 
-  /// Shared app configuration from iOS
-  var sharedConfiguration = WatchConnector.loadAppConfigurations().writing
+  var sharedConfiguration = SyncCoordinator.loadAppConfigurations().writing
 
   // MARK: - Initializer
 
@@ -80,7 +79,7 @@ class WritingManager {
       self.applySharedConfiguration()
 
       #if DEBUG
-        print("✅ Writing: Applied configuration from iOS")
+        print("Writing: Applied configuration from iOS")
       #endif
     }
   }

@@ -23,7 +23,7 @@ struct LevelRewardView: View {
       }
       .frame(height: 20)
 
-      Text("+\(animatedXP) FocusPoints")
+      Text("+\(animatedXP) Points")
         .font(.title2)
         .fontWeight(.bold)
         .foregroundColor(.yellow)
@@ -128,7 +128,7 @@ struct LevelRewardView: View {
 
     while currentAnimationLevel < finalLevel {
       let xpNeeded = LevelProgress.xpForLevel(currentAnimationLevel + 1)
-      let xpToFill = xpNeeded - currentAnimationXP
+        _ = xpNeeded - currentAnimationXP
 
       let fillDuration = 0.8
 

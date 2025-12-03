@@ -2,7 +2,7 @@ import PhotosUI
 import SwiftUI
 
 struct ChecklistEditorView: View {
-  @ObservedObject var checklistManager: ChecklistViewModel
+  @ObservedObject var checklistService: ChecklistSyncService
   @StateObject private var galleryStorage = GalleryStorage.shared
   @Environment(\.presentationMode) var presentationMode
   @State private var newChecklistId: UUID?
@@ -19,7 +19,7 @@ struct ChecklistEditorView: View {
           }
           ToolbarItem(placement: .topBarTrailing) {
             Button {
-              let newChecklist = checklistManager.addChecklist(name: "New Checklist")
+              let newChecklist = addChecklist(name: "New Checklist")
               newChecklistId = newChecklist.id
             } label: {
               Text("New Checklist")
@@ -30,13 +30,21 @@ struct ChecklistEditorView: View {
     }
   }
 
+  private func addChecklist(name: String) -> Checklist {
+    let newChecklist = Checklist(name: name)
+    var data = checklistService.checklistData
+    data.checklists.append(newChecklist)
+    checklistService.updateChecklistData(data)
+    return newChecklist
+  }
+
   private var checklistList: some View {
     List {
-      ForEach(checklistManager.data.checklists) { checklist in
+      ForEach(checklistService.checklistData.checklists) { checklist in
         NavigationLink(
           destination: ChecklistDetailView(
             checklist: checklist,
-            checklistManager: checklistManager,
+            checklistService: checklistService,
             galleryStorage: galleryStorage
           )
         ) {
@@ -53,7 +61,7 @@ struct ChecklistEditorView: View {
         Text(checklist.name)
           .font(.headline)
         Spacer()
-        Text("+\(checklist.xpReward) FocusPoints")
+        Text("+\(checklist.xpReward) Points")
           .font(.caption)
           .foregroundColor(.green)
           .padding(.horizontal, 8)
@@ -77,12 +85,12 @@ struct ChecklistEditorView: View {
   private var navigationLink: some View {
     Group {
       if let id = newChecklistId,
-        let checklist = checklistManager.data.checklists.first(where: { $0.id == id })
+        let checklist = checklistService.checklistData.checklists.first(where: { $0.id == id })
       {
         NavigationLink(
           destination: ChecklistDetailView(
             checklist: checklist,
-            checklistManager: checklistManager,
+            checklistService: checklistService,
             galleryStorage: galleryStorage
           ),
           isActive: Binding(
@@ -98,8 +106,10 @@ struct ChecklistEditorView: View {
   }
 
   private func deleteChecklists(offsets: IndexSet) {
+    var data = checklistService.checklistData
     for index in offsets {
-      checklistManager.deleteChecklist(checklistManager.data.checklists[index])
+      data.checklists.removeAll { $0.id == checklistService.checklistData.checklists[index].id }
     }
+    checklistService.updateChecklistData(data)
   }
 }

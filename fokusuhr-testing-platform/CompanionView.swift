@@ -1,21 +1,19 @@
 import SwiftUI
 
 struct CompanionView: View {
-    @EnvironmentObject private var watchConnector: WatchConnector
-    @StateObject private var checklistManager = ChecklistViewModel(
-        watchConnector: WatchConnector.shared
-    )
+    @EnvironmentObject private var syncCoordinator: SyncCoordinator
+    @StateObject private var checklistService = ChecklistSyncService.shared
 
     var body: some View {
         TabView {
             WizardView()
-                .environmentObject(watchConnector)
+                .environmentObject(syncCoordinator)
                 .tabItem {
                     Image(systemName: "wand.and.rays")
                     Text("Wizard")
                 }
 
-            ChecklistEditorView(checklistManager: checklistManager)
+            ChecklistEditorView(checklistService: checklistService)
                 .tabItem {
                     Image(systemName: "checklist")
                     Text("Checklists")

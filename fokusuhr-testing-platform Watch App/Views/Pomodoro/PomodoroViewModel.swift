@@ -77,7 +77,7 @@ class PomodoroViewModel: ObservableObject {
     }
 
     #if DEBUG
-      print("✅ Pomodoro: Applied configuration from iOS")
+      print("Pomodoro: Applied configuration from iOS")
     #endif
   }
 

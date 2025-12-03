@@ -126,7 +126,7 @@ class UserConfigs: ObservableObject {
     // Load existing config or fallback to default upon initialization.
     self.loadConfigs()
 
-    // Listen for updates from WatchConnector
+    // Listen for updates from SyncCoordinator
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(handleAppConfigurationsUpdate(_:)),
@@ -207,7 +207,7 @@ class UserConfigs: ObservableObject {
       // Save the updated config
       self.storeConfigInUserDefaults(
         config: self.configs, forKey: "config_\(self.deviceUUIDPrefix)")
-      print("✅ Writing config updated: \(self.configs)")
+      print("Writing config updated: \(self.configs)")
     }
   }
 }

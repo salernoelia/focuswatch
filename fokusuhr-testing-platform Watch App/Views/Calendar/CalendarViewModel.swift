@@ -89,7 +89,7 @@ class CalendarViewModel: ObservableObject {
         #endif
       } else {
         #if DEBUG
-          print("✅ Test notification scheduled for 5 seconds from now")
+          print("Test notification scheduled for 5 seconds from now")
         #endif
       }
     }
@@ -112,7 +112,7 @@ class CalendarViewModel: ObservableObject {
 
     #if DEBUG
       UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
-        print("✅ CalendarViewModel: Total pending notifications: \(requests.count)")
+        print("CalendarViewModel: Total pending notifications: \(requests.count)")
         for request in requests {
           if let trigger = request.trigger as? UNCalendarNotificationTrigger,
             let nextTriggerDate = trigger.nextTriggerDate()
@@ -204,7 +204,7 @@ class CalendarViewModel: ObservableObject {
         #endif
       } else {
         #if DEBUG
-          print("✅ Successfully scheduled reminder for \(event.title)")
+          print("Successfully scheduled reminder for \(event.title)")
         #endif
       }
     }

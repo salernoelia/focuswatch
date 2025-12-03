@@ -97,7 +97,7 @@
         }
       }
     },
-    "%lld FocusPoints" : {
+    "%lld Points" : {
       "shouldTranslate" : false
     },
     "%lld items" : {
@@ -164,19 +164,19 @@
         }
       }
     },
-    "+ 10 FocusPoints" : {
+    "+ 10 Points" : {
       "shouldTranslate" : false
     },
-    "+ 50 FocusPoints" : {
+    "+ 50 Points" : {
       "shouldTranslate" : false
     },
-    "+ 100 FocusPoints" : {
+    "+ 100 Points" : {
       "shouldTranslate" : false
     },
-    "+ 500 FocusPoints" : {
+    "+ 500 Points" : {
       "shouldTranslate" : false
     },
-    "+%lld FocusPoints" : {
+    "+%lld Points" : {
       "shouldTranslate" : false
     },
     "✓" : {
@@ -194,6 +194,9 @@
           }
         }
       }
+    },
+    "🏆" : {
+
     },
     "🏆 %@" : {
       "shouldTranslate" : false
@@ -352,12 +355,12 @@
         }
       }
     },
-    "Add FocusPoints" : {
+    "Add Points" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "FocusPoints Hinzufügen"
+            "value" : "Points Hinzufügen"
           }
         }
       }
@@ -580,23 +583,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "App"
-          }
-        }
-      }
-    },
-    "App Index: %lld" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "App-Index: %lld"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "App Index: %lld"
           }
         }
       }
@@ -910,12 +896,12 @@
         }
       }
     },
-    "Current FocusPoints" : {
+    "Current Points" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jetzige FocusPoints"
+            "value" : "Jetzige Points"
           }
         }
       }
@@ -1017,6 +1003,9 @@
           }
         }
       }
+    },
+    "Debug Tools" : {
+
     },
     "Dein Feedback" : {
       "localizations" : {
@@ -1644,12 +1633,12 @@
         }
       }
     },
-    "FocusPoints Reward" : {
+    "Points Reward" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "FocusPoints Belohnung"
+            "value" : "Points Belohnung"
           }
         }
       }
@@ -3458,6 +3447,7 @@
       }
     },
     "stop_exercise_confirm" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3474,6 +3464,7 @@
       }
     },
     "stop_exercise_title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3727,22 +3718,22 @@
         }
       }
     },
-    "Total FocusPoints" : {
+    "Total Points" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Totale FocusPoints"
+            "value" : "Totale Points"
           }
         }
       }
     },
-    "Total: %lld FocusPoints" : {
+    "Total: %lld Points" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Total: %lld FocusPoints"
+            "value" : "Total: %lld Points"
           }
         }
       }
@@ -3772,6 +3763,9 @@
           }
         }
       }
+    },
+    "Übung stoppen" : {
+
     },
     "until level %lld" : {
       "localizations" : {
