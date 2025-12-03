@@ -9,48 +9,74 @@ import SwiftUI
 
 struct WritingColorView: View {
   @EnvironmentObject var WritingExerciseManager: WritingExerciseManager
-  let deviceUUIDPrefix = WatchConfig.shared.uuid.prefix(6)
+  @State private var showStopConfirmation = false
 
   var body: some View {
     Group {
       if WritingExerciseManager.showRunView && !UserConfigs.shared.configs.feedbackEnabled {
-        Color.black.edgesIgnoringSafeArea(.all)
+        Color.black
+          .edgesIgnoringSafeArea(.all)
+          .onTapGesture {
+            showStopConfirmation = true
+          }
+          .confirmationDialog(
+            String(localized: "stop_exercise_title"),
+            isPresented: $showStopConfirmation,
+            titleVisibility: .visible
+          ) {
+            Button(String(localized: "stop_exercise_confirm"), role: .destructive) {
+              stopExercise()
+            }
+            Button(String(localized: "Cancel"), role: .cancel) {}
+          }
       } else if WritingExerciseManager.showRunView {
         ColorRunView()
       } else {
-        GeometryReader { geometry in
-          Button(action: {
-            WritingExerciseManager.initExtendedSession()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-              WritingExerciseManager.showRunView = true
-            }
-          }) {
-            ZStack {
-              Circle()
-                .fill(Color.green)
-                .frame(width: geometry.size.width * 0.8, height: geometry.size.width * 0.8)
-
-              Image(systemName: "pencil.tip.crop.circle.badge.arrow.forward.fill")
-                .font(.system(size: geometry.size.width * 0.4))
-                .foregroundColor(.white)
-            }
-            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-          }
-          .buttonStyle(PlainButtonStyle())
-        }
+        StartButton()
       }
+    }
+  }
+
+  private func stopExercise() {
+    WritingExerciseManager.showRunView = false
+    WritingExerciseManager.stopExercise {
+      WritingExerciseManager.resetExercise()
+    }
+  }
+}
+
+struct StartButton: View {
+  @EnvironmentObject var WritingExerciseManager: WritingExerciseManager
+
+  var body: some View {
+    GeometryReader { geometry in
+      Button(action: {
+        WritingExerciseManager.initExtendedSession()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+          WritingExerciseManager.showRunView = true
+        }
+      }) {
+        ZStack {
+          Circle()
+            .fill(Color.green)
+            .frame(width: geometry.size.width * 0.8, height: geometry.size.width * 0.8)
+
+          Image(systemName: "pencil.tip.crop.circle.badge.arrow.forward.fill")
+            .font(.system(size: geometry.size.width * 0.4))
+            .foregroundColor(.white)
+        }
+        .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+      }
+      .buttonStyle(PlainButtonStyle())
     }
   }
 }
 
 // MARK: - ColorRunView
-/// The view displayed during an active exercise session, showing progress with an animated wave.
 struct ColorRunView: View {
-  // MARK: - Properties
-
   @EnvironmentObject var WritingExerciseManager: WritingExerciseManager
-  private let deviceUUIDPrefix = WatchConfig.shared.uuid.prefix(6)
-  var currentSetting = UserConfigs.shared.configs
+  @State private var showStopConfirmation = false
+  private var currentSetting = UserConfigs.shared.configs
 
   /// The state variable that drives the wave animation's phase.
   @State private var wavePhase: CGFloat = 0.0
@@ -59,18 +85,18 @@ struct ColorRunView: View {
 
   var body: some View {
     GeometryReader { geometry in
-      ZStack {
-        // Main view during an active session (not ended).
-        if WritingExerciseManager.exerciseState != .ended {
-          Color.black.edgesIgnoringSafeArea(.all)
+      let circleSize = geometry.size.width * 0.8
+      let centerX = geometry.size.width / 2
+      let centerY = geometry.size.height / 2
 
-          // A grey circle that serves as the background/track for the progress indicator.
+      ZStack {
+        Color.black.edgesIgnoringSafeArea(.all)
+
+        if WritingExerciseManager.exerciseState != .ended {
           Circle()
             .fill(Color.gray)
-            .frame(width: geometry.size.width * 0.8, height: geometry.size.width * 0.8)
-            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+            .frame(width: circleSize, height: circleSize)
 
-          // The main progress circle, which changes color based on the exercise state.
           Circle()
             .fill(
               LinearGradient(
@@ -82,26 +108,21 @@ struct ColorRunView: View {
                 endPoint: .bottom
               )
             )
-            .frame(width: geometry.size.width * 0.8, height: geometry.size.width * 0.8)
+            .frame(width: circleSize, height: circleSize)
             .overlay(
-              // The animated wave shape that "fills" the circle.
               WaveShape(percent: getFillPercentage(), phase: wavePhase)
                 .fill(Color.white.opacity(0.8))
-                .scaleEffect(x: 1.0, y: -1.0, anchor: .center)  // Flip vertically to fill from the bottom.
+                .scaleEffect(x: 1.0, y: -1.0, anchor: .center)
             )
-            .mask(Circle())  // Ensure the wave stays within the circle bounds.
-            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-
+            .mask(Circle())
+            .onTapGesture {
+              showStopConfirmation = true
+            }
         } else {
-          // View shown when the exercise session has ended.
-          Color.black.edgesIgnoringSafeArea(.all)
-
           Circle()
             .fill(Color.gray)
-            .frame(width: geometry.size.width * 0.8, height: geometry.size.width * 0.8)
-            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+            .frame(width: circleSize, height: circleSize)
 
-          // A purple circle indicating completion.
           Circle()
             .fill(
               LinearGradient(
@@ -110,25 +131,36 @@ struct ColorRunView: View {
                 endPoint: .bottom
               )
             )
-            .frame(width: geometry.size.width * 0.8, height: geometry.size.width * 0.8)
-            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+            .frame(width: circleSize, height: circleSize)
 
-          // A trophy emoji to celebrate completion.
-          VStack {
-            Spacer()
-            Text("🏆")
-              .foregroundColor(.white)
-              .font(.system(size: 64))
-              .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-          }
+          Image(systemName: "trophy.fill")
+            .font(.system(size: 48))
+            .foregroundColor(.yellow)
         }
       }
+      .position(x: centerX, y: centerY)
       .onAppear {
-        // Start a repeating linear animation for the wave phase.
         withAnimation(Animation.linear(duration: 4.0).repeatForever(autoreverses: false)) {
           wavePhase = .pi * 2
         }
       }
+      .confirmationDialog(
+        String(localized: "stop_exercise_title"),
+        isPresented: $showStopConfirmation,
+        titleVisibility: .visible
+      ) {
+        Button(String(localized: "stop_exercise_confirm"), role: .destructive) {
+          stopExercise()
+        }
+        Button(String(localized: "Cancel"), role: .cancel) {}
+      }
+    }
+  }
+
+  private func stopExercise() {
+    WritingExerciseManager.showRunView = false
+    WritingExerciseManager.stopExercise {
+      WritingExerciseManager.resetExercise()
     }
   }
 
@@ -202,114 +234,5 @@ struct WaveShape: Shape {
     path.addLine(to: CGPoint(x: 0, y: rect.height))
 
     return path
-  }
-}
-
-// MARK: - ColorRunViewNoWave
-/// A non-animated alternative to `ColorRunView` that uses a simple rectangle mask for the fill effect.
-struct ColorRunViewNoWave: View {
-  // MARK: - Properties
-
-  @EnvironmentObject var WritingExerciseManager: WritingExerciseManager
-  private let deviceUUIDPrefix = WatchConfig.shared.uuid.prefix(6)
-  var currentSetting = UserConfigs.shared.configs
-
-  // MARK: - Body
-
-  var body: some View {
-    GeometryReader { geometry in
-      ZStack {
-        if WritingExerciseManager.exerciseState != .ended {
-          Color.black.edgesIgnoringSafeArea(.all)
-
-          Circle()
-            .fill(Color.gray)
-            .frame(width: geometry.size.width * 0.8, height: geometry.size.width * 0.8)
-            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-
-          // The main colored circle.
-          Circle()
-            .fill(
-              LinearGradient(
-                gradient: Gradient(colors: [
-                  WritingExerciseManager.exerciseState.color,
-                  WritingExerciseManager.exerciseState.color.opacity(0.7),
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-              )
-            )
-            .frame(width: geometry.size.width * 0.8, height: geometry.size.width * 0.8)
-            .mask(
-              // The fill effect is created by masking the circle with a VStack containing a Spacer and a Rectangle.
-              // The height of the Spacer changes, revealing more or less of the circle.
-              VStack {
-                Spacer(minLength: getTopPadding(for: geometry.size.width * 0.8))
-                Rectangle()
-              }
-            )
-            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-        } else {
-          // End-of-session view, same as in the animated version.
-          Color.black.edgesIgnoringSafeArea(.all)
-
-          Circle()
-            .fill(Color.gray)
-            .frame(width: geometry.size.width * 0.8, height: geometry.size.width * 0.8)
-            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-
-          Circle()
-            .fill(
-              LinearGradient(
-                gradient: Gradient(colors: [Color.purple, Color.purple.opacity(0.7)]),
-                startPoint: .top,
-                endPoint: .bottom
-              )
-            )
-            .frame(width: geometry.size.width * 0.8, height: geometry.size.width * 0.8)
-            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-          VStack {
-            Spacer()
-            if WritingExerciseManager.exerciseState == .ended {
-              Text("🏆")
-                .foregroundColor(.white)
-                .font(.system(size: 64))
-                .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // MARK: - Helper Methods
-
-  /// Calculates the top padding for the mask, which determines the fill level.
-  private func getTopPadding(for diameter: CGFloat) -> CGFloat {
-    let totalAreaHeight = diameter
-    let margin = totalAreaHeight * 0.05  // A small margin at the bottom.
-    let availableHeight = totalAreaHeight - margin
-    let percentage: Double
-    let timePercentage: Double
-
-    if WritingExerciseManager.exerciseState == .pausing {
-      // During pause, the fill level is based on the pause timer.
-      let pauseTimePercentage =
-        Double(WritingExerciseManager.currentPauseTime) / Double(currentSetting.pause * 60)
-      percentage = pauseTimePercentage
-    } else {
-      // During work, the fill level is based on the work timer.
-      if WritingExerciseManager.pomodoro {
-        timePercentage =
-          Double(WritingExerciseManager.currentTime) / Double(currentSetting.learn * 60)
-        percentage = timePercentage
-      } else {
-        let timeWorked = WritingExerciseManager.totalWorkTime()
-        timePercentage = Double(timeWorked) / Double(currentSetting.learn * 60)
-        percentage = 1 - timePercentage
-      }
-    }
-    // The padding is the inverse of the fill percentage.
-    return totalAreaHeight - (margin + (availableHeight * percentage))
   }
 }

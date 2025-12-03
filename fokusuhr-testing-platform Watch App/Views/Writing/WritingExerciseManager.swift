@@ -33,10 +33,6 @@ class WritingExerciseManager: NSObject, ObservableObject {
   /// The current time remaining in a pause period, published for UI updates.
   @Published var currentPauseTime: Int = 0
 
-  /// A flag to determine if the machine learning model is used for activity detection. Deprecated in version 2.0.
-  @Published var isMLMode: Bool = true  // deprecated 2.0
-
-  /// The probability score from the activity prediction model.
   @Published var proba: Float = 0.0
 
   /// A dictionary holding results from the EMA (Exponential moving average) model.
@@ -260,9 +256,7 @@ class WritingExerciseManager: NSObject, ObservableObject {
   /// Monitors the user's activity by checking if they are writing/working.
   /// This method is central to the app's state logic during a work interval.
   private func monitorExercise() {
-    // Check the user's current writing status from the WritingManager.
-    let (proba, status) = writingManager.checkIfWriting(
-      isMLMode: isMLMode, currentTime: currentTime)
+    let (proba, status) = writingManager.checkIfWriting(currentTime: currentTime)
     let posFeedbackInterval = currentSetting.posFBIntveral
     DispatchQueue.main.async {
       self.proba = proba
@@ -302,19 +296,17 @@ class WritingExerciseManager: NSObject, ObservableObject {
         }
       }
     case 3:
-      /// User is returning to work after a disruption.
-      if exerciseState != .backToWork { hapticManager.stopHapticFeedback() }
-    default:  // Default to working state.
+      if exerciseState != .working {
+        startWorking()
+      }
+    default:
       if exerciseState != .working {
         startWorking()
       }
     }
 
-    // Log the result of the monitoring check.
     emaResHistory.append(EmaResHistoryEntry(timestamp: Date(), proba: proba, status: status))
   }
-
-  // MARK: - Exercise State Setters
 
   /// Sets the state to `.working` and stops any ongoing haptic feedback.
   private func startWorking() {
@@ -793,16 +785,6 @@ extension WritingExerciseManager {
       try container.encode(timestampString, forKey: .timestamp)
       try container.encode(state.rawValue, forKey: .state)
     }
-  }
-
-  /// An enum representing the different types of haptic feedback available.
-  enum HapticFeedbackType: String, Codable {
-    case startFB = "startFB"
-    case pauseFB = "pauseFB"
-    case endFB = "endFB"
-    case negFB = "negFB"
-    case posFB = "posFB"
-    case none = "none"
   }
 
   /// An enum representing all possible states during an exercise session.

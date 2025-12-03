@@ -33,9 +33,7 @@ struct Config: Codable {
   var email: String = ""
   /// The user's username.
   var username: String = ""
-  /// A flag to determine whether to use the simple EMA model or a more complex ML model.
   var emaModel: Bool = true
-  /// A nested struct containing parameters for the activity detection model.
   var modelParams: ModelParams = ModelParams()
 
   // MARK: - Public Methods

@@ -79,18 +79,6 @@ struct WritingConfigurationsView: View {
           .padding()
         }
 
-        // Show "Stop Exercise" button only when the session is active.
-        if WritingExerciseManager.showRunView {
-          Button("Übung stoppen") {
-            WritingExerciseManager.showRunView = false
-            WritingExerciseManager.stopExercise {
-              WritingExerciseManager.resetExercise()
-            }
-          }
-          .padding()
-        }
-
-        // Toggles for session mode and feedback type.
         Toggle(isOn: $WritingExerciseManager.pomodoro) {
           Text("Pomodoro")
         }
