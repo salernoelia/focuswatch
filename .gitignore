@@ -3,6 +3,8 @@ Development.xcconfig
 Production.xcconfig
 .env
 
+all.txt
+
 # Xcode
 *.xcworkspace
 *.xcuserstate
