@@ -1,5 +1,18 @@
 # Releases
 
+## [1.2.2] - 03.12.2025
+
+#### Changes
+- Added new Sync system for improved reliability between Phone and Watch
+- All "FocusPoints" are now called "Points" throughout the app as it was just too long for many UI elements
+- Minor UI and translation improvements
+
+#### What to test
+
+- Test that Points are displayed and updated correctly everywhere
+- Check that Watch and Phone sync is stable and fast
+- Ensure all main features (checklists, calendar, focus tools) work as expected
+
 ## [1.2.1] - 01.12.2025
 
 #### Changes
