@@ -10,6 +10,7 @@ final class ConnectivityTransport: NSObject, ObservableObject {
     let contextReceived = PassthroughSubject<[String: Any], Never>()
     let messageReceived = PassthroughSubject<([String: Any], (([String: Any]) -> Void)?), Never>()
     let userInfoReceived = PassthroughSubject<[String: Any], Never>()
+    let fileReceived = PassthroughSubject<(URL, [String: Any]?), Never>()
 
     private var connectionMonitorTimer: Timer?
     private var isMonitoringConnection = false
@@ -168,6 +169,15 @@ extension ConnectivityTransport: WCSessionDelegate {
     func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
         guard !userInfo.isEmpty else { return }
         userInfoReceived.send(userInfo)
+    }
+
+    func session(_ session: WCSession, didReceive file: WCSessionFile) {
+        #if DEBUG
+            print("Watch ConnectivityTransport: didReceive file")
+            print("Watch ConnectivityTransport: File URL: \(file.fileURL)")
+            print("Watch ConnectivityTransport: Metadata: \(String(describing: file.metadata))")
+        #endif
+        fileReceived.send((file.fileURL, file.metadata))
     }
 }
 

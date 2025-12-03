@@ -14,6 +14,8 @@ final class ConnectivityTransport: NSObject, ObservableObject {
     let contextReceived = PassthroughSubject<[String: Any], Never>()
     let messageReceived = PassthroughSubject<([String: Any], (([String: Any]) -> Void)?), Never>()
     let userInfoReceived = PassthroughSubject<[String: Any], Never>()
+    let fileReceived = PassthroughSubject<(URL, [String: Any]?), Never>()
+    let fileTransferFinished = PassthroughSubject<(WCSessionFileTransfer, Error?), Never>()
 
     private var connectionMonitorTimer: Timer?
     private var reconnectAttempts = 0
@@ -164,6 +166,36 @@ final class ConnectivityTransport: NSObject, ObservableObject {
     func getReceivedApplicationContext() -> [String: Any] {
         WCSession.default.receivedApplicationContext
     }
+
+    @discardableResult
+    func transferFile(_ fileURL: URL, metadata: [String: Any]?) -> WCSessionFileTransfer? {
+        guard WCSession.default.activationState == .activated else {
+            lastError = .watchSessionInactive
+            #if DEBUG
+                print("iOS ConnectivityTransport: Cannot transfer file - session inactive")
+            #endif
+            return nil
+        }
+
+        let transfer = WCSession.default.transferFile(fileURL, metadata: metadata)
+        #if DEBUG
+            if let imageName = metadata?[SyncConstants.Keys.imageName] as? String {
+                print("iOS ConnectivityTransport: Queued file transfer for \(imageName)")
+                print("iOS ConnectivityTransport: Outstanding transfers: \(WCSession.default.outstandingFileTransfers.count)")
+            }
+        #endif
+        return transfer
+    }
+
+    func outstandingFileTransfers() -> [WCSessionFileTransfer] {
+        WCSession.default.outstandingFileTransfers
+    }
+
+    func cancelAllFileTransfers() {
+        for transfer in WCSession.default.outstandingFileTransfers {
+            transfer.cancel()
+        }
+    }
 }
 
 extension ConnectivityTransport: WCSessionDelegate {
@@ -222,6 +254,23 @@ extension ConnectivityTransport: WCSessionDelegate {
 
     func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
         userInfoReceived.send(userInfo)
+    }
+
+    func session(_ session: WCSession, didReceive file: WCSessionFile) {
+        fileReceived.send((file.fileURL, file.metadata))
+    }
+
+    func session(_ session: WCSession, didFinish fileTransfer: WCSessionFileTransfer, error: Error?) {
+        #if DEBUG
+            if let imageName = fileTransfer.file.metadata?[SyncConstants.Keys.imageName] as? String {
+                if let error = error {
+                    print("iOS ConnectivityTransport: File transfer FAILED for \(imageName): \(error.localizedDescription)")
+                } else {
+                    print("iOS ConnectivityTransport: File transfer SUCCESS for \(imageName)")
+                }
+            }
+        #endif
+        fileTransferFinished.send((fileTransfer, error))
     }
 }
 

@@ -47,6 +47,13 @@ final class SyncCoordinator: ObservableObject {
                 self?.handleUserInfo(userInfo)
             }
             .store(in: &cancellables)
+
+        transport.fileReceived
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] fileURL, metadata in
+                self?.handleReceivedFile(fileURL: fileURL, metadata: metadata)
+            }
+            .store(in: &cancellables)
     }
 
     func forceReconnect() {
@@ -326,6 +333,35 @@ final class SyncCoordinator: ObservableObject {
             #if DEBUG
                 ErrorLogger.log(AppError.decodingFailed(type: "app configurations", underlying: error))
             #endif
+        }
+    }
+
+    private func handleReceivedFile(fileURL: URL, metadata: [String: Any]?) {
+        #if DEBUG
+            print("Watch SyncCoordinator: Received file transfer")
+            print("Watch SyncCoordinator: Metadata: \(String(describing: metadata))")
+        #endif
+
+        guard let metadata = metadata,
+              let syncType = metadata[SyncConstants.Keys.syncType] as? String else {
+            #if DEBUG
+                print("Watch SyncCoordinator: No syncType in metadata, ignoring")
+            #endif
+            return
+        }
+
+        #if DEBUG
+            print("Watch SyncCoordinator: SyncType: \(syncType)")
+        #endif
+
+        switch syncType {
+        case SyncMessageType.checklist.rawValue:
+            galleryManager.handleReceivedFile(fileURL: fileURL, metadata: metadata)
+        default:
+            #if DEBUG
+                print("Watch SyncCoordinator: Unknown syncType: \(syncType)")
+            #endif
+            break
         }
     }
 

@@ -24,14 +24,35 @@ applyTo: "**"
 
 ```
 .
+├── .cursor
+│   └── rules
+│       └── General.mdc
+├── .github
+│   └── instructions
+│       └── general.instructions.md
+├── .gitignore
+├── .vscode
+│   └── mcp.json
+├── "fokusuhr-testing-platform Watch App
+│   └── Assets.xcassets
+│       ├── Haseln\303\274sse.imageset
+│       │   ├── Contents.json"
+│       │   └── Haseln\303\274sse 1.png"
+│       ├── Messl\303\266ffel.imageset
+│       │   ├── Contents.json"
+│       │   └── Messl\303\266ffel.png"
+│       └── Sch\303\274ssel.imageset
+│           ├── Contents.json"
+│           └── Sch\303\274ssel.png"
 ├── assets
 │   └── template.af
-├── Development.xcconfig
+├── CHANGELOG.MD
 ├── docs
 │   ├── documentation__WatchConnectivity__WCSession.json
 │   ├── LEVEL_SYSTEM_INTEGRATION.md
 │   ├── LEVEL_SYSTEM_SUMMARY.md
 │   ├── LEVEL_SYSTEM.md
+│   ├── Schema_Generation.md
 │   ├── SwiftData.json
 │   ├── technologies.json
 │   └── WatchConnectivity.json
@@ -61,13 +82,16 @@ applyTo: "**"
 │   │       └── Contents.json
 │   ├── Services
 │   │   ├── GalleryStorage.swift
-│   │   ├── WatchConnector.swift
-│   │   ├── WatchConnectorCalendar.swift
-│   │   ├── WatchConnectorCommands.swift
-│   │   ├── WatchConnectorConnectivity.swift
-│   │   ├── WatchConnectorData.swift
-│   │   ├── WatchConnectorLevel.swift
-│   │   └── WatchConnectorMessages.swift
+│   │   └── Sync
+│   │       ├── AuthSyncService.swift
+│   │       ├── CalendarSyncService.swift
+│   │       ├── ChecklistSyncService.swift
+│   │       ├── CommandSyncService.swift
+│   │       ├── ConfigSyncService.swift
+│   │       ├── ConnectivityTransport.swift
+│   │       ├── LevelSyncService.swift
+│   │       ├── SyncCoordinator.swift
+│   │       └── TelemetrySyncService.swift
 │   ├── Utils
 │   │   └── PhotoPicker.swift
 │   └── Views
@@ -84,8 +108,7 @@ applyTo: "**"
 │       │   ├── ChecklistAddItemView.swift
 │       │   ├── ChecklistDetailView.swift
 │       │   ├── ChecklistEditorView.swift
-│       │   ├── ChecklistItemEditRow.swift
-│       │   └── ChecklistViewModel.swift
+│       │   └── ChecklistItemEditRow.swift
 │       ├── Feedback
 │       │   ├── FeedbackManager.swift
 │       │   └── FeedbackView.swift
@@ -114,6 +137,64 @@ applyTo: "**"
 │           ├── WizardConfigView.swift
 │           └── WizardView.swift
 ├── fokusuhr-testing-platform Watch App
+│   ├── Assets.xcassets
+│   │   ├── AccentColor.colorset
+│   │   │   └── Contents.json
+│   │   ├── AppIcon.appiconset
+│   │   │   ├── 1024.png
+│   │   │   └── Contents.json
+│   │   ├── Backblech.imageset
+│   │   │   ├── Backblech.png
+│   │   │   └── Contents.json
+│   │   ├── Backpapier.imageset
+│   │   │   ├── Backpapier.png
+│   │   │   └── Contents.json
+│   │   ├── Bleistift.imageset
+│   │   │   ├── Bleistift.png
+│   │   │   └── Contents.json
+│   │   ├── Buntes Papier.imageset
+│   │   │   ├── Buntes Papier.png
+│   │   │   └── Contents.json
+│   │   ├── Contents.json
+│   │   ├── Ei.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Ei.png
+│   │   ├── Kelle.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Kelle.png
+│   │   ├── Leimstift.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Leimstift.png
+│   │   ├── Lineal.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Lineal.png
+│   │   ├── Locher.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Locher.png
+│   │   ├── Maizena.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Maizena.png
+│   │   ├── Schere.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Schere.png
+│   │   ├── Schokoladenpulver.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Schokoladenpulver.png
+│   │   ├── Topflappen.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Topflappen.png
+│   │   ├── Waage.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Waage.png
+│   │   ├── Wackelaugen.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Wackelaugen.png
+│   │   ├── Wolle.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Wolle.png
+│   │   └── Zucker.imageset
+│   │       ├── Contents.json
+│   │       └── Zucker.png
 │   ├── Classifiers
 │   │   └── MultiClassifier.mlmodel
 │   ├── FokusUhr Watch App.entitlements
@@ -126,9 +207,10 @@ applyTo: "**"
 │   │   ├── AudioRecorder.swift
 │   │   ├── AuthManager.swift
 │   │   ├── GalleryManager.swift
-│   │   ├── VibrationManager.swift
-│   │   ├── WatchConnector.swift
-│   │   └── WatchConnectorLevel.swift
+│   │   ├── Sync
+│   │   │   ├── ConnectivityTransport.swift
+│   │   │   └── SyncCoordinator.swift
+│   │   └── VibrationManager.swift
 │   ├── Utils
 │   │   ├── ActivityPredictor.swift
 │   │   ├── FeatureCalculator.swift
@@ -204,16 +286,6 @@ applyTo: "**"
 ├── fokusuhr-testing-platform-Watch-App-Info.plist
 ├── fokusuhr-testing-platform.xcodeproj
 │   ├── project.pbxproj
-│   ├── project.xcworkspace
-│   │   ├── contents.xcworkspacedata
-│   │   ├── xcshareddata
-│   │   │   └── swiftpm
-│   │   │       ├── configuration
-│   │   │       └── Package.resolved
-│   │   └── xcuserdata
-│   │       └── eliasalerno.xcuserdatad
-│   │           ├── IDEFindNavigatorScopes.plist
-│   │           └── UserInterfaceState.xcuserstate
 │   ├── xcshareddata
 │   │   └── xcschemes
 │   │       ├── fokusuhr-testing-platform Watch App.xcscheme
@@ -224,17 +296,22 @@ applyTo: "**"
 │           │   └── Breakpoints_v2.xcbkptlist
 │           └── xcschemes
 │               └── xcschememanagement.plist
-├── Production.xcconfig
+├── plans
+│   └── WatchConnectorRefactor.md
 ├── README.md
 ├── Shared
 │   ├── Configs
 │   │   ├── SupabaseConfig.swift
 │   │   └── WatchConfig.swift
+│   ├── Connectivity
+│   │   ├── SyncConstants.swift
+│   │   └── SyncPacket.swift
 │   ├── Constants
 │   │   └── AppConstants.swift
 │   ├── Localizable.xcstrings
 │   ├── Models
 │   │   ├── ActivityStats.swift
+│   │   ├── AppConfigurations.swift
 │   │   ├── AppInfo.swift
 │   │   ├── Calendar.swift
 │   │   ├── Checklist.swift
@@ -259,43 +336,8 @@ applyTo: "**"
 │       └── ValidationHelper.swift
 ├── supabase
 │   ├── config.toml
-│   ├── functions
-│   │   ├── invite_supervisor
-│   │   │   ├── deno.json
-│   │   │   ├── deno.lock
-│   │   │   └── index.ts
-│   │   └── publishBugToNotionTickets
-│   │       ├── deno.json
-│   │       └── index.ts
-│   ├── migrations
-│   │   ├── 20250902224853_init.sql
-│   │   ├── 20250903221741_add_rls.sql
-│   │   ├── 20250903221928_add_policies.sql
-│   │   ├── 20250903222153_user_id_to_test_user_id.sql
-│   │   ├── 20250903222613_test_user_table_changes.sql
-│   │   ├── 20250904173029_user_id_col_for_supervisors.sql
-│   │   ├── 20250904173722_better_intergation_with_auth_uid.sql
-│   │   ├── 20250904174106_journals_for_your_own_id_only.sql
-│   │   ├── 20250904174538_apps_table.sql
-│   │   ├── 20250923195343_apps_table.sql
-│   │   ├── 20250923200855_rm_experiences_table.sql
-│   │   ├── 20250923200922_add_pgvector.sql
-│   │   ├── 20250923201429_add_app_logs_table_and_rls.sql
-│   │   ├── 20250923215438_function_automatic_supervisor_creation.sql
-│   │   ├── 20250924102830_change_journal_rls.sql
-│   │   ├── 20250924103355_return_of_app_name_for_convenience.sql
-│   │   ├── 20250924120000_fix_supervisor_trigger.sql
-│   │   ├── 20250924120001_add_email_column_to_supervisors.sql
-│   │   ├── 20250924120002_fix_supervisor_trigger_with_logging.sql
-│   │   ├── 20250928202215_add timestamptz col to journals.sql
-│   │   ├── 20251024133238_add_feedback_table.sql
-│   │   ├── 20251024134448_add_implemented_bool_to_feedback_table.sql
-│   │   ├── 20251024140110_fix_rls_for_inserting_feedback_as_anon.sql
-│   │   ├── 20251024141330_fix_rls_updateable.sql
-│   │   ├── 20251029112446_add_watch_id.sql
-│   │   ├── 20251029124805_remote_schema.sql
-│   │   └── 20251029124945_rm_app_id_ref.sql
-│   └── seed.sql
+│   └── docs
+│       └── custom_claims_setup.md
 ├── version-complication
 │   ├── AppIntent.swift
 │   ├── Assets.xcassets
@@ -312,6 +354,8 @@ applyTo: "**"
 └── watch-notification
     ├── Info.plist
     └── NotificationService.swift
+
+102 directories, 229 files
 ```
 
 - Use the command "tree" in the commandline to see the latest directory tree if you need it

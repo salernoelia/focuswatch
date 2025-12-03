@@ -74,7 +74,7 @@ struct UserAddView: View {
               let session = supabase.auth.currentSession
             else { return }
 
-            let supervisorUid = supervisorManager.currentSupervisor?.uid ?? session.user.id
+            let supervisorUid = supervisorManager.currentSupervisor?.userId ?? session.user.id
 
             let user = PublicSchema.TestUsersInsert(
               age: ageInt,
@@ -82,7 +82,7 @@ struct UserAddView: View {
               gender: selectedGender,
               id: nil,
               lastName: lastName.trimmingCharacters(in: .whitespacesAndNewlines),
-              supervisorUid: supervisorUid
+              testSupervisorUserId: supervisorUid
             )
             onAdd(user)
             dismiss()

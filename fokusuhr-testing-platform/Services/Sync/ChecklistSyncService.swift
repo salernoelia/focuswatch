@@ -8,11 +8,13 @@ final class ChecklistSyncService: ObservableObject {
     @Published var lastError: AppError?
 
     private let transport: ConnectivityTransport
+    private let imageSyncService: ImageSyncService
     private var lastSyncedHash: Int?
     var isSyncing = false
 
-    init(transport: ConnectivityTransport = .shared) {
+    init(transport: ConnectivityTransport = .shared, imageSyncService: ImageSyncService = .shared) {
         self.transport = transport
+        self.imageSyncService = imageSyncService
         loadChecklistData()
     }
 
@@ -27,6 +29,16 @@ final class ChecklistSyncService: ObservableObject {
             WCSession.default.activate()
             return
         }
+        sync()
+    }
+
+    func forceSyncWithImages() {
+        guard WCSession.default.activationState == .activated else {
+            WCSession.default.activate()
+            return
+        }
+        lastSyncedHash = nil
+        imageSyncService.forceSyncAllImages(for: checklistData, galleryStorage: GalleryStorage.shared)
         sync()
     }
 
@@ -50,46 +62,25 @@ final class ChecklistSyncService: ObservableObject {
     private func performSync(hashToSet: Int) {
         do {
             let data = try JSONEncoder().encode(checklistData)
-            var imageData: [String: String] = [:]
+            let imageData = collectImageDataForContext()
 
-            let galleryStorage = GalleryStorage.shared
-            let usedImageNames = Set(
-                checklistData.checklists.flatMap { checklist in
-                    checklist.items.map { $0.imageName }
-                }.filter { !$0.isEmpty }
-            )
-
-            for item in galleryStorage.items {
-                guard usedImageNames.contains(item.label) else { continue }
-
-                let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
-                guard let documentsURL = documentsURL else { continue }
-
-                let url = documentsURL.appendingPathComponent(item.imagePath)
-                guard FileManager.default.fileExists(atPath: url.path),
-                      let fileData = try? Data(contentsOf: url) else { continue }
-
-                imageData[item.label] = fileData.base64EncodedString()
-            }
-
-            if !imageData.isEmpty {
-                let checkPayloadSize = try JSONSerialization.data(withJSONObject: imageData, options: [])
-                let sizeInKB = Double(checkPayloadSize.count) / AppConstants.Network.bytesToKBDivisor
-                if sizeInKB > AppConstants.Network.maxPayloadSizeKB {
-                    imageData = [:]
-                }
-            }
-
-            let context: [String: Any] = [
+            var context: [String: Any] = [
                 SyncConstants.Keys.checklistData: data,
-                SyncConstants.Keys.checklistImageData: imageData,
                 SyncConstants.Keys.forceOverwrite: true,
                 SyncConstants.Keys.timestamp: Date().timeIntervalSince1970
             ]
 
+            if !imageData.isEmpty {
+                context[SyncConstants.Keys.checklistImageData] = imageData
+                #if DEBUG
+                    print("iOS: Including \(imageData.count) images in applicationContext")
+                #endif
+            }
+
             try transport.updateApplicationContext(context)
 
             DispatchQueue.main.async {
+                self.imageSyncService.syncImages(for: self.checklistData, galleryStorage: GalleryStorage.shared)
                 self.isSyncing = false
                 self.lastSyncedHash = hashToSet
             }
@@ -106,6 +97,57 @@ final class ChecklistSyncService: ObservableObject {
                 ErrorLogger.log(AppError.encodingFailed(type: "checklist", underlying: error))
             #endif
         }
+    }
+
+    private func collectImageDataForContext() -> [String: String] {
+        var imageData: [String: String] = [:]
+
+        let galleryStorage = GalleryStorage.shared
+        let usedImageNames = Set(
+            checklistData.checklists.flatMap { checklist in
+                checklist.items.map { $0.imageName }
+            }.filter { !$0.isEmpty }
+        )
+
+        #if DEBUG
+            print("iOS: Used image names in checklists: \(usedImageNames)")
+            print("iOS: Gallery items: \(galleryStorage.items.map { $0.label })")
+        #endif
+
+        for item in galleryStorage.items {
+            guard usedImageNames.contains(item.label) else { continue }
+
+            guard let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { continue }
+
+            let url = documentsURL.appendingPathComponent(item.imagePath)
+            guard FileManager.default.fileExists(atPath: url.path),
+                  let fileData = try? Data(contentsOf: url) else { continue }
+
+            imageData[item.label] = fileData.base64EncodedString()
+            #if DEBUG
+                print("iOS: Added image to context: \(item.label) (\(fileData.count) bytes)")
+            #endif
+        }
+
+        if !imageData.isEmpty {
+            do {
+                let checkPayloadSize = try JSONSerialization.data(withJSONObject: imageData, options: [])
+                let sizeInKB = Double(checkPayloadSize.count) / AppConstants.Network.bytesToKBDivisor
+                #if DEBUG
+                    print("iOS: Total image payload size: \(sizeInKB) KB (max: \(AppConstants.Network.maxPayloadSizeKB) KB)")
+                #endif
+                if sizeInKB > AppConstants.Network.maxPayloadSizeKB {
+                    #if DEBUG
+                        print("iOS: Image payload too large, will use file transfer only")
+                    #endif
+                    return [:]
+                }
+            } catch {
+                return [:]
+            }
+        }
+
+        return imageData
     }
 
     private func computeHash() -> Int {

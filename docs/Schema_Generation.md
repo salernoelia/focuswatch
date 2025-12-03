@@ -1,1 +1,3 @@
-supabase gen types swift --local >./Shared/Models/Schema.swift
+```
+supabase gen types --lang swift --local >./Shared/Models/Schema.swift
+```

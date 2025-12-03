@@ -31,6 +31,9 @@ enum SyncConstants {
         static let hasConsent = "hasConsent"
         static let appIndex = "appIndex"
         static let status = "status"
+        static let imageName = "imageName"
+        static let imageHash = "imageHash"
+        static let syncType = "syncType"
     }
 
     enum Actions {
