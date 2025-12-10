@@ -25,6 +25,7 @@
 		0E4379A92E9804D4000B2941 /* version-complication.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0E4379992E9804D2000B2941 /* version-complication.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0E437A892E981ABC000B2941 /* StatKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0E437A882E981ABC000B2941 /* StatKit */; };
 		0E437AA32E981D24000B2941 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 0E437AA22E981D24000B2941 /* KeychainAccess */; };
+		0E93F04C2EE4ECB6005D4332 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 0E93F04B2EE4ECB6005D4332 /* KeychainAccess */; };
 		0E9D8CD02E0D6C24002B7989 /* fokusuhr-testing-platform Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0E9D8CCF2E0D6C24002B7989 /* fokusuhr-testing-platform Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -165,6 +166,7 @@
 			files = (
 				0E43799E2E9804D3000B2941 /* SwiftUI.framework in Frameworks */,
 				0E43799C2E9804D3000B2941 /* WidgetKit.framework in Frameworks */,
+				0E93F04C2EE4ECB6005D4332 /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,6 +279,7 @@
 			);
 			name = "version-complication";
 			packageProductDependencies = (
+				0E93F04B2EE4ECB6005D4332 /* KeychainAccess */,
 			);
 			productName = widgetExtension;
 			productReference = 0E4379992E9804D2000B2941 /* version-complication.appex */;
@@ -496,7 +499,7 @@
 					"@executable_path/../../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr.watchkitapp.notification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -524,7 +527,7 @@
 					"@executable_path/../../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr.watchkitapp.notification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -556,7 +559,7 @@
 					"@executable_path/../../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.com.fokusuhr.FokusUhr.watchkitapp.version-complication";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -587,7 +590,7 @@
 					"@executable_path/../../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.com.fokusuhr.FokusUhr.watchkitapp.version-complication";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -755,7 +758,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -796,7 +799,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -839,7 +842,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -879,7 +882,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.com.fokusuhr.FokusUhr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1035,6 +1038,11 @@
 			productName = StatKit;
 		};
 		0E437AA22E981D24000B2941 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0E437AA12E981D24000B2941 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+		0E93F04B2EE4ECB6005D4332 /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0E437AA12E981D24000B2941 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
 			productName = KeychainAccess;

@@ -97,9 +97,6 @@
         }
       }
     },
-    "%lld Points" : {
-      "shouldTranslate" : false
-    },
     "%lld items" : {
       "localizations" : {
         "de" : {
@@ -147,6 +144,9 @@
           }
         }
       }
+    },
+    "%lld Points" : {
+      "shouldTranslate" : false
     },
     "•" : {
       "localizations" : {
@@ -355,16 +355,6 @@
         }
       }
     },
-    "Add Points" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Points Hinzufügen"
-          }
-        }
-      }
-    },
     "Add Item" : {
       "localizations" : {
         "de" : {
@@ -435,6 +425,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Add photos to use in checklists"
+          }
+        }
+      }
+    },
+    "Add Points" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Points Hinzufügen"
           }
         }
       }
@@ -896,22 +896,22 @@
         }
       }
     },
-    "Current Points" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jetzige Points"
-          }
-        }
-      }
-    },
     "Current Level" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Jetziges Level"
+          }
+        }
+      }
+    },
+    "Current Points" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzige Points"
           }
         }
       }
@@ -1003,9 +1003,6 @@
           }
         }
       }
-    },
-    "Debug Tools" : {
-
     },
     "Dein Feedback" : {
       "localizations" : {
@@ -1629,16 +1626,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fokuslehrling"
-          }
-        }
-      }
-    },
-    "Points Reward" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Points Belohnung"
           }
         }
       }
@@ -2848,6 +2835,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Please log in to access your journal entries"
+          }
+        }
+      }
+    },
+    "Points Reward" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Points Belohnung"
           }
         }
       }

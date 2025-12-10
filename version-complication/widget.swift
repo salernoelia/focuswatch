@@ -5,6 +5,7 @@
 //  Created by Elia Salerno on 09.10.2025.
 //
 
+import Security
 import SwiftUI
 import WidgetKit
 
@@ -22,27 +23,35 @@ struct Provider: AppIntentTimelineProvider {
     return bundle.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
   }
 
+  private func getKeychainUUID() -> String? {
+    let query: [String: Any] = [
+      kSecClass as String: kSecClassGenericPassword,
+      kSecAttrService as String: "com.fokusapp.FokusWatch.watchkitapp",
+      kSecAttrAccount as String: "deviceUUID",
+      kSecReturnData as String: true,
+      kSecMatchLimit as String: kSecMatchLimitOne
+    ]
+
+    var result: AnyObject?
+    let status = SecItemCopyMatching(query as CFDictionary, &result)
+
+    guard status == errSecSuccess,
+          let data = result as? Data,
+          let uuid = String(data: data, encoding: .utf8) else {
+      return nil
+    }
+    return uuid
+  }
+
   private var deviceId: String {
-    let sharedDefaults = UserDefaults(suiteName: "group.net.com.fokusuhr")
-
-    #if DEBUG
-      print("📱 Widget: Attempting to read deviceUUID from shared container")
-    #endif
-
-    if let uuid = sharedDefaults?.string(forKey: "deviceUUID") {
-      let shortId = String(uuid.prefix(6)).uppercased()
-      #if DEBUG
-        print("📱 Widget: Found deviceUUID: \(shortId)")
-      #endif
-      return shortId
+    if let uuid = getKeychainUUID() {
+      return String(uuid.prefix(6)).uppercased()
     }
 
-    #if DEBUG
-      print("📱 Widget: No deviceUUID found in shared container")
-      if let allKeys = sharedDefaults?.dictionaryRepresentation().keys {
-        print("📱 Widget: Available keys: \(allKeys)")
-      }
-    #endif
+    let sharedDefaults = UserDefaults(suiteName: "group.net.com.fokusuhr")
+    if let uuid = sharedDefaults?.string(forKey: "deviceUUID") {
+      return String(uuid.prefix(6)).uppercased()
+    }
 
     return "NO ID"
   }

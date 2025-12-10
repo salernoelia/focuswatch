@@ -6,6 +6,7 @@ class GalleryManager {
 
     private var receivedImageHashes: Set<String> = []
     private let receivedHashesKey = "receivedImageHashes"
+    private var lastImageDataHash: Int = 0
 
     init() {
         loadReceivedHashes()
@@ -41,12 +42,28 @@ class GalleryManager {
         }
 
         receivedImageHashes.removeAll()
+        lastImageDataHash = 0
         saveReceivedHashes()
     }
 
     func saveGalleryImages(_ imageData: [String: String]) {
         #if DEBUG
             print("Watch GalleryManager: Received \(imageData.count) images via applicationContext")
+        #endif
+
+        guard !imageData.isEmpty else { return }
+
+        let newHash = computeImageDataHash(imageData)
+        
+        if newHash == lastImageDataHash && lastImageDataHash != 0 {
+            #if DEBUG
+                print("Watch GalleryManager: Image data unchanged (hash: \(newHash)), skipping sync")
+            #endif
+            return
+        }
+
+        #if DEBUG
+            print("Watch GalleryManager: Processing images (hash: \(lastImageDataHash) -> \(newHash))")
         #endif
 
         guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
@@ -56,28 +73,50 @@ class GalleryManager {
             return
         }
 
+        var savedCount = 0
+        var skippedCount = 0
+
         for (imageName, base64String) in imageData {
             guard let data = Data(base64Encoded: base64String) else {
                 #if DEBUG
                     ErrorLogger.log(AppError.decodingFailed(type: "base64 image", underlying: NSError(domain: "GalleryManager", code: -1)))
-                    print("Watch GalleryManager: Failed to decode base64 for \(imageName)")
                 #endif
                 continue
             }
 
             let imageURL = documentsPath.appendingPathComponent("\(imageName).jpg")
+            
+            if FileManager.default.fileExists(atPath: imageURL.path),
+               let existingData = try? Data(contentsOf: imageURL),
+               existingData.count == data.count {
+                skippedCount += 1
+                continue
+            }
+
             do {
                 try data.write(to: imageURL)
-                #if DEBUG
-                    print("Watch GalleryManager: Saved image \(imageName) (\(data.count) bytes)")
-                #endif
+                savedCount += 1
             } catch {
                 #if DEBUG
                     ErrorLogger.log(AppError.fileOperationFailed(operation: "save gallery image", underlying: error))
-                    print("Watch GalleryManager: Failed to save \(imageName): \(error.localizedDescription)")
                 #endif
             }
         }
+
+        lastImageDataHash = newHash
+
+        #if DEBUG
+            print("Watch GalleryManager: Saved \(savedCount), skipped \(skippedCount) unchanged images")
+        #endif
+    }
+
+    private func computeImageDataHash(_ imageData: [String: String]) -> Int {
+        var hasher = Hasher()
+        for key in imageData.keys.sorted() {
+            hasher.combine(key)
+            hasher.combine(imageData[key]?.count ?? 0)
+        }
+        return hasher.finalize()
     }
 
     func handleReceivedFile(fileURL: URL, metadata: [String: Any]?) {
