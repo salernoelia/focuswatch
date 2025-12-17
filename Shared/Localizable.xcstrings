@@ -1004,6 +1004,9 @@
         }
       }
     },
+    "Debug Tools" : {
+
+    },
     "Dein Feedback" : {
       "localizations" : {
         "de" : {
@@ -2932,6 +2935,9 @@
           }
         }
       }
+    },
+    "Reached Level 3" : {
+
     },
     "Reached Level 5" : {
       "localizations" : {

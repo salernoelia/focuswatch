@@ -48,7 +48,7 @@ struct LevelData: Codable {
             LevelMilestone(
                 levelRequired: 3,
                 title: String(localized: "Early Bird"),
-                description: String(localized: "Reached Level 5")
+                description: String(localized: "Reached Level 3")
             ),
             LevelMilestone(
                 levelRequired: 5,

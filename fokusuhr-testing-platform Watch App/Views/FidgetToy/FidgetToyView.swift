@@ -27,6 +27,7 @@ struct FidgetToyView: View {
       appLogger.logViewLifecycle(appName: "fidget", event: "open")
     }
     .onDisappear {
+      viewModel.cleanup()
       appLogger.logViewLifecycle(appName: "fidget", event: "close")
     }
   }

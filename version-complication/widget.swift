@@ -29,15 +29,16 @@ struct Provider: AppIntentTimelineProvider {
       kSecAttrService as String: "com.fokusapp.FokusWatch.watchkitapp",
       kSecAttrAccount as String: "deviceUUID",
       kSecReturnData as String: true,
-      kSecMatchLimit as String: kSecMatchLimitOne
+      kSecMatchLimit as String: kSecMatchLimitOne,
     ]
 
     var result: AnyObject?
     let status = SecItemCopyMatching(query as CFDictionary, &result)
 
     guard status == errSecSuccess,
-          let data = result as? Data,
-          let uuid = String(data: data, encoding: .utf8) else {
+      let data = result as? Data,
+      let uuid = String(data: data, encoding: .utf8)
+    else {
       return nil
     }
     return uuid

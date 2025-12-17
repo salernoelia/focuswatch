@@ -46,37 +46,28 @@ class ChecklistViewModel: ObservableObject {
       let newData = try JSONDecoder().decode(ChecklistData.self, from: data)
       let newHash = computeHash(for: newData)
 
-      if let lastHash = lastSyncedHash, lastHash == newHash {
+      if let lastHash = lastSyncedHash, lastHash == newHash, !forceOverwrite {
         #if DEBUG
-          ErrorLogger.log("Data unchanged, skipping sync")
+          ErrorLogger.log("Watch: Data unchanged, skipping update")
         #endif
         return
       }
 
       if forceOverwrite {
         #if DEBUG
-          ErrorLogger.log("Force overwrite: Clearing old data and replacing with new data")
+          ErrorLogger.log("Watch: Force overwrite - clearing old images")
         #endif
         galleryManager.clearOldGalleryImages()
+      }
 
-        DispatchQueue.main.async {
-          self.checklistData = newData
-          self.lastSyncedHash = newHash
-          self.saveChecklistData(silent: false)
-        }
-
-        #if DEBUG
-          ErrorLogger.log("Replaced with \(newData.checklists.count) checklists")
-        #endif
-      } else {
-        DispatchQueue.main.async {
-          self.checklistData = newData
-          self.lastSyncedHash = newHash
-          self.saveChecklistData(silent: false)
-        }
+      DispatchQueue.main.async { [weak self] in
+        guard let self = self else { return }
+        self.checklistData = newData
+        self.lastSyncedHash = newHash
+        self.saveChecklistData(silent: false)
 
         #if DEBUG
-          ErrorLogger.log("Updated with \(newData.checklists.count) checklists")
+          ErrorLogger.log("Watch: Updated with \(newData.checklists.count) checklists")
         #endif
       }
     } catch {
@@ -95,6 +86,11 @@ class ChecklistViewModel: ObservableObject {
       hasher.combine(checklist.name)
       hasher.combine(checklist.items.count)
       hasher.combine(checklist.xpReward)
+      for item in checklist.items {
+        hasher.combine(item.id)
+        hasher.combine(item.title)
+        hasher.combine(item.imageName)
+      }
     }
     return hasher.finalize()
   }

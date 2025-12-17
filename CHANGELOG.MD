@@ -1,8 +1,10 @@
 # Releases
 
+## [1.2.3] - 10.12.2025
+- Fidget vibrations when exiting app bugfix
+
 ## [1.2.2] - 07.12.2025
 
-#### Changes
 - All "FocusPoints" are now called "Points" throughout the app as it was just too long for many UI elements
 - Minor UI and translation improvements
 - Added new Sync system for improved reliability between Phone and Watch
