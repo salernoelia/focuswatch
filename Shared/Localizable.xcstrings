@@ -355,9 +355,6 @@
         }
       }
     },
-    "Add from Photos" : {
-
-    },
     "Add Item" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -482,6 +479,7 @@
       }
     },
     "Advanced" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1681,10 +1679,8 @@
         }
       }
     },
-    "Force Sync" : {
-
-    },
     "Force Sync All Data" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1701,6 +1697,7 @@
       }
     },
     "Force Syncing..." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2489,6 +2486,7 @@
       }
     },
     "New Checklist" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3564,9 +3562,6 @@
         }
       }
     },
-    "Sync" : {
-
-    },
     "Take Photo" : {
 
     },
@@ -3708,9 +3703,6 @@
           }
         }
       }
-    },
-    "This will re-sync all checklists and images to the Watch. Continue?" : {
-
     },
     "Time" : {
       "localizations" : {

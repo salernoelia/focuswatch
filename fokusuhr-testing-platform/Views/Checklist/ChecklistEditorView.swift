@@ -7,12 +7,14 @@ struct ChecklistEditorView: View {
   @StateObject private var syncCoordinator = SyncCoordinator.shared
   @Environment(\.presentationMode) var presentationMode
   @State private var newChecklistId: UUID?
-  @State private var showingSyncConfirmation = false
 
   var body: some View {
     NavigationView {
       checklistList
         .navigationTitle("Checklists")
+        .refreshable {
+          syncCoordinator.forceSyncChecklists()
+        }
         .toolbar {
           ToolbarItem(placement: .topBarLeading) {
             NavigationLink(destination: GalleryView()) {
@@ -20,32 +22,15 @@ struct ChecklistEditorView: View {
             }
           }
           ToolbarItem(placement: .topBarTrailing) {
-            Menu {
-              Button {
-                let newChecklist = addChecklist(name: "New Checklist")
-                newChecklistId = newChecklist.id
-              } label: {
-                Label(NSLocalizedString("New Checklist", comment: ""), systemImage: "plus")
-              }
-              Button {
-                showingSyncConfirmation = true
-              } label: {
-                Label(NSLocalizedString("Force Sync", comment: ""), systemImage: "arrow.clockwise")
-              }
+            Button {
+              let newChecklist = addChecklist(name: "New Checklist")
+              newChecklistId = newChecklist.id
             } label: {
-              Image(systemName: "ellipsis.circle")
+              Image(systemName: "plus")
             }
           }
         }
         .background(navigationLink)
-        .alert(NSLocalizedString("Force Sync", comment: ""), isPresented: $showingSyncConfirmation) {
-          Button(NSLocalizedString("Cancel", comment: ""), role: .cancel) {}
-          Button(NSLocalizedString("Sync", comment: "")) {
-            syncCoordinator.forceSyncChecklists()
-          }
-        } message: {
-          Text(NSLocalizedString("This will re-sync all checklists and images to the Watch. Continue?", comment: ""))
-        }
     }
   }
 

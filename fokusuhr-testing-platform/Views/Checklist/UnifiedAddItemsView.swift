@@ -37,7 +37,8 @@ struct UnifiedAddItemsView: View {
             if pendingItems.isEmpty {
               presentationMode.wrappedValue.dismiss()
             } else {
-              withAnimation {
+              focusedField = nil
+              DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 pendingItems.removeAll()
               }
             }
@@ -47,8 +48,11 @@ struct UnifiedAddItemsView: View {
         if !pendingItems.isEmpty {
           ToolbarItem(placement: .navigationBarTrailing) {
             Button(NSLocalizedString("Done", comment: "")) {
-              saveAllItems()
-              presentationMode.wrappedValue.dismiss()
+              focusedField = nil
+              DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                saveAllItems()
+                presentationMode.wrappedValue.dismiss()
+              }
             }
             .fontWeight(.semibold)
             .disabled(pendingItems.contains { $0.label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty })
@@ -177,8 +181,18 @@ struct UnifiedAddItemsView: View {
           .padding(.vertical, 4)
           .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button(role: .destructive) {
-              withAnimation {
-                pendingItems.removeAll { $0.id == item.id }
+              let itemId = item.id
+              if focusedField == itemId {
+                focusedField = nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                  withAnimation {
+                    pendingItems.removeAll { $0.id == itemId }
+                  }
+                }
+              } else {
+                withAnimation {
+                  pendingItems.removeAll { $0.id == itemId }
+                }
               }
             } label: {
               Label(NSLocalizedString("Delete", comment: ""), systemImage: "trash")
@@ -191,17 +205,20 @@ struct UnifiedAddItemsView: View {
       VStack(spacing: 0) {
         Divider()
         
-        HStack(spacing: 12) {
+        HStack(spacing: 8) {
           Button {
             showingPhotoPicker = true
           } label: {
-            HStack {
+            HStack(spacing: 6) {
               Image(systemName: "photo.badge.plus")
-              Text(NSLocalizedString("Add from Photos", comment: ""))
+                .font(.body)
+              Text(NSLocalizedString("Photos", comment: ""))
+                .font(.subheadline)
+                .fontWeight(.medium)
             }
             .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color.secondary.opacity(0.1))
+            .padding(.vertical, 14)
+            .background(Color.accentColor.opacity(0.1))
             .foregroundColor(.accentColor)
             .cornerRadius(10)
           }
@@ -209,21 +226,35 @@ struct UnifiedAddItemsView: View {
           Button {
             showingCameraPicker = true
           } label: {
-            Image(systemName: "camera")
-              .frame(width: 50, height: 50)
-              .background(Color.secondary.opacity(0.1))
-              .foregroundColor(.accentColor)
-              .cornerRadius(10)
+            HStack(spacing: 6) {
+              Image(systemName: "camera")
+                .font(.body)
+              Text(NSLocalizedString("Camera", comment: ""))
+                .font(.subheadline)
+                .fontWeight(.medium)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .background(Color.accentColor.opacity(0.1))
+            .foregroundColor(.accentColor)
+            .cornerRadius(10)
           }
           
           Button {
             showingGalleryPicker = true
           } label: {
-            Image(systemName: "square.grid.2x2")
-              .frame(width: 50, height: 50)
-              .background(Color.secondary.opacity(0.1))
-              .foregroundColor(.accentColor)
-              .cornerRadius(10)
+            HStack(spacing: 6) {
+              Image(systemName: "square.grid.2x2")
+                .font(.body)
+              Text(NSLocalizedString("Gallery", comment: ""))
+                .font(.subheadline)
+                .fontWeight(.medium)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .background(Color.accentColor.opacity(0.1))
+            .foregroundColor(.accentColor)
+            .cornerRadius(10)
           }
         }
         .padding(.horizontal, 16)

@@ -1,10 +1,13 @@
 # Releases
 
 ## [1.2.3] - 10.12.2025
-- Fidget vibrations when exiting app bugfix
-- Checklist force sync button in the "Checklists" Page on the iPhone App
-- Checklist Items can be re-sorted by long-pressing an item and dragging it around
-- Fully reworked Checklist editor interface on iPhone App
+- Fixed fidget vibration issue when leaving the app
+- Added force sync of checklists on pull down of the "Checklists" page on iPhone
+- Enabled checklist item reordering via long-press and drag
+- Redesigned checklist editor interface on iPhone
+- Added batch-adding of items from Photos for Checklist items
+- More solid sync system for checklist data between Phone and Watch
+- Hashing of checklist data to prevent duplicate items
 
 ## [1.2.2] - 07.12.2025
 

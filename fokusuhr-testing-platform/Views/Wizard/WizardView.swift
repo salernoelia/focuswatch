@@ -241,19 +241,19 @@ struct WizardView: View {
                     .disabled(connectionStatus != .connected)
                 }
 
-                Section("Advanced") {
-                    Button(action: forceSyncToWatch) {
-                        HStack {
-                            if isSyncing {
-                                ProgressView()
-                                    .scaleEffect(AppConstants.UI.progressScaleFactor)
-                            }
-                            Text(isSyncing ? "Force Syncing..." : "Force Sync All Data")
-                                .foregroundColor(isSyncing ? .secondary : .red)
-                        }
-                    }
-                    .disabled(!syncCoordinator.isConnected || isSyncing)
-                }
+                // Section("Advanced") {
+                //     Button(action: forceSyncToWatch) {
+                //         HStack {
+                //             if isSyncing {
+                //                 ProgressView()
+                //                     .scaleEffect(AppConstants.UI.progressScaleFactor)
+                //             }
+                //             Text(isSyncing ? "Force Syncing..." : "Force Sync All Data")
+                //                 .foregroundColor(isSyncing ? .secondary : .red)
+                //         }
+                //     }
+                //     .disabled(!syncCoordinator.isConnected || isSyncing)
+                // }
 
             }
             .listStyle(.insetGrouped)
