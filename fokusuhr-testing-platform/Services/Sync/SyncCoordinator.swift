@@ -3,74 +3,96 @@ import Foundation
 import WatchConnectivity
 
 final class SyncCoordinator: ObservableObject {
-  static let shared = SyncCoordinator()
+    static let shared = SyncCoordinator()
 
-  @Published var isConnected = false
-  @Published var lastError: AppError?
+    @Published var isConnected = false
+    @Published var lastError: AppError?
+    @Published private(set) var syncStatus: String = SyncConstants.Status.pending
 
-  let transport: ConnectivityTransport
-  let calendarService: CalendarSyncService
-  let checklistService: ChecklistSyncService
-  let levelService: LevelSyncService
-  let configService: ConfigSyncService
-  let authService: AuthSyncService
-  let telemetryService: TelemetrySyncService
-  let commandService: CommandSyncService
+    let transport: ConnectivityTransport
+    let calendarService: CalendarSyncService
+    let checklistService: ChecklistSyncService
+    let levelService: LevelSyncService
+    let configService: ConfigSyncService
+    let authService: AuthSyncService
+    let telemetryService: TelemetrySyncService
+    let commandService: CommandSyncService
+    let imageSyncService: ImageSyncService
 
-  private var cancellables = Set<AnyCancellable>()
+    private var cancellables = Set<AnyCancellable>()
 
-  init(
-    transport: ConnectivityTransport = .shared,
-    calendarService: CalendarSyncService = .shared,
-    checklistService: ChecklistSyncService = .shared,
-    levelService: LevelSyncService = .shared,
-    configService: ConfigSyncService = .shared,
-    authService: AuthSyncService = .shared,
-    telemetryService: TelemetrySyncService = .shared,
-    commandService: CommandSyncService = .shared
-  ) {
-    self.transport = transport
-    self.calendarService = calendarService
-    self.checklistService = checklistService
-    self.levelService = levelService
-    self.configService = configService
-    self.authService = authService
-    self.telemetryService = telemetryService
-    self.commandService = commandService
+    init(
+        transport: ConnectivityTransport = .shared,
+        calendarService: CalendarSyncService = .shared,
+        checklistService: ChecklistSyncService = .shared,
+        levelService: LevelSyncService = .shared,
+        configService: ConfigSyncService = .shared,
+        authService: AuthSyncService = .shared,
+        telemetryService: TelemetrySyncService = .shared,
+        commandService: CommandSyncService = .shared,
+        imageSyncService: ImageSyncService = .shared
+    ) {
+        self.transport = transport
+        self.calendarService = calendarService
+        self.checklistService = checklistService
+        self.levelService = levelService
+        self.configService = configService
+        self.authService = authService
+        self.telemetryService = telemetryService
+        self.commandService = commandService
+        self.imageSyncService = imageSyncService
 
-    setupObservers()
-    loadWatchUUIDFromContext()
-  }
+        setupObservers()
+        loadWatchUUIDFromContext()
+    }
 
-  private func setupObservers() {
-    transport.$isConnected
-      .receive(on: DispatchQueue.main)
-      .sink { [weak self] isConnected in
-        self?.isConnected = isConnected
-        if isConnected {
-          self?.syncAllData()
-        }
-      }
-      .store(in: &cancellables)
+    private func setupObservers() {
+        transport.$isConnected
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isConnected in
+                self?.isConnected = isConnected
+                if isConnected {
+                    self?.syncAllData()
+                }
+            }
+            .store(in: &cancellables)
 
-    transport.$lastError
-      .receive(on: DispatchQueue.main)
-      .assign(to: &$lastError)
+        transport.$lastError
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$lastError)
 
-    transport.contextReceived
-      .receive(on: DispatchQueue.main)
-      .sink { [weak self] context in
-        self?.handleIncomingContext(context)
-      }
-      .store(in: &cancellables)
+        transport.contextReceived
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] context in
+                self?.handleIncomingContext(context)
+            }
+            .store(in: &cancellables)
 
-    transport.messageReceived
-      .receive(on: DispatchQueue.main)
-      .sink { [weak self] message, replyHandler in
-        self?.handleIncomingMessage(message, replyHandler: replyHandler)
-      }
-      .store(in: &cancellables)
-  }
+        transport.messageReceived
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] message, replyHandler in
+                self?.handleIncomingMessage(message, replyHandler: replyHandler)
+            }
+            .store(in: &cancellables)
+
+        imageSyncService.$syncProgress
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] progress in
+                if progress >= 1.0 {
+                    self?.syncStatus = SyncConstants.Status.complete
+                } else if progress > 0 {
+                    self?.syncStatus = SyncConstants.Status.partial
+                }
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: NSNotification.Name("AllImagesAcknowledged"))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.syncStatus = SyncConstants.Status.complete
+            }
+            .store(in: &cancellables)
+    }
 
   private func loadWatchUUIDFromContext() {
     let context = transport.getReceivedApplicationContext()
@@ -113,37 +135,60 @@ final class SyncCoordinator: ObservableObject {
     }
   }
 
-  private func handleIncomingMessage(
-    _ message: [String: Any], replyHandler: (([String: Any]) -> Void)?
-  ) {
-    guard let action = message[SyncConstants.Keys.action] as? String else {
-      replyHandler?([SyncConstants.Keys.status: SyncConstants.Status.noAction])
-      return
+    private func handleIncomingMessage(
+        _ message: [String: Any],
+        replyHandler: (([String: Any]) -> Void)?
+    ) {
+        guard let action = message[SyncConstants.Keys.action] as? String else {
+            replyHandler?([SyncConstants.Keys.status: SyncConstants.Status.noAction])
+            return
+        }
+
+        switch action {
+        case SyncConstants.Actions.updateWatchUUID:
+            if let watchUUID = message[SyncConstants.Keys.watchUUID] as? String {
+                WatchConfig.shared.setConnectedWatchUUID(watchUUID)
+            }
+
+        case SyncConstants.Actions.syncLevelFromWatch:
+            if let dataString = message[SyncConstants.Keys.data] as? String,
+               let data = Data(base64Encoded: dataString),
+               let levelData = try? JSONDecoder().decode(LevelData.self, from: data)
+            {
+                levelService.handleIncomingLevelData(levelData)
+            }
+
+        case SyncConstants.Actions.requestLevelData:
+            levelService.sync()
+
+        case SyncConstants.Actions.forceSync:
+            #if DEBUG
+                print("iOS SyncCoordinator: Received forceSync request")
+            #endif
+            syncStatus = SyncConstants.Status.pending
+            checklistService.forceSyncWithImages()
+
+        case SyncConstants.Actions.reportSyncStatus:
+            if let status = message[SyncConstants.Keys.syncStatus] as? String {
+                #if DEBUG
+                    print("iOS SyncCoordinator: Watch reported sync status: \(status)")
+                #endif
+                if status == SyncConstants.Status.complete {
+                    syncStatus = SyncConstants.Status.complete
+                }
+            }
+
+        default:
+            #if DEBUG
+                print("iOS SyncCoordinator: Unknown action: \(action)")
+            #endif
+        }
+
+        replyHandler?([SyncConstants.Keys.status: SyncConstants.Status.success])
     }
 
-    switch action {
-    case SyncConstants.Actions.updateWatchUUID:
-      if let watchUUID = message[SyncConstants.Keys.watchUUID] as? String {
-        WatchConfig.shared.setConnectedWatchUUID(watchUUID)
-      }
-
-    case SyncConstants.Actions.syncLevelFromWatch:
-      if let dataString = message[SyncConstants.Keys.data] as? String,
-        let data = Data(base64Encoded: dataString),
-        let levelData = try? JSONDecoder().decode(LevelData.self, from: data)
-      {
-        levelService.handleIncomingLevelData(levelData)
-      }
-
-    case SyncConstants.Actions.requestLevelData:
-      levelService.sync()
-
-    default:
-      #if DEBUG
-        print("📱 iOS: Unknown action: \(action)")
-      #endif
+    func forceSyncChecklists() {
+        syncStatus = SyncConstants.Status.pending
+        checklistService.forceSyncWithImages()
     }
-
-    replyHandler?([SyncConstants.Keys.status: SyncConstants.Status.success])
-  }
 }

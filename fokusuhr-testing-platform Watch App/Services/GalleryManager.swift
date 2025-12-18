@@ -1,15 +1,24 @@
+import Combine
 import Foundation
+import WatchConnectivity
 
-class GalleryManager {
+class GalleryManager: ObservableObject {
 
     static let shared = GalleryManager()
 
+    @Published private(set) var receivedImages: Set<String> = []
+    @Published private(set) var pendingAcknowledgments: [String] = []
+
     private var receivedImageHashes: Set<String> = []
     private let receivedHashesKey = "receivedImageHashes"
+    private let receivedImagesKey = "receivedImageNames"
     private var lastImageDataHash: Int = 0
+    private var acknowledgmentTimer: Timer?
+    private let acknowledgmentBatchDelay: TimeInterval = 2.0
 
     init() {
         loadReceivedHashes()
+        loadReceivedImages()
     }
 
     func clearOldGalleryImages() {
@@ -42,19 +51,26 @@ class GalleryManager {
         }
 
         receivedImageHashes.removeAll()
+        receivedImages.removeAll()
         lastImageDataHash = 0
         saveReceivedHashes()
+        saveReceivedImages()
     }
 
     func saveGalleryImages(_ imageData: [String: String]) {
         #if DEBUG
-            print("Watch GalleryManager: Received \(imageData.count) images via applicationContext")
+            print("Watch GalleryManager: Received \(imageData.count) images via applicationContext: \(imageData.keys.sorted())")
         #endif
 
-        guard !imageData.isEmpty else { return }
+        guard !imageData.isEmpty else {
+            #if DEBUG
+                print("Watch GalleryManager: No images to save")
+            #endif
+            return
+        }
 
         let newHash = computeImageDataHash(imageData)
-        
+
         if newHash == lastImageDataHash && lastImageDataHash != 0 {
             #if DEBUG
                 print("Watch GalleryManager: Image data unchanged (hash: \(newHash)), skipping sync")
@@ -75,39 +91,54 @@ class GalleryManager {
 
         var savedCount = 0
         var skippedCount = 0
+        var savedImageNames: [String] = []
 
         for (imageName, base64String) in imageData {
             guard let data = Data(base64Encoded: base64String) else {
                 #if DEBUG
+                    print("Watch GalleryManager: Failed to decode base64 for \(imageName)")
                     ErrorLogger.log(AppError.decodingFailed(type: "base64 image", underlying: NSError(domain: "GalleryManager", code: -1)))
                 #endif
                 continue
             }
 
             let imageURL = documentsPath.appendingPathComponent("\(imageName).jpg")
-            
+
             if FileManager.default.fileExists(atPath: imageURL.path),
                let existingData = try? Data(contentsOf: imageURL),
                existingData.count == data.count {
                 skippedCount += 1
+                receivedImages.insert(imageName)
                 continue
             }
 
             do {
                 try data.write(to: imageURL)
                 savedCount += 1
+                savedImageNames.append(imageName)
+                receivedImages.insert(imageName)
+                #if DEBUG
+                    print("Watch GalleryManager: Saved \(imageName) (\(data.count) bytes)")
+                #endif
             } catch {
                 #if DEBUG
+                    print("Watch GalleryManager: Failed to save \(imageName): \(error)")
                     ErrorLogger.log(AppError.fileOperationFailed(operation: "save gallery image", underlying: error))
                 #endif
             }
         }
 
         lastImageDataHash = newHash
+        saveReceivedImages()
 
         #if DEBUG
             print("Watch GalleryManager: Saved \(savedCount), skipped \(skippedCount) unchanged images")
+            print("Watch GalleryManager: receivedImages now contains: \(receivedImages.sorted())")
         #endif
+
+        if !savedImageNames.isEmpty {
+            scheduleAcknowledgment(for: savedImageNames)
+        }
     }
 
     private func computeImageDataHash(_ imageData: [String: String]) -> Int {
@@ -142,6 +173,8 @@ class GalleryManager {
             #if DEBUG
                 print("Watch GalleryManager: Skipping duplicate image: \(imageName)")
             #endif
+            receivedImages.insert(imageName)
+            scheduleAcknowledgment(for: [imageName])
             return
         }
 
@@ -172,6 +205,11 @@ class GalleryManager {
                 saveReceivedHashes()
             }
 
+            receivedImages.insert(imageName)
+            saveReceivedImages()
+
+            scheduleAcknowledgment(for: [imageName])
+
             #if DEBUG
                 print("Watch GalleryManager: SUCCESS - Saved file transfer image: \(imageName)")
             #endif
@@ -180,6 +218,118 @@ class GalleryManager {
                 ErrorLogger.log(AppError.fileOperationFailed(operation: "save transferred image", underlying: error))
                 print("Watch GalleryManager: FAILED to save \(imageName): \(error.localizedDescription)")
             #endif
+        }
+    }
+
+    private func scheduleAcknowledgment(for imageNames: [String]) {
+        pendingAcknowledgments.append(contentsOf: imageNames)
+
+        acknowledgmentTimer?.invalidate()
+        acknowledgmentTimer = Timer.scheduledTimer(withTimeInterval: acknowledgmentBatchDelay, repeats: false) { [weak self] _ in
+            self?.sendAcknowledgments()
+        }
+    }
+
+    private func sendAcknowledgments() {
+        guard !pendingAcknowledgments.isEmpty else { return }
+
+        let imagesToAcknowledge = pendingAcknowledgments
+        pendingAcknowledgments.removeAll()
+
+        let message: [String: Any] = [
+            SyncConstants.Keys.action: SyncConstants.Actions.acknowledgeImages,
+            SyncConstants.Keys.receivedImages: imagesToAcknowledge,
+            SyncConstants.Keys.timestamp: Date().timeIntervalSince1970
+        ]
+
+        #if DEBUG
+            print("Watch GalleryManager: Sending acknowledgment for \(imagesToAcknowledge.count) images")
+        #endif
+
+        if WCSession.default.isReachable {
+            WCSession.default.sendMessage(message, replyHandler: nil) { [weak self] error in
+                #if DEBUG
+                    print("Watch GalleryManager: Acknowledgment failed: \(error.localizedDescription)")
+                #endif
+                self?.pendingAcknowledgments.append(contentsOf: imagesToAcknowledge)
+            }
+        } else {
+            do {
+                WCSession.default.transferUserInfo(message)
+            }
+        }
+    }
+
+    func imageExists(_ imageName: String) -> Bool {
+        guard !imageName.isEmpty else { return true }
+
+        guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return false
+        }
+
+        let imageURL = documentsPath.appendingPathComponent("\(imageName).jpg")
+        return FileManager.default.fileExists(atPath: imageURL.path)
+    }
+
+    func validateChecklistImages(_ checklist: Checklist) -> (valid: Bool, missingImages: [String]) {
+        var missingImages: [String] = []
+
+        for item in checklist.items {
+            if !item.imageName.isEmpty && !imageExists(item.imageName) {
+                missingImages.append(item.imageName)
+            }
+        }
+
+        return (missingImages.isEmpty, missingImages)
+    }
+
+    func requestMissingImages(_ imageNames: [String]) {
+        guard !imageNames.isEmpty else { return }
+
+        let message: [String: Any] = [
+            SyncConstants.Keys.action: SyncConstants.Actions.requestMissingImages,
+            SyncConstants.Keys.missingImages: imageNames,
+            SyncConstants.Keys.timestamp: Date().timeIntervalSince1970
+        ]
+
+        #if DEBUG
+            print("Watch GalleryManager: Requesting \(imageNames.count) missing images: \(imageNames)")
+        #endif
+
+        if WCSession.default.isReachable {
+            WCSession.default.sendMessage(message, replyHandler: nil, errorHandler: nil)
+        } else {
+            WCSession.default.transferUserInfo(message)
+        }
+    }
+
+    func reportSyncStatus(requiredImages: Set<String>) {
+        let existingImages = requiredImages.filter { imageExists($0) }
+        let missingImages = requiredImages.subtracting(existingImages)
+
+        let status: String
+        if missingImages.isEmpty {
+            status = SyncConstants.Status.complete
+        } else if existingImages.isEmpty {
+            status = SyncConstants.Status.failed
+        } else {
+            status = SyncConstants.Status.partial
+        }
+
+        let message: [String: Any] = [
+            SyncConstants.Keys.action: SyncConstants.Actions.reportSyncStatus,
+            SyncConstants.Keys.syncStatus: status,
+            SyncConstants.Keys.receivedImages: Array(existingImages),
+            SyncConstants.Keys.missingImages: Array(missingImages),
+            SyncConstants.Keys.timestamp: Date().timeIntervalSince1970
+        ]
+
+        #if DEBUG
+            print("Watch GalleryManager: Reporting sync status: \(status) (received: \(existingImages.count), missing: \(missingImages.count))")
+        #endif
+
+        if WCSession.default.isReachable {
+            WCSession.default.sendMessage(message, replyHandler: nil, errorHandler: nil)
         }
     }
 
@@ -193,6 +343,19 @@ class GalleryManager {
     private func saveReceivedHashes() {
         if let data = try? JSONEncoder().encode(receivedImageHashes) {
             UserDefaults.standard.set(data, forKey: receivedHashesKey)
+        }
+    }
+
+    private func loadReceivedImages() {
+        if let data = UserDefaults.standard.data(forKey: receivedImagesKey),
+           let images = try? JSONDecoder().decode(Set<String>.self, from: data) {
+            receivedImages = images
+        }
+    }
+
+    private func saveReceivedImages() {
+        if let data = try? JSONEncoder().encode(receivedImages) {
+            UserDefaults.standard.set(data, forKey: receivedImagesKey)
         }
     }
 }

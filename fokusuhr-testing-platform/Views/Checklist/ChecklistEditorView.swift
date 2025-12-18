@@ -4,8 +4,10 @@ import SwiftUI
 struct ChecklistEditorView: View {
   @ObservedObject var checklistService: ChecklistSyncService
   @StateObject private var galleryStorage = GalleryStorage.shared
+  @StateObject private var syncCoordinator = SyncCoordinator.shared
   @Environment(\.presentationMode) var presentationMode
   @State private var newChecklistId: UUID?
+  @State private var showingSyncConfirmation = false
 
   var body: some View {
     NavigationView {
@@ -18,15 +20,32 @@ struct ChecklistEditorView: View {
             }
           }
           ToolbarItem(placement: .topBarTrailing) {
-            Button {
-              let newChecklist = addChecklist(name: "New Checklist")
-              newChecklistId = newChecklist.id
+            Menu {
+              Button {
+                let newChecklist = addChecklist(name: "New Checklist")
+                newChecklistId = newChecklist.id
+              } label: {
+                Label(NSLocalizedString("New Checklist", comment: ""), systemImage: "plus")
+              }
+              Button {
+                showingSyncConfirmation = true
+              } label: {
+                Label(NSLocalizedString("Force Sync", comment: ""), systemImage: "arrow.clockwise")
+              }
             } label: {
-              Text("New Checklist")
+              Image(systemName: "ellipsis.circle")
             }
           }
         }
         .background(navigationLink)
+        .alert(NSLocalizedString("Force Sync", comment: ""), isPresented: $showingSyncConfirmation) {
+          Button(NSLocalizedString("Cancel", comment: ""), role: .cancel) {}
+          Button(NSLocalizedString("Sync", comment: "")) {
+            syncCoordinator.forceSyncChecklists()
+          }
+        } message: {
+          Text(NSLocalizedString("This will re-sync all checklists and images to the Watch. Continue?", comment: ""))
+        }
     }
   }
 

@@ -34,6 +34,11 @@ enum SyncConstants {
         static let imageName = "imageName"
         static let imageHash = "imageHash"
         static let syncType = "syncType"
+        static let syncId = "syncId"
+        static let receivedImages = "receivedImages"
+        static let missingImages = "missingImages"
+        static let requiredImages = "requiredImages"
+        static let syncStatus = "syncStatus"
     }
 
     enum Actions {
@@ -48,12 +53,27 @@ enum SyncConstants {
         static let switchToApp = "switchToApp"
         static let returnToDashboard = "returnToDashboard"
         static let wakeUp = "wakeUp"
+        static let acknowledgeImages = "acknowledgeImages"
+        static let requestMissingImages = "requestMissingImages"
+        static let reportSyncStatus = "reportSyncStatus"
+        static let forceSync = "forceSync"
     }
 
     enum Status {
         static let success = "success"
         static let unknownAction = "unknown_action"
         static let noAction = "no_action"
+        static let pending = "pending"
+        static let complete = "complete"
+        static let partial = "partial"
+        static let failed = "failed"
+    }
+
+    enum Timing {
+        static let retryDelay: TimeInterval = 5.0
+        static let maxRetries = 5
+        static let syncTimeout: TimeInterval = 30.0
+        static let verificationInterval: TimeInterval = 10.0
     }
 }
 

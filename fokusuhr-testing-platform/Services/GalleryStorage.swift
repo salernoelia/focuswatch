@@ -8,6 +8,7 @@ class GalleryStorage: ObservableObject {
 
   private init() {
     loadItems()
+    initializeDefaultImagesIfNeeded()
   }
 
   func addItem(image: UIImage, label: String) {
@@ -156,5 +157,34 @@ class GalleryStorage: ObservableObject {
       items[index].label = newLabel
       saveItems()
     }
+  }
+
+  private func initializeDefaultImagesIfNeeded() {
+    let hasInitialized = UserDefaults.standard.bool(forKey: "galleryDefaultImagesInitialized")
+    guard !hasInitialized else { return }
+
+    let defaultImageNames = [
+      "Schere", "Lineal", "Bleistift", "Leimstift", "Buntes Papier", "Wolle", "Wackelaugen", "Locher",
+      "Zucker", "Ei", "Haselnüsse", "Schokoladenpulver", "Maizena", "Schüssel", "Kelle",
+      "Backblech", "Backpapier", "Waage", "Messlöffel", "Topflappen"
+    ]
+
+    for imageName in defaultImageNames {
+      if let image = UIImage(named: imageName) {
+        addItem(image: image, label: imageName)
+        #if DEBUG
+          ErrorLogger.log("Initialized default image: \(imageName)")
+        #endif
+      } else {
+        #if DEBUG
+          ErrorLogger.log("Default image not found in assets: \(imageName)")
+        #endif
+      }
+    }
+
+    UserDefaults.standard.set(true, forKey: "galleryDefaultImagesInitialized")
+    #if DEBUG
+      ErrorLogger.log("Gallery initialized with \(items.count) default images")
+    #endif
   }
 }

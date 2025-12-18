@@ -3,117 +3,257 @@ import Foundation
 import WatchConnectivity
 
 enum WatchViewState {
-  case mainMenu
-  case app(Int)
+    case mainMenu
+    case app(Int)
 }
 
 final class SyncCoordinator: ObservableObject {
-  static let shared = SyncCoordinator()
+    static let shared = SyncCoordinator()
 
-  @Published var currentView: WatchViewState = .mainMenu
+    @Published var currentView: WatchViewState = .mainMenu
+    @Published private(set) var isSyncing = false
+    @Published private(set) var syncStatus: String = SyncConstants.Status.pending
 
-  let transport: ConnectivityTransport
+    let transport: ConnectivityTransport
 
-  private let checklistManager = ChecklistViewModel.shared
-  private let galleryManager = GalleryManager.shared
-  private let calendarManager = CalendarViewModel.shared
-  private let authManager = AuthManager.shared
+    private let checklistManager = ChecklistViewModel.shared
+    private let galleryManager = GalleryManager.shared
+    private let calendarManager = CalendarViewModel.shared
+    private let authManager = AuthManager.shared
 
-  private var cancellables = Set<AnyCancellable>()
+    private var cancellables = Set<AnyCancellable>()
+    private var validationTimer: Timer?
+    private var pendingValidation = false
+    private var lastValidationTime: Date?
 
-  init(transport: ConnectivityTransport = .shared) {
-    self.transport = transport
-    setupObservers()
-  }
-
-  private func setupObservers() {
-    transport.contextReceived
-      .receive(on: DispatchQueue.main)
-      .sink { [weak self] context in
-        self?.handleApplicationContext(context)
-      }
-      .store(in: &cancellables)
-
-    transport.messageReceived
-      .receive(on: DispatchQueue.main)
-      .sink { [weak self] message, replyHandler in
-        self?.handleMessage(message, replyHandler: replyHandler)
-      }
-      .store(in: &cancellables)
-
-    transport.userInfoReceived
-      .receive(on: DispatchQueue.main)
-      .sink { [weak self] userInfo in
-        self?.handleUserInfo(userInfo)
-      }
-      .store(in: &cancellables)
-
-    transport.fileReceived
-      .receive(on: DispatchQueue.main)
-      .sink { [weak self] fileURL, metadata in
-        self?.handleReceivedFile(fileURL: fileURL, metadata: metadata)
-      }
-      .store(in: &cancellables)
-  }
-
-  func forceReconnect() {
-    transport.forceReconnect()
-  }
-
-  func checkForCalendarUpdates() {
-    transport.loadLatestApplicationContext()
-  }
-
-  private func handleApplicationContext(_ context: [String: Any]) {
-    #if DEBUG
-      ErrorLogger.log("Watch: Received applicationContext")
-    #endif
-
-    if let calendarDataBytes = context[SyncConstants.Keys.calendarData] as? Data,
-      let events = try? JSONDecoder().decode([EventTransfer].self, from: calendarDataBytes)
-    {
-      calendarManager.updateEvents(events)
-    } else if let calendarDataString = context[SyncConstants.Keys.calendarData] as? String,
-      let data = Data(base64Encoded: calendarDataString),
-      let events = try? JSONDecoder().decode([EventTransfer].self, from: data)
-    {
-      calendarManager.updateEvents(events)
+    init(transport: ConnectivityTransport = .shared) {
+        self.transport = transport
+        setupObservers()
+        startValidationTimer()
     }
 
-    if let checklistDataBytes = context[SyncConstants.Keys.checklistData] as? Data {
-      let forceOverwrite = context[SyncConstants.Keys.forceOverwrite] as? Bool ?? false
+    private func setupObservers() {
+        transport.contextReceived
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] context in
+                self?.handleApplicationContext(context)
+            }
+            .store(in: &cancellables)
 
-      #if DEBUG
-        ErrorLogger.log("Watch: Processing checklist data (forceOverwrite: \(forceOverwrite))")
-      #endif
+        transport.messageReceived
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] message, replyHandler in
+                self?.handleMessage(message, replyHandler: replyHandler)
+            }
+            .store(in: &cancellables)
 
-      checklistManager.updateChecklistData(from: checklistDataBytes, forceOverwrite: forceOverwrite)
+        transport.userInfoReceived
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] userInfo in
+                self?.handleUserInfo(userInfo)
+            }
+            .store(in: &cancellables)
 
-      if let imageData = context[SyncConstants.Keys.checklistImageData] as? [String: String] {
-        #if DEBUG
-          ErrorLogger.log("Watch: Saving \(imageData.count) gallery images from context")
-        #endif
-        galleryManager.saveGalleryImages(imageData)
-      }
-    } else if let checklistDataString = context[SyncConstants.Keys.checklistData] as? String,
-      let data = Data(base64Encoded: checklistDataString)
-    {
-      let forceOverwrite = context[SyncConstants.Keys.forceOverwrite] as? Bool ?? false
+        transport.fileReceived
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] fileURL, metadata in
+                self?.handleReceivedFile(fileURL: fileURL, metadata: metadata)
+            }
+            .store(in: &cancellables)
 
-      #if DEBUG
-        ErrorLogger.log(
-          "Watch: Processing base64 checklist data (forceOverwrite: \(forceOverwrite))")
-      #endif
-
-      checklistManager.updateChecklistData(from: data, forceOverwrite: forceOverwrite)
-
-      if let imageData = context[SyncConstants.Keys.checklistImageData] as? [String: String] {
-        #if DEBUG
-          ErrorLogger.log("Watch: Saving \(imageData.count) gallery images from base64 context")
-        #endif
-        galleryManager.saveGalleryImages(imageData)
-      }
+        NotificationCenter.default.publisher(for: Notification.Name.checklistDataChanged)
+            .debounce(for: .seconds(3), scheduler: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.validateCurrentSync()
+            }
+            .store(in: &cancellables)
     }
+
+    private func startValidationTimer() {
+        validationTimer = Timer.scheduledTimer(
+            withTimeInterval: SyncConstants.Timing.verificationInterval,
+            repeats: true
+        ) { [weak self] _ in
+            self?.validateCurrentSync()
+        }
+    }
+
+    private func validateCurrentSync() {
+        let requiredImages = Set(
+            checklistManager.checklistData.checklists.flatMap { checklist in
+                checklist.items.compactMap { item in
+                    item.imageName.isEmpty ? nil : item.imageName
+                }
+            }
+        )
+
+        guard !requiredImages.isEmpty else {
+            syncStatus = SyncConstants.Status.complete
+            return
+        }
+
+        var missingImages: [String] = []
+        for imageName in requiredImages {
+            if !galleryManager.imageExists(imageName) {
+                missingImages.append(imageName)
+            }
+        }
+
+        if missingImages.isEmpty {
+            syncStatus = SyncConstants.Status.complete
+            lastValidationTime = nil
+        } else if missingImages.count == requiredImages.count {
+            syncStatus = SyncConstants.Status.pending
+        } else {
+            syncStatus = SyncConstants.Status.partial
+        }
+
+        if !missingImages.isEmpty && transport.isReachable && !pendingValidation {
+            if let lastValidation = lastValidationTime,
+               Date().timeIntervalSince(lastValidation) < 15.0 {
+                #if DEBUG
+                    print("Watch SyncCoordinator: Throttling validation - too soon since last request")
+                #endif
+                return
+            }
+
+            #if DEBUG
+                print("Watch SyncCoordinator: Validation found \(missingImages.count) missing images")
+            #endif
+            lastValidationTime = Date()
+            pendingValidation = true
+            galleryManager.requestMissingImages(missingImages)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 30.0) { [weak self] in
+                self?.pendingValidation = false
+            }
+        }
+    }
+
+    func forceReconnect() {
+        transport.forceReconnect()
+    }
+
+    func checkForCalendarUpdates() {
+        transport.loadLatestApplicationContext()
+    }
+
+    func forceSync() {
+        isSyncing = true
+        syncStatus = SyncConstants.Status.pending
+        lastValidationTime = nil
+        pendingValidation = false
+
+        let message: [String: Any] = [
+            SyncConstants.Keys.action: SyncConstants.Actions.forceSync,
+            SyncConstants.Keys.timestamp: Date().timeIntervalSince1970
+        ]
+
+        if transport.isReachable {
+            transport.sendMessage(message, replyHandler: { [weak self] _ in
+                DispatchQueue.main.async {
+                    self?.transport.loadLatestApplicationContext()
+                }
+            }, errorHandler: { [weak self] _ in
+                DispatchQueue.main.async {
+                    self?.isSyncing = false
+                }
+            })
+        } else {
+            transport.transferUserInfo(message)
+            transport.loadLatestApplicationContext()
+            isSyncing = false
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10.0) { [weak self] in
+            self?.validateCurrentSync()
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 15.0) { [weak self] in
+            self?.isSyncing = false
+        }
+    }
+
+    private func handleApplicationContext(_ context: [String: Any]) {
+        #if DEBUG
+            ErrorLogger.log("Watch: Received applicationContext")
+            ErrorLogger.log("Watch: Context keys: \(context.keys.joined(separator: ", "))")
+        #endif
+
+        isSyncing = true
+
+        if let calendarDataBytes = context[SyncConstants.Keys.calendarData] as? Data,
+           let events = try? JSONDecoder().decode([EventTransfer].self, from: calendarDataBytes)
+        {
+            calendarManager.updateEvents(events)
+        } else if let calendarDataString = context[SyncConstants.Keys.calendarData] as? String,
+                  let data = Data(base64Encoded: calendarDataString),
+                  let events = try? JSONDecoder().decode([EventTransfer].self, from: data)
+        {
+            calendarManager.updateEvents(events)
+        }
+
+        var checklistUpdated = false
+
+        if let checklistDataBytes = context[SyncConstants.Keys.checklistData] as? Data {
+            let forceOverwrite = context[SyncConstants.Keys.forceOverwrite] as? Bool ?? false
+
+            #if DEBUG
+                ErrorLogger.log("Watch: Processing checklist data (forceOverwrite: \(forceOverwrite), size: \(checklistDataBytes.count) bytes)")
+                if let decodedData = try? JSONDecoder().decode(ChecklistData.self, from: checklistDataBytes) {
+                    ErrorLogger.log("Watch: Decoded \(decodedData.checklists.count) checklists from context")
+                    for (index, checklist) in decodedData.checklists.enumerated() {
+                        ErrorLogger.log("Watch:   [\(index)] \(checklist.name) - \(checklist.items.count) items")
+                    }
+                }
+            #endif
+
+            if let imageData = context[SyncConstants.Keys.checklistImageData] as? [String: String], !imageData.isEmpty {
+                #if DEBUG
+                    ErrorLogger.log("Watch: Saving \(imageData.count) gallery images from context")
+                #endif
+                galleryManager.saveGalleryImages(imageData)
+            } else {
+                #if DEBUG
+                    ErrorLogger.log("Watch: No images in context payload")
+                #endif
+            }
+
+            checklistManager.updateChecklistData(from: checklistDataBytes, forceOverwrite: forceOverwrite)
+            checklistUpdated = true
+        } else if let checklistDataString = context[SyncConstants.Keys.checklistData] as? String,
+                  let data = Data(base64Encoded: checklistDataString)
+        {
+            let forceOverwrite = context[SyncConstants.Keys.forceOverwrite] as? Bool ?? false
+
+            #if DEBUG
+                ErrorLogger.log("Watch: Processing base64 checklist data (forceOverwrite: \(forceOverwrite))")
+            #endif
+
+            if let imageData = context[SyncConstants.Keys.checklistImageData] as? [String: String], !imageData.isEmpty {
+                #if DEBUG
+                    ErrorLogger.log("Watch: Saving \(imageData.count) gallery images from base64 context")
+                #endif
+                galleryManager.saveGalleryImages(imageData)
+            } else {
+                #if DEBUG
+                    ErrorLogger.log("Watch: No images in base64 context payload")
+                #endif
+            }
+
+            checklistManager.updateChecklistData(from: data, forceOverwrite: forceOverwrite)
+            checklistUpdated = true
+        }
+
+        if checklistUpdated {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+                self?.validateCurrentSync()
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 8.0) { [weak self] in
+                self?.isSyncing = false
+            }
+        } else {
+            isSyncing = false
+        }
 
     if let levelDataBytes = context[SyncConstants.Keys.levelData] as? Data {
       handleLevelUpdate(data: levelDataBytes)
@@ -373,8 +513,12 @@ final class SyncCoordinator: ObservableObject {
 
   private func handleReceivedFile(fileURL: URL, metadata: [String: Any]?) {
     #if DEBUG
-      print("Watch SyncCoordinator: Received file transfer")
+      print("Watch SyncCoordinator: Received file transfer at: \(fileURL.path)")
       print("Watch SyncCoordinator: Metadata: \(String(describing: metadata))")
+      if let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path),
+         let fileSize = attributes[.size] as? Int64 {
+        print("Watch SyncCoordinator: File size: \(fileSize) bytes")
+      }
     #endif
 
     guard let metadata = metadata,
@@ -388,6 +532,9 @@ final class SyncCoordinator: ObservableObject {
 
     #if DEBUG
       print("Watch SyncCoordinator: SyncType: \(syncType)")
+      if let imageName = metadata[SyncConstants.Keys.imageName] as? String {
+        print("Watch SyncCoordinator: Image name: \(imageName)")
+      }
     #endif
 
     switch syncType {
@@ -415,5 +562,5 @@ final class SyncCoordinator: ObservableObject {
 }
 
 extension Notification.Name {
-  static let appConfigurationsUpdated = Notification.Name("appConfigurationsUpdated")
+    static let appConfigurationsUpdated = Notification.Name("appConfigurationsUpdated")
 }

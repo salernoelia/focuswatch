@@ -23,30 +23,15 @@ applyTo: "**"
 - if you do edits, check if something exists already, and if you delete something cleanup after yourself
 
 ```
+
+~/Github/fokusuhr-platform  main ✗                                                  22h26m ⚑  
+▶ tree               
 .
-├── .cursor
-│   └── rules
-│       └── General.mdc
-├── .github
-│   └── instructions
-│       └── general.instructions.md
-├── .gitignore
-├── .vscode
-│   └── mcp.json
-├── "fokusuhr-testing-platform Watch App
-│   └── Assets.xcassets
-│       ├── Haseln\303\274sse.imageset
-│       │   ├── Contents.json"
-│       │   └── Haseln\303\274sse 1.png"
-│       ├── Messl\303\266ffel.imageset
-│       │   ├── Contents.json"
-│       │   └── Messl\303\266ffel.png"
-│       └── Sch\303\274ssel.imageset
-│           ├── Contents.json"
-│           └── Sch\303\274ssel.png"
+├── all.txt
 ├── assets
 │   └── template.af
 ├── CHANGELOG.MD
+├── Development.xcconfig
 ├── docs
 │   ├── documentation__WatchConnectivity__WCSession.json
 │   ├── LEVEL_SYSTEM_INTEGRATION.md
@@ -89,6 +74,7 @@ applyTo: "**"
 │   │       ├── CommandSyncService.swift
 │   │       ├── ConfigSyncService.swift
 │   │       ├── ConnectivityTransport.swift
+│   │       ├── ImageSyncService.swift
 │   │       ├── LevelSyncService.swift
 │   │       ├── SyncCoordinator.swift
 │   │       └── TelemetrySyncService.swift
@@ -159,6 +145,9 @@ applyTo: "**"
 │   │   ├── Ei.imageset
 │   │   │   ├── Contents.json
 │   │   │   └── Ei.png
+│   │   ├── Haselnüsse.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Haselnüsse 1.png
 │   │   ├── Kelle.imageset
 │   │   │   ├── Contents.json
 │   │   │   └── Kelle.png
@@ -174,12 +163,18 @@ applyTo: "**"
 │   │   ├── Maizena.imageset
 │   │   │   ├── Contents.json
 │   │   │   └── Maizena.png
+│   │   ├── Messlöffel.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Messlöffel.png
 │   │   ├── Schere.imageset
 │   │   │   ├── Contents.json
 │   │   │   └── Schere.png
 │   │   ├── Schokoladenpulver.imageset
 │   │   │   ├── Contents.json
 │   │   │   └── Schokoladenpulver.png
+│   │   ├── Schüssel.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Schüssel.png
 │   │   ├── Topflappen.imageset
 │   │   │   ├── Contents.json
 │   │   │   └── Topflappen.png
@@ -286,6 +281,16 @@ applyTo: "**"
 ├── fokusuhr-testing-platform-Watch-App-Info.plist
 ├── fokusuhr-testing-platform.xcodeproj
 │   ├── project.pbxproj
+│   ├── project.xcworkspace
+│   │   ├── contents.xcworkspacedata
+│   │   ├── xcshareddata
+│   │   │   └── swiftpm
+│   │   │       ├── configuration
+│   │   │       └── Package.resolved
+│   │   └── xcuserdata
+│   │       └── eliasalerno.xcuserdatad
+│   │           ├── IDEFindNavigatorScopes.plist
+│   │           └── UserInterfaceState.xcuserstate
 │   ├── xcshareddata
 │   │   └── xcschemes
 │   │       ├── fokusuhr-testing-platform Watch App.xcscheme
@@ -298,16 +303,17 @@ applyTo: "**"
 │               └── xcschememanagement.plist
 ├── plans
 │   └── WatchConnectorRefactor.md
+├── Production.xcconfig
 ├── README.md
 ├── Shared
 │   ├── Configs
 │   │   ├── SupabaseConfig.swift
 │   │   └── WatchConfig.swift
 │   ├── Connectivity
-│   │   ├── SyncConstants.swift
 │   │   └── SyncPacket.swift
 │   ├── Constants
-│   │   └── AppConstants.swift
+│   │   ├── AppConstants.swift
+│   │   └── SyncConstants.swift
 │   ├── Localizable.xcstrings
 │   ├── Models
 │   │   ├── ActivityStats.swift
@@ -355,7 +361,7 @@ applyTo: "**"
     ├── Info.plist
     └── NotificationService.swift
 
-102 directories, 229 files
+101 directories, 233 files
 ```
 
 - Use the command "tree" in the commandline to see the latest directory tree if you need it

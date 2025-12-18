@@ -44,7 +44,7 @@ enum AppConstants {
 
     enum Image {
         static let thumbnailSize = CGSize(width: 300, height: 300)
-        static let compressionQuality: CGFloat = 0.3
+        static let compressionQuality: CGFloat = 0.2
         static let renderingScale: CGFloat = 1.0
     }
 
@@ -55,13 +55,13 @@ enum AppConstants {
     }
 
     enum Network {
-        static let maxPayloadSizeKB: Double = 60.0
+        static let maxPayloadSizeKB: Double = 400.0
         static let bytesToKBDivisor: Double = 1024.0
     }
 
     enum StorageKeys {
         static let checklistData = "checklistData"
-        static let authToken = "authToken"
+        static let authToken = "authToken"  
         static let refreshToken = "refreshToken"
     }
 
