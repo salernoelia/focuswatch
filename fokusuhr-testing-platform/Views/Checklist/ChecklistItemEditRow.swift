@@ -6,58 +6,52 @@ struct ChecklistItemEditRow: View {
     @Binding var checklist: Checklist
     @ObservedObject var checklistService: ChecklistSyncService
     @ObservedObject var galleryStorage: GalleryStorage
+    @State private var showingImageSelector = false
 
     var body: some View {
         HStack(spacing: 12) {
-            if !item.imageName.isEmpty, let image = getImage() {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 44, height: 44)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.secondary.opacity(0.2), lineWidth: 0.5)
-                    )
-            }
-
-            VStack(alignment: .leading, spacing: 4) {
-                TextField("Item title", text: $item.title)
-                    .font(.body)
-                    .onSubmit {
-                        updateItem()
-                    }
-
-                Menu {
-                    Button("None") {
-                        item.imageName = ""
-                        updateItem()
-                    }
-
-                    Divider()
-
-                    ForEach(availableImages, id: \.self) { imageName in
-                        Button(imageName) {
-                            item.imageName = imageName
-                            updateItem()
-                        }
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "photo")
-                            .font(.caption2)
-                        Text(item.imageName.isEmpty ? "Add image" : item.imageName)
-                            .font(.caption)
-                        Image(systemName: "chevron.down")
-                            .font(.caption2)
-                    }
-                    .foregroundColor(.secondary)
+            Button {
+                showingImageSelector = true
+            } label: {
+                if !item.imageName.isEmpty, let image = getImage() {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 50, height: 50)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.secondary.opacity(0.2), lineWidth: 0.5)
+                        )
+                } else {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.secondary.opacity(0.1))
+                        .frame(width: 50, height: 50)
+                        .overlay(
+                            Image(systemName: "photo.badge.plus")
+                                .foregroundColor(.secondary)
+                        )
                 }
             }
+
+            TextField(NSLocalizedString("Item title", comment: ""), text: $item.title)
+                .font(.body)
+                .onChange(of: item.title, initial: false) { _, _ in
+                    updateItem()
+                }
 
             Spacer()
         }
         .padding(.vertical, 4)
+        .sheet(isPresented: $showingImageSelector) {
+            ImageSelectorView(
+                currentImageName: item.imageName,
+                galleryStorage: galleryStorage
+            ) { selectedImageName in
+                item.imageName = selectedImageName
+                updateItem()
+            }
+        }
     }
 
     private var availableImages: [String] {

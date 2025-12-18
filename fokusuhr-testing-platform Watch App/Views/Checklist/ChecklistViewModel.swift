@@ -57,6 +57,22 @@ class ChecklistViewModel: ObservableObject {
 
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
+                
+                let incomingChecklistIDs = Set(newData.checklists.map { $0.id })
+                let existingChecklistIDs = Set(self.checklistData.checklists.map { $0.id })
+                let deletedChecklistIDs = existingChecklistIDs.subtracting(incomingChecklistIDs)
+                
+                if !deletedChecklistIDs.isEmpty {
+                    #if DEBUG
+                        ErrorLogger.log("Watch: Removing \(deletedChecklistIDs.count) deleted checklists")
+                        for id in deletedChecklistIDs {
+                            if let checklist = self.checklistData.checklists.first(where: { $0.id == id }) {
+                                ErrorLogger.log("  - Deleted: \(checklist.name)")
+                            }
+                        }
+                    #endif
+                }
+                
                 self.checklistData = newData
                 self.lastSyncedHash = newHash
                 self.saveChecklistData(silent: false)

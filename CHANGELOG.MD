@@ -4,6 +4,7 @@
 - Fidget vibrations when exiting app bugfix
 - Checklist force sync button in the "Checklists" Page on the iPhone App
 - Checklist Items can be re-sorted by long-pressing an item and dragging it around
+- Fully reworked Checklist editor interface on iPhone App
 
 ## [1.2.2] - 07.12.2025
 

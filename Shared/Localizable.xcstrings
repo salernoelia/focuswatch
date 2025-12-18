@@ -355,7 +355,11 @@
         }
       }
     },
+    "Add from Photos" : {
+
+    },
     "Add Item" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -370,6 +374,9 @@
           }
         }
       }
+    },
+    "Add Items" : {
+
     },
     "Add Milestone" : {
       "localizations" : {
@@ -412,6 +419,9 @@
           }
         }
       }
+    },
+    "Add Photos" : {
+
     },
     "Add photos to use in checklists" : {
       "localizations" : {
@@ -709,7 +719,11 @@
         }
       }
     },
+    "Back" : {
+
+    },
     "Bild Ersetzen" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -726,6 +740,7 @@
       }
     },
     "Bilder" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -834,6 +849,12 @@
           }
         }
       }
+    },
+    "Choose Image" : {
+
+    },
+    "Choose Photos" : {
+
     },
     "Color Breathing" : {
       "localizations" : {
@@ -1368,6 +1389,7 @@
       }
     },
     "Enter label" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1710,6 +1732,9 @@
         }
       }
     },
+    "Gallery" : {
+
+    },
     "Gender" : {
       "localizations" : {
         "de" : {
@@ -1843,6 +1868,7 @@
       }
     },
     "Image" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1859,6 +1885,7 @@
       }
     },
     "Image Selection" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2435,6 +2462,7 @@
       }
     },
     "Neues Bild Hinzufügen" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2845,6 +2873,9 @@
         }
       }
     },
+    "Points" : {
+
+    },
     "Points Reward" : {
       "localizations" : {
         "de" : {
@@ -2904,6 +2935,7 @@
       }
     },
     "Preview" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3033,6 +3065,7 @@
       }
     },
     "Remove Photo" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3267,6 +3300,9 @@
           }
         }
       }
+    },
+    "Select one or multiple photos to label and add" : {
+
     },
     "Select User" : {
       "localizations" : {
@@ -3531,6 +3567,9 @@
     "Sync" : {
 
     },
+    "Take Photo" : {
+
+    },
     "Teile dein Feedback..." : {
       "localizations" : {
         "de" : {
@@ -3654,6 +3693,7 @@
       }
     },
     "This label will be displayed alongside the image" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

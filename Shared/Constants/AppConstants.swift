@@ -55,7 +55,7 @@ enum AppConstants {
     }
 
     enum Network {
-        static let maxPayloadSizeKB: Double = 400.0
+        static let maxPayloadSizeKB: Double = 4000.0
         static let bytesToKBDivisor: Double = 1024.0
     }
 

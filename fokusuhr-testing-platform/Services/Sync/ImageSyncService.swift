@@ -121,7 +121,8 @@ final class ImageSyncService: ObservableObject {
             return
         }
 
-        for imageName in usedImageNames {
+        let imageArray = Array(usedImageNames)
+        for (index, imageName) in imageArray.enumerated() {
             guard let item = galleryStorage.items.first(where: { $0.label == imageName }) else {
                 #if DEBUG
                     print("iOS ImageSync: Image '\(imageName)' not found in gallery storage")
@@ -159,21 +160,25 @@ final class ImageSyncService: ObservableObject {
                 SyncConstants.Keys.timestamp: Date().timeIntervalSince1970
             ]
 
-            if transport.transferFile(url, metadata: metadata) != nil {
-                transferCount += 1
-                successfullyQueued.append(imageName)
-                stateManager.updateState { $0.markImageTransferred(imageName) }
-                #if DEBUG
-                    print("iOS ImageSync: Queued transfer: \(imageName) (\(fileData.count) bytes)")
-                #endif
-            } else {
-                #if DEBUG
-                    print("iOS ImageSync: Failed to queue transfer: \(imageName)")
-                #endif
-                retryQueue.append((url, metadata))
-                stateManager.updateState { $0.markImageFailed(imageName) }
-                failedImages.append(imageName)
+            let delay = Double(index) * 0.1
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                guard let self = self else { return }
+                if self.transport.transferFile(url, metadata: metadata) != nil {
+                    self.stateManager.updateState { $0.markImageTransferred(imageName) }
+                    #if DEBUG
+                        print("iOS ImageSync: Queued transfer: \(imageName) (\(fileData.count) bytes)")
+                    #endif
+                } else {
+                    #if DEBUG
+                        print("iOS ImageSync: Failed to queue transfer: \(imageName)")
+                    #endif
+                    self.retryQueue.append((url, metadata))
+                    self.stateManager.updateState { $0.markImageFailed(imageName) }
+                }
             }
+            
+            transferCount += 1
+            successfullyQueued.append(imageName)
         }
 
         pendingTransfers = transferCount

@@ -5,18 +5,18 @@ struct ChecklistDetailView: View {
   @State var checklist: Checklist
   @ObservedObject var checklistService: ChecklistSyncService
   @ObservedObject var galleryStorage: GalleryStorage
-  @State private var showingAddItem = false
+  @State private var showingAddItems = false
 
   var body: some View {
     List {
       Section {
-        TextField("Checklist Name", text: $checklist.name)
+        TextField(NSLocalizedString("Checklist Name", comment: ""), text: $checklist.name)
           .font(.headline)
           .onChange(of: checklist.name, initial: false) { _, _ in
             updateChecklist()
           }
 
-        TextField("Description", text: $checklist.description, axis: .vertical)
+        TextField(NSLocalizedString("Description", comment: ""), text: $checklist.description, axis: .vertical)
           .font(.subheadline)
           .foregroundColor(.secondary)
           .lineLimit(3...6)
@@ -26,9 +26,9 @@ struct ChecklistDetailView: View {
 
         Stepper(value: $checklist.xpReward, in: 0...500, step: 10) {
           HStack {
-            Text("Points Reward")
+            Text(NSLocalizedString("Points Reward", comment: ""))
             Spacer()
-            Text("\(checklist.xpReward) Points")
+            Text("\(checklist.xpReward) \(NSLocalizedString("Points", comment: ""))")
               .foregroundColor(.secondary)
           }
         }
@@ -45,28 +45,27 @@ struct ChecklistDetailView: View {
         }
         .onDelete(perform: deleteItems)
         .onMove(perform: moveItems)
-
-        Button {
-          showingAddItem = true
-        } label: {
-          HStack {
+      } header: {
+        HStack {
+          Text(NSLocalizedString("Items", comment: ""))
+          Spacer()
+          Button {
+            showingAddItems = true
+          } label: {
             Image(systemName: "plus.circle.fill")
               .foregroundColor(.accentColor)
-            Text("Add Item")
-              .foregroundColor(.accentColor)
+              .imageScale(.large)
           }
         }
-      } header: {
-        Text("Items")
       }
     }
-    .navigationTitle("Edit Checklist")
+    .navigationTitle(NSLocalizedString("Edit Checklist", comment: ""))
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       EditButton()
     }
-    .sheet(isPresented: $showingAddItem) {
-      ChecklistAddItemView(
+    .sheet(isPresented: $showingAddItems) {
+      UnifiedAddItemsView(
         checklist: $checklist, checklistService: checklistService, galleryStorage: galleryStorage)
     }
   }
