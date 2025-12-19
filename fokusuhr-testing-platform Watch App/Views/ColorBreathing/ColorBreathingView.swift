@@ -3,6 +3,7 @@ import WatchKit
 
 struct ColorBreathingView: View {
   @StateObject private var viewModel = ColorBreathingViewModel()
+  @Environment(\.scenePhase) private var scenePhase
   private let appLogger = AppLogger.shared
 
   var body: some View {
@@ -25,11 +26,6 @@ struct ColorBreathingView: View {
               )
             )
             .scaleEffect(viewModel.scale)
-            .animation(
-              .easeInOut(duration: Double(viewModel.configuration.inhaleSeconds))
-                .repeatForever(autoreverses: true),
-              value: viewModel.scale
-            )
         }
         .frame(width: 120, height: 120)
 
@@ -37,7 +33,6 @@ struct ColorBreathingView: View {
           Text(viewModel.isInhaling ? "Einatmen" : "Ausatmen")
             .font(.caption)
             .foregroundColor(.white.opacity(0.8))
-            .animation(.easeInOut(duration: 1), value: viewModel.isInhaling)
 
           if viewModel.configuration.cycleCount > 0 {
             Text("\(viewModel.currentCycle) / \(viewModel.configuration.cycleCount)")
@@ -54,6 +49,13 @@ struct ColorBreathingView: View {
     .onDisappear {
       viewModel.stopBreathing()
       appLogger.logViewLifecycle(appName: "farbatmung", event: "close")
+    }
+    .onChange(of: scenePhase) { oldPhase, newPhase in
+      if newPhase == .active && oldPhase != .active {
+        viewModel.startBreathing()
+      } else if newPhase != .active {
+        viewModel.stopBreathing()
+      }
     }
   }
 }

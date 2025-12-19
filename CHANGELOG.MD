@@ -1,5 +1,9 @@
 # Releases
 
+## [1.2.4] - 19.12.2025
+- Fixed color breathing app out of sync & broken counter
+- Fixed multiple localization issues & enhanced ux writing
+
 ## [1.2.3] - 18.12.2025
 - Fixed fidget vibration issue when leaving the app
 - Added force sync of checklists on pull down of the "Checklists" page on iPhone

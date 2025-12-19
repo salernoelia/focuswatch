@@ -141,7 +141,7 @@ struct UnifiedAddItemsView: View {
         } label: {
           HStack {
             Image(systemName: "square.grid.2x2")
-            Text(NSLocalizedString("Gallery", comment: ""))
+            Text(NSLocalizedString("Existing Items", comment: ""))
           }
           .frame(maxWidth: .infinity)
           .padding()
@@ -246,7 +246,7 @@ struct UnifiedAddItemsView: View {
             HStack(spacing: 6) {
               Image(systemName: "square.grid.2x2")
                 .font(.body)
-              Text(NSLocalizedString("Gallery", comment: ""))
+              Text(NSLocalizedString("Items", comment: ""))
                 .font(.subheadline)
                 .fontWeight(.medium)
             }
@@ -398,7 +398,7 @@ struct GalleryMultiSelectView: View {
         }
         .padding()
       }
-      .navigationTitle(NSLocalizedString("Gallery", comment: ""))
+      .navigationTitle(NSLocalizedString("Items", comment: ""))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {

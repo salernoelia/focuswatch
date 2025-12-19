@@ -171,3 +171,4 @@ final class SyncStateManager: ObservableObject {
         UserDefaults.standard.removeObject(forKey: historyKey)
     }
 }
+

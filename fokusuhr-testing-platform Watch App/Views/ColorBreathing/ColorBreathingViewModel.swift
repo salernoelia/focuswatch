@@ -8,6 +8,7 @@ class ColorBreathingViewModel: ObservableObject {
     @Published var currentCycle: Int = 0
 
     private var timer: Timer?
+    private var isActive = false
 
     init() {
         loadConfiguration()
@@ -34,33 +35,85 @@ class ColorBreathingViewModel: ObservableObject {
     }
 
     func startBreathing() {
-        scale = 1.2
+        guard !isActive else { return }
+        isActive = true
+        
+        scale = 0.5
+        isInhaling = true
+        currentCycle = 1
+        
+        if configuration.vibrationOnTransition {
+            vibrate()
+        }
+        
+        withAnimation(.easeInOut(duration: Double(configuration.inhaleSeconds))) {
+            scale = 1.2
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + Double(configuration.inhaleSeconds)) { [weak self] in
+            self?.transitionToExhale()
+        }
+    }
+    
+    private func transitionToExhale() {
+        guard isActive else { return }
+        
+        isInhaling = false
+        
+        if configuration.vibrationOnTransition {
+            vibrate()
+        }
+        
+        withAnimation(.easeInOut(duration: Double(configuration.exhaleSeconds))) {
+            scale = 0.5
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + Double(configuration.exhaleSeconds)) { [weak self] in
+            self?.completeBreathCycle()
+        }
+    }
+    
+    private func completeBreathCycle() {
+        guard isActive else { return }
+        
+        if currentCycle >= configuration.cycleCount {
+            restartBreathing()
+            return
+        }
+        
+        currentCycle += 1
+        isInhaling = true
+        
+        if configuration.vibrationOnTransition {
+            vibrate()
+        }
+        
+        withAnimation(.easeInOut(duration: Double(configuration.inhaleSeconds))) {
+            scale = 1.2
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + Double(configuration.inhaleSeconds)) { [weak self] in
+            self?.transitionToExhale()
+        }
+    }
+    
+    private func restartBreathing() {
+        isActive = false
+        scale = 0.5
+        isInhaling = true
         currentCycle = 0
-        let intervalSeconds = Double(configuration.inhaleSeconds + configuration.exhaleSeconds)
-
-        timer = Timer.scheduledTimer(withTimeInterval: intervalSeconds, repeats: true) {
-            [weak self] _ in
-            guard let self = self else { return }
-
-            self.isInhaling.toggle()
-
-            if self.configuration.vibrationOnTransition {
-                self.vibrate()
-            }
-
-            if !self.isInhaling {
-                self.currentCycle += 1
-
-                if self.currentCycle >= self.configuration.cycleCount {
-                    self.stopBreathing()
-                }
-            }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            self?.startBreathing()
         }
     }
 
     func stopBreathing() {
+        isActive = false
         timer?.invalidate()
         timer = nil
+        scale = 0.5
+        isInhaling = true
         currentCycle = 0
     }
 

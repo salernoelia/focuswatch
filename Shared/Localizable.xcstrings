@@ -196,7 +196,7 @@
       }
     },
     "🏆" : {
-
+      "shouldTranslate" : false
     },
     "🏆 %@" : {
       "shouldTranslate" : false
@@ -355,25 +355,15 @@
         }
       }
     },
-    "Add Item" : {
-      "extractionState" : "stale",
+    "Add Items" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eintrag hinzufügen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add Item"
+            "value" : "Gegenstände hinzuf."
           }
         }
       }
-    },
-    "Add Items" : {
-
     },
     "Add Milestone" : {
       "localizations" : {
@@ -418,7 +408,14 @@
       }
     },
     "Add Photos" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bilder hinzufügen"
+          }
+        }
+      }
     },
     "Add photos to use in checklists" : {
       "localizations" : {
@@ -474,17 +471,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Add TestUser"
-          }
-        }
-      }
-    },
-    "Advanced" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erweitert"
           }
         }
       }
@@ -718,7 +704,14 @@
       }
     },
     "Back" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zurück"
+          }
+        }
+      }
     },
     "Bild Ersetzen" : {
       "extractionState" : "stale",
@@ -816,6 +809,16 @@
         }
       }
     },
+    "Checklist Items" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checklistengegenstände"
+          }
+        }
+      }
+    },
     "Checklist Name" : {
       "localizations" : {
         "de" : {
@@ -849,10 +852,24 @@
       }
     },
     "Choose Image" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bild auswählen"
+          }
+        }
+      }
     },
     "Choose Photos" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bilder auswählen"
+          }
+        }
+      }
     },
     "Color Breathing" : {
       "localizations" : {
@@ -865,7 +882,14 @@
       }
     },
     "Completion Vibration" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abschlussvibration"
+          }
+        }
+      }
     },
     "Configurations" : {
       "localizations" : {
@@ -1022,6 +1046,9 @@
           }
         }
       }
+    },
+    "Debug Tools" : {
+
     },
     "Dein Feedback" : {
       "localizations" : {
@@ -1468,6 +1495,27 @@
         }
       }
     },
+    "Existing Checklist Items" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bestehende Gegenstände"
+          }
+        }
+      }
+    },
+    "Existing Items" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bestehende Gegenstände"
+          }
+        }
+      }
+    },
     "Failed Uploads:\n%@" : {
       "localizations" : {
         "de" : {
@@ -1725,9 +1773,6 @@
           }
         }
       }
-    },
-    "Gallery" : {
-
     },
     "Gender" : {
       "localizations" : {
@@ -2792,7 +2837,14 @@
       }
     },
     "Pause" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause"
+          }
+        }
+      }
     },
     "Pause überspringen" : {
       "localizations" : {
@@ -2869,7 +2921,14 @@
       }
     },
     "Points" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Punkte"
+          }
+        }
+      }
     },
     "Points Reward" : {
       "localizations" : {
@@ -2967,7 +3026,14 @@
       }
     },
     "Reached Level 3" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level 3 erreicht"
+          }
+        }
+      }
     },
     "Reached Level 5" : {
       "localizations" : {
@@ -3228,7 +3294,18 @@
         }
       }
     },
+    "Search items" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einträge suchen"
+          }
+        }
+      }
+    },
     "Search photos" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3297,7 +3374,14 @@
       }
     },
     "Select one or multiple photos to label and add" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle ein- oder mehrere Fotos aus"
+          }
+        }
+      }
     },
     "Select User" : {
       "localizations" : {
@@ -3483,6 +3567,16 @@
         }
       }
     },
+    "Stop Exercise" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Übung stoppen"
+          }
+        }
+      }
+    },
     "stop_exercise_confirm" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3560,7 +3654,14 @@
       }
     },
     "Take Photo" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bild aufnehmen"
+          }
+        }
+      }
     },
     "Teile dein Feedback..." : {
       "localizations" : {
@@ -3804,9 +3905,6 @@
           }
         }
       }
-    },
-    "Übung stoppen" : {
-
     },
     "until level %lld" : {
       "localizations" : {

@@ -81,7 +81,7 @@ struct WritingConfigurationsView: View {
 
         // Show "Stop Exercise" button only when the session is active.
         if WritingExerciseManager.showRunView {
-          Button("Übung stoppen") {
+          Button("Stop Exercise") {
             WritingExerciseManager.showRunView = false
             WritingExerciseManager.stopExercise {
               WritingExerciseManager.resetExercise()

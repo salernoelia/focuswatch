@@ -62,10 +62,10 @@ struct GalleryView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
           }
-          .searchable(text: $searchText, prompt: "Search photos")
+          .searchable(text: $searchText, prompt: "Search items")
         }
       }
-      .navigationTitle("Photos")
+      .navigationTitle("Checklist Items")
       .navigationBarTitleDisplayMode(.large)
       .toolbar {
         ToolbarItemGroup(placement: .navigationBarTrailing) {

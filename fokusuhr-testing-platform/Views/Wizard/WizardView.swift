@@ -262,6 +262,7 @@ struct WizardView: View {
                     await testUsersManager.fetchTestUsers()
                     await supervisorManager.fetchCurrentSupervisor()
                 }
+                appsManager.refreshApps()
                 reconnectToWatch()
             }
             .navigationTitle("Wizard")
@@ -277,6 +278,7 @@ struct WizardView: View {
             }
             .onAppear {
                 checklistService.loadChecklistData()
+                appsManager.refreshApps()
                 tryInitialWatchConnect()
             }
             .sheet(item: $showingConfig) { toolType in

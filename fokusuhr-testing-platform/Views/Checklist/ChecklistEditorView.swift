@@ -18,7 +18,7 @@ struct ChecklistEditorView: View {
         .toolbar {
           ToolbarItem(placement: .topBarLeading) {
             NavigationLink(destination: GalleryView()) {
-              Text("Photos")
+              Text("Checklist Items")
             }
           }
           ToolbarItem(placement: .topBarTrailing) {
