@@ -28,6 +28,7 @@ enum AppError: LocalizedError {
   case fileNotFound(path: String)
   case fileOperationFailed(operation: String, underlying: Error)
   case insufficientStorage
+  case documentsDirectoryUnavailable
 
   // MARK: - Watch Connectivity Errors
   case watchNotSupported
@@ -99,6 +100,8 @@ enum AppError: LocalizedError {
       return "File \(operation) failed: \(error.localizedDescription)"
     case .insufficientStorage:
       return "Insufficient storage space."
+    case .documentsDirectoryUnavailable:
+      return "Unable to access the app's documents directory."
 
     // Watch Connectivity
     case .watchNotSupported:
@@ -160,6 +163,8 @@ enum AppError: LocalizedError {
       return "The file may have been moved or deleted."
     case .insufficientStorage:
       return "Please free up storage space and try again."
+    case .documentsDirectoryUnavailable:
+      return "Please restart the app or contact support."
     default:
       return "Please try again or contact support if the problem persists."
     }

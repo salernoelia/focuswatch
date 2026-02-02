@@ -34,6 +34,36 @@ struct SettingsView: View {
                 .frame(maxWidth: .infinity)
                 .background(Color.white.opacity(0.05))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
+                
+                #if DEBUG
+                VStack(spacing: 0) {
+                    Text("Debug Tools")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.bottom, 8)
+                    
+                    NavigationLink {
+                        CalendarDebugView()
+                    } label: {
+                        HStack {
+                            Image(systemName: "calendar.badge.clock")
+                                .foregroundColor(.accentColor)
+                            Text("Calendar Debug")
+                                .font(.body)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.white.opacity(0.05))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .buttonStyle(.plain)
+                }
+                #endif
                
             }
             .padding(.horizontal, 8)

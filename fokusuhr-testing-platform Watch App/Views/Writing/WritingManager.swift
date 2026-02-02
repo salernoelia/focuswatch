@@ -293,10 +293,11 @@ class WritingManager {
       return
     }
     let binaryFilename = sessionFilename.replacingOccurrences(of: ".json", with: ".bin")
-    let binaryFileURL = self.getDocumentsDirectory().appendingPathComponent(binaryFilename)
-
+    
     // Write the binary data to the file.
     do {
+      let docsDir = try self.getDocumentsDirectory()
+      let binaryFileURL = docsDir.appendingPathComponent(binaryFilename)
       try binaryData.write(to: binaryFileURL)
     } catch {
       print("Failed to write binary data: \(error)")
@@ -314,8 +315,12 @@ class WritingManager {
   }
 
   /// A helper function to get the app's documents directory URL.
-  private func getDocumentsDirectory() -> URL {
-    return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+  private func getDocumentsDirectory() throws -> URL {
+    if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+        return dir
+    } else {
+        throw AppError.documentsDirectoryUnavailable
+    }
   }
 }
 

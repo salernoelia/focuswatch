@@ -81,6 +81,7 @@ struct CalendarEntryTriggerConsent: View {
         }
 
         content.sound = .default
+        content.interruptionLevel = .timeSensitive
         content.userInfo = [
             "eventId": event.id.uuidString,
             "reminderId": reminder.id.uuidString,

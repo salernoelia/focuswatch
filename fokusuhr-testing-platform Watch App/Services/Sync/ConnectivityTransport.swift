@@ -12,18 +12,14 @@ final class ConnectivityTransport: NSObject, ObservableObject {
     let userInfoReceived = PassthroughSubject<[String: Any], Never>()
     let fileReceived = PassthroughSubject<(URL, [String: Any]?), Never>()
 
-    private var connectionMonitorTimer: Timer?
-    private var isMonitoringConnection = false
+
 
     override private init() {
         super.init()
         setupWatchConnectivity()
-        startConnectionMonitoring()
     }
 
-    deinit {
-        stopConnectionMonitoring()
-    }
+
 
     private func setupWatchConnectivity() {
         if WCSession.isSupported() {
@@ -36,32 +32,7 @@ final class ConnectivityTransport: NSObject, ObservableObject {
         }
     }
 
-    private func startConnectionMonitoring() {
-        guard !isMonitoringConnection else { return }
-        isMonitoringConnection = true
 
-        connectionMonitorTimer = Timer.scheduledTimer(withTimeInterval: 15.0, repeats: true) { [weak self] _ in
-            self?.checkConnectionHealth()
-        }
-    }
-
-    private func stopConnectionMonitoring() {
-        connectionMonitorTimer?.invalidate()
-        connectionMonitorTimer = nil
-        isMonitoringConnection = false
-    }
-
-    private func checkConnectionHealth() {
-        guard WCSession.isSupported() else { return }
-
-        let session = WCSession.default
-
-        if session.activationState != .activated {
-            session.activate()
-        } else if session.isReachable {
-            loadLatestApplicationContext()
-        }
-    }
 
     func forceReconnect() {
         guard WCSession.isSupported() else { return }

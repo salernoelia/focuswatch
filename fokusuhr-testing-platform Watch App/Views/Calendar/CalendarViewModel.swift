@@ -24,6 +24,13 @@ class CalendarViewModel: ObservableObject {
       print("   → Old events count: \(self.events.count)")
       print("   → New hash: \(newHash)")
       print("   → Last hash: \(lastSyncedHash ?? -1)")
+      for event in newEvents {
+        print("   📝 Event: \(event.title)")
+        print("      → Reminders count: \(event.reminders.count)")
+        for reminder in event.reminders {
+          print("      → Reminder: \(reminder.minutesBefore) min before, launch: \(reminder.shouldLaunchApp)")
+        }
+      }
     #endif
 
     if let lastHash = lastSyncedHash, lastHash == newHash {
@@ -55,13 +62,20 @@ class CalendarViewModel: ObservableObject {
       hasher.combine(event.title)
       hasher.combine(event.eventDescription)
       hasher.combine(event.startTime)
+      hasher.combine(event.repeatRule.rawValue)
       hasher.combine(event.reminders.count)
+      for reminder in event.reminders {
+        hasher.combine(reminder.id)
+        hasher.combine(reminder.minutesBefore)
+        hasher.combine(reminder.shouldLaunchApp)
+        hasher.combine(reminder.message)
+      }
     }
     return hasher.finalize()
   }
 
   private func requestNotificationPermissions() {
-    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) {
+    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge, .timeSensitive]) {
       granted, error in
       #if DEBUG
         print("📢 Notification permission granted: \(granted)")
@@ -77,6 +91,7 @@ class CalendarViewModel: ObservableObject {
     content.title = "Test Event"
     content.body = "This is a test notification"
     content.sound = .default
+    content.interruptionLevel = .timeSensitive
 
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
     let request = UNNotificationRequest(
@@ -102,13 +117,16 @@ class CalendarViewModel: ObservableObject {
 
     UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
 
+    let now = Date()
+    let futureEvents = events.filter { event in
+      event.startTime > now || event.repeatRule != .none
+    }
+
     #if DEBUG
-      print("🔄 CalendarViewModel: Scheduling reminders for \(events.count) events")
+      print("🔄 CalendarViewModel: Scheduling reminders for \(futureEvents.count) future/repeating events (filtered from \(events.count) total)")
     #endif
 
-    for event in events {
-      scheduleReminders(for: event)
-    }
+    scheduleUpcomingReminders(for: futureEvents, from: now)
 
     #if DEBUG
       UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
@@ -124,13 +142,107 @@ class CalendarViewModel: ObservableObject {
     #endif
   }
 
+  private func scheduleUpcomingReminders(for events: [EventTransfer], from startDate: Date) {
+    let calendar = Calendar.current
+    let maxLookAhead = calendar.date(byAdding: .day, value: 7, to: startDate) ?? startDate
+    let maxNotifications = 60
+    
+    var scheduledCount = 0
+    var reminderDates: [(event: EventTransfer, reminder: Reminder, triggerDate: Date)] = []
+    
+    for event in events {
+      if event.repeatRule == .none {
+        for reminder in event.reminders {
+          if let triggerDate = calendar.date(byAdding: .minute, value: -reminder.minutesBefore, to: event.startTime),
+             triggerDate > startDate {
+            reminderDates.append((event: event, reminder: reminder, triggerDate: triggerDate))
+          }
+        }
+      } else {
+        var currentDate = startDate
+        while currentDate <= maxLookAhead {
+          if shouldRepeatOn(event: event, date: currentDate) {
+            let occurrenceTime = combineDateTime(date: currentDate, time: event.startTime)
+            
+            for reminder in event.reminders {
+              if let triggerDate = calendar.date(byAdding: .minute, value: -reminder.minutesBefore, to: occurrenceTime),
+                 triggerDate > startDate {
+                reminderDates.append((event: event, reminder: reminder, triggerDate: triggerDate))
+              }
+            }
+          }
+          
+          guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else { break }
+          currentDate = nextDate
+        }
+      }
+    }
+    
+    reminderDates.sort { $0.triggerDate < $1.triggerDate }
+    
+    for reminderInfo in reminderDates.prefix(maxNotifications) {
+      scheduleReminder(
+        for: reminderInfo.event,
+        reminder: reminderInfo.reminder,
+        at: reminderInfo.triggerDate
+      )
+      scheduledCount += 1
+    }
+    
+    #if DEBUG
+      print("📊 Scheduled \(scheduledCount) notifications (\(reminderDates.count) total candidates)")
+    #endif
+  }
+
+  private func shouldRepeatOn(event: EventTransfer, date: Date) -> Bool {
+    let cal = Calendar.current
+    let eventDate = event.date
+    
+    if date < cal.startOfDay(for: eventDate) {
+      return false
+    }
+    
+    switch event.repeatRule {
+    case .none:
+      return false
+    case .daily:
+      return true
+    case .weekly:
+      let eventWeekday = cal.component(.weekday, from: eventDate)
+      let targetWeekday = cal.component(.weekday, from: date)
+      return eventWeekday == targetWeekday
+    case .weekdays:
+      let targetWeekday = cal.component(.weekday, from: date)
+      return targetWeekday >= 2 && targetWeekday <= 6
+    case .custom:
+      let targetWeekday = cal.component(.weekday, from: date)
+      return event.customWeekdays.contains(targetWeekday)
+    }
+  }
+  
+  private func combineDateTime(date: Date, time: Date) -> Date {
+    let calendar = Calendar.current
+    let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+    let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: time)
+    
+    var combined = DateComponents()
+    combined.year = dateComponents.year
+    combined.month = dateComponents.month
+    combined.day = dateComponents.day
+    combined.hour = timeComponents.hour
+    combined.minute = timeComponents.minute
+    combined.second = timeComponents.second
+    
+    return calendar.date(from: combined) ?? date
+  }
+
   private func scheduleReminders(for event: EventTransfer) {
     for reminder in event.reminders {
       scheduleReminder(for: event, reminder: reminder)
     }
   }
 
-  private func scheduleReminder(for event: EventTransfer, reminder: Reminder) {
+  private func scheduleReminder(for event: EventTransfer, reminder: Reminder, at triggerDate: Date? = nil) {
     let content = UNMutableNotificationContent()
     content.title = event.title
 
@@ -143,6 +255,7 @@ class CalendarViewModel: ObservableObject {
     }
 
     content.sound = .default
+    content.interruptionLevel = .timeSensitive
     content.userInfo = [
       "eventId": event.id.uuidString,
       "reminderId": reminder.id.uuidString,
@@ -156,14 +269,18 @@ class CalendarViewModel: ObservableObject {
       content.categoryIdentifier = "CALENDAR_REMINDER"
     }
 
-    let triggerDate = Calendar.current.date(
-      byAdding: .minute, value: -reminder.minutesBefore, to: event.startTime)
-
-    guard let triggerDate = triggerDate else {
-      #if DEBUG
-        print("❌ Failed to calculate trigger date for \(event.title)")
-      #endif
-      return
+    let calculatedTriggerDate: Date
+    if let explicitDate = triggerDate {
+      calculatedTriggerDate = explicitDate
+    } else {
+      guard let computed = Calendar.current.date(
+        byAdding: .minute, value: -reminder.minutesBefore, to: event.startTime) else {
+        #if DEBUG
+          print("❌ Failed to calculate trigger date for \(event.title)")
+        #endif
+        return
+      }
+      calculatedTriggerDate = computed
     }
 
     let now = Date()
@@ -175,22 +292,22 @@ class CalendarViewModel: ObservableObject {
       print("⏰ Scheduling: \(event.title)")
       print("   → Event start: \(formatter.string(from: event.startTime))")
       print("   → Reminder: \(reminder.minutesBefore) min before")
-      print("   → Trigger date: \(formatter.string(from: triggerDate))")
+      print("   → Trigger date: \(formatter.string(from: calculatedTriggerDate))")
       print("   → Current time: \(formatter.string(from: now))")
     #endif
 
-    guard triggerDate > now else {
+    guard calculatedTriggerDate > now else {
       #if DEBUG
         print("⏭️ SKIPPED: Trigger date is in the past")
         print("   → Event: \(event.title)")
-        print("   → Trigger was: \(triggerDate)")
+        print("   → Trigger was: \(calculatedTriggerDate)")
         print("   → Now is: \(now)")
       #endif
       return
     }
 
     let components = Calendar.current.dateComponents(
-      [.year, .month, .day, .hour, .minute], from: triggerDate)
+      [.year, .month, .day, .hour, .minute, .second], from: calculatedTriggerDate)
     let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
 
     let identifier = "\(event.id.uuidString)-\(reminder.id.uuidString)"
@@ -216,6 +333,21 @@ class CalendarViewModel: ObservableObject {
     else { return }
 
     pendingReminder = (event, reminder, shouldLaunch)
+  }
+  
+  func rescheduleIfNeeded() {
+    UNUserNotificationCenter.current().getPendingNotificationRequests { [weak self] requests in
+      guard let self = self else { return }
+      
+      if requests.isEmpty && !self.events.isEmpty {
+        #if DEBUG
+          print("⚠️ No pending notifications but have events - rescheduling")
+        #endif
+        DispatchQueue.main.async {
+          self.scheduleAllReminders()
+        }
+      }
+    }
   }
 
   func events(on day: Date) -> [EventTransfer] {
@@ -245,56 +377,9 @@ class CalendarViewModel: ObservableObject {
     return matchingEvents.sorted { $0.startTime < $1.startTime }
   }
 
-  private func shouldRepeatOn(event: EventTransfer, date: Date) -> Bool {
-    let cal = Calendar.current
-    let eventDate = event.date
-    let targetDate = date
+ 
 
-    if targetDate < eventDate {
-      return false
-    }
 
-    switch event.repeatRule {
-    case .none:
-      return false
-    case .daily:
-      return true
-    case .weekly:
-      let eventWeekday = cal.component(.weekday, from: eventDate)
-      let targetWeekday = cal.component(.weekday, from: targetDate)
-      return eventWeekday == targetWeekday
-    case .weekdays:
-      let targetWeekday = cal.component(.weekday, from: targetDate)
-      return targetWeekday >= 2 && targetWeekday <= 6
-    case .custom:
-      let targetWeekday = cal.component(.weekday, from: targetDate)
-      return event.customWeekdays.contains(targetWeekday)
-    }
-  }
-
-  func upcomingEvents(within minutes: Int = 60) -> [EventTransfer] {
-    let now = Date()
-    let futureDate = Calendar.current.date(byAdding: .minute, value: minutes, to: now) ?? now
-
-    return events.filter { event in
-      event.startTime > now && event.startTime <= futureDate
-    }.sorted { $0.startTime < $1.startTime }
-  }
-
-  private func combineDateTime(date: Date, time: Date) -> Date {
-    let calendar = Calendar.current
-    let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
-    let timeComponents = calendar.dateComponents([.hour, .minute], from: time)
-
-    var combined = DateComponents()
-    combined.year = dateComponents.year
-    combined.month = dateComponents.month
-    combined.day = dateComponents.day
-    combined.hour = timeComponents.hour
-    combined.minute = timeComponents.minute
-
-    return calendar.date(from: combined) ?? date
-  }
 
   private func saveEvents() {
     guard let data = try? JSONEncoder().encode(events) else { return }

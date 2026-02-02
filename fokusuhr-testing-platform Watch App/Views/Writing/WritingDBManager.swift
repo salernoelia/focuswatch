@@ -93,7 +93,8 @@ class DataStorageManager: UploadService {
     DispatchQueue.global(qos: .background).async {
       do {
         let jsonData = try JSONSerialization.data(withJSONObject: data, options: [.prettyPrinted])
-        let fileURL = self.getDocumentsDirectory().appendingPathComponent(filename)
+        let docsDir = try self.getDocumentsDirectory()
+        let fileURL = docsDir.appendingPathComponent(filename)
         try jsonData.write(to: fileURL)
         DispatchQueue.main.async {
           completion(.success(()))
@@ -117,7 +118,8 @@ class DataStorageManager: UploadService {
     DispatchQueue.global(qos: .background).async {
       do {
         let jsonData = try JSONSerialization.data(withJSONObject: data, options: [.prettyPrinted])
-        let fileURL = self.getDocumentsDirectory().appendingPathComponent(filename)
+        let docsDir = try self.getDocumentsDirectory()
+        let fileURL = docsDir.appendingPathComponent(filename)
         try jsonData.write(to: fileURL)
         DispatchQueue.main.async {
           completion(.success(()))
@@ -132,12 +134,12 @@ class DataStorageManager: UploadService {
 
   /// Helper to get the documents directory URL.
   /// - Returns: The URL of the app's documents directory.
-  internal func getDocumentsDirectory() -> URL {
+  internal func getDocumentsDirectory() throws -> URL {
     let fileManager = FileManager.default
     guard
       let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first
     else {
-      fatalError("Unable to access Documents directory")
+      throw AppError.documentsDirectoryUnavailable
     }
     return documentsDirectory
   }
@@ -195,7 +197,12 @@ class DataStorageManager: UploadService {
   /// - Parameter filename: The name of the session JSON file.
   /// - Returns: A `Result` with the parsed JSON dictionary or an `Error`.
   internal func loadSessionJSON(filename: String) -> Result<[String: Any], Error> {
-    let sessionURL = getDocumentsDirectory().appendingPathComponent(filename)
+    let sessionURL: URL
+    do {
+      sessionURL = try getDocumentsDirectory().appendingPathComponent(filename)
+    } catch {
+      return .failure(error)
+    }
 
     guard FileManager.default.fileExists(atPath: sessionURL.path) else {
       return .failure(error(with: "File not found at path \(sessionURL.path)"))
@@ -286,7 +293,12 @@ class DataStorageManager: UploadService {
         let jsonFilename = upload.id  // Assuming `id` is the JSON filename
 
         let binFilename = (jsonFilename as NSString).deletingPathExtension + ".bin"
-        let binFileURL = self.getDocumentsDirectory().appendingPathComponent(binFilename)
+        
+        guard let docsDir = try? self.getDocumentsDirectory() else {
+             print("Skipping retry for \(jsonFilename) due to docs dir access failure")
+             continue
+        }
+        let binFileURL = docsDir.appendingPathComponent(binFilename)
 
         if FileManager.default.fileExists(atPath: binFileURL.path) {
           // If .bin file exists, we assume it's ready for upload.
@@ -650,7 +662,7 @@ class DataStorageManager: UploadService {
 
     let fileManager = FileManager.default
     guard
-      let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first
+      let documentsDirectory = try? getDocumentsDirectory()
     else {
       print("Failed to retrieve documents directory.")
       return
@@ -684,7 +696,7 @@ class DataStorageManager: UploadService {
   private func storeSuccessUpload(data: Data, filename: String) {
     let fileManager = FileManager.default
     guard
-      let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first
+      let documentsDirectory = try? getDocumentsDirectory()
     else {
       print("Failed to access documents directory.")
       return
@@ -760,9 +772,8 @@ class DataStorageManager: UploadService {
 
   /// Writes raw `Data` to a file in the documents directory.
   private func storeDataToFile(data: Data, filename: String) -> Result<URL, Error> {
-    let fileURL = getDocumentsDirectory().appendingPathComponent(filename)
-
     do {
+      let fileURL = try getDocumentsDirectory().appendingPathComponent(filename)
       try data.write(to: fileURL)
       print("Successfully wrote data to \(fileURL)")
       return .success(fileURL)

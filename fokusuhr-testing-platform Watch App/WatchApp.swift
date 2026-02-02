@@ -36,6 +36,7 @@ struct WatchApp: App {
                 .onChange(of: scenePhase, initial: false) { oldPhase, newPhase in
                     if newPhase == .active {
                         syncCoordinator.forceReconnect()
+                        calendarManager.rescheduleIfNeeded()
                     }
                 }
         }
@@ -158,6 +159,7 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
         }
 
         content.sound = .default
+        content.interruptionLevel = .timeSensitive
         content.userInfo = userInfo
 
         if reminder.shouldLaunchApp && event.appIndex != nil {

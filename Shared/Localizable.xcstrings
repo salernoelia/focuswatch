@@ -767,6 +767,9 @@
         }
       }
     },
+    "Calendar Debug" : {
+
+    },
     "Calming breathing exercises" : {
       "localizations" : {
         "de" : {
@@ -1046,9 +1049,6 @@
           }
         }
       }
-    },
-    "Debug Tools" : {
-
     },
     "Dein Feedback" : {
       "localizations" : {
@@ -1723,6 +1723,9 @@
           }
         }
       }
+    },
+    "Force Reschedule All" : {
+
     },
     "Force Sync All Data" : {
       "extractionState" : "stale",
@@ -2710,6 +2713,9 @@
         }
       }
     },
+    "No results yet" : {
+
+    },
     "No user selected" : {
       "localizations" : {
         "de" : {
@@ -3092,6 +3098,9 @@
           }
         }
       }
+    },
+    "Refresh Notifications" : {
+
     },
     "Reminder" : {
       "localizations" : {
@@ -3711,6 +3720,12 @@
         }
       }
     },
+    "Test Immediate Notification" : {
+
+    },
+    "Test Results" : {
+
+    },
     "Test User ID: %d" : {
       "localizations" : {
         "de" : {
@@ -3963,6 +3978,9 @@
           }
         }
       }
+    },
+    "Validate Sync Data" : {
+
     },
     "Vibration bei Abschluss" : {
       "localizations" : {

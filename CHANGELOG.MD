@@ -1,5 +1,9 @@
 # Releases
 
+## [1.2.5] - 02.02.2026
+- Enhanced sync reliability for calendar events trough "high priority notification" calls
+- Improved pomodoro session timer accuracy
+
 ## [1.2.4] - 19.12.2025
 - Fixed color breathing app out of sync & broken counter
 - Fixed multiple localization issues & enhanced ux writing

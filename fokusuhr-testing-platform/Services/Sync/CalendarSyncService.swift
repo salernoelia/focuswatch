@@ -67,7 +67,14 @@ final class CalendarSyncService {
             hasher.combine(event.title)
             hasher.combine(event.eventDescription)
             hasher.combine(event.startTime)
+            hasher.combine(event.repeatRule.rawValue)
             hasher.combine(event.reminders.count)
+            for reminder in event.reminders {
+                hasher.combine(reminder.id)
+                hasher.combine(reminder.minutesBefore)
+                hasher.combine(reminder.shouldLaunchApp)
+                hasher.combine(reminder.message)
+            }
         }
         return hasher.finalize()
     }
