@@ -80,10 +80,10 @@ struct WatchView: View {
     var body: some View {
         NavigationStack(path: $navigationPath) {
             TabView {
-                DashboardView()
-                CalendarView()
-                FocusToolsListView()
                 ChecklistsListView()
+                FocusToolsListView()
+                CalendarView()
+                DashboardView()
                 SettingsView()
             }
             .tabViewStyle(.page)
