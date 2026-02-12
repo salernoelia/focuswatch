@@ -491,7 +491,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "watch-notification/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "watch-notification";
+				INFOPLIST_KEY_CFBundleDisplayName = "FocusWatch Notifications";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -519,7 +519,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "watch-notification/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "watch-notification";
+				INFOPLIST_KEY_CFBundleDisplayName = "FocusWatch Notifications";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -551,7 +551,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "version-complication/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "version-complication";
+				INFOPLIST_KEY_CFBundleDisplayName = "FocusWatch Shortcut";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -582,7 +582,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "version-complication/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "version-complication";
+				INFOPLIST_KEY_CFBundleDisplayName = "FocusWatch Shortcut";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -744,7 +744,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "fokusuhr-testing-platform-Watch-App-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "FokusUhr Platform";
+				INFOPLIST_KEY_CFBundleDisplayName = FocusWatch;
 				INFOPLIST_KEY_CLKComplicationPrincipalClass = fokusuhr_testing_platform_Watch_App.ComplicationsManager;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We require HealthKit to access clinical records for features that support ADHD assistance.";
@@ -785,7 +785,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "fokusuhr-testing-platform-Watch-App-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "FokusUhr Platform";
+				INFOPLIST_KEY_CFBundleDisplayName = FocusWatch;
 				INFOPLIST_KEY_CLKComplicationPrincipalClass = fokusuhr_testing_platform_Watch_App.ComplicationsManager;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We require HealthKit to access clinical records for features that support ADHD assistance.";
@@ -827,7 +827,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "fokusuhr-testing-platform/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "FokusUhr Platform";
+				INFOPLIST_KEY_CFBundleDisplayName = FocusWatch;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.medical";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to take photos.";
@@ -867,7 +867,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "fokusuhr-testing-platform/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "FokusUhr Platform";
+				INFOPLIST_KEY_CFBundleDisplayName = FocusWatch;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.medical";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to take photos.";

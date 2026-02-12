@@ -1,18 +1,40 @@
 import SwiftUI
 
 struct ChecklistProgressIndicator: View {
-  let totalItems: Int
-  let collectedCount: Int
+  let orderedItemIds: [UUID]
+  let itemStatuses: [UUID: ChecklistItemStatus]
 
   var body: some View {
     HStack(spacing: 4) {
-      ForEach(0..<totalItems, id: \.self) { index in
+      ForEach(orderedItemIds, id: \.self) { itemId in
         Circle()
-          .fill(index < collectedCount ? Color.green : Color.white.opacity(0.3))
+          .fill(color(for: itemId))
           .frame(width: 6, height: 6)
-          .scaleEffect(index < collectedCount ? 1.2 : 1.0)
-          .animation(.spring(response: 0.3, dampingFraction: 0.7), value: collectedCount)
+          .scaleEffect(scale(for: itemId))
+          .animation(.spring(response: 0.3, dampingFraction: 0.7), value: itemStatuses[itemId])
       }
+    }
+  }
+
+  private func color(for itemId: UUID) -> Color {
+    switch itemStatuses[itemId] ?? .pending {
+    case .collected:
+      return .green
+    case .later:
+      return .yellow
+    case .pending:
+      return Color.white.opacity(0.3)
+    }
+  }
+
+  private func scale(for itemId: UUID) -> CGFloat {
+    switch itemStatuses[itemId] ?? .pending {
+    case .pending:
+      return 1.0
+    case .later:
+      return 1.1
+    case .collected:
+      return 1.2
     }
   }
 }

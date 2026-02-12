@@ -75,7 +75,7 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
                 remainingItems: $remainingItems,
                 collectedItems: $collectedItems,
                 currentIndex: $currentIndex,
-                totalItems: items.count,
+                allItems: items,
                 onComplete: {
                     progressManager.clearProgress(for: checklistId)
                     LevelService.shared.addXP(xpReward, reason: "Checklist completed: \(title)")

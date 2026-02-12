@@ -2,8 +2,8 @@ import SwiftUI
 
 struct ChecklistCard<Item: ChecklistItemProtocol>: View {
   let item: Item
-  let onAdd: () -> Void
-  let onSkip: () -> Void
+  let onCollect: () -> Void
+  let onLater: () -> Void
 
   @State private var dragOffset: CGFloat = 0
   @State private var scale: CGFloat = 1.0
@@ -64,7 +64,7 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
 
   private var borderColor: Color {
     if abs(dragOffset) < 20 { return .clear }
-    return dragOffset > 0 ? .green : .orange
+    return dragOffset > 0 ? .green : .yellow
   }
 
   private var strokeWidth: CGFloat {
@@ -116,9 +116,9 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
 
     DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [self] in
       if isAdd {
-        onAdd()
+        onCollect()
       } else {
-        onSkip()
+        onLater()
       }
 
       DispatchQueue.main.async {

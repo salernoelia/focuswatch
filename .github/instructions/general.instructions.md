@@ -14,34 +14,73 @@ applyTo: "**"
 - Prefer SwiftData for future migration, else use UserDefaults
 - Use MVC inside each view's directory
 - Share data between iOS and watchOS via "WatchConnector.." in Services
-- Prioritize simplicity, robustness, and minimalism
+- Prioritize simplicity, robustness over uneccesary complexity
 - Always use Localization for strings, default English
 - Watch uses static UUID "uuid" in UserDefaults and `Shared/Configs/WatchConfig.swift` (WatchConfig.shared.uuid)
 - Logging via `/Shared/Services/TelemetryManager.swift`, toggle in `SettingsViewModel.swift` (iOS)
 - Use clean, minimal SwiftUI, no emojis, symbols only if beneficial, prefer Localized text
 - Ask apple-docs mcp for API documentation
 - if you do edits, check if something exists already, and if you delete something cleanup after yourself
+- on WatchOS Application do not overpopulate with text, especially buttons are maximum 1-2 words
+- use Apple's Icons and Colors where applicable as the WatchOS Application must be child friendly
 
 ```
-
-~/Github/fokusuhr-platform  main ✗                                                  22h26m ⚑  
-▶ tree               
+~/Github/fokusuhr-platform  main ✗                                             9d16h ⚑  
+▶ tree          
 .
+├── CHANGELOG.MD
+├── Development.xcconfig
+├── Example.xcconfig
+├── Production.xcconfig
+├── README.md
+├── Shared
+│   ├── Configs
+│   │   ├── SupabaseConfig.swift
+│   │   └── WatchConfig.swift
+│   ├── Connectivity
+│   │   └── SyncPacket.swift
+│   ├── Constants
+│   │   ├── AppConstants.swift
+│   │   └── SyncConstants.swift
+│   ├── Localizable.xcstrings
+│   ├── Models
+│   │   ├── ActivityStats.swift
+│   │   ├── AppConfigurations.swift
+│   │   ├── AppInfo.swift
+│   │   ├── Calendar.swift
+│   │   ├── Checklist.swift
+│   │   ├── ChecklistProgress.swift
+│   │   ├── LevelMilestone.swift
+│   │   ├── LevelProgress.swift
+│   │   └── Schema.swift
+│   ├── Services
+│   │   ├── AppsManager.swift
+│   │   ├── LevelService+Activities.swift
+│   │   ├── LevelService+Stats.swift
+│   │   ├── LevelService.swift
+│   │   ├── SupervisorManager.swift
+│   │   ├── TelemetryManager.swift
+│   │   └── TestUsersManager.swift
+│   └── Utils
+│       ├── AppError.swift
+│       ├── ErrorLogger.swift
+│       ├── LevelSystemIntegration.swift
+│       ├── ModelContainerProvider.swift
+│       ├── Supabase.swift
+│       └── ValidationHelper.swift
 ├── all.txt
 ├── assets
 │   └── template.af
-├── CHANGELOG.MD
-├── Development.xcconfig
+├── code.txt
 ├── docs
-│   ├── documentation__WatchConnectivity__WCSession.json
+│   ├── LEVEL_SYSTEM.md
 │   ├── LEVEL_SYSTEM_INTEGRATION.md
 │   ├── LEVEL_SYSTEM_SUMMARY.md
-│   ├── LEVEL_SYSTEM.md
 │   ├── Schema_Generation.md
 │   ├── SwiftData.json
-│   ├── technologies.json
-│   └── WatchConnectivity.json
-├── Example.xcconfig
+│   ├── WatchConnectivity.json
+│   ├── documentation__WatchConnectivity__WCSession.json
+│   └── technologies.json
 ├── examples
 │   └── logging_format.json
 ├── fokusuhr-testing-platform
@@ -53,12 +92,71 @@ applyTo: "**"
 │   │   │   ├── AppIcon1024x1024 1.png
 │   │   │   ├── AppIcon1024x1024.png
 │   │   │   └── Contents.json
-│   │   └── Contents.json
+│   │   ├── Backblech.imageset
+│   │   │   ├── Backblech.png
+│   │   │   └── Contents.json
+│   │   ├── Backpapier.imageset
+│   │   │   ├── Backpapier.png
+│   │   │   └── Contents.json
+│   │   ├── Bleistift.imageset
+│   │   │   ├── Bleistift.png
+│   │   │   └── Contents.json
+│   │   ├── Buntes Papier.imageset
+│   │   │   ├── Buntes Papier.png
+│   │   │   └── Contents.json
+│   │   ├── Contents.json
+│   │   ├── Ei.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Ei.png
+│   │   ├── Haselnüsse.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Haselnüsse 1.png
+│   │   ├── Kelle.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Kelle.png
+│   │   ├── Leimstift.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Leimstift.png
+│   │   ├── Lineal.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Lineal.png
+│   │   ├── Locher.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Locher.png
+│   │   ├── Maizena.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Maizena.png
+│   │   ├── Messlöffel.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Messlöffel.png
+│   │   ├── Schere.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Schere.png
+│   │   ├── Schokoladenpulver.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Schokoladenpulver.png
+│   │   ├── Schüssel.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Schüssel.png
+│   │   ├── Topflappen.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Topflappen.png
+│   │   ├── Waage.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Waage.png
+│   │   ├── Wackelaugen.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Wackelaugen.png
+│   │   ├── Wolle.imageset
+│   │   │   ├── Contents.json
+│   │   │   └── Wolle.png
+│   │   └── Zucker.imageset
+│   │       ├── Contents.json
+│   │       └── Zucker.png
 │   ├── CompanionApp.swift
 │   ├── CompanionView.swift
 │   ├── Constants
 │   │   └── CodingKeys.swift
-│   ├── fokusuhr-testing-platform.entitlements
 │   ├── Info.plist
 │   ├── Models
 │   │   └── Gallery.swift
@@ -77,51 +175,54 @@ applyTo: "**"
 │   │       ├── ImageSyncService.swift
 │   │       ├── LevelSyncService.swift
 │   │       ├── SyncCoordinator.swift
+│   │       ├── SyncStateManager.swift
 │   │       └── TelemetrySyncService.swift
 │   ├── Utils
 │   │   └── PhotoPicker.swift
-│   └── Views
-│       ├── Auth
-│       │   ├── AuthManager.swift
-│       │   ├── LoginRequiredView.swift
-│       │   └── LoginView.swift
-│       ├── Calendar
-│       │   ├── CalendarEventFormView.swift
-│       │   ├── CalendarEventRowView.swift
-│       │   ├── CalendarView.swift
-│       │   └── CalendarViewModel.swift
-│       ├── Checklist
-│       │   ├── ChecklistAddItemView.swift
-│       │   ├── ChecklistDetailView.swift
-│       │   ├── ChecklistEditorView.swift
-│       │   └── ChecklistItemEditRow.swift
-│       ├── Feedback
-│       │   ├── FeedbackManager.swift
-│       │   └── FeedbackView.swift
-│       ├── Gallery
-│       │   ├── GalleryItemCard.swift
-│       │   └── GalleryView.swift
-│       ├── Journal
-│       │   ├── JournalContentView.swift
-│       │   ├── JournalHistoryEntryRow.swift
-│       │   ├── JournalHistoryView.swift
-│       │   ├── JournalManager.swift
-│       │   └── JournalView.swift
-│       ├── Level
-│       │   ├── LevelView.swift
-│       │   └── MilestoneEditView.swift
-│       ├── Onboarding
-│       │   └── OnboardingView.swift
-│       ├── Settings
-│       │   ├── SettingsView.swift
-│       │   └── SettingsViewModel.swift
-│       ├── Testuser
-│       │   ├── UserAddView.swift
-│       │   ├── UserRow.swift
-│       │   └── UserSelectionView.swift
-│       └── Wizard
-│           ├── WizardConfigView.swift
-│           └── WizardView.swift
+│   ├── Views
+│   │   ├── Auth
+│   │   │   ├── AuthManager.swift
+│   │   │   ├── LoginRequiredView.swift
+│   │   │   └── LoginView.swift
+│   │   ├── Calendar
+│   │   │   ├── CalendarEventFormView.swift
+│   │   │   ├── CalendarEventRowView.swift
+│   │   │   ├── CalendarView.swift
+│   │   │   └── CalendarViewModel.swift
+│   │   ├── Checklist
+│   │   │   ├── ChecklistDetailView.swift
+│   │   │   ├── ChecklistEditorView.swift
+│   │   │   ├── ChecklistItemEditRow.swift
+│   │   │   ├── ImageSelectorView.swift
+│   │   │   └── UnifiedAddItemsView.swift
+│   │   ├── Feedback
+│   │   │   ├── FeedbackManager.swift
+│   │   │   └── FeedbackView.swift
+│   │   ├── Gallery
+│   │   │   ├── GalleryItemCard.swift
+│   │   │   └── GalleryView.swift
+│   │   ├── Journal
+│   │   │   ├── JournalContentView.swift
+│   │   │   ├── JournalHistoryEntryRow.swift
+│   │   │   ├── JournalHistoryView.swift
+│   │   │   ├── JournalManager.swift
+│   │   │   └── JournalView.swift
+│   │   ├── Level
+│   │   │   ├── LevelView.swift
+│   │   │   └── MilestoneEditView.swift
+│   │   ├── Onboarding
+│   │   │   └── OnboardingView.swift
+│   │   ├── Settings
+│   │   │   ├── SettingsView.swift
+│   │   │   └── SettingsViewModel.swift
+│   │   ├── Testuser
+│   │   │   ├── UserAddView.swift
+│   │   │   ├── UserRow.swift
+│   │   │   └── UserSelectionView.swift
+│   │   └── Wizard
+│   │       ├── WizardConfigView.swift
+│   │       └── WizardView.swift
+│   └── fokusuhr-testing-platform.entitlements
 ├── fokusuhr-testing-platform Watch App
 │   ├── Assets.xcassets
 │   │   ├── AccentColor.colorset
@@ -193,7 +294,6 @@ applyTo: "**"
 │   ├── Classifiers
 │   │   └── MultiClassifier.mlmodel
 │   ├── FokusUhr Watch App.entitlements
-│   ├── fokusuhr-testing-platform Watch App.entitlements
 │   ├── Preview Content
 │   │   └── Preview Assets.xcassets
 │   │       └── Contents.json
@@ -215,6 +315,7 @@ applyTo: "**"
 │   │   │   └── AnneView.swift
 │   │   ├── AppCardView.swift
 │   │   ├── Calendar
+│   │   │   ├── CalendarDebugView.swift
 │   │   │   ├── CalendarDetailView.swift
 │   │   │   ├── CalendarEntryTriggerConsent.swift
 │   │   │   ├── CalendarView.swift
@@ -277,7 +378,8 @@ applyTo: "**"
 │   │       ├── WritingTimeManager.swift
 │   │       └── WritingView.swift
 │   ├── WatchApp.swift
-│   └── WatchView.swift
+│   ├── WatchView.swift
+│   └── fokusuhr-testing-platform Watch App.entitlements
 ├── fokusuhr-testing-platform-Watch-App-Info.plist
 ├── fokusuhr-testing-platform.xcodeproj
 │   ├── project.pbxproj
@@ -285,8 +387,8 @@ applyTo: "**"
 │   │   ├── contents.xcworkspacedata
 │   │   ├── xcshareddata
 │   │   │   └── swiftpm
-│   │   │       ├── configuration
-│   │   │       └── Package.resolved
+│   │   │       ├── Package.resolved
+│   │   │       └── configuration
 │   │   └── xcuserdata
 │   │       └── eliasalerno.xcuserdatad
 │   │           ├── IDEFindNavigatorScopes.plist
@@ -303,43 +405,8 @@ applyTo: "**"
 │               └── xcschememanagement.plist
 ├── plans
 │   └── WatchConnectorRefactor.md
-├── Production.xcconfig
-├── README.md
-├── Shared
-│   ├── Configs
-│   │   ├── SupabaseConfig.swift
-│   │   └── WatchConfig.swift
-│   ├── Connectivity
-│   │   └── SyncPacket.swift
-│   ├── Constants
-│   │   ├── AppConstants.swift
-│   │   └── SyncConstants.swift
-│   ├── Localizable.xcstrings
-│   ├── Models
-│   │   ├── ActivityStats.swift
-│   │   ├── AppConfigurations.swift
-│   │   ├── AppInfo.swift
-│   │   ├── Calendar.swift
-│   │   ├── Checklist.swift
-│   │   ├── ChecklistProgress.swift
-│   │   ├── LevelMilestone.swift
-│   │   ├── LevelProgress.swift
-│   │   └── Schema.swift
-│   ├── Services
-│   │   ├── AppsManager.swift
-│   │   ├── LevelService.swift
-│   │   ├── LevelService+Activities.swift
-│   │   ├── LevelService+Stats.swift
-│   │   ├── SupervisorManager.swift
-│   │   ├── TelemetryManager.swift
-│   │   └── TestUsersManager.swift
-│   └── Utils
-│       ├── AppError.swift
-│       ├── ErrorLogger.swift
-│       ├── LevelSystemIntegration.swift
-│       ├── ModelContainerProvider.swift
-│       ├── Supabase.swift
-│       └── ValidationHelper.swift
+├── reports
+│   └── 30-01-2025-Architecture-Report.md
 ├── supabase
 │   ├── config.toml
 │   └── docs
@@ -361,7 +428,8 @@ applyTo: "**"
     ├── Info.plist
     └── NotificationService.swift
 
-101 directories, 233 files
+122 directories, 278 files
+(base) 
 ```
 
 - Use the command "tree" in the commandline to see the latest directory tree if you need it
