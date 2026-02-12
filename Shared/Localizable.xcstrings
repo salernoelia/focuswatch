@@ -713,6 +713,9 @@
         }
       }
     },
+    "Behavior" : {
+
+    },
     "Bild Ersetzen" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -838,6 +841,9 @@
         }
       }
     },
+    "Checklist Settings" : {
+
+    },
     "Checklists" : {
       "localizations" : {
         "de" : {
@@ -873,6 +879,12 @@
           }
         }
       }
+    },
+    "Collect: Left" : {
+
+    },
+    "Collect: Right" : {
+
     },
     "Color Breathing" : {
       "localizations" : {
@@ -2245,6 +2257,7 @@
       }
     },
     "Links = Später" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2383,6 +2396,7 @@
       }
     },
     "Loslegen" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3061,6 +3075,7 @@
       }
     },
     "Rechts = Hab ich!" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3186,6 +3201,12 @@
         }
       }
     },
+    "Reset Day" : {
+
+    },
+    "Reset Interval" : {
+
+    },
     "Reset Progress" : {
       "localizations" : {
         "de" : {
@@ -3195,6 +3216,12 @@
           }
         }
       }
+    },
+    "Reset Progress Now" : {
+
+    },
+    "Reset Time" : {
+
     },
     "Restore" : {
       "localizations" : {
@@ -3671,6 +3698,9 @@
         }
       }
     },
+    "Swipe Mapping" : {
+
+    },
     "Take Photo" : {
       "localizations" : {
         "de" : {
@@ -3914,6 +3944,9 @@
         }
       }
     },
+    "Try again later" : {
+
+    },
     "Try to Reconnect" : {
       "localizations" : {
         "de" : {
@@ -3929,6 +3962,12 @@
           }
         }
       }
+    },
+    "Tutorial" : {
+
+    },
+    "Tutorial Done!" : {
+
     },
     "Undo" : {
 

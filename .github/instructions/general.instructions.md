@@ -23,6 +23,7 @@ applyTo: "**"
 - if you do edits, check if something exists already, and if you delete something cleanup after yourself
 - on WatchOS Application do not overpopulate with text, especially buttons are maximum 1-2 words
 - use Apple's Icons and Colors where applicable as the WatchOS Application must be child friendly
+- Never run xcodebuild
 
 ```
 ~/Github/fokusuhr-platform  main ✗                                             9d16h ⚑  

@@ -7,9 +7,10 @@ struct ChecklistEditorView: View {
   @StateObject private var syncCoordinator = SyncCoordinator.shared
   @Environment(\.presentationMode) var presentationMode
   @State private var newChecklistId: UUID?
+  @State private var showNewChecklistDetail = false
 
   var body: some View {
-    NavigationView {
+    NavigationStack {
       checklistList
         .navigationTitle("Checklists")
         .refreshable {
@@ -22,15 +23,31 @@ struct ChecklistEditorView: View {
             }
           }
           ToolbarItem(placement: .topBarTrailing) {
+            NavigationLink(destination: ChecklistSettingsView()) {
+              Image(systemName: "gearshape.fill")
+            }
+          }
+          ToolbarItem(placement: .topBarTrailing) {
             Button {
               let newChecklist = addChecklist(name: "New Checklist")
               newChecklistId = newChecklist.id
+              showNewChecklistDetail = true
             } label: {
               Image(systemName: "plus")
             }
           }
         }
-        .background(navigationLink)
+        .navigationDestination(isPresented: $showNewChecklistDetail) {
+          if let id = newChecklistId,
+            let checklist = checklistService.checklistData.checklists.first(where: { $0.id == id })
+          {
+            ChecklistDetailView(
+              checklist: checklist,
+              checklistService: checklistService,
+              galleryStorage: galleryStorage
+            )
+          }
+        }
     }
   }
 
@@ -84,29 +101,6 @@ struct ChecklistEditorView: View {
         .foregroundColor(.secondary)
     }
     .padding(.vertical, 4)
-  }
-
-  private var navigationLink: some View {
-    Group {
-      if let id = newChecklistId,
-        let checklist = checklistService.checklistData.checklists.first(where: { $0.id == id })
-      {
-        NavigationLink(
-          destination: ChecklistDetailView(
-            checklist: checklist,
-            checklistService: checklistService,
-            galleryStorage: galleryStorage
-          ),
-          isActive: Binding(
-            get: { newChecklistId != nil },
-            set: { if !$0 { newChecklistId = nil } }
-          )
-        ) {
-          EmptyView()
-        }
-        .hidden()
-      }
-    }
   }
 
   private func deleteChecklists(offsets: IndexSet) {

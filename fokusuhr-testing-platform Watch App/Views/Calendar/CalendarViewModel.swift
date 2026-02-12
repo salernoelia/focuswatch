@@ -75,7 +75,7 @@ class CalendarViewModel: ObservableObject {
   }
 
   private func requestNotificationPermissions() {
-    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge, .timeSensitive]) {
+    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) {
       granted, error in
       #if DEBUG
         print("📢 Notification permission granted: \(granted)")
@@ -91,7 +91,7 @@ class CalendarViewModel: ObservableObject {
     content.title = "Test Event"
     content.body = "This is a test notification"
     content.sound = .default
-    content.interruptionLevel = .timeSensitive
+    content.interruptionLevel = .active
 
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
     let request = UNNotificationRequest(

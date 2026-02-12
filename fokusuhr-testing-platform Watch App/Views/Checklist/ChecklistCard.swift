@@ -2,6 +2,8 @@ import SwiftUI
 
 struct ChecklistCard<Item: ChecklistItemProtocol>: View {
   let item: Item
+  let swipeMapping: ChecklistSwipeDirectionMapping
+  let promptText: String?
   let onCollect: () -> Void
   let onLater: () -> Void
 
@@ -22,6 +24,17 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
         .lineLimit(4)
         .multilineTextAlignment(.center)
         .shadow(color: .black.opacity(0.6), radius: 2, x: 1, y: 1)
+
+      if let promptText {
+        Text(promptText)
+          .font(.caption2)
+          .foregroundColor(.white)
+          .multilineTextAlignment(.center)
+          .padding(.horizontal, 8)
+          .padding(.vertical, 4)
+          .background(Color.black.opacity(0.55))
+          .clipShape(RoundedRectangle(cornerRadius: 8))
+      }
     }
     .frame(maxWidth: .infinity)
     .frame(height: 130)
@@ -64,7 +77,10 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
 
   private var borderColor: Color {
     if abs(dragOffset) < 20 { return .clear }
-    return dragOffset > 0 ? .green : .yellow
+    if dragOffset > 0 {
+      return swipeMapping.collectDirection == .right ? .green : .yellow
+    }
+    return swipeMapping.collectDirection == .left ? .green : .yellow
   }
 
   private var strokeWidth: CGFloat {
@@ -91,9 +107,9 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
 
     if abs(translation) > abs(value.translation.height) {
       if translation > dragThreshold || velocity > 300 {
-        performAction(isAdd: true)
+        performAction(direction: .right)
       } else if translation < -dragThreshold || velocity < -300 {
-        performAction(isAdd: false)
+        performAction(direction: .left)
       } else {
         resetCard()
       }
@@ -102,11 +118,12 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
     }
   }
 
-  private func performAction(isAdd: Bool) {
+  private func performAction(direction: ChecklistSwipeDirection) {
     guard !isProcessing else { return }
     isProcessing = true
 
-    let targetOffset: CGFloat = isAdd ? 200 : -200
+    let targetOffset: CGFloat = direction == .right ? 200 : -200
+    let shouldCollect = direction == swipeMapping.collectDirection
 
     withAnimation(.easeInOut(duration: animationDuration)) {
       dragOffset = targetOffset
@@ -115,7 +132,7 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
     }
 
     DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [self] in
-      if isAdd {
+      if shouldCollect {
         onCollect()
       } else {
         onLater()

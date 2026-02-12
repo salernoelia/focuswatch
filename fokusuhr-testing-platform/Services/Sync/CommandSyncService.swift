@@ -75,5 +75,27 @@ final class CommandSyncService: ObservableObject {
             self?.lastError = appError
         }
     }
+
+    func resetChecklistState(checklistId: UUID) {
+        guard WCSession.default.activationState == .activated else { return }
+
+        let message: [String: Any] = [
+            SyncConstants.Keys.action: SyncConstants.Actions.resetChecklistState,
+            SyncConstants.Keys.checklistId: checklistId.uuidString
+        ]
+
+        if WCSession.default.isReachable {
+            transport.sendMessage(message, replyHandler: nil) { [weak self] error in
+                let appError = AppError.watchMessageFailed(underlying: error)
+                #if DEBUG
+                    ErrorLogger.log(appError)
+                #endif
+                self?.lastError = appError
+            }
+            return
+        }
+
+        transport.transferUserInfo(message)
+    }
 }
 

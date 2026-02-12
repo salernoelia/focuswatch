@@ -1,6 +1,54 @@
 import Foundation
 import SwiftUI
 
+enum ChecklistSwipeDirection: String, Codable {
+  case left
+  case right
+}
+
+enum ChecklistSwipeDirectionMapping: String, Codable, CaseIterable {
+  case collectRightDelayLeft
+  case collectLeftDelayRight
+
+  var collectDirection: ChecklistSwipeDirection {
+    switch self {
+    case .collectRightDelayLeft:
+      return .right
+    case .collectLeftDelayRight:
+      return .left
+    }
+  }
+
+  var delayDirection: ChecklistSwipeDirection {
+    switch self {
+    case .collectRightDelayLeft:
+      return .left
+    case .collectLeftDelayRight:
+      return .right
+    }
+  }
+}
+
+enum ChecklistResetInterval: String, Codable, CaseIterable {
+  case none
+  case daily
+  case weekly
+}
+
+struct ChecklistResetConfiguration: Codable {
+  var interval: ChecklistResetInterval
+  var hour: Int
+  var minute: Int
+  var weekday: Int
+
+  init(interval: ChecklistResetInterval = .none, hour: Int = 2, minute: Int = 0, weekday: Int = 2) {
+    self.interval = interval
+    self.hour = min(max(hour, 0), 23)
+    self.minute = min(max(minute, 0), 59)
+    self.weekday = min(max(weekday, 1), 7)
+  }
+}
+
 struct ChecklistItem: Identifiable, Codable {
   var id = UUID()
   var title: String
@@ -18,12 +66,46 @@ struct Checklist: Identifiable, Codable {
   var description: String
   var items: [ChecklistItem]
   var xpReward: Int
+  var resetConfiguration: ChecklistResetConfiguration
+  var swipeMapping: ChecklistSwipeDirectionMapping
 
-  init(name: String, description: String = "", items: [ChecklistItem] = [], xpReward: Int = 50) {
+  init(
+    name: String,
+    description: String = "",
+    items: [ChecklistItem] = [],
+    xpReward: Int = 50,
+    resetConfiguration: ChecklistResetConfiguration = ChecklistResetConfiguration(),
+    swipeMapping: ChecklistSwipeDirectionMapping = .collectRightDelayLeft
+  ) {
     self.name = name
     self.description = description
     self.items = items
     self.xpReward = xpReward
+    self.resetConfiguration = resetConfiguration
+    self.swipeMapping = swipeMapping
+  }
+
+  enum CodingKeys: String, CodingKey {
+    case id
+    case name
+    case description
+    case items
+    case xpReward
+    case resetConfiguration
+    case swipeMapping
+  }
+
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+    name = try container.decode(String.self, forKey: .name)
+    description = try container.decodeIfPresent(String.self, forKey: .description) ?? ""
+    items = try container.decodeIfPresent([ChecklistItem].self, forKey: .items) ?? []
+    xpReward = try container.decodeIfPresent(Int.self, forKey: .xpReward) ?? 50
+    resetConfiguration = try container.decodeIfPresent(ChecklistResetConfiguration.self, forKey: .resetConfiguration)
+      ?? ChecklistResetConfiguration()
+    swipeMapping = try container.decodeIfPresent(ChecklistSwipeDirectionMapping.self, forKey: .swipeMapping)
+      ?? .collectRightDelayLeft
   }
 }
 

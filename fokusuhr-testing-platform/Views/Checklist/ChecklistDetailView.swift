@@ -6,6 +6,29 @@ struct ChecklistDetailView: View {
   @ObservedObject var checklistService: ChecklistSyncService
   @ObservedObject var galleryStorage: GalleryStorage
   @State private var showingAddItems = false
+  private let progressManager = ChecklistProgressManager.shared
+  private let commandSyncService = CommandSyncService.shared
+
+  private var resetTimeBinding: Binding<Date> {
+    Binding(
+      get: {
+        let calendar = Calendar.current
+        let now = Date()
+        return calendar.date(
+          bySettingHour: checklist.resetConfiguration.hour,
+          minute: checklist.resetConfiguration.minute,
+          second: 0,
+          of: now
+        ) ?? now
+      },
+      set: { newValue in
+        let components = Calendar.current.dateComponents([.hour, .minute], from: newValue)
+        checklist.resetConfiguration.hour = components.hour ?? 2
+        checklist.resetConfiguration.minute = components.minute ?? 0
+        updateChecklist()
+      }
+    )
+  }
 
   var body: some View {
     List {
@@ -35,6 +58,45 @@ struct ChecklistDetailView: View {
         .onChange(of: checklist.xpReward, initial: false) { _, _ in
           updateChecklist()
         }
+      }
+
+      Section {
+        Picker(NSLocalizedString("Reset Interval", comment: ""), selection: $checklist.resetConfiguration.interval) {
+          Text(NSLocalizedString("Never", comment: "")).tag(ChecklistResetInterval.none)
+          Text(NSLocalizedString("Daily", comment: "")).tag(ChecklistResetInterval.daily)
+          Text(NSLocalizedString("Weekly", comment: "")).tag(ChecklistResetInterval.weekly)
+        }
+        .onChange(of: checklist.resetConfiguration.interval, initial: false) { _, _ in
+          updateChecklist()
+        }
+
+        if checklist.resetConfiguration.interval != .none {
+          DatePicker(
+            NSLocalizedString("Reset Time", comment: ""),
+            selection: resetTimeBinding,
+            displayedComponents: [.hourAndMinute]
+          )
+
+          if checklist.resetConfiguration.interval == .weekly {
+            Picker(NSLocalizedString("Reset Day", comment: ""), selection: $checklist.resetConfiguration.weekday) {
+              ForEach(1...7, id: \.self) { weekday in
+                Text(Calendar.current.weekdaySymbols[weekday - 1]).tag(weekday)
+              }
+            }
+            .onChange(of: checklist.resetConfiguration.weekday, initial: false) { _, _ in
+              updateChecklist()
+            }
+          }
+
+          Button(role: .destructive) {
+            progressManager.clearProgressAndCompletion(for: checklist.id)
+            commandSyncService.resetChecklistState(checklistId: checklist.id)
+          } label: {
+            Text(NSLocalizedString("Reset Progress Now", comment: ""))
+          }
+        }
+      } header: {
+        Text(NSLocalizedString("Behavior", comment: ""))
       }
 
       Section {

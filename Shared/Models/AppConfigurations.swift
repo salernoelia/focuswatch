@@ -111,6 +111,29 @@ struct AppConfigurations: Codable, Hashable {
   var colorBreathing: ColorBreathingConfiguration = ColorBreathingConfiguration()
   var fokusMeter: FokusMeterConfiguration = FokusMeterConfiguration()
   var writing: WritingConfiguration = WritingConfiguration()
+  var checklistSwipeMapping: ChecklistSwipeDirectionMapping = .collectRightDelayLeft
+
+  enum CodingKeys: String, CodingKey {
+    case pomodoro
+    case fidgetToy
+    case colorBreathing
+    case fokusMeter
+    case writing
+    case checklistSwipeMapping
+  }
+
+  init() {}
+
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    pomodoro = try container.decodeIfPresent(PomodoroConfiguration.self, forKey: .pomodoro) ?? PomodoroConfiguration()
+    fidgetToy = try container.decodeIfPresent(FidgetToyConfiguration.self, forKey: .fidgetToy) ?? FidgetToyConfiguration()
+    colorBreathing = try container.decodeIfPresent(ColorBreathingConfiguration.self, forKey: .colorBreathing) ?? ColorBreathingConfiguration()
+    fokusMeter = try container.decodeIfPresent(FokusMeterConfiguration.self, forKey: .fokusMeter) ?? FokusMeterConfiguration()
+    writing = try container.decodeIfPresent(WritingConfiguration.self, forKey: .writing) ?? WritingConfiguration()
+    checklistSwipeMapping = try container.decodeIfPresent(ChecklistSwipeDirectionMapping.self, forKey: .checklistSwipeMapping)
+      ?? .collectRightDelayLeft
+  }
 
   static let `default` = AppConfigurations()
 }

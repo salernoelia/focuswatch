@@ -41,6 +41,7 @@ struct ChecklistMainView<Item: ChecklistItemProtocol>: View {
     @Binding var collectedItems: [Item]
     @Binding var currentIndex: Int
     let allItems: [Item]
+    let swipeMapping: ChecklistSwipeDirectionMapping
     private let appLogger = AppLogger.shared
     let onComplete: () -> Void
     @State private var itemStatuses: [UUID: ChecklistItemStatus] = [:]
@@ -58,6 +59,8 @@ struct ChecklistMainView<Item: ChecklistItemProtocol>: View {
                 {
                     ChecklistCard(
                         item: remainingItems[currentIndex],
+                        swipeMapping: swipeMapping,
+                        promptText: nil,
                         onCollect: collectCurrentItem,
                         onLater: deferCurrentItem
                     )

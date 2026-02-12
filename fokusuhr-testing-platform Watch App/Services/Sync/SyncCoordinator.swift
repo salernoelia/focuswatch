@@ -335,6 +335,13 @@ final class SyncCoordinator: ObservableObject {
         handleLevelUpdate(data: data)
       }
 
+    case SyncConstants.Actions.resetChecklistState:
+      if let checklistIdString = message[SyncConstants.Keys.checklistId] as? String,
+        let checklistId = UUID(uuidString: checklistIdString)
+      {
+        ChecklistProgressManager.shared.clearProgressAndCompletion(for: checklistId)
+      }
+
     default:
       replyHandler?([SyncConstants.Keys.status: SyncConstants.Status.unknownAction])
       return
@@ -356,6 +363,13 @@ final class SyncCoordinator: ObservableObject {
       }
       if let imageData = userInfo[SyncConstants.Keys.imageData] as? [String: String] {
         galleryManager.saveGalleryImages(imageData)
+      }
+
+    case SyncConstants.Actions.resetChecklistState:
+      if let checklistIdString = userInfo[SyncConstants.Keys.checklistId] as? String,
+        let checklistId = UUID(uuidString: checklistIdString)
+      {
+        ChecklistProgressManager.shared.clearProgressAndCompletion(for: checklistId)
       }
 
     case SyncConstants.Actions.updateTelemetry:

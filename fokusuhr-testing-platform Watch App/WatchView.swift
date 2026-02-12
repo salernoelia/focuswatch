@@ -54,7 +54,8 @@ struct WatchView: View {
                             instructionTitle: checklist.name,
                             items: checklist.items,
                             checklistId: checklist.id,
-                            xpReward: checklist.xpReward
+                            xpReward: checklist.xpReward,
+                            resetConfiguration: checklist.resetConfiguration
                         )
                     } else {
                         Text(String(localized: "App not found"))

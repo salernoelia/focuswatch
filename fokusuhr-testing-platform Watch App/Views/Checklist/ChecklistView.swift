@@ -11,6 +11,7 @@ extension ChecklistItem: ChecklistItemProtocol {}
 enum ChecklistState {
     case description
     case instructions
+    case cooldown
     case resumePrompt
     case checklist
     case completed
@@ -23,6 +24,7 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
     let items: [Item]
     let checklistId: UUID
     let xpReward: Int
+    let resetConfiguration: ChecklistResetConfiguration
 
     @EnvironmentObject var syncCoordinator: SyncCoordinator
     @State private var remainingItems: [Item] = []
@@ -31,6 +33,8 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
     @State private var state: ChecklistState = .description
     @State private var hasExistingProgress = false
     @State private var isViewActive = true
+    @State private var nextAvailableDate: Date?
+    @State private var swipeMapping = SyncCoordinator.loadAppConfigurations().checklistSwipeMapping
 
     private let progressManager = ChecklistProgressManager.shared
 
@@ -41,13 +45,36 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
                 title: title,
                 description: description,
                 onContinue: {
-                    state = .instructions
+                    if let blockedUntil = progressManager.nextAvailableDate(
+                        for: checklistId,
+                        resetConfiguration: resetConfiguration
+                    ) {
+                        nextAvailableDate = blockedUntil
+                        state = .cooldown
+                    } else {
+                        state = .instructions
+                    }
                 }
             )
             .transition(.opacity)
+        case .cooldown:
+            VStack(spacing: 10) {
+                Text(String(localized: "Try again later"))
+                    .font(.headline)
+                if let nextAvailableDate {
+                    Text(nextAvailableDate, style: .time)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Button(String(localized: "Back")) {
+                    state = .description
+                }
+            }
+            .padding()
         case .instructions:
             ChecklistInstructionsView(
                 title: instructionTitle,
+                swipeMapping: swipeMapping,
                 onStart: {
                     checkAndLoadProgress()
                 }
@@ -66,7 +93,7 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
                     remainingItems = items
                     collectedItems = []
                     currentIndex = 0
-                    state = .checklist
+                    state = .instructions
                 }
             )
             .transition(.opacity)
@@ -76,8 +103,10 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
                 collectedItems: $collectedItems,
                 currentIndex: $currentIndex,
                 allItems: items,
+                swipeMapping: swipeMapping,
                 onComplete: {
                     progressManager.clearProgress(for: checklistId)
+                    progressManager.markCompleted(for: checklistId)
                     LevelService.shared.addXP(xpReward, reason: "Checklist completed: \(title)")
                     state = .completed
                 }
@@ -94,6 +123,13 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
                     saveProgress()
                 }
             }
+            .onReceive(NotificationCenter.default.publisher(for: .appConfigurationsUpdated)) { notification in
+                if let configurations = notification.object as? AppConfigurations {
+                    swipeMapping = configurations.checklistSwipeMapping
+                } else {
+                    swipeMapping = SyncCoordinator.loadAppConfigurations().checklistSwipeMapping
+                }
+            }
         case .completed:
             ChecklistCompletionView(
                 xpReward: xpReward,
@@ -106,7 +142,7 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
     private func checkForExistingProgress() {
         guard !items.isEmpty else { return }
 
-        if let progress = progressManager.loadProgress(for: checklistId) {
+        if let progress = progressManager.loadProgress(for: checklistId, resetConfiguration: resetConfiguration) {
             let collectedIds = Set(progress.collectedItemIds)
             let remaining = items.filter { !collectedIds.contains($0.id) }
 
@@ -126,7 +162,7 @@ struct UniversalChecklistView<Item: ChecklistItemProtocol>: View {
             return
         }
 
-        if let progress = progressManager.loadProgress(for: checklistId) {
+        if let progress = progressManager.loadProgress(for: checklistId, resetConfiguration: resetConfiguration) {
             let collectedIds = Set(progress.collectedItemIds)
             collectedItems = items.filter { collectedIds.contains($0.id) }
             remainingItems = items.filter { !collectedIds.contains($0.id) }

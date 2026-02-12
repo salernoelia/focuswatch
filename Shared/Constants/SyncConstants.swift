@@ -39,6 +39,7 @@ enum SyncConstants {
         static let missingImages = "missingImages"
         static let requiredImages = "requiredImages"
         static let syncStatus = "syncStatus"
+        static let checklistId = "checklistId"
     }
 
     enum Actions {
@@ -57,6 +58,7 @@ enum SyncConstants {
         static let requestMissingImages = "requestMissingImages"
         static let reportSyncStatus = "reportSyncStatus"
         static let forceSync = "forceSync"
+        static let resetChecklistState = "resetChecklistState"
     }
 
     enum Status {
