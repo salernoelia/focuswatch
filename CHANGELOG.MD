@@ -1,5 +1,13 @@
 # Releases
 
+## [1.2.6] - 12.02.2026
+- Added checklist swipe direction mapping (configurable collect/delay left/right) configurable "Companion App > Checklists > Gear Icon (Settings)"
+- Added checklist reset/cooldown configuration (daily/weekly/none), configurable within "Companion App > Checklists"
+- Improved checklist onboarding (tutorial) where user has to swipe in the correct direction for both "collect" and "delay"
+- Checklist items turn green in the bottom bar when collected for better progression feedback
+- Added undo button after accidental swipe (visible for 2s)
+- Navigation tabs of watch order changed -> Checklists, Tools, Calendar, Level, Settings
+
 ## [1.2.5] - 02.02.2026
 - Enhanced sync reliability for calendar events trough "high priority notification" calls
 - Improved pomodoro session timer accuracy

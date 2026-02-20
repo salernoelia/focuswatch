@@ -714,38 +714,11 @@
       }
     },
     "Behavior" : {
-
-    },
-    "Bild Ersetzen" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bild Ersetzen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Replace Image"
-          }
-        }
-      }
-    },
-    "Bilder" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bilder"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Images"
+            "value" : "Verhalten"
           }
         }
       }
@@ -771,7 +744,14 @@
       }
     },
     "Calendar Debug" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calendar Debug"
+          }
+        }
+      }
     },
     "Calming breathing exercises" : {
       "localizations" : {
@@ -842,7 +822,14 @@
       }
     },
     "Checklist Settings" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checklisten Einstellungen"
+          }
+        }
+      }
     },
     "Checklists" : {
       "localizations" : {
@@ -881,10 +868,24 @@
       }
     },
     "Collect: Left" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Links"
+          }
+        }
+      }
     },
     "Collect: Right" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rechts"
+          }
+        }
+      }
     },
     "Color Breathing" : {
       "localizations" : {
@@ -1061,9 +1062,6 @@
           }
         }
       }
-    },
-    "Debug Tools" : {
-
     },
     "Dein Feedback" : {
       "localizations" : {
@@ -1425,23 +1423,6 @@
         }
       }
     },
-    "Enter label" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Beschriftung eingeben"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enter label"
-          }
-        }
-      }
-    },
     "Entry Details" : {
       "localizations" : {
         "de" : {
@@ -1506,17 +1487,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ausatmen"
-          }
-        }
-      }
-    },
-    "Existing Checklist Items" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bestehende Gegenstände"
           }
         }
       }
@@ -1740,38 +1710,11 @@
       }
     },
     "Force Reschedule All" : {
-
-    },
-    "Force Sync All Data" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alle Daten zwangssynchronisieren"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Force Sync All Data"
-          }
-        }
-      }
-    },
-    "Force Syncing..." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zwangssynchronisierung..."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Force Syncing..."
+            "value" : "Timer zurücksetzen"
           }
         }
       }
@@ -1924,40 +1867,6 @@
         }
       }
     },
-    "Image" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bild"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Image"
-          }
-        }
-      }
-    },
-    "Image Selection" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bildauswahl"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Image Selection"
-          }
-        }
-      }
-    },
     "In 5 minutes" : {
       "localizations" : {
         "de" : {
@@ -2037,10 +1946,24 @@
       }
     },
     "Item Collected" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gegenstand gesammelt"
+          }
+        }
+      }
     },
     "Item for Later" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gegenstand später"
+          }
+        }
+      }
     },
     "Item title" : {
       "localizations" : {
@@ -2256,23 +2179,6 @@
         }
       }
     },
-    "Links = Später" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Links = Später"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Left = Later"
-          }
-        }
-      }
-    },
     "Loading apps..." : {
       "localizations" : {
         "de" : {
@@ -2395,23 +2301,6 @@
         }
       }
     },
-    "Loslegen" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Loslegen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Get Started"
-          }
-        }
-      }
-    },
     "Male" : {
       "localizations" : {
         "de" : {
@@ -2526,40 +2415,12 @@
         }
       }
     },
-    "Neues Bild Hinzufügen" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Neues Bild Hinzufügen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add New Image"
-          }
-        }
-      }
-    },
     "Never" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nie"
-          }
-        }
-      }
-    },
-    "New Checklist" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Neue Checkliste"
           }
         }
       }
@@ -2737,7 +2598,14 @@
       }
     },
     "No results yet" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Resultate"
+          }
+        }
+      }
     },
     "No user selected" : {
       "localizations" : {
@@ -3017,23 +2885,6 @@
         }
       }
     },
-    "Preview" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vorschau"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preview"
-          }
-        }
-      }
-    },
     "Progress" : {
       "localizations" : {
         "de" : {
@@ -3074,23 +2925,6 @@
         }
       }
     },
-    "Rechts = Hab ich!" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rechts = Hab ich!"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Right = Got it!"
-          }
-        }
-      }
-    },
     "Reconnecting..." : {
       "localizations" : {
         "de" : {
@@ -3124,7 +2958,14 @@
       }
     },
     "Refresh Notifications" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benachrichtigungen laden"
+          }
+        }
+      }
     },
     "Reminder" : {
       "localizations" : {
@@ -3158,23 +2999,6 @@
         }
       }
     },
-    "Remove Photo" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto entfernen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Remove Photo"
-          }
-        }
-      }
-    },
     "Repeat" : {
       "localizations" : {
         "de" : {
@@ -3202,10 +3026,24 @@
       }
     },
     "Reset Day" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tag zurücksetzen"
+          }
+        }
+      }
     },
     "Reset Interval" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interval zurücksetzen"
+          }
+        }
+      }
     },
     "Reset Progress" : {
       "localizations" : {
@@ -3218,10 +3056,24 @@
       }
     },
     "Reset Progress Now" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fortschritt zurücksetzen"
+          }
+        }
+      }
     },
     "Reset Time" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeit zurücksetzen"
+          }
+        }
+      }
     },
     "Restore" : {
       "localizations" : {
@@ -3345,23 +3197,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Einträge suchen"
-          }
-        }
-      }
-    },
-    "Search photos" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fotos suchen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Search photos"
           }
         }
       }
@@ -3622,40 +3457,6 @@
         }
       }
     },
-    "stop_exercise_confirm" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Übung stoppen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stop Exercise"
-          }
-        }
-      }
-    },
-    "stop_exercise_title" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Übung beenden?"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stop Exercise?"
-          }
-        }
-      }
-    },
     "Strong" : {
       "localizations" : {
         "de" : {
@@ -3699,7 +3500,14 @@
       }
     },
     "Swipe Mapping" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gegenstand sammeln Richtung"
+          }
+        }
+      }
     },
     "Take Photo" : {
       "localizations" : {
@@ -3839,23 +3647,6 @@
         }
       }
     },
-    "This label will be displayed alongside the image" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diese Beschriftung wird neben dem Bild angezeigt"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This label will be displayed alongside the image"
-          }
-        }
-      }
-    },
     "Time" : {
       "localizations" : {
         "de" : {
@@ -3945,7 +3736,14 @@
       }
     },
     "Try again later" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Später erneut versuchen"
+          }
+        }
+      }
     },
     "Try to Reconnect" : {
       "localizations" : {
@@ -3964,13 +3762,34 @@
       }
     },
     "Tutorial" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Übung"
+          }
+        }
+      }
     },
     "Tutorial Done!" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Übung bestanden!"
+          }
+        }
+      }
     },
     "Undo" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rückgängig"
+          }
+        }
+      }
     },
     "until level %lld" : {
       "localizations" : {
@@ -4031,7 +3850,14 @@
       }
     },
     "Validate Sync Data" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisationsdaten validieren"
+          }
+        }
+      }
     },
     "Vibration bei Abschluss" : {
       "localizations" : {

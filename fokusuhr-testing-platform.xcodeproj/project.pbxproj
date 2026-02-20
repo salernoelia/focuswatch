@@ -488,7 +488,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "watch-notification/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "FocusWatch Notifications";
@@ -516,7 +516,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "watch-notification/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "FocusWatch Notifications";
@@ -548,7 +548,7 @@
 				CODE_SIGN_ENTITLEMENTS = "version-complication/widgetExtension.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "version-complication/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "FocusWatch Shortcut";
@@ -579,7 +579,7 @@
 				CODE_SIGN_ENTITLEMENTS = "version-complication/widgetExtension.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "version-complication/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "FocusWatch Shortcut";
@@ -738,7 +738,7 @@
 				CODE_SIGN_ENTITLEMENTS = "fokusuhr-testing-platform Watch App/fokusuhr-testing-platform Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"fokusuhr-testing-platform Watch App/Preview Content\"";
 				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				ENABLE_PREVIEWS = YES;
@@ -780,7 +780,7 @@
 				CODE_SIGN_ENTITLEMENTS = "fokusuhr-testing-platform Watch App/fokusuhr-testing-platform Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"fokusuhr-testing-platform Watch App/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -822,7 +822,7 @@
 				CODE_SIGN_ENTITLEMENTS = "fokusuhr-testing-platform/fokusuhr-testing-platform.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"fokusuhr-testing-platform/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -862,7 +862,7 @@
 				CODE_SIGN_ENTITLEMENTS = "fokusuhr-testing-platform/fokusuhr-testing-platform.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"fokusuhr-testing-platform/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
