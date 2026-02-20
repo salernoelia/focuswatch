@@ -1,5 +1,6 @@
 import SwiftUI
 import UserNotifications
+import WatchKit
 
 @main
 struct WatchApp: App {
@@ -36,9 +37,27 @@ struct WatchApp: App {
                 .onChange(of: scenePhase, initial: false) { oldPhase, newPhase in
                     if newPhase == .active {
                         syncCoordinator.forceReconnect()
-                        calendarManager.rescheduleIfNeeded()
+                        Task {
+                            await calendarManager.rescheduleIfNeeded()
+                            await scheduleBackgroundRefresh()
+                        }
                     }
                 }
+        }
+        .backgroundTask(.appRefresh("org.fokusuhr.refresh")) { _ in
+            await calendarManager.rescheduleIfNeeded()
+            await scheduleBackgroundRefresh()
+        }
+    }
+
+    private func scheduleBackgroundRefresh() async {
+        let preferredDate = Calendar.current.date(byAdding: .hour, value: 6, to: Date()) ?? Date()
+        do {
+            try await WKExtension.shared().scheduleBackgroundRefresh(withPreferredDate: preferredDate, userInfo: nil)
+        } catch {
+            #if DEBUG
+            print("Failed to schedule background refresh: \(error)")
+            #endif
         }
     }
 

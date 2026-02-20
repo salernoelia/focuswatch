@@ -310,7 +310,7 @@ class CalendarViewModel: ObservableObject {
       [.year, .month, .day, .hour, .minute, .second], from: calculatedTriggerDate)
     let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
 
-    let identifier = "\(event.id.uuidString)-\(reminder.id.uuidString)"
+    let identifier = "\(event.id.uuidString)-\(reminder.id.uuidString)-\(calculatedTriggerDate.timeIntervalSince1970)"
     let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
 
     UNUserNotificationCenter.current().add(request) { error in
@@ -335,17 +335,15 @@ class CalendarViewModel: ObservableObject {
     pendingReminder = (event, reminder, shouldLaunch)
   }
   
-  func rescheduleIfNeeded() {
-    UNUserNotificationCenter.current().getPendingNotificationRequests { [weak self] requests in
-      guard let self = self else { return }
-      
-      if requests.isEmpty && !self.events.isEmpty {
-        #if DEBUG
-          print("⚠️ No pending notifications but have events - rescheduling")
-        #endif
-        DispatchQueue.main.async {
-          self.scheduleAllReminders()
-        }
+  func rescheduleIfNeeded() async {
+    let requests = await UNUserNotificationCenter.current().pendingNotificationRequests()
+    
+    if requests.isEmpty && !self.events.isEmpty {
+      #if DEBUG
+        print("⚠️ No pending notifications but have events - rescheduling")
+      #endif
+      DispatchQueue.main.async {
+        self.scheduleAllReminders()
       }
     }
   }
