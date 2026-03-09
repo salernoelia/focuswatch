@@ -40,11 +40,6 @@ struct PomodoroTimerView: View {
                 .tint(viewModel.phaseColor)
             }
             .padding(.top, 4)
-
-            Text("Wische für Einstellungen →")
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
-                .padding(.top, 4)
         }
         .padding()
     }

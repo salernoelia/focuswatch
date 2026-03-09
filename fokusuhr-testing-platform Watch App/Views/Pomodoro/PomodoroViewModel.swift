@@ -3,7 +3,7 @@ import UserNotifications
 import WatchKit
 
 @MainActor
-class PomodoroViewModel: ObservableObject {
+class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDelegate {
   static let shared = PomodoroViewModel()
 
   @Published var settings = PomodoroConfig() {
@@ -30,7 +30,8 @@ class PomodoroViewModel: ObservableObject {
 
   private let defaults = UserDefaults.standard
 
-  private init() {
+  private override init() {
+    super.init()
     loadSettings()
     updateTotalTime()
     requestNotificationPermission()
@@ -268,7 +269,7 @@ class PomodoroViewModel: ObservableObject {
 
     if extendedRuntimeSession == nil || extendedRuntimeSession?.state != .running {
       extendedRuntimeSession = WKExtendedRuntimeSession()
-      extendedRuntimeSession?.delegate = PomodoroExtendedRuntimeSessionDelegate.shared
+      extendedRuntimeSession?.delegate = self
       if extendedRuntimeSession?.state == .notStarted {
         extendedRuntimeSession?.start()
       }
@@ -303,8 +304,9 @@ class PomodoroViewModel: ObservableObject {
     if let session = extendedRuntimeSession {
       if session.state == .running {
         session.invalidate()
+      } else {
+        extendedRuntimeSession = nil
       }
-      extendedRuntimeSession = nil
     }
 
     let center = UNUserNotificationCenter.current()
@@ -428,4 +430,17 @@ class PomodoroViewModel: ObservableObject {
     }
     timeRemaining = totalTime
   }
+
+  nonisolated func extendedRuntimeSessionDidStart(_ session: WKExtendedRuntimeSession) {}
+  nonisolated func extendedRuntimeSessionWillExpire(_ session: WKExtendedRuntimeSession) {}
+  nonisolated func extendedRuntimeSession(
+    _ session: WKExtendedRuntimeSession,
+    didInvalidateWith reason: WKExtendedRuntimeSessionInvalidationReason,
+    error: Error?
+  ) {
+    Task { @MainActor in
+      self.extendedRuntimeSession = nil
+    }
+  }
 }
+
