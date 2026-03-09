@@ -14,7 +14,7 @@ class AppLogger: NSObject, ObservableObject {
       let sharedDefaults = UserDefaults(suiteName: "group.net.com.fokusuhr")
       let uuidString = sharedDefaults?.string(forKey: "deviceUUID")
       #if DEBUG
-        print("📱 Widget reading deviceUUID: \(uuidString ?? "nil")")
+        print(" Widget reading deviceUUID: \(uuidString ?? "nil")")
       #endif
       return uuidString.flatMap { UUID(uuidString: $0) }
     }

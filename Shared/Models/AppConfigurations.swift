@@ -89,10 +89,35 @@ struct FidgetToyConfiguration: Codable, Hashable {
 
 struct ColorBreathingConfiguration: Codable, Hashable {
   var inhaleSeconds: Int = 4
+  var inhaleHoldSeconds: Int = 0
   var exhaleSeconds: Int = 4
+  var exhaleHoldSeconds: Int = 0
   var cycleCount: Int = 5
   var vibrationOnTransition: Bool = true
   var vibrationIntensity: VibrationIntensity = .light
+
+  enum CodingKeys: String, CodingKey {
+    case inhaleSeconds
+    case inhaleHoldSeconds
+    case exhaleSeconds
+    case exhaleHoldSeconds
+    case cycleCount
+    case vibrationOnTransition
+    case vibrationIntensity
+  }
+
+  init() {}
+
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    inhaleSeconds = try container.decodeIfPresent(Int.self, forKey: .inhaleSeconds) ?? 4
+    inhaleHoldSeconds = try container.decodeIfPresent(Int.self, forKey: .inhaleHoldSeconds) ?? 0
+    exhaleSeconds = try container.decodeIfPresent(Int.self, forKey: .exhaleSeconds) ?? 4
+    exhaleHoldSeconds = try container.decodeIfPresent(Int.self, forKey: .exhaleHoldSeconds) ?? 0
+    cycleCount = try container.decodeIfPresent(Int.self, forKey: .cycleCount) ?? 5
+    vibrationOnTransition = try container.decodeIfPresent(Bool.self, forKey: .vibrationOnTransition) ?? true
+    vibrationIntensity = try container.decodeIfPresent(VibrationIntensity.self, forKey: .vibrationIntensity) ?? .light
+  }
 }
 
 struct FokusMeterConfiguration: Codable, Hashable {}

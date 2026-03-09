@@ -671,22 +671,6 @@
         }
       }
     },
-    "Ausatmen" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ausatmen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exhale"
-          }
-        }
-      }
-    },
     "Authentication" : {
       "localizations" : {
         "de" : {
@@ -1304,22 +1288,6 @@
         }
       }
     },
-    "Einatmen" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einatmen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inhale"
-          }
-        }
-      }
-    },
     "Einstellung ändern" : {
       "localizations" : {
         "de" : {
@@ -1856,6 +1824,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "History"
+          }
+        }
+      }
+    },
+    "Hold In" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atem halten"
+          }
+        }
+      }
+    },
+    "Hold Out" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atem halten"
           }
         }
       }
@@ -3574,7 +3562,14 @@
 
     },
     "Test Results" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Testresultat"
+          }
+        }
+      }
     },
     "Test User ID: %d" : {
       "localizations" : {

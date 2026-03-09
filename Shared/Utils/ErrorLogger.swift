@@ -19,7 +19,7 @@ enum ErrorLogger {
   ) {
     #if DEBUG
       let fileName = (file as NSString).lastPathComponent
-      print("ℹ️ [\(fileName):\(line)] \(function)")
+      print("[\(fileName):\(line)] \(function)")
       print("   \(message)")
     #endif
   }

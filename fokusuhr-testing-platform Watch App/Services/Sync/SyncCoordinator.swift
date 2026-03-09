@@ -184,12 +184,12 @@ final class SyncCoordinator: ObservableObject {
         if let calendarDataBytes = context[SyncConstants.Keys.calendarData] as? Data,
            let events = try? JSONDecoder().decode([EventTransfer].self, from: calendarDataBytes)
         {
-            calendarManager.updateEvents(events)
+          updateCalendarEvents(events)
         } else if let calendarDataString = context[SyncConstants.Keys.calendarData] as? String,
                   let data = Data(base64Encoded: calendarDataString),
                   let events = try? JSONDecoder().decode([EventTransfer].self, from: data)
         {
-            calendarManager.updateEvents(events)
+          updateCalendarEvents(events)
         }
 
         var checklistUpdated = false
@@ -325,7 +325,7 @@ final class SyncCoordinator: ObservableObject {
         let data = Data(base64Encoded: dataString),
         let events = try? JSONDecoder().decode([EventTransfer].self, from: data)
       {
-        calendarManager.updateEvents(events)
+        updateCalendarEvents(events)
       }
 
     case SyncConstants.Actions.updateLevel:
@@ -419,6 +419,12 @@ final class SyncCoordinator: ObservableObject {
 
     default:
       break
+    }
+  }
+
+  private func updateCalendarEvents(_ events: [EventTransfer]) {
+    Task { @MainActor in
+      calendarManager.updateEvents(events)
     }
   }
 

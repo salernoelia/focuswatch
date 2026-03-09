@@ -1,6 +1,7 @@
 import Foundation
 import UserNotifications
 
+@MainActor
 class CalendarViewModel: ObservableObject {
   @Published var events: [EventTransfer] = []
   @Published var pendingReminder:
@@ -25,7 +26,7 @@ class CalendarViewModel: ObservableObject {
       print("   → New hash: \(newHash)")
       print("   → Last hash: \(lastSyncedHash ?? -1)")
       for event in newEvents {
-        print("   📝 Event: \(event.title)")
+        print("    Event: \(event.title)")
         print("      → Reminders count: \(event.reminders.count)")
         for reminder in event.reminders {
           print("      → Reminder: \(reminder.minutesBefore) min before, launch: \(reminder.shouldLaunchApp)")
@@ -78,7 +79,7 @@ class CalendarViewModel: ObservableObject {
     UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) {
       granted, error in
       #if DEBUG
-        print("📢 Notification permission granted: \(granted)")
+        print(" Notification permission granted: \(granted)")
         if let error = error {
           ErrorLogger.log("Notification permission error: \(error)")
         }
@@ -112,7 +113,7 @@ class CalendarViewModel: ObservableObject {
 
   func scheduleAllReminders() {
     #if DEBUG
-      print("🗑️ CalendarViewModel: Removing all pending notifications")
+      print(" CalendarViewModel: Removing all pending notifications")
     #endif
 
     UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
@@ -123,7 +124,7 @@ class CalendarViewModel: ObservableObject {
     }
 
     #if DEBUG
-      print("🔄 CalendarViewModel: Scheduling reminders for \(futureEvents.count) future/repeating events (filtered from \(events.count) total)")
+      print(" CalendarViewModel: Scheduling reminders for \(futureEvents.count) future/repeating events (filtered from \(events.count) total)")
     #endif
 
     scheduleUpcomingReminders(for: futureEvents, from: now)
@@ -190,7 +191,7 @@ class CalendarViewModel: ObservableObject {
     }
     
     #if DEBUG
-      print("📊 Scheduled \(scheduledCount) notifications (\(reminderDates.count) total candidates)")
+      print(" Scheduled \(scheduledCount) notifications (\(reminderDates.count) total candidates)")
     #endif
   }
 
@@ -374,10 +375,6 @@ class CalendarViewModel: ObservableObject {
 
     return matchingEvents.sorted { $0.startTime < $1.startTime }
   }
-
- 
-
-
 
   private func saveEvents() {
     guard let data = try? JSONEncoder().encode(events) else { return }

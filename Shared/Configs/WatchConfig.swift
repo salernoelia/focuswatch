@@ -12,7 +12,7 @@ class WatchConfig {
     #if os(watchOS)
       if let retrievedUUID = try? keychain.getString("deviceUUID") {
         #if DEBUG
-          print("⌚ WatchConfig: Found Keychain UUID: \(String(retrievedUUID.prefix(8)))")
+          print("WatchConfig: Found Keychain UUID: \(String(retrievedUUID.prefix(8)))")
         #endif
         syncToSharedContainer(retrievedUUID)
         return retrievedUUID
@@ -20,7 +20,7 @@ class WatchConfig {
         let newUUID = UUID().uuidString
         try? keychain.set(String(newUUID), key: "deviceUUID")
         #if DEBUG
-          print("⌚ WatchConfig: Generated NEW UUID: \(String(newUUID.prefix(8)))")
+          print("WatchConfig: Generated NEW UUID: \(String(newUUID.prefix(8)))")
         #endif
         syncToSharedContainer(newUUID)
         return newUUID
@@ -28,12 +28,12 @@ class WatchConfig {
     #else
       if let connectedWatchUUID = UserDefaults.standard.string(forKey: "connectedWatchUUID") {
         #if DEBUG
-          print("📱 WatchConfig: Connected Watch UUID: \(String(connectedWatchUUID.prefix(8)))")
+          print(" WatchConfig: Connected Watch UUID: \(String(connectedWatchUUID.prefix(8)))")
         #endif
         return connectedWatchUUID
       }
       #if DEBUG
-        print("📱 WatchConfig: No watch connected yet")
+        print(" WatchConfig: No watch connected yet")
       #endif
       return "NOT-CONNECTED"
     #endif
@@ -46,7 +46,7 @@ class WatchConfig {
       sharedDefaults?.synchronize()
 
       #if DEBUG
-        print("⌚ WatchConfig: Synced UUID to shared container: \(String(uuid.prefix(8)))")
+        print("WatchConfig: Synced UUID to shared container: \(String(uuid.prefix(8)))")
       #endif
     }
   #endif
@@ -68,10 +68,10 @@ class WatchConfig {
       #if DEBUG
         if currentUUID != uuid {
           print(
-            "📱 WatchConfig: Updated connected watch UUID from \(currentUUID ?? "none") to \(String(uuid.prefix(8)))"
+            " WatchConfig: Updated connected watch UUID from \(currentUUID ?? "none") to \(String(uuid.prefix(8)))"
           )
         } else {
-          print("📱 WatchConfig: Confirmed watch UUID: \(String(uuid.prefix(8)))")
+          print(" WatchConfig: Confirmed watch UUID: \(String(uuid.prefix(8)))")
         }
       #endif
     }

@@ -193,7 +193,7 @@ class UserConfigs: ObservableObject {
     let writingConfig = appConfigs.writing
 
     DispatchQueue.main.async {
-      print("📝 Updating Writing config from AppConfigurations...")
+      print(" Updating Writing config from AppConfigurations...")
 
       // Update properties from shared configuration
       self.configs.learn = writingConfig.workMinutes

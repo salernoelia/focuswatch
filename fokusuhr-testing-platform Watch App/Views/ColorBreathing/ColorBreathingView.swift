@@ -30,7 +30,7 @@ struct ColorBreathingView: View {
         .frame(width: 120, height: 120)
 
         VStack(spacing: 4) {
-          Text(viewModel.isInhaling ? "Einatmen" : "Ausatmen")
+          Text(viewModel.phaseTitle)
             .font(.caption)
             .foregroundColor(.white.opacity(0.8))
 

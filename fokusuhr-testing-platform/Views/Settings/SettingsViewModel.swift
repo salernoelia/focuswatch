@@ -63,7 +63,7 @@ class SettingsViewModel: ObservableObject {
   private func loadWatchUUID() {
     watchUUID = watchConfig.uuid
     #if DEBUG
-      print("📱 SettingsViewModel: Loaded Watch UUID: \(watchUUID)")
+      print(" SettingsViewModel: Loaded Watch UUID: \(watchUUID)")
     #endif
   }
 
@@ -74,7 +74,7 @@ class SettingsViewModel: ObservableObject {
     .receive(on: DispatchQueue.main)
     .sink { [weak self] notification in
       #if DEBUG
-        print("📱 SettingsViewModel: Received Watch UUID change notification")
+        print(" SettingsViewModel: Received Watch UUID change notification")
       #endif
       self?.loadWatchUUID()
     }

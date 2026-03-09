@@ -21,6 +21,7 @@ final class ConnectivityTransport: NSObject, ObservableObject {
     private var reconnectAttempts = 0
     private let maxReconnectAttempts = 5
     private var isMonitoringConnection = false
+    private let applicationContextQueue = DispatchQueue(label: "com.fokusuhr.sync.applicationContext")
 
     override private init() {
         super.init()
@@ -141,7 +142,23 @@ final class ConnectivityTransport: NSObject, ObservableObject {
         guard WCSession.default.activationState == .activated else {
             throw AppError.watchSessionInactive
         }
-        try WCSession.default.updateApplicationContext(context)
+
+        var resultError: Error?
+        applicationContextQueue.sync {
+            do {
+                var mergedContext = WCSession.default.applicationContext
+                for (key, value) in context {
+                    mergedContext[key] = value
+                }
+                try WCSession.default.updateApplicationContext(mergedContext)
+            } catch {
+                resultError = error
+            }
+        }
+
+        if let resultError {
+            throw resultError
+        }
     }
 
     func sendMessage(_ message: [String: Any], replyHandler: (([String: Any]) -> Void)? = nil, errorHandler: ((Error) -> Void)? = nil) {

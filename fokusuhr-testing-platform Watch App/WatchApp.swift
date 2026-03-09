@@ -52,12 +52,15 @@ struct WatchApp: App {
 
     private func scheduleBackgroundRefresh() async {
         let preferredDate = Calendar.current.date(byAdding: .hour, value: 6, to: Date()) ?? Date()
-        do {
-            try await WKExtension.shared().scheduleBackgroundRefresh(withPreferredDate: preferredDate, userInfo: nil)
-        } catch {
-            #if DEBUG
-            print("Failed to schedule background refresh: \(error)")
-            #endif
+        await withCheckedContinuation { continuation in
+            WKExtension.shared().scheduleBackgroundRefresh(withPreferredDate: preferredDate, userInfo: nil) { error in
+                #if DEBUG
+                if let error {
+                    print("Failed to schedule background refresh: \(error)")
+                }
+                #endif
+                continuation.resume()
+            }
         }
     }
 
@@ -155,6 +158,7 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
         completionHandler()
     }
 
+    @MainActor
     private func scheduleSnoozeNotification(
         eventId: UUID,
         reminderId: UUID,

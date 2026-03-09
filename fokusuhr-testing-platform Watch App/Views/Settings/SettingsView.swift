@@ -96,7 +96,7 @@ struct SettingsView: View {
         sharedDefaults?.synchronize()
         
 #if DEBUG
-        print("⌚ SettingsView: Updated widget data - UUID: \(String(fullUUID.prefix(8)))")
+        print("SettingsView: Updated widget data - UUID: \(String(fullUUID.prefix(8)))")
 #endif
     }
 }

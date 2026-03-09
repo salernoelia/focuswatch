@@ -29,7 +29,7 @@ extension LevelService {
       try context.save()
 
       #if DEBUG
-        ErrorLogger.log("📊 Recorded activity: \(appName) - \(activityType)")
+        ErrorLogger.log(" Recorded activity: \(appName) - \(activityType)")
       #endif
     } catch {
       #if DEBUG

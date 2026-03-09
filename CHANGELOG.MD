@@ -1,5 +1,9 @@
 # Releases
 
+## [1.2.7] - 
+- Improved notification scheduling
+- Holding breath configuration option in color breathing
+
 ## [1.2.6] - 12.02.2026
 - Added checklist swipe direction mapping (configurable collect/delay left/right) configurable "Companion App > Checklists > Gear Icon (Settings)"
 - Added checklist reset/cooldown configuration (daily/weekly/none), configurable within "Companion App > Checklists"

@@ -109,8 +109,16 @@ struct ColorBreathingConfigSection: View {
         value: $config.inhaleSeconds, in: 2...8
       )
       Stepper(
+        "\(String(localized: "Hold In")): \(config.inhaleHoldSeconds) \(String(localized: "sec"))",
+        value: $config.inhaleHoldSeconds, in: 0...8
+      )
+      Stepper(
         "\(String(localized: "Exhale")): \(config.exhaleSeconds) \(String(localized: "sec"))",
         value: $config.exhaleSeconds, in: 2...8
+      )
+      Stepper(
+        "\(String(localized: "Hold Out")): \(config.exhaleHoldSeconds) \(String(localized: "sec"))",
+        value: $config.exhaleHoldSeconds, in: 0...8
       )
       Stepper(
         "\(String(localized: "Cycles")): \(config.cycleCount)",
