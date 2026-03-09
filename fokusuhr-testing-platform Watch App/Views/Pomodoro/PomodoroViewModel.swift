@@ -9,7 +9,9 @@ class PomodoroViewModel: ObservableObject {
   @Published var settings = PomodoroConfig() {
     didSet {
       saveSettings()
-      reset()
+      if !isLoadingSettings {
+        reset()
+      }
     }
   }
   @Published var timeRemaining: Int = 1500
@@ -24,6 +26,7 @@ class PomodoroViewModel: ObservableObject {
   private var lastTickDate: Date?
   private var nextVibrationTime: Date?
   private var vibrationNotificationIds: [String] = []
+  private var isLoadingSettings = false
 
   private let defaults = UserDefaults.standard
 
@@ -62,6 +65,7 @@ class PomodoroViewModel: ObservableObject {
   }
 
   private func applyConfiguration(_ config: PomodoroConfiguration) {
+    isLoadingSettings = true
     settings = PomodoroConfig(
       workMinutes: config.workMinutes,
       shortBreakMinutes: config.shortBreakMinutes,
@@ -71,6 +75,7 @@ class PomodoroViewModel: ObservableObject {
       vibrationIntensity: config.vibrationIntensity,
       completionVibration: config.completionVibration
     )
+    isLoadingSettings = false
 
     if !isRunning {
       updateTotalTime()
@@ -110,7 +115,9 @@ class PomodoroViewModel: ObservableObject {
     if let data = defaults.data(forKey: "PomodoroConfig"),
       let decoded = try? JSONDecoder().decode(PomodoroConfig.self, from: data)
     {
+      isLoadingSettings = true
       settings = decoded
+      isLoadingSettings = false
     }
   }
 
