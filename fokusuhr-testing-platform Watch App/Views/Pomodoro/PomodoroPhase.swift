@@ -1,11 +1,3 @@
-//
-//  PomodoroPhase.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 27.10.2025.
-//
-
-
 import SwiftUI
 import UserNotifications
 import WatchKit

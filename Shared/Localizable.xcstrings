@@ -1047,9 +1047,6 @@
         }
       }
     },
-    "Debug Tools" : {
-
-    },
     "Dein Feedback" : {
       "localizations" : {
         "de" : {
@@ -4033,6 +4030,7 @@
       }
     },
     "Wische für Einstellungen →" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

@@ -1,8 +1,10 @@
 # Releases
 
-## [1.2.7] - 
-- Improved notification scheduling
+## [1.2.7] - 09.03.2026
+- Improved notification scheduling (still work in progress...)
 - Holding breath configuration option in color breathing
+- Fix: Pomodoro timer resetting when watch in standby
+- ⁠Fix: Jittery animation of the Color Breathing animation
 
 ## [1.2.6] - 12.02.2026
 - Added checklist swipe direction mapping (configurable collect/delay left/right) configurable "Companion App > Checklists > Gear Icon (Settings)"
