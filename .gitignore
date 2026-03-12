@@ -3,6 +3,9 @@ Development.xcconfig
 Production.xcconfig
 .env
 
+.cursor
+.github/instructions/*
+
 all.txt
 
 # Xcode
