@@ -3,8 +3,8 @@ Development.xcconfig
 Production.xcconfig
 .env
 
-.cursor
-.github/instructions/*
+.cursor/
+.github/instructions/
 
 all.txt
 

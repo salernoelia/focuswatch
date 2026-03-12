@@ -1,3 +1,4 @@
+// copy and create both Development.xcconfig and Production.xcconfig out of this file
 SUPABASE_URL = https:/$()/<url>.supabase.co
 SUPABASE_ANON_KEY = <key>
 GOOGLE_DRIVE_USERNAME = <username>
