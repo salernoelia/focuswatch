@@ -10,10 +10,17 @@ class VibrationManager: ObservableObject {
   private var pomodoroVibrationTimer: DispatchSourceTimer?
   func startPomodoroRandomVibrations(intervalRange: ClosedRange<Int>, intensity: WKHapticType) {
     stopPomodoroRandomVibrations()
-    let timer = DispatchSource.makeTimerSource()
+
+    guard intervalRange.lowerBound > 0 else { return }
+
+    let timer = DispatchSource.makeTimerSource(queue: .main)
     scheduleNextRandomVibration(timer: timer, intervalRange: intervalRange, intensity: intensity)
     pomodoroVibrationTimer = timer
     timer.resume()
+
+    #if DEBUG
+      print("VibrationManager: Started pomodoro vibrations (interval: \(intervalRange), intensity: \(intensity))")
+    #endif
   }
 
   private func scheduleNextRandomVibration(
@@ -22,19 +29,24 @@ class VibrationManager: ObservableObject {
     let randomInterval = Int.random(in: intervalRange)
     timer.schedule(deadline: .now() + .seconds(randomInterval))
     timer.setEventHandler { [weak self] in
-      DispatchQueue.main.async {
-        self?.device.play(intensity)
-        if let strongSelf = self {
-          strongSelf.scheduleNextRandomVibration(
-            timer: timer, intervalRange: intervalRange, intensity: intensity)
-        }
-      }
+      guard let self = self else { return }
+      self.device.play(intensity)
+      #if DEBUG
+        print("VibrationManager: Fired pomodoro vibration")
+      #endif
+      self.scheduleNextRandomVibration(
+        timer: timer, intervalRange: intervalRange, intensity: intensity)
     }
   }
 
   func stopPomodoroRandomVibrations() {
-    pomodoroVibrationTimer?.cancel()
-    pomodoroVibrationTimer = nil
+    if pomodoroVibrationTimer != nil {
+      pomodoroVibrationTimer?.cancel()
+      pomodoroVibrationTimer = nil
+      #if DEBUG
+        print("VibrationManager: Stopped pomodoro vibrations")
+      #endif
+    }
   }
 
   private init() {}

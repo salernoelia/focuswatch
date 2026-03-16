@@ -24,8 +24,7 @@ class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDel
   private var totalTime: Int = 1500
   private var endDate: Date?
   private var lastTickDate: Date?
-  private var nextVibrationTime: Date?
-  private var vibrationNotificationIds: [String] = []
+
   private var isLoadingSettings = false
 
   private let defaults = UserDefaults.standard
@@ -255,11 +254,10 @@ class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDel
   private func startTimer() {
     endDate = Date().addingTimeInterval(TimeInterval(timeRemaining))
     lastTickDate = Date()
-    scheduleNextVibration()
-    scheduleBackgroundVibrations()
 
     scheduleTimerNotification()
 
+    // Start vibrations only during work phases
     if settings.vibrationFrequency != .never && currentPhase == .work {
       VibrationManager.shared.startPomodoroRandomVibrations(
         intervalRange: settings.vibrationFrequency.intervalRange,
@@ -267,13 +265,25 @@ class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDel
       )
     }
 
-    if extendedRuntimeSession == nil || extendedRuntimeSession?.state != .running {
-      extendedRuntimeSession = WKExtendedRuntimeSession()
-      extendedRuntimeSession?.delegate = self
-      if extendedRuntimeSession?.state == .notStarted {
-        extendedRuntimeSession?.start()
+    // Ensure any stale session is cleaned up before creating a new one
+    if let existingSession = extendedRuntimeSession {
+      if existingSession.state == .running {
+        // Session already running, reuse it
+      } else {
+        extendedRuntimeSession = nil
       }
     }
+
+    if extendedRuntimeSession == nil {
+      let session = WKExtendedRuntimeSession()
+      session.delegate = self
+      extendedRuntimeSession = session
+      session.start()
+    }
+
+    #if DEBUG
+      print("Pomodoro: Timer started, phase=\(currentPhase), remaining=\(timeRemaining)s, vibrations=\(settings.vibrationFrequency != .never && currentPhase == .work)")
+    #endif
 
     timerTask = Task {
       while !Task.isCancelled {
@@ -297,20 +307,23 @@ class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDel
     timerTask = nil
     endDate = nil
     lastTickDate = nil
-    nextVibrationTime = nil
-    cancelBackgroundVibrations()
+
+    // Always stop vibrations when timer stops
     VibrationManager.shared.stopPomodoroRandomVibrations()
 
     if let session = extendedRuntimeSession {
       if session.state == .running {
         session.invalidate()
-      } else {
-        extendedRuntimeSession = nil
       }
+      extendedRuntimeSession = nil
     }
 
     let center = UNUserNotificationCenter.current()
     center.removePendingNotificationRequests(withIdentifiers: ["pomodoroTimer"])
+
+    #if DEBUG
+      print("Pomodoro: Timer stopped")
+    #endif
   }
 
   private func tick() async {
@@ -319,7 +332,6 @@ class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDel
     if let lastTick = lastTickDate {
       let timeSinceLastTick = now.timeIntervalSince(lastTick)
       if timeSinceLastTick < 0.9 {
-
         return
       }
     }
@@ -330,11 +342,8 @@ class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDel
       let remaining = Int(ceil(endDate.timeIntervalSince(now)))
       timeRemaining = max(0, remaining)
     } else {
-
       timeRemaining = max(0, timeRemaining - 1)
     }
-
-    checkRandomVibration()
 
     if timeRemaining % 10 == 0 {
       saveState()
@@ -344,6 +353,12 @@ class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDel
   private func phaseCompleted() async {
     stopTimer()
     isRunning = false
+
+    // Play completion vibration if enabled
+    if settings.completionVibration {
+      VibrationManager.shared.playHaptic(.notification)
+    }
+
     switch currentPhase {
     case .work:
       completedRounds += 1
@@ -355,6 +370,10 @@ class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDel
     case .shortBreak, .longBreak:
       currentPhase = .work
     }
+
+    #if DEBUG
+      print("Pomodoro: Phase completed, new phase=\(currentPhase), rounds=\(completedRounds)")
+    #endif
 
     updateTotalTime()
     saveState()
@@ -385,39 +404,6 @@ class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDel
     saveState()
   }
 
-  private func scheduleBackgroundVibrations() {
-    cancelBackgroundVibrations()
-  }
-
-  private func cancelBackgroundVibrations() {
-    let center = UNUserNotificationCenter.current()
-    center.removePendingNotificationRequests(withIdentifiers: vibrationNotificationIds)
-    vibrationNotificationIds.removeAll()
-  }
-
-  private func scheduleNextVibration() {
-    guard currentPhase == .work, settings.vibrationFrequency != .never else {
-      nextVibrationTime = nil
-      return
-    }
-
-    let range = settings.vibrationFrequency.intervalRange
-    let randomInterval = Int.random(in: range)
-    nextVibrationTime = Date().addingTimeInterval(TimeInterval(randomInterval))
-  }
-
-  private func checkRandomVibration() {
-    guard currentPhase == .work,
-      settings.vibrationFrequency != .never,
-      let nextTime = nextVibrationTime,
-      Date() >= nextTime
-    else {
-      return
-    }
-
-    VibrationManager.shared.playHaptic(settings.vibrationIntensity.hapticType)
-    scheduleNextVibration()
-  }
 
   private func updateTotalTime() {
     switch currentPhase {

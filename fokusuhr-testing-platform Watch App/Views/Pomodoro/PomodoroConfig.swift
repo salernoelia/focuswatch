@@ -8,6 +8,6 @@ struct PomodoroConfig: Codable {
   var longBreakMinutes: Int = 15
   var roundsUntilLongBreak: Int = 4
   var vibrationFrequency: VibrationFrequency = .normal
-  var vibrationIntensity: VibrationIntensity = .light
+  var vibrationIntensity: VibrationIntensity = .medium
   var completionVibration: Bool = true
 }

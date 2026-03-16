@@ -128,6 +128,22 @@ struct PomodoroConfigView: View {
               .tint(.blue)
             }
           }
+
+          #if DEBUG
+            Divider()
+            VStack(spacing: 8) {
+              Text("Debug")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+              Button("🔔 Test Vibration") {
+                VibrationManager.shared.playHaptic(viewModel.settings.vibrationIntensity.hapticType)
+              }
+              .font(.caption)
+              .buttonStyle(.bordered)
+              .tint(.red)
+            }
+          #endif
         }
       }
       .padding()

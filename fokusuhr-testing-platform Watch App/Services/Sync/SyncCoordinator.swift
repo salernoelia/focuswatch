@@ -7,6 +7,7 @@ enum WatchViewState {
     case app(Int)
 }
 
+@MainActor
 final class SyncCoordinator: ObservableObject {
     static let shared = SyncCoordinator()
 
@@ -74,7 +75,9 @@ final class SyncCoordinator: ObservableObject {
             withTimeInterval: SyncConstants.Timing.verificationInterval,
             repeats: true
         ) { [weak self] _ in
-            self?.validateCurrentSync()
+            Task { @MainActor in
+                self?.validateCurrentSync()
+            }
         }
     }
 
@@ -568,7 +571,7 @@ final class SyncCoordinator: ObservableObject {
     }
   }
 
-  static func loadAppConfigurations() -> AppConfigurations {
+  nonisolated static func loadAppConfigurations() -> AppConfigurations {
     guard let data = UserDefaults.standard.data(forKey: "appConfigurations") else {
       return AppConfigurations.default
     }

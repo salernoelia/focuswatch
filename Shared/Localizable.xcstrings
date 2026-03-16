@@ -217,6 +217,9 @@
         }
       }
     },
+    "🔔 Test Vibration" : {
+
+    },
     "1 hour before" : {
       "localizations" : {
         "de" : {
@@ -1046,6 +1049,12 @@
           }
         }
       }
+    },
+    "Debug" : {
+
+    },
+    "Debug Tools" : {
+
     },
     "Dein Feedback" : {
       "localizations" : {
