@@ -218,7 +218,14 @@
       }
     },
     "1" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1"
+          }
+        }
+      }
     },
     "1 hour before" : {
       "localizations" : {
@@ -237,10 +244,24 @@
       }
     },
     "2" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2"
+          }
+        }
+      }
     },
     "3" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3"
+          }
+        }
+      }
     },
     "5 minutes before" : {
       "localizations" : {
@@ -881,7 +902,14 @@
       }
     },
     "Color" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farne"
+          }
+        }
+      }
     },
     "Color Breathing" : {
       "localizations" : {
@@ -1058,6 +1086,12 @@
           }
         }
       }
+    },
+    "Debug" : {
+
+    },
+    "Debug Tools" : {
+
     },
     "Dein Feedback" : {
       "localizations" : {
@@ -1362,7 +1396,14 @@
       }
     },
     "Emoji" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emoji"
+          }
+        }
+      }
     },
     "Enabled" : {
       "localizations" : {
@@ -2496,17 +2537,6 @@
         }
       }
     },
-    "No configurations availible for this App." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diese App hat keine Konfigurationsoptionen."
-          }
-        }
-      }
-    },
     "No Entries" : {
       "localizations" : {
         "de" : {
@@ -3572,7 +3602,14 @@
       }
     },
     "Test Immediate Notification" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Test Immediate Notification"
+          }
+        }
+      }
     },
     "Test Results" : {
       "localizations" : {
@@ -3599,6 +3636,9 @@
           }
         }
       }
+    },
+    "Test Vibration" : {
+
     },
     "Tester: %@" : {
       "localizations" : {
@@ -4025,40 +4065,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "When"
-          }
-        }
-      }
-    },
-    "Wie fühlst du dich?" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wie fühlst du dich?"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "How are you feeling?"
-          }
-        }
-      }
-    },
-    "Wische für Einstellungen →" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wische für Einstellungen →"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Swipe for Settings →"
           }
         }
       }

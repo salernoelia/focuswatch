@@ -42,9 +42,9 @@ enum VibrationFrequency: String, Codable, CaseIterable {
   var intervalRange: ClosedRange<Int> {
     switch self {
     case .never: return 0...0
-    case .rare: return 100...180
-    case .normal: return 45...100
-    case .frequent: return 15...40
+    case .rare: return 50...90
+    case .normal: return 20...50
+    case .frequent: return 7...20
     }
   }
 }
