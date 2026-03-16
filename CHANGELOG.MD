@@ -1,8 +1,8 @@
 # Releases
 
 ## [1.2.8] - 16.03.2026
+- Configuration options for the Fokusmeter (Title, Colors, Emojis) (ISSUE-217)
 - Fixed vibration intensity not being applied and inconsistencies when triggered (ISSUE-215)
-- 
 
 ## [1.2.7] - 09.03.2026
 - Improved notification scheduling (still work in progress...)

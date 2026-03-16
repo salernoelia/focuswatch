@@ -217,7 +217,7 @@
         }
       }
     },
-    "🔔 Test Vibration" : {
+    "1" : {
 
     },
     "1 hour before" : {
@@ -235,6 +235,12 @@
           }
         }
       }
+    },
+    "2" : {
+
+    },
+    "3" : {
+
     },
     "5 minutes before" : {
       "localizations" : {
@@ -874,6 +880,9 @@
         }
       }
     },
+    "Color" : {
+
+    },
     "Color Breathing" : {
       "localizations" : {
         "de" : {
@@ -1357,6 +1366,9 @@
           }
         }
       }
+    },
+    "Emoji" : {
+
     },
     "Enabled" : {
       "localizations" : {
@@ -2491,6 +2503,7 @@
       }
     },
     "No configurations availible for this App." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3593,6 +3606,9 @@
         }
       }
     },
+    "Test Vibration" : {
+
+    },
     "Tester: %@" : {
       "localizations" : {
         "de" : {
@@ -4023,6 +4039,7 @@
       }
     },
     "Wie fühlst du dich?" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SpeedometerView: View {
+  @StateObject private var viewModel = SpeedometerViewModel()
   @State private var moodValue: Double = 0.5
 
   private let appLogger = AppLogger.shared
@@ -12,13 +13,17 @@ struct SpeedometerView: View {
         x: geometry.size.width / 2, y: geometry.size.height * 0.4)
 
       VStack(spacing: 8) {
-        Text("Wie fühlst du dich?")
+        Text(viewModel.configuration.titleText)
           .font(.caption)
           .foregroundColor(.white)
           .multilineTextAlignment(.center)
 
         ZStack {
-          SemicircleSegments()
+          SemicircleSegments(
+            lowColor: Color(hex: viewModel.configuration.lowColorHex),
+            mediumColor: Color(hex: viewModel.configuration.mediumColorHex),
+            highColor: Color(hex: viewModel.configuration.highColorHex)
+          )
             .frame(width: size, height: size / 2)
             .position(center)
 
@@ -65,24 +70,28 @@ struct SpeedometerView: View {
 
   private var moodLabel: String {
     switch moodValue {
-    case 0.0..<0.33: return "🚜"
-    case 0.33..<0.66: return "🚙"
-    default: return "🏎️"
+    case 0.0..<0.33: return viewModel.configuration.lowEmoji
+    case 0.33..<0.66: return viewModel.configuration.mediumEmoji
+    default: return viewModel.configuration.highEmoji
     }
   }
 }
 
 struct SemicircleSegments: View {
+  var lowColor: Color
+  var mediumColor: Color
+  var highColor: Color
+
   var body: some View {
     ZStack {
       SemicircleSegment(startAngle: 180, endAngle: 240)
-        .fill(Color.orange)
+        .fill(lowColor)
 
       SemicircleSegment(startAngle: 240, endAngle: 300)
-        .fill(Color.green)
+        .fill(mediumColor)
 
       SemicircleSegment(startAngle: 300, endAngle: 360)
-        .fill(Color.orange)
+        .fill(highColor)
     }
   }
 }

@@ -136,7 +136,7 @@ struct PomodoroConfigView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
-              Button("🔔 Test Vibration") {
+              Button("Test Vibration") {
                 VibrationManager.shared.playHaptic(viewModel.settings.vibrationIntensity.hapticType)
               }
               .font(.caption)

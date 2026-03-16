@@ -120,7 +120,40 @@ struct ColorBreathingConfiguration: Codable, Hashable {
   }
 }
 
-struct FokusMeterConfiguration: Codable, Hashable {}
+struct FokusMeterConfiguration: Codable, Hashable {
+  var titleText: String = "Wie fühlst du dich?"
+  var lowEmoji: String = "🚜"
+  var mediumEmoji: String = "🚙"
+  var highEmoji: String = "🏎️"
+  
+  var lowColorHex: String = "FFA500" // Orange
+  var mediumColorHex: String = "008000" // Green
+  var highColorHex: String = "FFA500" // Orange
+
+  enum CodingKeys: String, CodingKey {
+    case titleText
+    case lowEmoji
+    case mediumEmoji
+    case highEmoji
+    case lowColorHex
+    case mediumColorHex
+    case highColorHex
+  }
+
+  init() {}
+
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    titleText = try container.decodeIfPresent(String.self, forKey: .titleText) ?? "Wie fühlst du dich?"
+    lowEmoji = try container.decodeIfPresent(String.self, forKey: .lowEmoji) ?? "🚜"
+    mediumEmoji = try container.decodeIfPresent(String.self, forKey: .mediumEmoji) ?? "🚙"
+    highEmoji = try container.decodeIfPresent(String.self, forKey: .highEmoji) ?? "🏎️"
+    lowColorHex = try container.decodeIfPresent(String.self, forKey: .lowColorHex) ?? "FFA500"
+    mediumColorHex = try container.decodeIfPresent(String.self, forKey: .mediumColorHex) ?? "008000"
+    highColorHex = try container.decodeIfPresent(String.self, forKey: .highColorHex) ?? "FFA500"
+  }
+}
+
 struct WritingConfiguration: Codable, Hashable {
   var workMinutes: Double = 5.0
   var thinkMinutes: Double = 0.3

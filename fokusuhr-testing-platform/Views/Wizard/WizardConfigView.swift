@@ -143,7 +143,33 @@ struct FokusMeterConfigSection: View {
   @Binding var config: FokusMeterConfiguration
 
   var body: some View {
-    Text("No configurations availible for this App.")
+    Section {
+      TextField(String(localized: "Title"), text: $config.titleText)
+    }
+
+    Section("1") {
+      TextField(String(localized: "Emoji"), text: $config.lowEmoji)
+      ColorPicker(String(localized: "Color"), selection: Binding(
+        get: { Color(hex: config.lowColorHex) },
+        set: { config.lowColorHex = $0.toHex() ?? config.lowColorHex }
+      ))
+    }
+
+    Section("2") {
+      TextField(String(localized: "Emoji"), text: $config.mediumEmoji)
+      ColorPicker(String(localized: "Color"), selection: Binding(
+        get: { Color(hex: config.mediumColorHex) },
+        set: { config.mediumColorHex = $0.toHex() ?? config.mediumColorHex }
+      ))
+    }
+
+    Section("3") {
+      TextField(String(localized: "Emoji"), text: $config.highEmoji)
+      ColorPicker(String(localized: "Color"), selection: Binding(
+        get: { Color(hex: config.highColorHex) },
+        set: { config.highColorHex = $0.toHex() ?? config.highColorHex }
+      ))
+    }
   }
 }
 
