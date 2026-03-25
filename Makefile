@@ -4,6 +4,8 @@ WATCH_SCHEME := watch
 
 IOS_SIM_NAME ?= 24.11.25
 WATCH_SIM_NAME ?= 24.11.25 (W)
+IOS_TEST_SIM_NAME ?= iPhone 17
+WATCH_TEST_SIM_NAME ?= Apple Watch Series 11 (46mm)
 
 IOS_BUNDLE_ID := net.com.fokusuhr.FokusUhr
 WATCH_BUNDLE_ID := net.com.fokusuhr.FokusUhr.watchkitapp
@@ -26,6 +28,8 @@ help:
 	@echo "Overrides:"
 	@echo "  IOS_SIM_NAME='24.11.25'"
 	@echo "  WATCH_SIM_NAME='24.11.25 (W)'"
+	@echo "  IOS_TEST_SIM_NAME='iPhone 17'"
+	@echo "  WATCH_TEST_SIM_NAME='Apple Watch Series 11 (46mm)'"
 
 ios-build:
 	@set -e; \
@@ -43,9 +47,9 @@ ios-build:
 
 ios-test:
 	@set -e; \
-	device=$$(xcrun simctl list devices available | grep "$(IOS_SIM_NAME)" | grep -v "Plus\|Pro\|Max\|Paired" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/'); \
+	device=$$(xcrun simctl list devices available | grep "$(IOS_TEST_SIM_NAME)" | grep -v "Plus\|Pro\|Max\|Paired" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/'); \
 	if [ -z "$$device" ]; then \
-		echo "No available iOS simulator matched: $(IOS_SIM_NAME)"; \
+		echo "No available iOS simulator matched: $(IOS_TEST_SIM_NAME)"; \
 		exit 1; \
 	fi; \
 	echo "Using iOS simulator UDID: $$device"; \
@@ -91,9 +95,9 @@ watch-build:
 
 watch-test:
 	@set -e; \
-	device=$$(xcrun simctl list devices available | grep "$(WATCH_SIM_NAME)" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/'); \
+	device=$$(xcrun simctl list devices available | grep "$(WATCH_TEST_SIM_NAME)" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/'); \
 	if [ -z "$$device" ]; then \
-		echo "No available watchOS simulator matched: $(WATCH_SIM_NAME)"; \
+		echo "No available watchOS simulator matched: $(WATCH_TEST_SIM_NAME)"; \
 		exit 1; \
 	fi; \
 	echo "Using watchOS simulator UDID: $$device"; \
