@@ -10,7 +10,7 @@ WATCH_BUNDLE_ID := net.com.fokusuhr.FokusUhr.watchkitapp
 
 DERIVED_DATA := .build/DerivedData
 
-.PHONY: help ios-build ios-test ios-run watch-build watch-test watch-run dev all-test clean
+.PHONY: help ios-build ios-test ios-run ios-launch watch-build watch-test watch-run watch-launch dev all-test clean
 
 help:
 	@echo "focuswatch Make targets"
@@ -55,7 +55,9 @@ ios-test:
 		-destination "platform=iOS Simulator,arch=arm64,id=$$device" \
 		-derivedDataPath "$(DERIVED_DATA)"
 
-ios-run: ios-build
+ios-run: ios-build ios-launch
+
+ios-launch:
 	@set -e; \
 	device=$$(xcrun simctl list devices available | grep "$(IOS_SIM_NAME)" | grep -v "Plus\|Pro\|Max\|Paired" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/'); \
 	if [ -z "$$device" ]; then \
@@ -101,7 +103,9 @@ watch-test:
 		-destination "platform=watchOS Simulator,arch=arm64,id=$$device" \
 		-derivedDataPath "$(DERIVED_DATA)"
 
-watch-run: watch-build
+watch-run: watch-build watch-launch
+
+watch-launch:
 	@set -e; \
 	device=$$(xcrun simctl list devices available | grep "$(WATCH_SIM_NAME)" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/'); \
 	if [ -z "$$device" ]; then \
@@ -121,8 +125,9 @@ watch-run: watch-build
 
 dev:
 	@set -e; \
-	$(MAKE) --no-print-directory ios-run & ios_pid=$$!; \
-	$(MAKE) --no-print-directory watch-run & watch_pid=$$!; \
+	$(MAKE) --no-print-directory ios-build watch-build; \
+	$(MAKE) --no-print-directory ios-launch & ios_pid=$$!; \
+	$(MAKE) --no-print-directory watch-launch & watch_pid=$$!; \
 	ios_status=0; watch_status=0; \
 	wait $$ios_pid || ios_status=$$?; \
 	wait $$watch_pid || watch_status=$$?; \
