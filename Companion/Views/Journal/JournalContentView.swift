@@ -1,10 +1,3 @@
-//
-//  JournalContentView.swift
-//  fokusuhr-testing-platform
-//
-//  Created by Elia Salerno on 05.10.2025.
-//
-
 import SwiftUI
 
 struct JournalContentView: View {

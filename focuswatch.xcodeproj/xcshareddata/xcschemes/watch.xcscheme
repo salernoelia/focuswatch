@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "0E9D8CCE2E0D6C24002B7989"
-               BuildableName = "fokusuhr-testing-platform Watch App.app"
-               BlueprintName = "fokusuhr-testing-platform Watch App"
-               ReferencedContainer = "container:fokusuhr-testing-platform.xcodeproj">
+               BuildableName = "watch.app"
+               BlueprintName = "watch"
+               ReferencedContainer = "container:focuswatch.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -30,9 +30,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "0E9D8CBE2E0D6C23002B7989"
-               BuildableName = "fokusuhr-testing-platform.app"
-               BlueprintName = "fokusuhr-testing-platform"
-               ReferencedContainer = "container:fokusuhr-testing-platform.xcodeproj">
+               BuildableName = "companion.app"
+               BlueprintName = "companion"
+               ReferencedContainer = "container:focuswatch.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -59,9 +59,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0E9D8CCE2E0D6C24002B7989"
-            BuildableName = "fokusuhr-testing-platform Watch App.app"
-            BlueprintName = "fokusuhr-testing-platform Watch App"
-            ReferencedContainer = "container:fokusuhr-testing-platform.xcodeproj">
+            BuildableName = "watch.app"
+            BlueprintName = "watch"
+            ReferencedContainer = "container:focuswatch.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -76,9 +76,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0E9D8CCE2E0D6C24002B7989"
-            BuildableName = "fokusuhr-testing-platform Watch App.app"
-            BlueprintName = "fokusuhr-testing-platform Watch App"
-            ReferencedContainer = "container:fokusuhr-testing-platform.xcodeproj">
+            BuildableName = "watch.app"
+            BlueprintName = "watch"
+            ReferencedContainer = "container:focuswatch.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

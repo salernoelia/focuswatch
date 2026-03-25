@@ -8,6 +8,8 @@ Production.xcconfig
 
 all.txt
 
+.DS_Store
+
 # Xcode
 *.xcworkspace
 *.xcuserstate
