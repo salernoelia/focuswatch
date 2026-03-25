@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Bucket
-   uuid = "34C1BCC7-0CFF-4DC2-8B97-6A60544562D4"
-   type = "1"
-   version = "2.0">
-   <Breakpoints>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "B9611932-0FEB-42BD-8E2D-02829ABE6AF0"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "fokusuhr-testing-platform/Views/Calendar/CalendarEventFormView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "351"
-            endingLineNumber = "351"
-            landmarkName = "body"
-            landmarkType = "24">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "F965E26F-419F-4C1B-AB1F-7BB757C4F66E"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "fokusuhr-testing-platform Watch App/Views/Checklist/ChecklistView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "86"
-            endingLineNumber = "86"
-            landmarkName = "body"
-            landmarkType = "24">
-         </BreakpointContent>
-      </BreakpointProxy>
-   </Breakpoints>
+    uuid="34C1BCC7-0CFF-4DC2-8B97-6A60544562D4"
+    type="1"
+    version="2.0">
+    <Breakpoints>
+        <BreakpointProxy
+            BreakpointExtensionID="Xcode.Breakpoint.FileBreakpoint">
+            <BreakpointContent
+                uuid="B9611932-0FEB-42BD-8E2D-02829ABE6AF0"
+                shouldBeEnabled="No"
+                ignoreCount="0"
+                continueAfterRunningActions="No"
+                filePath="companion/Views/Calendar/CalendarEventFormView.swift"
+                startingColumnNumber="9223372036854775807"
+                endingColumnNumber="9223372036854775807"
+                startingLineNumber="351"
+                endingLineNumber="351"
+                landmarkName="body"
+                landmarkType="24">
+            </BreakpointContent>
+        </BreakpointProxy>
+        <BreakpointProxy
+            BreakpointExtensionID="Xcode.Breakpoint.FileBreakpoint">
+            <BreakpointContent
+                uuid="F965E26F-419F-4C1B-AB1F-7BB757C4F66E"
+                shouldBeEnabled="No"
+                ignoreCount="0"
+                continueAfterRunningActions="No"
+                filePath="watch/Views/Checklist/ChecklistView.swift"
+                startingColumnNumber="9223372036854775807"
+                endingColumnNumber="9223372036854775807"
+                startingLineNumber="86"
+                endingLineNumber="86"
+                landmarkName="body"
+                landmarkType="24">
+            </BreakpointContent>
+        </BreakpointProxy>
+    </Breakpoints>
 </Bucket>

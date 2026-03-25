@@ -49,7 +49,7 @@
 			containerPortal = 0E9D8CB72E0D6C22002B7989 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 0E9D8CCE2E0D6C24002B7989;
-			remoteInfo = "fokusuhr-testing-platform Watch App";
+			remoteInfo = "watch";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -313,7 +313,7 @@
 				0E078DFC2E6E2C3100D74BDA /* Supabase */,
 				0E3AFF102EB518BD008B1321 /* KeychainAccess */,
 			);
-			productName = "fokusuhr-testing-platform";
+			productName = "companion";
 			productReference = 0E9D8CBF2E0D6C23002B7989 /* companion.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -346,7 +346,7 @@
 				0E437A882E981ABC000B2941 /* StatKit */,
 				0E437AA22E981D24000B2941 /* KeychainAccess */,
 			);
-			productName = "fokusuhr-testing-platform Watch App";
+			productName = "watch";
 			productReference = 0E9D8CCF2E0D6C24002B7989 /* watch.app */;
 			productType = "com.apple.product-type.application";
 		};
