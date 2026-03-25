@@ -92,21 +92,21 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		0E12535B2E840AEB005F5FB4 /* Exceptions for "companion" folder in "companion" target */ = {
+		0E12535B2E840AEB005F5FB4 /* Exceptions for "Companion" folder in "companion" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = 0E9D8CBE2E0D6C23002B7989 /* companion */;
 		};
-		0E4379932E9804C9000B2941 /* Exceptions for "watch-notification" folder in "watch-notification" target */ = {
+		0E4379932E9804C9000B2941 /* Exceptions for "Watch-notification" folder in "watch-notification" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = 0E4379872E9804C9000B2941 /* watch-notification */;
 		};
-		0E4379AD2E9804D4000B2941 /* Exceptions for "watch-version-complication" folder in "watch-version-complication" target */ = {
+		0E4379AD2E9804D4000B2941 /* Exceptions for "Watch-version-complication" folder in "watch-version-complication" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -116,38 +116,38 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		0E195C0A2E917F6800DC7E4B /* shared */ = {
+		0E195C0A2E917F6800DC7E4B /* Shared */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = shared;
+			path = Shared;
 			sourceTree = "<group>";
 		};
-		0E4379892E9804C9000B2941 /* watch-notification */ = {
+		0E4379892E9804C9000B2941 /* Watch-notification */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				0E4379932E9804C9000B2941 /* Exceptions for "watch-notification" folder in "watch-notification" target */,
+				0E4379932E9804C9000B2941 /* Exceptions for "Watch-notification" folder in "watch-notification" target */,
 			);
-			path = "watch-notification";
+			path = "Watch-notification";
 			sourceTree = "<group>";
 		};
-		0E43799F2E9804D3000B2941 /* watch-version-complication */ = {
+		0E43799F2E9804D3000B2941 /* Watch-version-complication */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				0E4379AD2E9804D4000B2941 /* Exceptions for "watch-version-complication" folder in "watch-version-complication" target */,
+				0E4379AD2E9804D4000B2941 /* Exceptions for "Watch-version-complication" folder in "watch-version-complication" target */,
 			);
-			path = "watch-version-complication";
+			path = "Watch-version-complication";
 			sourceTree = "<group>";
 		};
-		0E9D8CC12E0D6C23002B7989 /* companion */ = {
+		0E9D8CC12E0D6C23002B7989 /* Companion */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				0E12535B2E840AEB005F5FB4 /* Exceptions for "companion" folder in "companion" target */,
+				0E12535B2E840AEB005F5FB4 /* Exceptions for "Companion" folder in "companion" target */,
 			);
-			path = companion;
+			path = Companion;
 			sourceTree = "<group>";
 		};
-		0E9D8CD32E0D6C24002B7989 /* watch */ = {
+		0E9D8CD32E0D6C24002B7989 /* Watch */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = watch;
+			path = Watch;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -213,14 +213,14 @@
 		0E9D8CB62E0D6C22002B7989 = {
 			isa = PBXGroup;
 			children = (
-				0E195C0A2E917F6800DC7E4B /* shared */,
+				0E195C0A2E917F6800DC7E4B /* Shared */,
 				0E195C072E917D2A00DC7E4B /* Example.xcconfig */,
 				0E195BFF2E917A2500DC7E4B /* Production.xcconfig */,
 				0E195C042E917BAF00DC7E4B /* Development.xcconfig */,
-				0E9D8CC12E0D6C23002B7989 /* companion */,
-				0E9D8CD32E0D6C24002B7989 /* watch */,
-				0E4379892E9804C9000B2941 /* watch-notification */,
-				0E43799F2E9804D3000B2941 /* watch-version-complication */,
+				0E9D8CC12E0D6C23002B7989 /* Companion */,
+				0E9D8CD32E0D6C24002B7989 /* Watch */,
+				0E4379892E9804C9000B2941 /* Watch-notification */,
+				0E43799F2E9804D3000B2941 /* Watch-version-complication */,
 				0E43799A2E9804D2000B2941 /* Frameworks */,
 				0E9D8CC02E0D6C23002B7989 /* Products */,
 			);
@@ -253,7 +253,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				0E4379892E9804C9000B2941 /* watch-notification */,
+				0E4379892E9804C9000B2941 /* Watch-notification */,
 			);
 			name = "watch-notification";
 			packageProductDependencies = (
@@ -275,7 +275,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				0E43799F2E9804D3000B2941 /* watch-version-complication */,
+				0E43799F2E9804D3000B2941 /* Watch-version-complication */,
 			);
 			name = "watch-version-complication";
 			packageProductDependencies = (
@@ -300,8 +300,8 @@
 				0E9D8CD22E0D6C24002B7989 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				0E195C0A2E917F6800DC7E4B /* shared */,
-				0E9D8CC12E0D6C23002B7989 /* companion */,
+				0E195C0A2E917F6800DC7E4B /* Shared */,
+				0E9D8CC12E0D6C23002B7989 /* Companion */,
 			);
 			name = companion;
 			packageProductDependencies = (
@@ -333,8 +333,8 @@
 				0E4379A82E9804D4000B2941 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				0E195C0A2E917F6800DC7E4B /* shared */,
-				0E9D8CD32E0D6C24002B7989 /* watch */,
+				0E195C0A2E917F6800DC7E4B /* Shared */,
+				0E9D8CD32E0D6C24002B7989 /* Watch */,
 			);
 			name = watch;
 			packageProductDependencies = (
