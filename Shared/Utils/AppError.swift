@@ -2,35 +2,35 @@ import Foundation
 
 enum AppError: LocalizedError {
 
-  // MARK: - Authentication Errors
+  // Authentication Errors
   case authenticationFailed(reason: String)
   case noActiveSession
   case invalidCredentials
 
-  // MARK: - Network Errors
+  // Network Errors
   case networkUnavailable
   case requestFailed(statusCode: Int, message: String)
   case invalidResponse
   case serverError(underlying: Error)
 
-  // MARK: - Data Errors
+  // Data Errors
   case decodingFailed(type: String, underlying: Error)
   case encodingFailed(type: String, underlying: Error)
   case invalidData(reason: String)
   case missingRequiredField(field: String)
 
-  // MARK: - Database Errors
+  // Database Errors
   case databaseQueryFailed(operation: String, underlying: Error)
   case recordNotFound(type: String, id: String)
   case duplicateRecord(type: String)
 
-  // MARK: - File System Errors
+  // File System Errors
   case fileNotFound(path: String)
   case fileOperationFailed(operation: String, underlying: Error)
   case insufficientStorage
   case documentsDirectoryUnavailable
 
-  // MARK: - Watch Connectivity Errors
+  // Watch Connectivity Errors
   case watchNotSupported
   case watchNotConnected
   case watchNotReachable
@@ -38,19 +38,19 @@ enum AppError: LocalizedError {
   case watchMessageFailed(underlying: Error)
   case watchSessionInactive
 
-  // MARK: - Audio Errors
+  // Audio Errors
   case microphoneAccessDenied
   case recordingFailed(reason: String)
   case playbackFailed(reason: String)
   case audioSessionError(underlying: Error)
 
-  // MARK: - Validation Errors
+  // Validation Errors
   case invalidInput(field: String, reason: String)
   case textTooShort(field: String, minLength: Int)
   case textTooLong(field: String, maxLength: Int)
   case emptyField(field: String)
 
-  // MARK: - General Errors
+  // General Errors
   case unknown(underlying: Error)
   case operationCancelled
   case timeout

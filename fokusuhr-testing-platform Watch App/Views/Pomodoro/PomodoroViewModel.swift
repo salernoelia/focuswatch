@@ -257,7 +257,6 @@ class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDel
 
     scheduleTimerNotification()
 
-    // Start vibrations only during work phases
     if settings.vibrationFrequency != .never && currentPhase == .work {
       VibrationManager.shared.startPomodoroRandomVibrations(
         intervalRange: settings.vibrationFrequency.intervalRange,
@@ -265,10 +264,8 @@ class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDel
       )
     }
 
-    // Ensure any stale session is cleaned up before creating a new one
     if let existingSession = extendedRuntimeSession {
       if existingSession.state == .running {
-        // Session already running, reuse it
       } else {
         extendedRuntimeSession = nil
       }
