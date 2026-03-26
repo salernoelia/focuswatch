@@ -5,6 +5,7 @@ Production.xcconfig
 
 .cursor/
 .github/instructions/
+.DS_Store
 
 all.txt
 
