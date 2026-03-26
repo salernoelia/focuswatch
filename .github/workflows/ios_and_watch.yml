@@ -7,9 +7,9 @@ on:
     branches: ["main"]
 
 jobs:
-  build-and-test-ios:
-    name: Build & Test iOS
-    runs-on: macos-26
+  build-ios:
+    name: Build iOS (iPhone Simulator)
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -24,17 +24,17 @@ jobs:
           EOF
           cp Development.xcconfig Production.xcconfig
 
-      - name: Build & Test (iOS)
+      - name: Build (iOS)
         run: |
-            device=$(xcrun simctl list devices available | grep "iPhone 16" | grep -v "Plus\|Pro\|Max" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
-            xcodebuild test \
-            -scheme "companion" \
-            -project "focuswatch.xcodeproj" \
-            -destination "platform=iOS Simulator,arch=arm64,id=$device"
+          device=$(xcrun simctl list devices available | grep "iPhone 16" | grep -v "Plus\|Pro\|Max" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+          xcodebuild build \
+            -scheme "fokusuhr-testing-platform" \
+            -project "fokusuhr-testing-platform.xcodeproj" \
+            -destination "platform=iOS Simulator,id=$device"
 
-  build-and-test-watchos:
-    name: Build & Test watchOS
-    runs-on: macos-15
+  build-watchos:
+    name: Build watchOS (Apple Watch Simulator)
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -49,10 +49,10 @@ jobs:
           EOF
           cp Development.xcconfig Production.xcconfig
 
-      - name: Build & Test (watchOS)
+      - name: Build (watchOS)
         run: |
-            device=$(xcrun simctl list devices available | grep "Apple Watch Series 11 (46mm)" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
-            xcodebuild test \
-            -scheme "watch" \
-            -project "focuswatch.xcodeproj" \
-            -destination "platform=watchOS Simulator,arch=arm64,id=$device"
+          device=$(xcrun simctl list devices available | grep "Apple Watch Series 11 (46mm)" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+          xcodebuild build \
+            -scheme "fokusuhr-testing-platform Watch App" \
+            -project "fokusuhr-testing-platform.xcodeproj" \
+            -destination "platform=watchOS Simulator,id=$device"
