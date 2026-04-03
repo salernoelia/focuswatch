@@ -1,17 +1,65 @@
 import Combine
 import Foundation
 
+protocol SyncSessionStateStore {
+    func loadCurrentState() -> SyncState?
+    func loadHistory() -> [SyncState]
+    func saveCurrentState(_ state: SyncState?)
+    func saveHistory(_ history: [SyncState])
+    func clear()
+}
+
+final class UserDefaultsSyncSessionStateStore: SyncSessionStateStore {
+    private let stateKey = "currentSyncState"
+    private let historyKey = "syncStateHistory"
+
+    func loadCurrentState() -> SyncState? {
+        guard let data = UserDefaults.standard.data(forKey: stateKey) else { return nil }
+        return try? JSONDecoder().decode(SyncState.self, from: data)
+    }
+
+    func loadHistory() -> [SyncState] {
+        guard let data = UserDefaults.standard.data(forKey: historyKey) else { return [] }
+        return (try? JSONDecoder().decode([SyncState].self, from: data)) ?? []
+    }
+
+    func saveCurrentState(_ state: SyncState?) {
+        if let state,
+            let data = try? JSONEncoder().encode(state)
+        {
+            UserDefaults.standard.set(data, forKey: stateKey)
+        } else {
+            UserDefaults.standard.removeObject(forKey: stateKey)
+        }
+    }
+
+    func saveHistory(_ history: [SyncState]) {
+        guard let data = try? JSONEncoder().encode(history) else { return }
+        UserDefaults.standard.set(data, forKey: historyKey)
+    }
+
+    func clear() {
+        UserDefaults.standard.removeObject(forKey: stateKey)
+        UserDefaults.standard.removeObject(forKey: historyKey)
+    }
+}
+
 final class SyncStateManager: ObservableObject {
     static let shared = SyncStateManager()
 
     @Published private(set) var currentState: SyncState?
     @Published private(set) var syncHistory: [SyncState] = []
 
-    private let stateKey = "currentSyncState"
-    private let historyKey = "syncStateHistory"
+    private let tracker: SyncSessionTracking
+    private let store: SyncSessionStateStore?
     private let maxHistoryCount = 10
 
-    private init() {
+    init(
+        tracker: SyncSessionTracking = SyncSessionTracker(),
+        store: SyncSessionStateStore? = nil
+    ) {
+        self.tracker = tracker
+        self.store = store
         loadState()
     }
 
@@ -24,8 +72,8 @@ final class SyncStateManager: ObservableObject {
             archiveState(existing)
         }
 
-        let newState = SyncState(id: id, requiredImages: requiredImages)
-        currentState = newState
+        tracker.startNewSync(id: id, requiredImages: requiredImages)
+        currentState = tracker.currentState
         saveState()
 
         #if DEBUG
@@ -36,16 +84,16 @@ final class SyncStateManager: ObservableObject {
     }
 
     func updateState(_ update: (inout SyncState) -> Void) {
-        guard var state = currentState else { return }
-        update(&state)
-        currentState = state
+        tracker.updateState(update)
+        currentState = tracker.currentState
         saveState()
     }
 
     func completeCurrentSync() {
         guard let state = currentState else { return }
         archiveState(state)
-        currentState = nil
+        tracker.completeCurrentSync()
+        currentState = tracker.currentState
         saveState()
 
         #if DEBUG
@@ -58,7 +106,8 @@ final class SyncStateManager: ObservableObject {
         var cancelled = state
         cancelled.incrementRetry()
         archiveState(cancelled)
-        currentState = nil
+        tracker.cancelCurrentSync()
+        currentState = tracker.currentState
         saveState()
     }
 
@@ -71,39 +120,29 @@ final class SyncStateManager: ObservableObject {
     }
 
     private func loadState() {
-        if let data = UserDefaults.standard.data(forKey: stateKey),
-            let state = try? JSONDecoder().decode(SyncState.self, from: data)
-        {
-            currentState = state
-        }
-
-        if let data = UserDefaults.standard.data(forKey: historyKey),
-            let history = try? JSONDecoder().decode([SyncState].self, from: data)
-        {
-            syncHistory = history
+        currentState = store?.loadCurrentState()
+        syncHistory = store?.loadHistory() ?? []
+        if let state = currentState {
+            tracker.startNewSync(id: state.id, requiredImages: state.requiredImages)
+            tracker.updateState { trackedState in
+                trackedState = state
+            }
+            currentState = tracker.currentState
         }
     }
 
     private func saveState() {
-        if let state = currentState,
-            let data = try? JSONEncoder().encode(state)
-        {
-            UserDefaults.standard.set(data, forKey: stateKey)
-        } else {
-            UserDefaults.standard.removeObject(forKey: stateKey)
-        }
+        store?.saveCurrentState(currentState)
     }
 
     private func saveHistory() {
-        if let data = try? JSONEncoder().encode(syncHistory) {
-            UserDefaults.standard.set(data, forKey: historyKey)
-        }
+        store?.saveHistory(syncHistory)
     }
 
     func clearAll() {
-        currentState = nil
+        tracker.clear()
+        currentState = tracker.currentState
         syncHistory = []
-        UserDefaults.standard.removeObject(forKey: stateKey)
-        UserDefaults.standard.removeObject(forKey: historyKey)
+        store?.clear()
     }
 }

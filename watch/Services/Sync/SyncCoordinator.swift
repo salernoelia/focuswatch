@@ -14,6 +14,7 @@ final class SyncCoordinator: ObservableObject {
     @Published var currentView: WatchViewState = .mainMenu
     @Published private(set) var isSyncing = false
     @Published private(set) var syncStatus: String = SyncConstants.Status.pending
+    @Published private(set) var syncProgress: Double = 0
 
     let transport: ConnectivityTransport
     private let incomingMessageRouter: IncomingMessageRouter
@@ -111,7 +112,7 @@ final class SyncCoordinator: ObservableObject {
     }
 
     private func validateCurrentSync() {
-        syncStatus = syncValidationService.validate(
+        let validationResult = syncValidationService.validate(
             checklistData: checklistManager.checklistData,
             transportReachable: transport.isReachable,
             imageExists: { [galleryManager] imageName in
@@ -121,6 +122,8 @@ final class SyncCoordinator: ObservableObject {
                 galleryManager.requestMissingImages(missingImages)
             }
         )
+        syncStatus = validationResult.status
+        syncProgress = validationResult.progress
     }
 
     func forceReconnect() {
@@ -134,6 +137,7 @@ final class SyncCoordinator: ObservableObject {
     func forceSync() {
         isSyncing = true
         syncStatus = SyncConstants.Status.pending
+        syncProgress = 0
         syncValidationService.reset()
 
         let message: [String: Any] = [

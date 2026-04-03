@@ -1,5 +1,11 @@
 import Foundation
 
+struct SyncValidationResult {
+    let status: String
+    let progress: Double
+    let missingImages: [String]
+}
+
 @MainActor
 final class SyncValidationService {
     private var pendingValidation = false
@@ -18,7 +24,7 @@ final class SyncValidationService {
         transportReachable: Bool,
         imageExists: (String) -> Bool,
         requestMissingImages: ([String]) -> Void
-    ) -> String {
+    ) -> SyncValidationResult {
         let requiredImages = Set(
             checklistData.checklists.flatMap { checklist in
                 checklist.items.compactMap { item in
@@ -28,7 +34,11 @@ final class SyncValidationService {
         )
 
         guard !requiredImages.isEmpty else {
-            return SyncConstants.Status.complete
+            return SyncValidationResult(
+                status: SyncConstants.Status.complete,
+                progress: 1.0,
+                missingImages: []
+            )
         }
 
         var missingImages: [String] = []
@@ -46,8 +56,15 @@ final class SyncValidationService {
             status = SyncConstants.Status.partial
         }
 
+        let progress =
+            Double(requiredImages.count - missingImages.count) / Double(requiredImages.count)
+
         guard !missingImages.isEmpty, transportReachable, !pendingValidation else {
-            return status
+            return SyncValidationResult(
+                status: status,
+                progress: progress,
+                missingImages: missingImages
+            )
         }
 
         if let lastValidation = lastValidationTime,
@@ -56,7 +73,11 @@ final class SyncValidationService {
             #if DEBUG
                 print("Watch SyncCoordinator: Throttling validation - too soon since last request")
             #endif
-            return status
+            return SyncValidationResult(
+                status: status,
+                progress: progress,
+                missingImages: missingImages
+            )
         }
 
         #if DEBUG
@@ -72,6 +93,10 @@ final class SyncValidationService {
             self?.pendingValidation = false
         }
 
-        return status
+        return SyncValidationResult(
+            status: status,
+            progress: progress,
+            missingImages: missingImages
+        )
     }
 }
