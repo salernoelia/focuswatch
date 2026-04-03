@@ -9,14 +9,14 @@ enum WatchViewState {
 
 @MainActor
 final class SyncCoordinator: ObservableObject {
-    static let shared = SyncCoordinator()
+    static let shared = SyncCoordinator(transport: ConnectivityTransportAdapter())
 
     @Published var currentView: WatchViewState = .mainMenu
     @Published private(set) var isSyncing = false
     @Published private(set) var syncStatus: String = SyncConstants.Status.pending
     @Published private(set) var syncProgress: Double = 0
 
-    let transport: ConnectivityTransport
+    let transport: SyncTransportProtocol
     private let incomingMessageRouter: IncomingMessageRouter
     private let incomingContextHandler: IncomingContextHandler
     private let incomingFileHandler: IncomingFileHandler
@@ -32,7 +32,7 @@ final class SyncCoordinator: ObservableObject {
     private var validationTimer: Timer?
 
     init(
-        transport: ConnectivityTransport = .shared,
+        transport: SyncTransportProtocol = ConnectivityTransportAdapter(),
         checklistManager: ChecklistViewModel = .shared,
         galleryManager: GalleryManager = .shared,
         calendarManager: CalendarViewModel = .shared,
@@ -64,28 +64,28 @@ final class SyncCoordinator: ObservableObject {
     }
 
     private func setupObservers() {
-        transport.contextReceived
+        transport.contextReceivedPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] context in
                 self?.handleApplicationContext(context)
             }
             .store(in: &cancellables)
 
-        transport.messageReceived
+        transport.messageReceivedPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] message, replyHandler in
                 self?.handleIncomingMessage(message, replyHandler: replyHandler)
             }
             .store(in: &cancellables)
 
-        transport.userInfoReceived
+        transport.userInfoReceivedPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] userInfo in
                 self?.handleUserInfo(userInfo)
             }
             .store(in: &cancellables)
 
-        transport.fileReceived
+        transport.fileReceivedPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] fileURL, metadata in
                 self?.handleReceivedFile(fileURL: fileURL, metadata: metadata)

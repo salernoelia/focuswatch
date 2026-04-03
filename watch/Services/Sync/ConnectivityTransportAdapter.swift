@@ -59,4 +59,8 @@ final class ConnectivityTransportAdapter: SyncTransportProtocol {
     func getReceivedApplicationContext() -> [String: Any] {
         transport.getReceivedApplicationContext()
     }
+
+    func loadLatestApplicationContext() {
+        transport.loadLatestApplicationContext()
+    }
 }

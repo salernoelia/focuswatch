@@ -84,6 +84,10 @@ final class ConnectivityTransportAdapter: SyncTransportProtocol {
         transport.getReceivedApplicationContext()
     }
 
+    func loadLatestApplicationContext() {
+        // iOS transport receives latest context through delegate callbacks.
+    }
+
     @discardableResult
     func transferFile(_ fileURL: URL, metadata: [String: Any]?) -> SyncFileTransferReference? {
         guard let transfer = transport.transferFile(fileURL, metadata: metadata) else {

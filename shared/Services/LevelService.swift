@@ -18,8 +18,30 @@ class LevelService: ObservableObject {
     #if os(watchOS)
         private let vibrationManager = VibrationManager.shared
     #endif
+    private let loadMilestones: () -> [LevelMilestone]
+    #if os(watchOS)
+        private let notifyLevelChange: () -> Void
+    #endif
 
-    private init() {
+    private init(
+        loadMilestones: (() -> [LevelMilestone])? = nil,
+        notifyLevelChange: (() -> Void)? = nil
+    ) {
+        self.loadMilestones = loadMilestones
+            ?? {
+                #if os(watchOS)
+                    return SyncCoordinator.shared.loadLevelMilestones()
+                #else
+                    return LevelSyncService.shared.loadLevelData().milestones
+                #endif
+            }
+        #if os(watchOS)
+            self.notifyLevelChange = notifyLevelChange
+                ?? {
+                    SyncCoordinator.shared.syncLevelToiOS()
+                }
+        #endif
+
         let schema = Schema([
             LevelProgress.self,
             ActivityStats.self,
@@ -95,7 +117,7 @@ class LevelService: ObservableObject {
 
     #if os(watchOS)
         private func notifyiOSOfLevelChange() {
-            SyncCoordinator.shared.syncLevelToiOS()
+            notifyLevelChange()
         }
     #endif
 
@@ -113,11 +135,7 @@ class LevelService: ObservableObject {
     }
 
     private func checkUnlockedMilestones(at level: Int) -> [LevelMilestone] {
-        #if os(watchOS)
-            let milestones = SyncCoordinator.shared.loadLevelMilestones()
-        #else
-            let milestones = LevelSyncService.shared.loadLevelData().milestones
-        #endif
+        let milestones = loadMilestones()
 
         return milestones.filter { $0.isEnabled && $0.levelRequired == level }
     }

@@ -10,7 +10,9 @@ struct WatchApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
-        _syncCoordinator = StateObject(wrappedValue: SyncCoordinator.shared)
+        _syncCoordinator = StateObject(
+            wrappedValue: SyncCoordinator(transport: ConnectivityTransportAdapter())
+        )
         setupNotifications()
         syncWatchIdToWidget()
     }

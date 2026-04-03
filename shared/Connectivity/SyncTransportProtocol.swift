@@ -26,6 +26,7 @@ protocol SyncTransportProtocol: AnyObject {
     )
     func transferUserInfo(_ userInfo: [String: Any])
     func getReceivedApplicationContext() -> [String: Any]
+    func loadLatestApplicationContext()
 
     @discardableResult
     func transferFile(_ fileURL: URL, metadata: [String: Any]?) -> SyncFileTransferReference?
@@ -56,6 +57,9 @@ extension SyncTransportProtocol {
     }
 
     func cancelAllFileTransfers() {
+    }
+
+    func loadLatestApplicationContext() {
     }
 
     var fileTransferFinishedPublisher: AnyPublisher<(SyncFileTransferReference, Error?), Never> {
