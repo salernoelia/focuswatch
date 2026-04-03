@@ -93,7 +93,8 @@ struct ChecklistEditorView: View {
 
     private var groupedChecklists: [ChecklistTagSection] {
         let uncategorizedTitle = NSLocalizedString("Other", comment: "")
-        let grouped = Dictionary(grouping: checklistDataStore.checklistData.checklists) { checklist in
+        let grouped = Dictionary(grouping: checklistDataStore.checklistData.checklists) {
+            checklist in
             let trimmedTag = checklist.tag.trimmingCharacters(in: .whitespacesAndNewlines)
             return trimmedTag.isEmpty ? uncategorizedTitle : trimmedTag
         }

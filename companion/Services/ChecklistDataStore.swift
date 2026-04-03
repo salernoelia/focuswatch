@@ -7,7 +7,8 @@ final class ChecklistDataStore: ObservableObject {
     @Published private(set) var checklistData: ChecklistData = .default
 
     private let userDefaults: UserDefaults
-    private let persistenceQueue = DispatchQueue(label: "com.fokusuhr.checklist.persistence", qos: .utility)
+    private let persistenceQueue = DispatchQueue(
+        label: "com.fokusuhr.checklist.persistence", qos: .utility)
     private let debounceInterval: TimeInterval
     private var cancellables = Set<AnyCancellable>()
 
@@ -39,7 +40,8 @@ final class ChecklistDataStore: ObservableObject {
                 userDefaults.set(encodedData, forKey: AppConstants.StorageKeys.checklistData)
             } catch {
                 #if DEBUG
-                    ErrorLogger.log(AppError.encodingFailed(type: "checklist data", underlying: error))
+                    ErrorLogger.log(
+                        AppError.encodingFailed(type: "checklist data", underlying: error))
                 #endif
             }
         }

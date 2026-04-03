@@ -57,7 +57,8 @@ struct ChecklistItemEditRow: View {
     private var availableImages: [String] {
         let watchImages = [
             "Schere", "Lineal", "Bleistift", "Leimstift", "Buntes Papier", "Wolle", "Wackelaugen",
-            "Locher", "Zucker", "Ei", "Haselnüsse", "Schokoladenpulver", "Maizena", "Schüssel", "Kelle",
+            "Locher", "Zucker", "Ei", "Haselnüsse", "Schokoladenpulver", "Maizena", "Schüssel",
+            "Kelle",
             "Backblech", "Backpapier", "Waage", "Messlöffel", "Topflappen",
         ]
         let galleryImages = galleryStorage.items.map { $0.label }
