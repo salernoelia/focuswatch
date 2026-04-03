@@ -1,6 +1,6 @@
 # Releases
 
-## [1.2.9] -
+## [1.2.9] - 03.04.2026
 - Checklist items can now be added without an image (text-only items)
 - Improved no-image checklist cards on watch with clear colored backgrounds
 - Added checklist categories/tags and grouped checklists by tag on companion and watch
@@ -10,6 +10,7 @@
 - Checklist emoji is also shown in companion checklist previews
 - Improved checklist sync hashing so tag/description/emoji changes reliably sync to watch
 - Updated default checklist demo data to better reflect tag/emoji features
+- A lot of internal technical changes, please report anything that does not work as expected
 
 ## [1.2.8] - 16.03.2026
 - Configuration options for the Fokusmeter (Title, Colors, Emojis) (ISSUE-217)

@@ -810,7 +810,14 @@
       }
     },
     "Category" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kategorie"
+          }
+        }
+      }
     },
     "Checklist Items" : {
       "localizations" : {
@@ -1089,12 +1096,6 @@
           }
         }
       }
-    },
-    "Debug" : {
-      "shouldTranslate" : false
-    },
-    "Debug Tools" : {
-      "shouldTranslate" : false
     },
     "Dein Feedback" : {
       "localizations" : {
@@ -1779,7 +1780,14 @@
       }
     },
     "General" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allgemein"
+          }
+        }
+      }
     },
     "Generell" : {
       "localizations" : {
@@ -2732,7 +2740,14 @@
       }
     },
     "Other" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Andere"
+          }
+        }
+      }
     },
     "Overview" : {
       "localizations" : {
@@ -3145,7 +3160,14 @@
       }
     },
     "Reward" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Belohnunh"
+          }
+        }
+      }
     },
     "Rounds Until Long Break" : {
       "localizations" : {
@@ -3649,9 +3671,6 @@
         }
       }
     },
-    "Test Vibration" : {
-      "shouldTranslate" : false
-    },
     "Tester: %@" : {
       "localizations" : {
         "de" : {
@@ -3685,10 +3704,24 @@
       }
     },
     "Text" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Text"
+          }
+        }
+      }
     },
     "Text Only" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nur Text"
+          }
+        }
+      }
     },
     "The usage data of the watch will be collected to improve the functionality of FokusUhr as it is a scientific project." : {
       "localizations" : {
