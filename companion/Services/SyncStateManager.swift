@@ -45,7 +45,7 @@ final class UserDefaultsSyncSessionStateStore: SyncSessionStateStore {
 }
 
 final class SyncStateManager: ObservableObject {
-    static let shared = SyncStateManager()
+    static let shared = SyncStateManager(store: UserDefaultsSyncSessionStateStore())
 
     @Published private(set) var currentState: SyncState?
     @Published private(set) var syncHistory: [SyncState] = []
