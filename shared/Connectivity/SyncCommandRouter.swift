@@ -19,7 +19,7 @@ final class SyncCommandRouter {
         replyHandler: (([String: Any]) -> Void)?
     ) -> Bool {
         guard let action = message[SyncConstants.Keys.action] as? String,
-              let handler = handlers[action]
+            let handler = handlers[action]
         else {
             return false
         }

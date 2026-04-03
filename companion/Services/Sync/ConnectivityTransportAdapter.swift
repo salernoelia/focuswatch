@@ -44,7 +44,10 @@ final class ConnectivityTransportAdapter: SyncTransportProtocol {
     var fileTransferFinishedPublisher: AnyPublisher<(SyncFileTransferReference, Error?), Never> {
         transport.fileTransferFinished
             .map { transfer, error in
-                (WCSessionFileTransferReference(transfer: transfer) as SyncFileTransferReference, error)
+                (
+                    WCSessionFileTransferReference(transfer: transfer) as SyncFileTransferReference,
+                    error
+                )
             }
             .eraseToAnyPublisher()
     }

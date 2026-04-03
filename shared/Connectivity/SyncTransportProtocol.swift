@@ -9,7 +9,9 @@ protocol SyncTransportProtocol: AnyObject {
     var isReachable: Bool { get }
 
     var contextReceivedPublisher: AnyPublisher<[String: Any], Never> { get }
-    var messageReceivedPublisher: AnyPublisher<([String: Any], (([String: Any]) -> Void)?), Never> { get }
+    var messageReceivedPublisher: AnyPublisher<([String: Any], (([String: Any]) -> Void)?), Never> {
+        get
+    }
     var userInfoReceivedPublisher: AnyPublisher<[String: Any], Never> { get }
     var fileReceivedPublisher: AnyPublisher<(URL, [String: Any]?), Never> { get }
 
@@ -28,7 +30,9 @@ protocol SyncTransportProtocol: AnyObject {
     func outstandingFileTransferCount() -> Int
     func cancelAllFileTransfers()
 
-    var fileTransferFinishedPublisher: AnyPublisher<(SyncFileTransferReference, Error?), Never> { get }
+    var fileTransferFinishedPublisher: AnyPublisher<(SyncFileTransferReference, Error?), Never> {
+        get
+    }
 }
 
 extension SyncTransportProtocol {

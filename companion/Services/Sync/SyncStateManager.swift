@@ -29,7 +29,9 @@ final class SyncStateManager: ObservableObject {
         saveState()
 
         #if DEBUG
-            print("iOS SyncStateManager: Started new sync \(id) with \(requiredImages.count) required images")
+            print(
+                "iOS SyncStateManager: Started new sync \(id) with \(requiredImages.count) required images"
+            )
         #endif
     }
 
@@ -70,19 +72,22 @@ final class SyncStateManager: ObservableObject {
 
     private func loadState() {
         if let data = UserDefaults.standard.data(forKey: stateKey),
-           let state = try? JSONDecoder().decode(SyncState.self, from: data) {
+            let state = try? JSONDecoder().decode(SyncState.self, from: data)
+        {
             currentState = state
         }
 
         if let data = UserDefaults.standard.data(forKey: historyKey),
-           let history = try? JSONDecoder().decode([SyncState].self, from: data) {
+            let history = try? JSONDecoder().decode([SyncState].self, from: data)
+        {
             syncHistory = history
         }
     }
 
     private func saveState() {
         if let state = currentState,
-           let data = try? JSONEncoder().encode(state) {
+            let data = try? JSONEncoder().encode(state)
+        {
             UserDefaults.standard.set(data, forKey: stateKey)
         } else {
             UserDefaults.standard.removeObject(forKey: stateKey)
@@ -102,4 +107,3 @@ final class SyncStateManager: ObservableObject {
         UserDefaults.standard.removeObject(forKey: historyKey)
     }
 }
-
