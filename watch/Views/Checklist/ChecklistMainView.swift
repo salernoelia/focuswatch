@@ -55,8 +55,7 @@ struct ChecklistMainView<Item: ChecklistItemProtocol>: View {
             VStack {
                 Spacer()
 
-                if !remainingItems.isEmpty, currentIndex < remainingItems.count
-                {
+                if !remainingItems.isEmpty, currentIndex < remainingItems.count {
                     ChecklistCard(
                         item: remainingItems[currentIndex],
                         swipeMapping: swipeMapping,
@@ -229,10 +228,9 @@ struct ChecklistMainView<Item: ChecklistItemProtocol>: View {
             }
             .tint(action.outcome.color)
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 12)
         .background(Color.black.opacity(1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .padding(.horizontal, 8)
     }
 }

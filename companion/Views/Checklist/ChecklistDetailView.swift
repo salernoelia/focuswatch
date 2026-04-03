@@ -46,9 +46,50 @@ struct ChecklistDetailView: View {
         )
     }
 
+    private var suggestedTagRows: [[String]] {
+        let rowSize = 3
+        var rows: [[String]] = []
+        var index = 0
+
+        while index < suggestedTags.count {
+            let endIndex = min(index + rowSize, suggestedTags.count)
+            rows.append(Array(suggestedTags[index..<endIndex]))
+            index = endIndex
+        }
+
+        return rows
+    }
+
+    private var tagSuggestionsView: some View {
+        return VStack(alignment: .leading, spacing: 6) {
+            ForEach(Array(suggestedTagRows.enumerated()), id: \.offset) { _, row in
+                HStack(spacing: 8) {
+                    ForEach(row, id: \.self) { tag in
+                        Button {
+                            checklist.tag = tag
+                            updateChecklist()
+                        } label: {
+                            Text(tag)
+                                .font(.caption)
+                                .lineLimit(1)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 6)
+                                .background(Color.secondary.opacity(0.15))
+                                .foregroundColor(.primary)
+                                .clipShape(Capsule())
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    Spacer(minLength: 0)
+                }
+            }
+        }
+    }
+
     var body: some View {
         List {
-            Section {
+            Section(NSLocalizedString("General", comment: "")) {
                 TextField(NSLocalizedString("Checklist Name", comment: ""), text: $checklist.name)
                     .font(.headline)
                     .onChange(of: checklist.name, initial: false) { _, _ in
@@ -66,6 +107,21 @@ struct ChecklistDetailView: View {
                     updateChecklist()
                 }
 
+                TextField(NSLocalizedString("Emoji", comment: ""), text: $checklist.emoji)
+                    .font(.subheadline)
+                    .onChange(of: checklist.emoji, initial: false) { _, _ in
+                        let trimmed = checklist.emoji.trimmingCharacters(
+                            in: .whitespacesAndNewlines)
+                        if let firstCharacter = trimmed.first {
+                            checklist.emoji = String(firstCharacter)
+                        } else {
+                            checklist.emoji = ""
+                        }
+                        updateChecklist()
+                    }
+            }
+
+            Section(NSLocalizedString("Category", comment: "")) {
                 TextField(NSLocalizedString("Category", comment: ""), text: $checklist.tag)
                     .font(.subheadline)
                     .onChange(of: checklist.tag, initial: false) { _, _ in
@@ -75,28 +131,11 @@ struct ChecklistDetailView: View {
                     }
 
                 if !suggestedTags.isEmpty {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(suggestedTags, id: \.self) { tag in
-                                Button {
-                                    checklist.tag = tag
-                                    updateChecklist()
-                                } label: {
-                                    Text(tag)
-                                        .font(.caption)
-                                        .padding(.horizontal, 10)
-                                        .padding(.vertical, 6)
-                                        .background(Color.secondary.opacity(0.15))
-                                        .foregroundColor(.primary)
-                                        .clipShape(Capsule())
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                        .padding(.vertical, 2)
-                    }
+                    tagSuggestionsView
                 }
+            }
 
+            Section(NSLocalizedString("Reward", comment: "")) {
                 Stepper(value: $checklist.xpReward, in: 0...500, step: 10) {
                     HStack {
                         Text(NSLocalizedString("Points Reward", comment: ""))
@@ -181,6 +220,7 @@ struct ChecklistDetailView: View {
         }
         .navigationTitle(NSLocalizedString("Edit Checklist", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
+        .listSectionSpacing(.compact)
         .toolbar {
             EditButton()
         }

@@ -1778,6 +1778,9 @@
         }
       }
     },
+    "General" : {
+
+    },
     "Generell" : {
       "localizations" : {
         "de" : {
@@ -3140,6 +3143,9 @@
           }
         }
       }
+    },
+    "Reward" : {
+
     },
     "Rounds Until Long Break" : {
       "localizations" : {

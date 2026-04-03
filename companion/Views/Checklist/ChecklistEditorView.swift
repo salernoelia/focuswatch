@@ -116,8 +116,13 @@ struct ChecklistEditorView: View {
     }
 
     private func checklistRow(_ checklist: Checklist) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 2) {
             HStack {
+                if !checklist.emoji.isEmpty {
+                    Text(checklist.emoji)
+                        .font(.title3)
+                }
+
                 Text(checklist.name)
                     .font(.headline)
                 Spacer()

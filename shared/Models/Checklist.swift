@@ -64,6 +64,7 @@ struct ChecklistItem: Identifiable, Codable {
 struct Checklist: Identifiable, Codable {
     var id = UUID()
     var name: String
+    var emoji: String
     var tag: String
     var description: String
     var items: [ChecklistItem]
@@ -73,6 +74,7 @@ struct Checklist: Identifiable, Codable {
 
     init(
         name: String,
+        emoji: String = "",
         tag: String = "",
         description: String = "",
         items: [ChecklistItem] = [],
@@ -81,6 +83,7 @@ struct Checklist: Identifiable, Codable {
         swipeMapping: ChecklistSwipeDirectionMapping = .collectRightDelayLeft
     ) {
         self.name = name
+        self.emoji = emoji
         self.tag = tag
         self.description = description
         self.items = items
@@ -92,6 +95,7 @@ struct Checklist: Identifiable, Codable {
     enum CodingKeys: String, CodingKey {
         case id
         case name
+        case emoji
         case tag
         case description
         case items
@@ -104,6 +108,7 @@ struct Checklist: Identifiable, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
         name = try container.decode(String.self, forKey: .name)
+        emoji = try container.decodeIfPresent(String.self, forKey: .emoji) ?? ""
         tag = try container.decodeIfPresent(String.self, forKey: .tag) ?? ""
         description = try container.decodeIfPresent(String.self, forKey: .description) ?? ""
         items = try container.decodeIfPresent([ChecklistItem].self, forKey: .items) ?? []
@@ -125,23 +130,9 @@ struct ChecklistData: Codable {
     static let `default` = ChecklistData(
         checklists: [
             Checklist(
-                name: "Bastelsachen",
-                tag: "Schulroutinen",
-                description: "Sammle alle benötigten Bastelmaterialien für dein Projekt.",
-                items: [
-                    ChecklistItem(title: "Eine Schere", imageName: "Schere"),
-                    ChecklistItem(title: "Ein Lineal", imageName: "Lineal"),
-                    ChecklistItem(title: "Ein Bleistift", imageName: "Bleistift"),
-                    ChecklistItem(title: "Ein Leimstift", imageName: "Leimstift"),
-                    ChecklistItem(title: "Buntes Papier", imageName: "Buntes Papier"),
-                    ChecklistItem(title: "Wolle", imageName: "Wolle"),
-                    ChecklistItem(title: "Wackelaugen", imageName: "Wackelaugen"),
-                    ChecklistItem(title: "Locher", imageName: "Locher"),
-                ]
-            ),
-            Checklist(
                 name: "Schoggikugeln",
-                tag: "Küche",
+                emoji: "🍫",
+                tag: "Demo",
                 description:
                     "Bereite alle Zutaten und Küchenutensilien für leckere Schoggikugeln vor.",
                 items: [
@@ -158,7 +149,7 @@ struct ChecklistData: Codable {
                     ChecklistItem(title: "1 Messlöffel", imageName: "Messlöffel"),
                     ChecklistItem(title: "2 Topflappen", imageName: "Topflappen"),
                 ]
-            ),
+            )
         ]
     )
 }
