@@ -94,46 +94,46 @@ final class SyncCoordinator: ObservableObject {
             .store(in: &cancellables)
     }
 
-  private func loadWatchUUIDFromContext() {
-    let context = transport.getReceivedApplicationContext()
-    if let watchUUID = context[SyncConstants.Keys.watchUUID] as? String {
-      WatchConfig.shared.setConnectedWatchUUID(watchUUID)
-    }
-  }
-
-  func syncAllData() {
-    checklistService.forceSync()
-    authService.sync()
-    telemetryService.sync()
-    calendarService.sync()
-    levelService.sync()
-
-    if let data = UserDefaults.standard.data(forKey: "appConfigurations"),
-      let configurations = try? JSONDecoder().decode(AppConfigurations.self, from: data)
-    {
-      configService.sync(configurations)
-    }
-  }
-
-  func forceReconnect() {
-    transport.forceReconnect()
-
-    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-      if self?.isConnected == true {
-        self?.loadWatchUUIDFromContext()
-        self?.syncAllData()
-        if self?.transport.isReachable == true {
-          self?.commandService.sendWakeUpMessage()
+    private func loadWatchUUIDFromContext() {
+        let context = transport.getReceivedApplicationContext()
+        if let watchUUID = context[SyncConstants.Keys.watchUUID] as? String {
+            WatchConfig.shared.setConnectedWatchUUID(watchUUID)
         }
-      }
     }
-  }
 
-  private func handleIncomingContext(_ context: [String: Any]) {
-    if let watchUUID = context[SyncConstants.Keys.watchUUID] as? String {
-      WatchConfig.shared.setConnectedWatchUUID(watchUUID)
+    func syncAllData() {
+        checklistService.forceSync()
+        authService.sync()
+        telemetryService.sync()
+        calendarService.sync()
+        levelService.sync()
+
+        if let data = UserDefaults.standard.data(forKey: "appConfigurations"),
+            let configurations = try? JSONDecoder().decode(AppConfigurations.self, from: data)
+        {
+            configService.sync(configurations)
+        }
     }
-  }
+
+    func forceReconnect() {
+        transport.forceReconnect()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            if self?.isConnected == true {
+                self?.loadWatchUUIDFromContext()
+                self?.syncAllData()
+                if self?.transport.isReachable == true {
+                    self?.commandService.sendWakeUpMessage()
+                }
+            }
+        }
+    }
+
+    private func handleIncomingContext(_ context: [String: Any]) {
+        if let watchUUID = context[SyncConstants.Keys.watchUUID] as? String {
+            WatchConfig.shared.setConnectedWatchUUID(watchUUID)
+        }
+    }
 
     private func handleIncomingMessage(
         _ message: [String: Any],
@@ -152,8 +152,8 @@ final class SyncCoordinator: ObservableObject {
 
         case SyncConstants.Actions.syncLevelFromWatch:
             if let dataString = message[SyncConstants.Keys.data] as? String,
-               let data = Data(base64Encoded: dataString),
-               let levelData = try? JSONDecoder().decode(LevelData.self, from: data)
+                let data = Data(base64Encoded: dataString),
+                let levelData = try? JSONDecoder().decode(LevelData.self, from: data)
             {
                 levelService.handleIncomingLevelData(levelData)
             }
