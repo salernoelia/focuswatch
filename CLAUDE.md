@@ -12,32 +12,7 @@ FocusWatch is a watchOS + iOS Swift app for users with focus difficulties. It ha
 
 ## Build & Run Commands
 
-All build commands use `make`. Run `make help` for a full list, optimally prompt user to use xcode though.
-
-```bash
-make ios-build        # Build iOS app for simulator
-make watch-build      # Build watchOS app for simulator
-make dev              # Build + launch both iOS and watch apps concurrently
-make ios-run          # Build + install + launch iOS only
-make watch-run        # Build + install + launch watch only
-make ios-test         # Run iOS unit tests
-make watch-test       # Run watchOS unit tests
-make all-test         # Run both test suites
-make clean            # Remove .build/DerivedData
-```
-
-Default simulator names are `24.11.25` (iOS) and `24.11.25 (W)` (watch). Override with:
-```bash
-make ios-run IOS_SIM_NAME="iPhone 16"
-```
-
-## Local Environment Setup
-
-1. Run `supabase start` in the project root (requires Docker Desktop and Supabase CLI).
-2. Copy `Example.xcconfig` → `Development.xcconfig` and populate with your Supabase URL and API keys.
-3. In Xcode, set a valid Developer Team under Signing & Capabilities for all targets.
-
-`Development.xcconfig` and `Production.xcconfig` are gitignored — never commit them.
+Don't trigger builds yourself.
 
 ## Architecture
 

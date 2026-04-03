@@ -378,6 +378,8 @@ final class ChecklistSyncService: ObservableObject {
         for checklist in checklistData.checklists {
             hasher.combine(checklist.id)
             hasher.combine(checklist.name)
+            hasher.combine(checklist.tag)
+            hasher.combine(checklist.description)
             hasher.combine(checklist.items.count)
             hasher.combine(checklist.xpReward)
             hasher.combine(checklist.resetConfiguration.interval.rawValue)

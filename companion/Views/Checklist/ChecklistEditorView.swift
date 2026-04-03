@@ -9,6 +9,13 @@ struct ChecklistEditorView: View {
   @State private var newChecklistId: UUID?
   @State private var showNewChecklistDetail = false
 
+  private struct ChecklistTagSection: Identifiable {
+    let tag: String
+    let checklists: [Checklist]
+
+    var id: String { tag }
+  }
+
   var body: some View {
     NavigationStack {
       checklistList
@@ -61,19 +68,46 @@ struct ChecklistEditorView: View {
 
   private var checklistList: some View {
     List {
-      ForEach(checklistService.checklistData.checklists) { checklist in
-        NavigationLink(
-          destination: ChecklistDetailView(
-            checklist: checklist,
-            checklistService: checklistService,
-            galleryStorage: galleryStorage
-          )
-        ) {
-          checklistRow(checklist)
+      ForEach(groupedChecklists) { section in
+        Section(section.tag) {
+          ForEach(section.checklists) { checklist in
+            NavigationLink(
+              destination: ChecklistDetailView(
+                checklist: checklist,
+                checklistService: checklistService,
+                galleryStorage: galleryStorage
+              )
+            ) {
+              checklistRow(checklist)
+            }
+          }
+          .onDelete { offsets in
+            deleteChecklists(offsets: offsets, from: section.checklists)
+          }
         }
       }
-      .onDelete(perform: deleteChecklists)
     }
+  }
+
+  private var groupedChecklists: [ChecklistTagSection] {
+    let uncategorizedTitle = NSLocalizedString("Other", comment: "")
+    let grouped = Dictionary(grouping: checklistService.checklistData.checklists) { checklist in
+      let trimmedTag = checklist.tag.trimmingCharacters(in: .whitespacesAndNewlines)
+      return trimmedTag.isEmpty ? uncategorizedTitle : trimmedTag
+    }
+
+    return grouped
+      .map { tag, checklists in
+        ChecklistTagSection(
+          tag: tag,
+          checklists: checklists.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        )
+      }
+      .sorted { lhs, rhs in
+        if lhs.tag == uncategorizedTitle { return false }
+        if rhs.tag == uncategorizedTitle { return true }
+        return lhs.tag.localizedCaseInsensitiveCompare(rhs.tag) == .orderedAscending
+      }
   }
 
   private func checklistRow(_ checklist: Checklist) -> some View {
@@ -103,10 +137,10 @@ struct ChecklistEditorView: View {
     .padding(.vertical, 4)
   }
 
-  private func deleteChecklists(offsets: IndexSet) {
+  private func deleteChecklists(offsets: IndexSet, from sectionChecklists: [Checklist]) {
     var data = checklistService.checklistData
     for index in offsets {
-      data.checklists.removeAll { $0.id == checklistService.checklistData.checklists[index].id }
+      data.checklists.removeAll { $0.id == sectionChecklists[index].id }
     }
     checklistService.updateChecklistData(data)
   }
