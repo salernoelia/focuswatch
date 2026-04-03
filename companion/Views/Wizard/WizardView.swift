@@ -141,7 +141,9 @@ struct WizardView: View {
                 }
 
                 Section("Focus Tools") {
-                    ForEach(appsManager.apps.filter { $0.index < appsManager.builtInAppCount }, id: \.id) { app in
+                    ForEach(
+                        appsManager.apps.filter { $0.index < appsManager.builtInAppCount }, id: \.id
+                    ) { app in
                         HStack(spacing: 12) {
                             Button {
                                 CommandSyncService.shared.switchToApp(index: app.index)
@@ -177,7 +179,10 @@ struct WizardView: View {
 
                 if appsManager.apps.count > appsManager.builtInAppCount {
                     Section("Checklists") {
-                        ForEach(appsManager.apps.filter { $0.index >= appsManager.builtInAppCount }, id: \.id) { app in
+                        ForEach(
+                            appsManager.apps.filter { $0.index >= appsManager.builtInAppCount },
+                            id: \.id
+                        ) { app in
                             Button {
                                 CommandSyncService.shared.switchToApp(index: app.index)
                             } label: {
