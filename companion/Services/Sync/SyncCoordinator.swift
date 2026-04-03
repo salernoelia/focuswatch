@@ -3,13 +3,13 @@ import Foundation
 import WatchConnectivity
 
 final class SyncCoordinator: ObservableObject {
-    static let shared = SyncCoordinator()
+    static let shared = SyncCoordinator(transport: ConnectivityTransportAdapter())
 
     @Published var isConnected = false
     @Published var lastError: AppError?
     @Published private(set) var syncStatus: String = SyncConstants.Status.pending
 
-    let transport: ConnectivityTransport
+    let transport: SyncTransportProtocol
     let calendarService: CalendarSyncService
     let checklistService: ChecklistSyncService
     let levelService: LevelSyncService
@@ -22,7 +22,7 @@ final class SyncCoordinator: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     init(
-        transport: ConnectivityTransport = .shared,
+        transport: SyncTransportProtocol = ConnectivityTransportAdapter(),
         calendarService: CalendarSyncService = .shared,
         checklistService: ChecklistSyncService = .shared,
         levelService: LevelSyncService = .shared,
@@ -47,7 +47,7 @@ final class SyncCoordinator: ObservableObject {
     }
 
     private func setupObservers() {
-        transport.$isConnected
+        transport.isConnectedPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isConnected in
                 self?.isConnected = isConnected
@@ -57,18 +57,18 @@ final class SyncCoordinator: ObservableObject {
             }
             .store(in: &cancellables)
 
-        transport.$lastError
+        transport.lastErrorPublisher
             .receive(on: DispatchQueue.main)
             .assign(to: &$lastError)
 
-        transport.contextReceived
+        transport.contextReceivedPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] context in
                 self?.handleIncomingContext(context)
             }
             .store(in: &cancellables)
 
-        transport.messageReceived
+        transport.messageReceivedPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] message, replyHandler in
                 self?.handleIncomingMessage(message, replyHandler: replyHandler)

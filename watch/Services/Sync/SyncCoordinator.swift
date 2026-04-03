@@ -16,19 +16,41 @@ final class SyncCoordinator: ObservableObject {
     @Published private(set) var syncStatus: String = SyncConstants.Status.pending
 
     let transport: ConnectivityTransport
+    private let incomingMessageRouter: IncomingMessageRouter
 
-    private let checklistManager = ChecklistViewModel.shared
-    private let galleryManager = GalleryManager.shared
-    private let calendarManager = CalendarViewModel.shared
-    private let authManager = AuthManager.shared
+    private let checklistManager: ChecklistViewModel
+    private let galleryManager: GalleryManager
+    private let calendarManager: CalendarViewModel
+    private let telemetryManager: TelemetryManager
+    private let checklistProgressManager: ChecklistProgressManager
 
     private var cancellables = Set<AnyCancellable>()
     private var validationTimer: Timer?
     private var pendingValidation = false
     private var lastValidationTime: Date?
 
-    init(transport: ConnectivityTransport = .shared) {
+    init(
+      transport: ConnectivityTransport = .shared,
+      checklistManager: ChecklistViewModel = .shared,
+      galleryManager: GalleryManager = .shared,
+      calendarManager: CalendarViewModel = .shared,
+      authManager: AuthManager = .shared,
+      telemetryManager: TelemetryManager = .shared,
+      checklistProgressManager: ChecklistProgressManager = .shared
+    ) {
         self.transport = transport
+      self.checklistManager = checklistManager
+      self.galleryManager = galleryManager
+      self.calendarManager = calendarManager
+      self.telemetryManager = telemetryManager
+      self.checklistProgressManager = checklistProgressManager
+      self.incomingMessageRouter = IncomingMessageRouter(
+        checklistManager: checklistManager,
+        galleryManager: galleryManager,
+        authManager: authManager,
+        telemetryManager: telemetryManager,
+        checklistProgressManager: checklistProgressManager
+      )
         setupObservers()
         startValidationTimer()
     }
@@ -44,7 +66,7 @@ final class SyncCoordinator: ObservableObject {
         transport.messageReceived
             .receive(on: DispatchQueue.main)
             .sink { [weak self] message, replyHandler in
-                self?.handleMessage(message, replyHandler: replyHandler)
+            self?.handleIncomingMessage(message, replyHandler: replyHandler)
             }
             .store(in: &cancellables)
 
@@ -279,78 +301,20 @@ final class SyncCoordinator: ObservableObject {
     }
   }
 
-  private func handleMessage(_ message: [String: Any], replyHandler: (([String: Any]) -> Void)?) {
-    guard let action = message[SyncConstants.Keys.action] as? String else {
-      replyHandler?([SyncConstants.Keys.status: SyncConstants.Status.noAction])
-      return
-    }
-
-    switch action {
-    case SyncConstants.Actions.switchToApp:
-      currentView = .mainMenu
-      if let appIndex = message[SyncConstants.Keys.appIndex] as? Int {
-        currentView = .app(appIndex)
+  private func handleIncomingMessage(_ message: [String: Any], replyHandler: (([String: Any]) -> Void)?) {
+    incomingMessageRouter.handle(
+      message: message,
+      replyHandler: replyHandler,
+      setCurrentView: { [weak self] view in
+        self?.currentView = view
+      },
+      updateCalendarEvents: { [weak self] events in
+        self?.updateCalendarEvents(events)
+      },
+      handleLevelUpdate: { [weak self] data in
+        self?.handleLevelUpdate(data: data)
       }
-
-    case SyncConstants.Actions.returnToDashboard, SyncConstants.Actions.wakeUp:
-      currentView = .mainMenu
-
-    case SyncConstants.Actions.updateChecklist:
-      if let dataString = message[SyncConstants.Keys.data] as? String,
-        let data = Data(base64Encoded: dataString)
-      {
-        let forceOverwrite = message[SyncConstants.Keys.forceOverwrite] as? Bool ?? false
-        checklistManager.updateChecklistData(from: data, forceOverwrite: forceOverwrite)
-      }
-      if let imageData = message[SyncConstants.Keys.imageData] as? [String: String] {
-        galleryManager.saveGalleryImages(imageData)
-      }
-
-    case SyncConstants.Actions.updateAuth:
-      if let isLoggedIn = message[SyncConstants.Keys.isLoggedIn] as? Bool {
-        if isLoggedIn,
-          let accessToken = message[SyncConstants.Keys.accessToken] as? String,
-          let refreshToken = message[SyncConstants.Keys.refreshToken] as? String
-        {
-          authManager.updateAuthState(accessToken: accessToken, refreshToken: refreshToken)
-        } else {
-          authManager.clearAuthState()
-        }
-      }
-
-    case SyncConstants.Actions.updateTelemetry:
-      if let hasConsent = message[SyncConstants.Keys.hasConsent] as? Bool {
-        TelemetryManager.shared.hasConsent = hasConsent
-      }
-
-    case SyncConstants.Actions.updateCalendar:
-      if let dataString = message[SyncConstants.Keys.data] as? String,
-        let data = Data(base64Encoded: dataString),
-        let events = try? JSONDecoder().decode([EventTransfer].self, from: data)
-      {
-        updateCalendarEvents(events)
-      }
-
-    case SyncConstants.Actions.updateLevel:
-      if let dataString = message[SyncConstants.Keys.data] as? String,
-        let data = Data(base64Encoded: dataString)
-      {
-        handleLevelUpdate(data: data)
-      }
-
-    case SyncConstants.Actions.resetChecklistState:
-      if let checklistIdString = message[SyncConstants.Keys.checklistId] as? String,
-        let checklistId = UUID(uuidString: checklistIdString)
-      {
-        ChecklistProgressManager.shared.clearProgressAndCompletion(for: checklistId)
-      }
-
-    default:
-      replyHandler?([SyncConstants.Keys.status: SyncConstants.Status.unknownAction])
-      return
-    }
-
-    replyHandler?([SyncConstants.Keys.status: SyncConstants.Status.success])
+    )
   }
 
   private func handleUserInfo(_ userInfo: [String: Any]) {
@@ -372,12 +336,12 @@ final class SyncCoordinator: ObservableObject {
       if let checklistIdString = userInfo[SyncConstants.Keys.checklistId] as? String,
         let checklistId = UUID(uuidString: checklistIdString)
       {
-        ChecklistProgressManager.shared.clearProgressAndCompletion(for: checklistId)
+        checklistProgressManager.clearProgressAndCompletion(for: checklistId)
       }
 
     case SyncConstants.Actions.updateTelemetry:
       if let hasConsent = userInfo[SyncConstants.Keys.hasConsent] as? Bool {
-        TelemetryManager.shared.hasConsent = hasConsent
+        telemetryManager.hasConsent = hasConsent
       }
 
     case SyncConstants.Actions.updateLevel:
@@ -410,7 +374,7 @@ final class SyncCoordinator: ObservableObject {
 
     case SyncConstants.Actions.updateTelemetry:
       if let hasConsent = context[SyncConstants.Keys.hasConsent] as? Bool {
-        TelemetryManager.shared.hasConsent = hasConsent
+        telemetryManager.hasConsent = hasConsent
       }
 
     case SyncConstants.Actions.updateLevel:
@@ -581,6 +545,108 @@ final class SyncCoordinator: ObservableObject {
     } catch {
       return AppConfigurations.default
     }
+  }
+}
+
+final class IncomingMessageRouter {
+  private let checklistManager: ChecklistViewModel
+  private let galleryManager: GalleryManager
+  private let authManager: AuthManager
+  private let telemetryManager: TelemetryManager
+  private let checklistProgressManager: ChecklistProgressManager
+
+  init(
+    checklistManager: ChecklistViewModel,
+    galleryManager: GalleryManager,
+    authManager: AuthManager,
+    telemetryManager: TelemetryManager,
+    checklistProgressManager: ChecklistProgressManager
+  ) {
+    self.checklistManager = checklistManager
+    self.galleryManager = galleryManager
+    self.authManager = authManager
+    self.telemetryManager = telemetryManager
+    self.checklistProgressManager = checklistProgressManager
+  }
+
+  func handle(
+    message: [String: Any],
+    replyHandler: (([String: Any]) -> Void)?,
+    setCurrentView: (WatchViewState) -> Void,
+    updateCalendarEvents: ([EventTransfer]) -> Void,
+    handleLevelUpdate: (Data) -> Void
+  ) {
+    guard let action = message[SyncConstants.Keys.action] as? String else {
+      replyHandler?([SyncConstants.Keys.status: SyncConstants.Status.noAction])
+      return
+    }
+
+    switch action {
+    case SyncConstants.Actions.switchToApp:
+      setCurrentView(.mainMenu)
+      if let appIndex = message[SyncConstants.Keys.appIndex] as? Int {
+        setCurrentView(.app(appIndex))
+      }
+
+    case SyncConstants.Actions.returnToDashboard, SyncConstants.Actions.wakeUp:
+      setCurrentView(.mainMenu)
+
+    case SyncConstants.Actions.updateChecklist:
+      if let dataString = message[SyncConstants.Keys.data] as? String,
+        let data = Data(base64Encoded: dataString)
+      {
+        let forceOverwrite = message[SyncConstants.Keys.forceOverwrite] as? Bool ?? false
+        checklistManager.updateChecklistData(from: data, forceOverwrite: forceOverwrite)
+      }
+      if let imageData = message[SyncConstants.Keys.imageData] as? [String: String] {
+        galleryManager.saveGalleryImages(imageData)
+      }
+
+    case SyncConstants.Actions.updateAuth:
+      if let isLoggedIn = message[SyncConstants.Keys.isLoggedIn] as? Bool {
+        if isLoggedIn,
+          let accessToken = message[SyncConstants.Keys.accessToken] as? String,
+          let refreshToken = message[SyncConstants.Keys.refreshToken] as? String
+        {
+          authManager.updateAuthState(accessToken: accessToken, refreshToken: refreshToken)
+        } else {
+          authManager.clearAuthState()
+        }
+      }
+
+    case SyncConstants.Actions.updateTelemetry:
+      if let hasConsent = message[SyncConstants.Keys.hasConsent] as? Bool {
+        telemetryManager.hasConsent = hasConsent
+      }
+
+    case SyncConstants.Actions.updateCalendar:
+      if let dataString = message[SyncConstants.Keys.data] as? String,
+        let data = Data(base64Encoded: dataString),
+        let events = try? JSONDecoder().decode([EventTransfer].self, from: data)
+      {
+        updateCalendarEvents(events)
+      }
+
+    case SyncConstants.Actions.updateLevel:
+      if let dataString = message[SyncConstants.Keys.data] as? String,
+        let data = Data(base64Encoded: dataString)
+      {
+        handleLevelUpdate(data)
+      }
+
+    case SyncConstants.Actions.resetChecklistState:
+      if let checklistIdString = message[SyncConstants.Keys.checklistId] as? String,
+        let checklistId = UUID(uuidString: checklistIdString)
+      {
+        checklistProgressManager.clearProgressAndCompletion(for: checklistId)
+      }
+
+    default:
+      replyHandler?([SyncConstants.Keys.status: SyncConstants.Status.unknownAction])
+      return
+    }
+
+    replyHandler?([SyncConstants.Keys.status: SyncConstants.Status.success])
   }
 }
 

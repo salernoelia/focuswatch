@@ -4,12 +4,13 @@ import WatchKit
 
 @main
 struct WatchApp: App {
-    @StateObject private var syncCoordinator = SyncCoordinator.shared
+    @StateObject private var syncCoordinator: SyncCoordinator
     @StateObject private var writingExerciseManager = WritingExerciseManager()
     @StateObject private var calendarManager = CalendarViewModel.shared
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        _syncCoordinator = StateObject(wrappedValue: SyncCoordinator.shared)
         setupNotifications()
         syncWatchIdToWidget()
     }

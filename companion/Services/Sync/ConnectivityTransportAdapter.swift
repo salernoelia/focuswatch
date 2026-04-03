@@ -21,6 +21,14 @@ final class ConnectivityTransportAdapter: SyncTransportProtocol {
         self.transport = transport
     }
 
+    var isConnectedPublisher: AnyPublisher<Bool, Never> {
+        transport.$isConnected.eraseToAnyPublisher()
+    }
+
+    var lastErrorPublisher: AnyPublisher<AppError?, Never> {
+        transport.$lastError.eraseToAnyPublisher()
+    }
+
     var isReachable: Bool {
         transport.isReachable
     }

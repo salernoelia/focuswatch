@@ -6,6 +6,8 @@ protocol SyncFileTransferReference: AnyObject {
 }
 
 protocol SyncTransportProtocol: AnyObject {
+    var isConnectedPublisher: AnyPublisher<Bool, Never> { get }
+    var lastErrorPublisher: AnyPublisher<AppError?, Never> { get }
     var isReachable: Bool { get }
 
     var contextReceivedPublisher: AnyPublisher<[String: Any], Never> { get }
@@ -36,6 +38,14 @@ protocol SyncTransportProtocol: AnyObject {
 }
 
 extension SyncTransportProtocol {
+    var isConnectedPublisher: AnyPublisher<Bool, Never> {
+        Just(false).eraseToAnyPublisher()
+    }
+
+    var lastErrorPublisher: AnyPublisher<AppError?, Never> {
+        Just(nil).eraseToAnyPublisher()
+    }
+
     @discardableResult
     func transferFile(_ fileURL: URL, metadata: [String: Any]?) -> SyncFileTransferReference? {
         nil
