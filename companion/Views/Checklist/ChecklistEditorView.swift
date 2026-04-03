@@ -2,7 +2,7 @@ import PhotosUI
 import SwiftUI
 
 struct ChecklistEditorView: View {
-    @ObservedObject var checklistService: ChecklistSyncService
+    @ObservedObject var checklistDataStore: ChecklistDataStore
     @StateObject private var galleryStorage = GalleryStorage.shared
     @StateObject private var syncCoordinator = SyncCoordinator.shared
     @Environment(\.presentationMode) var presentationMode
@@ -46,13 +46,13 @@ struct ChecklistEditorView: View {
                 }
                 .navigationDestination(isPresented: $showNewChecklistDetail) {
                     if let id = newChecklistId,
-                        let checklist = checklistService.checklistData.checklists.first(where: {
+                        let checklist = checklistDataStore.checklistData.checklists.first(where: {
                             $0.id == id
                         })
                     {
                         ChecklistDetailView(
                             checklist: checklist,
-                            checklistService: checklistService,
+                            checklistDataStore: checklistDataStore,
                             galleryStorage: galleryStorage
                         )
                     }
@@ -62,9 +62,9 @@ struct ChecklistEditorView: View {
 
     private func addChecklist(name: String) -> Checklist {
         let newChecklist = Checklist(name: name)
-        var data = checklistService.checklistData
+        var data = checklistDataStore.checklistData
         data.checklists.append(newChecklist)
-        checklistService.updateChecklistData(data)
+        checklistDataStore.updateChecklistData(data)
         return newChecklist
     }
 
@@ -76,7 +76,7 @@ struct ChecklistEditorView: View {
                         NavigationLink(
                             destination: ChecklistDetailView(
                                 checklist: checklist,
-                                checklistService: checklistService,
+                                checklistDataStore: checklistDataStore,
                                 galleryStorage: galleryStorage
                             )
                         ) {
@@ -93,7 +93,7 @@ struct ChecklistEditorView: View {
 
     private var groupedChecklists: [ChecklistTagSection] {
         let uncategorizedTitle = NSLocalizedString("Other", comment: "")
-        let grouped = Dictionary(grouping: checklistService.checklistData.checklists) { checklist in
+        let grouped = Dictionary(grouping: checklistDataStore.checklistData.checklists) { checklist in
             let trimmedTag = checklist.tag.trimmingCharacters(in: .whitespacesAndNewlines)
             return trimmedTag.isEmpty ? uncategorizedTitle : trimmedTag
         }
@@ -148,10 +148,10 @@ struct ChecklistEditorView: View {
     }
 
     private func deleteChecklists(offsets: IndexSet, from sectionChecklists: [Checklist]) {
-        var data = checklistService.checklistData
+        var data = checklistDataStore.checklistData
         for index in offsets {
             data.checklists.removeAll { $0.id == sectionChecklists[index].id }
         }
-        checklistService.updateChecklistData(data)
+        checklistDataStore.updateChecklistData(data)
     }
 }

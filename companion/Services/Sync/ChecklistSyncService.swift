@@ -5,12 +5,13 @@ import WatchConnectivity
 final class ChecklistSyncService: ObservableObject {
     static let shared = ChecklistSyncService()
 
-    @Published var checklistData = ChecklistData.default
+    @Published private(set) var checklistData = ChecklistData.default
     @Published var lastError: AppError?
     @Published private(set) var isSyncing = false
     @Published private(set) var syncProgress: Double = 0
 
     private let transport: ConnectivityTransport
+    private let checklistDataStore: ChecklistDataStore
     private let imageSyncService: ImageSyncService
     private var lastSyncedHash: Int?
     private let syncQueue = DispatchQueue(label: "com.fokusuhr.checklist.sync", qos: .userInitiated)
@@ -20,14 +21,28 @@ final class ChecklistSyncService: ObservableObject {
     private var retryTimer: Timer?
     private var cancellables = Set<AnyCancellable>()
 
-    init(transport: ConnectivityTransport = .shared, imageSyncService: ImageSyncService = .shared) {
+    init(
+        transport: ConnectivityTransport = .shared,
+        checklistDataStore: ChecklistDataStore = .shared,
+        imageSyncService: ImageSyncService = .shared
+    ) {
         self.transport = transport
+        self.checklistDataStore = checklistDataStore
         self.imageSyncService = imageSyncService
-        loadChecklistData()
+        self.checklistData = checklistDataStore.checklistData
         setupObservers()
     }
 
     private func setupObservers() {
+        checklistDataStore.$checklistData
+            .dropFirst()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] data in
+                self?.checklistData = data
+                self?.debouncedSync()
+            }
+            .store(in: &cancellables)
+
         transport.messageReceived
             .receive(on: DispatchQueue.main)
             .sink { [weak self] message, replyHandler in
@@ -79,12 +94,6 @@ final class ChecklistSyncService: ObservableObject {
             #endif
             forceSyncWithImages()
         }
-    }
-
-    func updateChecklistData(_ data: ChecklistData) {
-        self.checklistData = data
-        saveChecklistData()
-        debouncedSync()
     }
 
     func forceSync() {
@@ -434,35 +443,4 @@ final class ChecklistSyncService: ObservableObject {
         return hasher.finalize()
     }
 
-    func saveChecklistData() {
-        do {
-            let data = try JSONEncoder().encode(checklistData)
-            UserDefaults.standard.set(data, forKey: AppConstants.StorageKeys.checklistData)
-        } catch {
-            #if DEBUG
-                ErrorLogger.log(AppError.encodingFailed(type: "checklist data", underlying: error))
-            #endif
-            lastError = AppError.encodingFailed(type: "checklist data", underlying: error)
-        }
-    }
-
-    func loadChecklistData() {
-        guard let data = UserDefaults.standard.data(forKey: AppConstants.StorageKeys.checklistData)
-        else {
-            checklistData = ChecklistData.default
-            saveChecklistData()
-            return
-        }
-
-        do {
-            checklistData = try JSONDecoder().decode(ChecklistData.self, from: data)
-        } catch {
-            #if DEBUG
-                ErrorLogger.log(AppError.decodingFailed(type: "checklist data", underlying: error))
-            #endif
-            lastError = AppError.decodingFailed(type: "checklist data", underlying: error)
-            checklistData = ChecklistData.default
-            saveChecklistData()
-        }
-    }
 }
