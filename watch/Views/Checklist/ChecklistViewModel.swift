@@ -14,7 +14,8 @@ class ChecklistViewModel: ObservableObject {
             UserDefaults.standard.set(data, forKey: "checklistData")
 
             if !silent {
-                NotificationCenter.default.post(name: Notification.Name.checklistDataChanged, object: nil)
+                NotificationCenter.default.post(
+                    name: Notification.Name.checklistDataChanged, object: nil)
             }
         } catch {
             let appError = AppError.encodingFailed(type: "checklist data", underlying: error)
@@ -57,28 +58,33 @@ class ChecklistViewModel: ObservableObject {
 
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
-                
+
                 let incomingChecklistIDs = Set(newData.checklists.map { $0.id })
                 let existingChecklistIDs = Set(self.checklistData.checklists.map { $0.id })
                 let deletedChecklistIDs = existingChecklistIDs.subtracting(incomingChecklistIDs)
-                
+
                 if !deletedChecklistIDs.isEmpty {
                     #if DEBUG
-                        ErrorLogger.log("Watch: Removing \(deletedChecklistIDs.count) deleted checklists")
+                        ErrorLogger.log(
+                            "Watch: Removing \(deletedChecklistIDs.count) deleted checklists")
                         for id in deletedChecklistIDs {
-                            if let checklist = self.checklistData.checklists.first(where: { $0.id == id }) {
+                            if let checklist = self.checklistData.checklists.first(where: {
+                                $0.id == id
+                            }) {
                                 ErrorLogger.log("  - Deleted: \(checklist.name)")
                             }
                         }
                     #endif
                 }
-                
+
                 self.checklistData = newData
                 self.lastSyncedHash = newHash
                 self.saveChecklistData(silent: false)
 
                 #if DEBUG
-                    ErrorLogger.log("Watch: Updated with \(newData.checklists.count) checklists (forceOverwrite: \(forceOverwrite), hash: \(newHash))")
+                    ErrorLogger.log(
+                        "Watch: Updated with \(newData.checklists.count) checklists (forceOverwrite: \(forceOverwrite), hash: \(newHash))"
+                    )
                     for checklist in newData.checklists {
                         ErrorLogger.log("  - \(checklist.name): \(checklist.items.count) items")
                     }

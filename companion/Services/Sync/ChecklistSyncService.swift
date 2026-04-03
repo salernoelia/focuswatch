@@ -91,7 +91,7 @@ final class ChecklistSyncService: ObservableObject {
         debounceTimer?.invalidate()
         retryCount = 0
         lastSyncedHash = nil
-        
+
         syncQueue.async { [weak self] in
             self?.performSyncIfPossible()
         }
@@ -101,7 +101,7 @@ final class ChecklistSyncService: ObservableObject {
         debounceTimer?.invalidate()
         retryCount = 0
         lastSyncedHash = nil
-        
+
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.isSyncing = true
@@ -110,7 +110,7 @@ final class ChecklistSyncService: ObservableObject {
                 galleryStorage: GalleryStorage.shared
             )
         }
-        
+
         syncQueue.async { [weak self] in
             self?.performSyncIfPossible()
         }
@@ -120,7 +120,8 @@ final class ChecklistSyncService: ObservableObject {
         DispatchQueue.main.async { [weak self] in
             self?.debounceTimer?.invalidate()
             self?.pendingSync = true
-            self?.debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
+            self?.debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) {
+                [weak self] _ in
                 self?.syncQueue.async {
                     self?.performSyncIfPossible()
                 }
@@ -156,7 +157,8 @@ final class ChecklistSyncService: ObservableObject {
         }
 
         #if DEBUG
-            print("iOS ChecklistSync: Starting sync (hash: \(lastSyncedHash ?? 0) -> \(currentHash))")
+            print(
+                "iOS ChecklistSync: Starting sync (hash: \(lastSyncedHash ?? 0) -> \(currentHash))")
         #endif
 
         DispatchQueue.main.async { [weak self] in
@@ -175,7 +177,9 @@ final class ChecklistSyncService: ObservableObject {
                 print("iOS ChecklistSync: Preparing sync payload")
                 print("iOS ChecklistSync: Checklists to sync: \(checklistData.checklists.count)")
                 for (index, checklist) in checklistData.checklists.enumerated() {
-                    print("iOS ChecklistSync:   [\(index)] \(checklist.name) - \(checklist.items.count) items")
+                    print(
+                        "iOS ChecklistSync:   [\(index)] \(checklist.name) - \(checklist.items.count) items"
+                    )
                 }
                 print("iOS ChecklistSync: Encoded data size: \(data.count) bytes")
             #endif
@@ -193,24 +197,30 @@ final class ChecklistSyncService: ObservableObject {
                 SyncConstants.Keys.forceOverwrite: true,
                 SyncConstants.Keys.timestamp: Date().timeIntervalSince1970,
                 SyncConstants.Keys.syncId: syncId,
-                SyncConstants.Keys.requiredImages: Array(requiredImages)
+                SyncConstants.Keys.requiredImages: Array(requiredImages),
             ]
 
             if !imageData.isEmpty {
                 context[SyncConstants.Keys.checklistImageData] = imageData
                 #if DEBUG
-                    print("iOS ChecklistSync: Including \(imageData.count) images in applicationContext")
+                    print(
+                        "iOS ChecklistSync: Including \(imageData.count) images in applicationContext"
+                    )
                 #endif
             } else {
                 #if DEBUG
-                    print("iOS ChecklistSync: No images in applicationContext, relying on file transfers")
+                    print(
+                        "iOS ChecklistSync: No images in applicationContext, relying on file transfers"
+                    )
                 #endif
             }
 
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 #if DEBUG
-                    print("iOS ChecklistSync: Starting ImageSyncService for \(requiredImages.count) images")
+                    print(
+                        "iOS ChecklistSync: Starting ImageSyncService for \(requiredImages.count) images"
+                    )
                 #endif
                 self.imageSyncService.syncImages(
                     for: self.checklistData,
@@ -223,7 +233,7 @@ final class ChecklistSyncService: ObservableObject {
                 guard let self = self else { return }
                 do {
                     try self.transport.updateApplicationContext(context)
-                    
+
                     DispatchQueue.main.async {
                         self.lastSyncedHash = hashToSet
                         self.pendingSync = false
@@ -232,7 +242,9 @@ final class ChecklistSyncService: ObservableObject {
                     }
 
                     #if DEBUG
-                        print("iOS ChecklistSync: Synced - \(self.checklistData.checklists.count) checklists, syncId: \(syncId)")
+                        print(
+                            "iOS ChecklistSync: Synced - \(self.checklistData.checklists.count) checklists, syncId: \(syncId)"
+                        )
                     #endif
                 } catch {
                     self.handleSyncFailure(error: error, hashToSet: hashToSet)
@@ -260,10 +272,13 @@ final class ChecklistSyncService: ObservableObject {
                 let delay = min(pow(2.0, Double(self.retryCount)), 8.0)
 
                 #if DEBUG
-                    ErrorLogger.log("Sync failed, retrying in \(delay)s (attempt \(self.retryCount)/\(SyncConstants.Timing.maxRetries))")
+                    ErrorLogger.log(
+                        "Sync failed, retrying in \(delay)s (attempt \(self.retryCount)/\(SyncConstants.Timing.maxRetries))"
+                    )
                 #endif
 
-                self.retryTimer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { [weak self] _ in
+                self.retryTimer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) {
+                    [weak self] _ in
                     self?.syncQueue.async {
                         self?.performSyncIfPossible()
                     }
@@ -289,7 +304,9 @@ final class ChecklistSyncService: ObservableObject {
                 ErrorLogger.log("Watch not reachable, will retry when available")
             #endif
 
-            self.retryTimer = Timer.scheduledTimer(withTimeInterval: SyncConstants.Timing.retryDelay, repeats: false) { [weak self] _ in
+            self.retryTimer = Timer.scheduledTimer(
+                withTimeInterval: SyncConstants.Timing.retryDelay, repeats: false
+            ) { [weak self] _ in
                 self?.syncQueue.async {
                     self?.performSyncIfPossible()
                 }
@@ -309,10 +326,16 @@ final class ChecklistSyncService: ObservableObject {
 
         #if DEBUG
             print("iOS ChecklistSync: Used image names in checklists: \(usedImageNames.sorted())")
-            print("iOS ChecklistSync: Gallery items: \(galleryStorage.items.map { $0.label }.sorted())")
+            print(
+                "iOS ChecklistSync: Gallery items: \(galleryStorage.items.map { $0.label }.sorted())"
+            )
         #endif
 
-        guard let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        guard
+            let documentsURL = FileManager.default.urls(
+                for: .documentDirectory, in: .userDomainMask
+            ).first
+        else {
             #if DEBUG
                 print("iOS ChecklistSync: Cannot get documents URL")
             #endif
@@ -324,14 +347,14 @@ final class ChecklistSyncService: ObservableObject {
             guard usedImageNames.contains(item.label) else { continue }
 
             let url = documentsURL.appendingPathComponent(item.imagePath)
-            
+
             guard FileManager.default.fileExists(atPath: url.path) else {
                 #if DEBUG
                     print("iOS ChecklistSync: Image file not found: \(item.label) at \(url.path)")
                 #endif
                 continue
             }
-            
+
             guard let fileData = try? Data(contentsOf: url) else {
                 #if DEBUG
                     print("iOS ChecklistSync: Failed to read image data: \(item.label)")
@@ -341,31 +364,45 @@ final class ChecklistSyncService: ObservableObject {
 
             let base64String = fileData.base64EncodedString()
             let estimatedSize = base64String.count
-            
-            if totalSize + estimatedSize > Int(AppConstants.Network.maxPayloadSizeKB * AppConstants.Network.bytesToKBDivisor) {
+
+            if totalSize + estimatedSize
+                > Int(AppConstants.Network.maxPayloadSizeKB * AppConstants.Network.bytesToKBDivisor)
+            {
                 #if DEBUG
-                    print("iOS ChecklistSync: Image \(item.label) would exceed payload limit, stopping context collection")
-                    print("iOS ChecklistSync: Current size: \(totalSize / 1024) KB, Image size: \(estimatedSize / 1024) KB")
+                    print(
+                        "iOS ChecklistSync: Image \(item.label) would exceed payload limit, stopping context collection"
+                    )
+                    print(
+                        "iOS ChecklistSync: Current size: \(totalSize / 1024) KB, Image size: \(estimatedSize / 1024) KB"
+                    )
                 #endif
                 break
             }
-            
+
             imageData[item.label] = base64String
             totalSize += estimatedSize
             #if DEBUG
-                print("iOS ChecklistSync: Added image to context: \(item.label) (\(fileData.count) bytes)")
+                print(
+                    "iOS ChecklistSync: Added image to context: \(item.label) (\(fileData.count) bytes)"
+                )
             #endif
         }
 
         if !imageData.isEmpty {
             let sizeInKB = Double(totalSize) / AppConstants.Network.bytesToKBDivisor
             #if DEBUG
-                print("iOS ChecklistSync: Total image payload size: \(String(format: "%.2f", sizeInKB)) KB (max: \(AppConstants.Network.maxPayloadSizeKB) KB)")
-                print("iOS ChecklistSync: Including \(imageData.count)/\(usedImageNames.count) images in applicationContext")
+                print(
+                    "iOS ChecklistSync: Total image payload size: \(String(format: "%.2f", sizeInKB)) KB (max: \(AppConstants.Network.maxPayloadSizeKB) KB)"
+                )
+                print(
+                    "iOS ChecklistSync: Including \(imageData.count)/\(usedImageNames.count) images in applicationContext"
+                )
             #endif
         } else {
             #if DEBUG
-                print("iOS ChecklistSync: No images collected for context, file transfer will handle all images")
+                print(
+                    "iOS ChecklistSync: No images collected for context, file transfer will handle all images"
+                )
             #endif
         }
 
@@ -409,7 +446,8 @@ final class ChecklistSyncService: ObservableObject {
     }
 
     func loadChecklistData() {
-        guard let data = UserDefaults.standard.data(forKey: AppConstants.StorageKeys.checklistData) else {
+        guard let data = UserDefaults.standard.data(forKey: AppConstants.StorageKeys.checklistData)
+        else {
             checklistData = ChecklistData.default
             saveChecklistData()
             return
