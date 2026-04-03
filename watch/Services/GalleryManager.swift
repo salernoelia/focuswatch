@@ -22,7 +22,11 @@ class GalleryManager: ObservableObject {
     }
 
     func clearOldGalleryImages() {
-        guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        guard
+            let documentsPath = FileManager.default.urls(
+                for: .documentDirectory, in: .userDomainMask
+            ).first
+        else {
             #if DEBUG
                 ErrorLogger.log(AppError.fileNotFound(path: "documents directory"))
             #endif
@@ -30,7 +34,8 @@ class GalleryManager: ObservableObject {
         }
 
         do {
-            let contents = try FileManager.default.contentsOfDirectory(at: documentsPath, includingPropertiesForKeys: nil)
+            let contents = try FileManager.default.contentsOfDirectory(
+                at: documentsPath, includingPropertiesForKeys: nil)
 
             for fileURL in contents where fileURL.pathExtension == "jpg" {
                 do {
@@ -40,13 +45,17 @@ class GalleryManager: ObservableObject {
                     #endif
                 } catch {
                     #if DEBUG
-                        ErrorLogger.log(AppError.fileOperationFailed(operation: "remove old image", underlying: error))
+                        ErrorLogger.log(
+                            AppError.fileOperationFailed(
+                                operation: "remove old image", underlying: error))
                     #endif
                 }
             }
         } catch {
             #if DEBUG
-                ErrorLogger.log(AppError.fileOperationFailed(operation: "list directory contents", underlying: error))
+                ErrorLogger.log(
+                    AppError.fileOperationFailed(
+                        operation: "list directory contents", underlying: error))
             #endif
         }
 
@@ -59,7 +68,9 @@ class GalleryManager: ObservableObject {
 
     func saveGalleryImages(_ imageData: [String: Data]) {
         #if DEBUG
-            print("Watch GalleryManager: Received \(imageData.count) images via applicationContext: \(imageData.keys.sorted())")
+            print(
+                "Watch GalleryManager: Received \(imageData.count) images via applicationContext: \(imageData.keys.sorted())"
+            )
         #endif
 
         guard !imageData.isEmpty else {
@@ -73,16 +84,23 @@ class GalleryManager: ObservableObject {
 
         if newHash == lastImageDataHash && lastImageDataHash != 0 {
             #if DEBUG
-                print("Watch GalleryManager: Image data unchanged (hash: \(newHash)), skipping sync")
+                print(
+                    "Watch GalleryManager: Image data unchanged (hash: \(newHash)), skipping sync")
             #endif
             return
         }
 
         #if DEBUG
-            print("Watch GalleryManager: Processing images (hash: \(lastImageDataHash) -> \(newHash))")
+            print(
+                "Watch GalleryManager: Processing images (hash: \(lastImageDataHash) -> \(newHash))"
+            )
         #endif
 
-        guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        guard
+            let documentsPath = FileManager.default.urls(
+                for: .documentDirectory, in: .userDomainMask
+            ).first
+        else {
             #if DEBUG
                 ErrorLogger.log(AppError.fileNotFound(path: "documents directory"))
             #endif
@@ -99,8 +117,9 @@ class GalleryManager: ObservableObject {
             let imageURL = documentsPath.appendingPathComponent("\(imageName).jpg")
 
             if FileManager.default.fileExists(atPath: imageURL.path),
-               let existingData = try? Data(contentsOf: imageURL),
-               existingData.count == data.count {
+                let existingData = try? Data(contentsOf: imageURL),
+                existingData.count == data.count
+            {
                 skippedCount += 1
                 receivedImages.insert(imageName)
                 continue
@@ -117,7 +136,9 @@ class GalleryManager: ObservableObject {
             } catch {
                 #if DEBUG
                     print("Watch GalleryManager: Failed to save \(imageName): \(error)")
-                    ErrorLogger.log(AppError.fileOperationFailed(operation: "save gallery image", underlying: error))
+                    ErrorLogger.log(
+                        AppError.fileOperationFailed(
+                            operation: "save gallery image", underlying: error))
                 #endif
             }
         }
@@ -126,7 +147,9 @@ class GalleryManager: ObservableObject {
         saveReceivedImages()
 
         #if DEBUG
-            print("Watch GalleryManager: Saved \(savedCount), skipped \(skippedCount) unchanged images")
+            print(
+                "Watch GalleryManager: Saved \(savedCount), skipped \(skippedCount) unchanged images"
+            )
             print("Watch GalleryManager: receivedImages now contains: \(receivedImages.sorted())")
         #endif
 
@@ -152,9 +175,13 @@ class GalleryManager: ObservableObject {
         #endif
 
         guard let metadata = metadata,
-              let imageName = metadata[SyncConstants.Keys.imageName] as? String else {
+            let imageName = metadata[SyncConstants.Keys.imageName] as? String
+        else {
             #if DEBUG
-                ErrorLogger.log(AppError.decodingFailed(type: "file metadata", underlying: NSError(domain: "GalleryManager", code: -1)))
+                ErrorLogger.log(
+                    AppError.decodingFailed(
+                        type: "file metadata",
+                        underlying: NSError(domain: "GalleryManager", code: -1)))
                 print("Watch GalleryManager: Missing imageName in metadata")
             #endif
             return
@@ -172,7 +199,11 @@ class GalleryManager: ObservableObject {
             return
         }
 
-        guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        guard
+            let documentsPath = FileManager.default.urls(
+                for: .documentDirectory, in: .userDomainMask
+            ).first
+        else {
             #if DEBUG
                 ErrorLogger.log(AppError.fileNotFound(path: "documents directory"))
                 print("Watch GalleryManager: Cannot get documents path")
@@ -209,8 +240,12 @@ class GalleryManager: ObservableObject {
             #endif
         } catch {
             #if DEBUG
-                ErrorLogger.log(AppError.fileOperationFailed(operation: "save transferred image", underlying: error))
-                print("Watch GalleryManager: FAILED to save \(imageName): \(error.localizedDescription)")
+                ErrorLogger.log(
+                    AppError.fileOperationFailed(
+                        operation: "save transferred image", underlying: error))
+                print(
+                    "Watch GalleryManager: FAILED to save \(imageName): \(error.localizedDescription)"
+                )
             #endif
         }
     }
@@ -219,7 +254,9 @@ class GalleryManager: ObservableObject {
         pendingAcknowledgments.append(contentsOf: imageNames)
 
         acknowledgmentTimer?.invalidate()
-        acknowledgmentTimer = Timer.scheduledTimer(withTimeInterval: acknowledgmentBatchDelay, repeats: false) { [weak self] _ in
+        acknowledgmentTimer = Timer.scheduledTimer(
+            withTimeInterval: acknowledgmentBatchDelay, repeats: false
+        ) { [weak self] _ in
             self?.sendAcknowledgments()
         }
     }
@@ -233,17 +270,21 @@ class GalleryManager: ObservableObject {
         let message: [String: Any] = [
             SyncConstants.Keys.action: SyncConstants.Actions.acknowledgeImages,
             SyncConstants.Keys.receivedImages: imagesToAcknowledge,
-            SyncConstants.Keys.timestamp: Date().timeIntervalSince1970
+            SyncConstants.Keys.timestamp: Date().timeIntervalSince1970,
         ]
 
         #if DEBUG
-            print("Watch GalleryManager: Sending acknowledgment for \(imagesToAcknowledge.count) images")
+            print(
+                "Watch GalleryManager: Sending acknowledgment for \(imagesToAcknowledge.count) images"
+            )
         #endif
 
         if WCSession.default.isReachable {
             WCSession.default.sendMessage(message, replyHandler: nil) { [weak self] error in
                 #if DEBUG
-                    print("Watch GalleryManager: Acknowledgment failed: \(error.localizedDescription)")
+                    print(
+                        "Watch GalleryManager: Acknowledgment failed: \(error.localizedDescription)"
+                    )
                 #endif
                 self?.pendingAcknowledgments.append(contentsOf: imagesToAcknowledge)
             }
@@ -257,7 +298,11 @@ class GalleryManager: ObservableObject {
     func imageExists(_ imageName: String) -> Bool {
         guard !imageName.isEmpty else { return true }
 
-        guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        guard
+            let documentsPath = FileManager.default.urls(
+                for: .documentDirectory, in: .userDomainMask
+            ).first
+        else {
             return false
         }
 
@@ -283,11 +328,13 @@ class GalleryManager: ObservableObject {
         let message: [String: Any] = [
             SyncConstants.Keys.action: SyncConstants.Actions.requestMissingImages,
             SyncConstants.Keys.missingImages: imageNames,
-            SyncConstants.Keys.timestamp: Date().timeIntervalSince1970
+            SyncConstants.Keys.timestamp: Date().timeIntervalSince1970,
         ]
 
         #if DEBUG
-            print("Watch GalleryManager: Requesting \(imageNames.count) missing images: \(imageNames)")
+            print(
+                "Watch GalleryManager: Requesting \(imageNames.count) missing images: \(imageNames)"
+            )
         #endif
 
         if WCSession.default.isReachable {
@@ -315,11 +362,13 @@ class GalleryManager: ObservableObject {
             SyncConstants.Keys.syncStatus: status,
             SyncConstants.Keys.receivedImages: Array(existingImages),
             SyncConstants.Keys.missingImages: Array(missingImages),
-            SyncConstants.Keys.timestamp: Date().timeIntervalSince1970
+            SyncConstants.Keys.timestamp: Date().timeIntervalSince1970,
         ]
 
         #if DEBUG
-            print("Watch GalleryManager: Reporting sync status: \(status) (received: \(existingImages.count), missing: \(missingImages.count))")
+            print(
+                "Watch GalleryManager: Reporting sync status: \(status) (received: \(existingImages.count), missing: \(missingImages.count))"
+            )
         #endif
 
         if WCSession.default.isReachable {
@@ -329,7 +378,8 @@ class GalleryManager: ObservableObject {
 
     private func loadReceivedHashes() {
         if let data = UserDefaults.standard.data(forKey: receivedHashesKey),
-           let hashes = try? JSONDecoder().decode(Set<String>.self, from: data) {
+            let hashes = try? JSONDecoder().decode(Set<String>.self, from: data)
+        {
             receivedImageHashes = hashes
         }
     }
@@ -342,7 +392,8 @@ class GalleryManager: ObservableObject {
 
     private func loadReceivedImages() {
         if let data = UserDefaults.standard.data(forKey: receivedImagesKey),
-           let images = try? JSONDecoder().decode(Set<String>.self, from: data) {
+            let images = try? JSONDecoder().decode(Set<String>.self, from: data)
+        {
             receivedImages = images
         }
     }
