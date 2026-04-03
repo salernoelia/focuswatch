@@ -15,24 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0E9D8CCE2E0D6C24002B7989"
-               BuildableName = "watch.app"
-               BlueprintName = "watch"
-               ReferencedContainer = "container:focuswatch.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "0E9D8CBE2E0D6C23002B7989"
                BuildableName = "companion.app"
                BlueprintName = "companion"
-               ReferencedContainer = "container:focuswatch.xcodeproj">
+               ReferencedContainer = "container:FocusWatch App.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -52,18 +38,7 @@
                BlueprintIdentifier = "0E257CA92F749AF9000D1CBF"
                BuildableName = "companion-testing.xctest"
                BlueprintName = "companion-testing"
-               ReferencedContainer = "container:focuswatch.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0E257CBA2F749B76000D1CBF"
-               BuildableName = "watch-testing.xctest"
-               BlueprintName = "watch-testing"
-               ReferencedContainer = "container:focuswatch.xcodeproj">
+               ReferencedContainer = "container:FocusWatch App.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -82,10 +57,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0E9D8CCE2E0D6C24002B7989"
-            BuildableName = "watch.app"
-            BlueprintName = "watch"
-            ReferencedContainer = "container:focuswatch.xcodeproj">
+            BlueprintIdentifier = "0E9D8CBE2E0D6C23002B7989"
+            BuildableName = "companion.app"
+            BlueprintName = "companion"
+            ReferencedContainer = "container:FocusWatch App.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -99,10 +74,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0E9D8CCE2E0D6C24002B7989"
-            BuildableName = "watch.app"
-            BlueprintName = "watch"
-            ReferencedContainer = "container:focuswatch.xcodeproj">
+            BlueprintIdentifier = "0E9D8CBE2E0D6C23002B7989"
+            BuildableName = "companion.app"
+            BlueprintName = "companion"
+            ReferencedContainer = "container:FocusWatch App.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
