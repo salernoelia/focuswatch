@@ -8,7 +8,7 @@ struct CompanionApp: App {
 
     init() {
         _syncCoordinator = StateObject(
-            wrappedValue: SyncCoordinator(transport: ConnectivityTransportAdapter())
+            wrappedValue: SyncCoordinator.shared
         )
     }
 
