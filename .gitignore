@@ -3,6 +3,8 @@ Development.xcconfig
 Production.xcconfig
 .env
 
+implementation.md
+
 .cursor/
 .github/instructions/
 .DS_Store

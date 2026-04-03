@@ -4,12 +4,15 @@ import WatchKit
 
 @main
 struct WatchApp: App {
-    @StateObject private var syncCoordinator = SyncCoordinator.shared
+    @StateObject private var syncCoordinator: SyncCoordinator
     @StateObject private var writingExerciseManager = WritingExerciseManager()
     @StateObject private var calendarManager = CalendarViewModel.shared
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        _syncCoordinator = StateObject(
+            wrappedValue: SyncCoordinator(transport: ConnectivityTransportAdapter())
+        )
         setupNotifications()
         syncWatchIdToWidget()
     }
@@ -53,11 +56,13 @@ struct WatchApp: App {
     private func scheduleBackgroundRefresh() async {
         let preferredDate = Calendar.current.date(byAdding: .hour, value: 6, to: Date()) ?? Date()
         await withCheckedContinuation { continuation in
-            WKExtension.shared().scheduleBackgroundRefresh(withPreferredDate: preferredDate, userInfo: nil) { error in
+            WKExtension.shared().scheduleBackgroundRefresh(
+                withPreferredDate: preferredDate, userInfo: nil
+            ) { error in
                 #if DEBUG
-                if let error {
-                    print("Failed to schedule background refresh: \(error)")
-                }
+                    if let error {
+                        print("Failed to schedule background refresh: \(error)")
+                    }
                 #endif
                 continuation.resume()
             }
@@ -93,7 +98,9 @@ struct WatchApp: App {
             options: []
         )
 
-        UNUserNotificationCenter.current().setNotificationCategories([launchCategory, reminderCategory])
+        UNUserNotificationCenter.current().setNotificationCategories([
+            launchCategory, reminderCategory,
+        ])
     }
 
     private func syncWatchIdToWidget() {
@@ -114,7 +121,8 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
-        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+        withCompletionHandler completionHandler:
+            @escaping (UNNotificationPresentationOptions) -> Void
     ) {
         completionHandler([.banner, .sound])
     }
@@ -133,9 +141,10 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
                 }
             }
         } else if let eventIdString = userInfo["eventId"] as? String,
-                  let eventId = UUID(uuidString: eventIdString),
-                  let reminderIdString = userInfo["reminderId"] as? String,
-                  let reminderId = UUID(uuidString: reminderIdString) {
+            let eventId = UUID(uuidString: eventIdString),
+            let reminderIdString = userInfo["reminderId"] as? String,
+            let reminderId = UUID(uuidString: reminderIdString)
+        {
             DispatchQueue.main.async {
                 if response.actionIdentifier == "SNOOZE_ACTION" {
                     self.scheduleSnoozeNotification(
@@ -165,7 +174,7 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
         userInfo: [AnyHashable: Any]
     ) {
         guard let event = CalendarViewModel.shared.events.first(where: { $0.id == eventId }),
-              let reminder = event.reminders.first(where: { $0.id == reminderId })
+            let reminder = event.reminders.first(where: { $0.id == reminderId })
         else {
             return
         }
@@ -192,8 +201,10 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
         }
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 300, repeats: false)
-        let identifier = "snooze-\(eventId.uuidString)-\(reminderId.uuidString)-\(Date().timeIntervalSince1970)"
-        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+        let identifier =
+            "snooze-\(eventId.uuidString)-\(reminderId.uuidString)-\(Date().timeIntervalSince1970)"
+        let request = UNNotificationRequest(
+            identifier: identifier, content: content, trigger: trigger)
 
         UNUserNotificationCenter.current().add(request) { _ in }
     }
