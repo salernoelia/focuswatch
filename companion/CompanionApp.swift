@@ -3,8 +3,14 @@ import SwiftUI
 
 @main
 struct CompanionApp: App {
-    @StateObject private var syncCoordinator = SyncCoordinator.shared
+    @StateObject private var syncCoordinator: SyncCoordinator
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+
+    init() {
+        _syncCoordinator = StateObject(
+            wrappedValue: SyncCoordinator(transport: ConnectivityTransportAdapter())
+        )
+    }
 
     var body: some Scene {
         WindowGroup {

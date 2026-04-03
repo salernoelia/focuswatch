@@ -3,13 +3,13 @@ import Foundation
 import WatchConnectivity
 
 final class SyncCoordinator: ObservableObject {
-    static let shared = SyncCoordinator()
+    static let shared = SyncCoordinator(transport: ConnectivityTransportAdapter())
 
     @Published var isConnected = false
     @Published var lastError: AppError?
     @Published private(set) var syncStatus: String = SyncConstants.Status.pending
 
-    let transport: ConnectivityTransport
+    let transport: SyncTransportProtocol
     let calendarService: CalendarSyncService
     let checklistService: ChecklistSyncService
     let levelService: LevelSyncService
@@ -22,7 +22,7 @@ final class SyncCoordinator: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     init(
-        transport: ConnectivityTransport = .shared,
+        transport: SyncTransportProtocol = ConnectivityTransportAdapter(),
         calendarService: CalendarSyncService = .shared,
         checklistService: ChecklistSyncService = .shared,
         levelService: LevelSyncService = .shared,
@@ -47,7 +47,7 @@ final class SyncCoordinator: ObservableObject {
     }
 
     private func setupObservers() {
-        transport.$isConnected
+        transport.isConnectedPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isConnected in
                 self?.isConnected = isConnected
@@ -57,18 +57,18 @@ final class SyncCoordinator: ObservableObject {
             }
             .store(in: &cancellables)
 
-        transport.$lastError
+        transport.lastErrorPublisher
             .receive(on: DispatchQueue.main)
             .assign(to: &$lastError)
 
-        transport.contextReceived
+        transport.contextReceivedPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] context in
                 self?.handleIncomingContext(context)
             }
             .store(in: &cancellables)
 
-        transport.messageReceived
+        transport.messageReceivedPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] message, replyHandler in
                 self?.handleIncomingMessage(message, replyHandler: replyHandler)
@@ -86,54 +86,57 @@ final class SyncCoordinator: ObservableObject {
             }
             .store(in: &cancellables)
 
-        NotificationCenter.default.publisher(for: NSNotification.Name("AllImagesAcknowledged"))
+        imageSyncService.syncResultPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.syncStatus = SyncConstants.Status.complete
+            .sink { [weak self] result in
+                switch result {
+                case .complete:
+                    self?.syncStatus = SyncConstants.Status.complete
+                }
             }
             .store(in: &cancellables)
     }
 
-  private func loadWatchUUIDFromContext() {
-    let context = transport.getReceivedApplicationContext()
-    if let watchUUID = context[SyncConstants.Keys.watchUUID] as? String {
-      WatchConfig.shared.setConnectedWatchUUID(watchUUID)
-    }
-  }
-
-  func syncAllData() {
-    checklistService.forceSync()
-    authService.sync()
-    telemetryService.sync()
-    calendarService.sync()
-    levelService.sync()
-
-    if let data = UserDefaults.standard.data(forKey: "appConfigurations"),
-      let configurations = try? JSONDecoder().decode(AppConfigurations.self, from: data)
-    {
-      configService.sync(configurations)
-    }
-  }
-
-  func forceReconnect() {
-    transport.forceReconnect()
-
-    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-      if self?.isConnected == true {
-        self?.loadWatchUUIDFromContext()
-        self?.syncAllData()
-        if self?.transport.isReachable == true {
-          self?.commandService.sendWakeUpMessage()
+    private func loadWatchUUIDFromContext() {
+        let context = transport.getReceivedApplicationContext()
+        if let watchUUID = context[SyncConstants.Keys.watchUUID] as? String {
+            WatchConfig.shared.setConnectedWatchUUID(watchUUID)
         }
-      }
     }
-  }
 
-  private func handleIncomingContext(_ context: [String: Any]) {
-    if let watchUUID = context[SyncConstants.Keys.watchUUID] as? String {
-      WatchConfig.shared.setConnectedWatchUUID(watchUUID)
+    func syncAllData() {
+        checklistService.forceSync()
+        authService.sync()
+        telemetryService.sync()
+        calendarService.sync()
+        levelService.sync()
+
+        if let data = UserDefaults.standard.data(forKey: "appConfigurations"),
+            let configurations = try? JSONDecoder().decode(AppConfigurations.self, from: data)
+        {
+            configService.sync(configurations)
+        }
     }
-  }
+
+    func forceReconnect() {
+        transport.forceReconnect()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            if self?.isConnected == true {
+                self?.loadWatchUUIDFromContext()
+                self?.syncAllData()
+                if self?.transport.isReachable == true {
+                    self?.commandService.sendWakeUpMessage()
+                }
+            }
+        }
+    }
+
+    private func handleIncomingContext(_ context: [String: Any]) {
+        if let watchUUID = context[SyncConstants.Keys.watchUUID] as? String {
+            WatchConfig.shared.setConnectedWatchUUID(watchUUID)
+        }
+    }
 
     private func handleIncomingMessage(
         _ message: [String: Any],
@@ -151,9 +154,8 @@ final class SyncCoordinator: ObservableObject {
             }
 
         case SyncConstants.Actions.syncLevelFromWatch:
-            if let dataString = message[SyncConstants.Keys.data] as? String,
-               let data = Data(base64Encoded: dataString),
-               let levelData = try? JSONDecoder().decode(LevelData.self, from: data)
+            if let data = message[SyncConstants.Keys.data] as? Data,
+                let levelData = try? JSONDecoder().decode(LevelData.self, from: data)
             {
                 levelService.handleIncomingLevelData(levelData)
             }

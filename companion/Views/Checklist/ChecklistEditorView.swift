@@ -4,7 +4,7 @@ import SwiftUI
 struct ChecklistEditorView: View {
     @ObservedObject var checklistDataStore: ChecklistDataStore
     @StateObject private var galleryStorage = GalleryStorage.shared
-    @StateObject private var syncCoordinator = SyncCoordinator.shared
+    @EnvironmentObject var syncCoordinator: SyncCoordinator
     @Environment(\.presentationMode) var presentationMode
     @State private var newChecklistId: UUID?
     @State private var showNewChecklistDetail = false
