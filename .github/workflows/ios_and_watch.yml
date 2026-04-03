@@ -29,7 +29,7 @@ jobs:
             device=$(xcrun simctl list devices available | grep "iPhone 16" | grep -v "Plus\|Pro\|Max" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
             xcodebuild test \
             -scheme "companion" \
-            -project "focuswatch.xcodeproj" \
+            -project "FocusWatch App.xcodeproj" \
             -destination "platform=iOS Simulator,arch=arm64,id=$device"
 
   build-and-test-watchos:
@@ -54,5 +54,5 @@ jobs:
             device=$(xcrun simctl list devices available | grep "Apple Watch Series 11 (46mm)" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
             xcodebuild test \
             -scheme "watch" \
-            -project "focuswatch.xcodeproj" \
+            -project "FocusWatch App.xcodeproj" \
             -destination "platform=watchOS Simulator,arch=arm64,id=$device"
