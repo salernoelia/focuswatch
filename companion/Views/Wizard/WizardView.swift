@@ -3,7 +3,6 @@ import WatchConnectivity
 
 struct WizardView: View {
     @EnvironmentObject private var syncCoordinator: SyncCoordinator
-    @StateObject private var checklistService = ChecklistSyncService.shared
     @StateObject private var testUsersManager = TestUsersManager.shared
     @StateObject private var supervisorManager = SupervisorManager.shared
     @StateObject private var authManager = AuthManager.shared
@@ -142,7 +141,9 @@ struct WizardView: View {
                 }
 
                 Section("Focus Tools") {
-                    ForEach(appsManager.apps.filter { $0.index < appsManager.builtInAppCount }, id: \.id) { app in
+                    ForEach(
+                        appsManager.apps.filter { $0.index < appsManager.builtInAppCount }, id: \.id
+                    ) { app in
                         HStack(spacing: 12) {
                             Button {
                                 CommandSyncService.shared.switchToApp(index: app.index)
@@ -178,7 +179,10 @@ struct WizardView: View {
 
                 if appsManager.apps.count > appsManager.builtInAppCount {
                     Section("Checklists") {
-                        ForEach(appsManager.apps.filter { $0.index >= appsManager.builtInAppCount }, id: \.id) { app in
+                        ForEach(
+                            appsManager.apps.filter { $0.index >= appsManager.builtInAppCount },
+                            id: \.id
+                        ) { app in
                             Button {
                                 CommandSyncService.shared.switchToApp(index: app.index)
                             } label: {
@@ -277,7 +281,6 @@ struct WizardView: View {
                 }
             }
             .onAppear {
-                checklistService.loadChecklistData()
                 appsManager.refreshApps()
                 tryInitialWatchConnect()
             }

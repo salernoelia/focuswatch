@@ -3,7 +3,7 @@ import SwiftUI
 
 struct UnifiedAddItemsView: View {
     @Binding var checklist: Checklist
-    @ObservedObject var checklistService: ChecklistSyncService
+    @ObservedObject var checklistDataStore: ChecklistDataStore
     @ObservedObject var galleryStorage: GalleryStorage
     @Environment(\.presentationMode) var presentationMode
 
@@ -389,10 +389,10 @@ struct UnifiedAddItemsView: View {
             checklist.items.append(newChecklistItem)
         }
 
-        var data = checklistService.checklistData
+        var data = checklistDataStore.checklistData
         if let index = data.checklists.firstIndex(where: { $0.id == checklist.id }) {
             data.checklists[index] = checklist
-            checklistService.updateChecklistData(data)
+            checklistDataStore.updateChecklistData(data)
         }
     }
 }
