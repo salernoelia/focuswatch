@@ -16,7 +16,7 @@ struct UnifiedAddItemsView: View {
   
   struct PendingItem: Identifiable {
     let id = UUID()
-    var image: UIImage
+    var image: UIImage?
     var label: String
   }
   
@@ -109,6 +109,20 @@ struct UnifiedAddItemsView: View {
       
       VStack(spacing: 12) {
         Button {
+          addPendingItem(image: nil, suggestedLabel: "")
+        } label: {
+          HStack {
+            Image(systemName: "character.textbox")
+            Text(NSLocalizedString("Text Only", comment: ""))
+          }
+          .frame(maxWidth: .infinity)
+          .padding()
+          .background(Color.accentColor)
+          .foregroundColor(.white)
+          .cornerRadius(12)
+        }
+
+        Button {
           showingPhotoPicker = true
         } label: {
           HStack {
@@ -160,15 +174,26 @@ struct UnifiedAddItemsView: View {
       List {
         ForEach($pendingItems) { $item in
           HStack(spacing: 12) {
-            Image(uiImage: item.image)
-              .resizable()
-              .scaledToFill()
-              .frame(width: 60, height: 60)
-              .clipShape(RoundedRectangle(cornerRadius: 8))
-              .overlay(
+            Group {
+              if let image = item.image {
+                Image(uiImage: image)
+                  .resizable()
+                  .scaledToFill()
+              } else {
                 RoundedRectangle(cornerRadius: 8)
-                  .stroke(Color.secondary.opacity(0.2), lineWidth: 0.5)
-              )
+                  .fill(Color.accentColor.opacity(0.2))
+                  .overlay(
+                    Image(systemName: "character.textbox")
+                      .foregroundColor(.accentColor)
+                  )
+              }
+            }
+            .frame(width: 60, height: 60)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+              RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.secondary.opacity(0.2), lineWidth: 0.5)
+            )
             
             TextField(NSLocalizedString("Label", comment: ""), text: $item.label)
               .font(.body)
@@ -205,56 +230,77 @@ struct UnifiedAddItemsView: View {
       VStack(spacing: 0) {
         Divider()
         
-        HStack(spacing: 8) {
-          Button {
-            showingPhotoPicker = true
-          } label: {
-            HStack(spacing: 6) {
-              Image(systemName: "photo.badge.plus")
-                .font(.body)
-              Text(NSLocalizedString("Photos", comment: ""))
-                .font(.subheadline)
-                .fontWeight(.medium)
+        VStack(spacing: 8) {
+          HStack(spacing: 8) {
+            Button {
+              addPendingItem(image: nil, suggestedLabel: "")
+            } label: {
+              HStack(spacing: 6) {
+                Image(systemName: "character.textbox")
+                  .font(.body)
+                Text(NSLocalizedString("Text", comment: ""))
+                  .font(.subheadline)
+                  .fontWeight(.medium)
+              }
+              .frame(maxWidth: .infinity)
+              .padding(.vertical, 14)
+              .background(Color.accentColor.opacity(0.1))
+              .foregroundColor(.accentColor)
+              .cornerRadius(10)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(Color.accentColor.opacity(0.1))
-            .foregroundColor(.accentColor)
-            .cornerRadius(10)
+
+            Button {
+              showingPhotoPicker = true
+            } label: {
+              HStack(spacing: 6) {
+                Image(systemName: "photo.badge.plus")
+                  .font(.body)
+                Text(NSLocalizedString("Photos", comment: ""))
+                  .font(.subheadline)
+                  .fontWeight(.medium)
+              }
+              .frame(maxWidth: .infinity)
+              .padding(.vertical, 14)
+              .background(Color.accentColor.opacity(0.1))
+              .foregroundColor(.accentColor)
+              .cornerRadius(10)
+            }
           }
-          
-          Button {
-            showingCameraPicker = true
-          } label: {
-            HStack(spacing: 6) {
-              Image(systemName: "camera")
-                .font(.body)
-              Text(NSLocalizedString("Camera", comment: ""))
-                .font(.subheadline)
-                .fontWeight(.medium)
+
+          HStack(spacing: 8) {
+            Button {
+              showingCameraPicker = true
+            } label: {
+              HStack(spacing: 6) {
+                Image(systemName: "camera")
+                  .font(.body)
+                Text(NSLocalizedString("Camera", comment: ""))
+                  .font(.subheadline)
+                  .fontWeight(.medium)
+              }
+              .frame(maxWidth: .infinity)
+              .padding(.vertical, 14)
+              .background(Color.accentColor.opacity(0.1))
+              .foregroundColor(.accentColor)
+              .cornerRadius(10)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(Color.accentColor.opacity(0.1))
-            .foregroundColor(.accentColor)
-            .cornerRadius(10)
-          }
-          
-          Button {
-            showingGalleryPicker = true
-          } label: {
-            HStack(spacing: 6) {
-              Image(systemName: "square.grid.2x2")
-                .font(.body)
-              Text(NSLocalizedString("Items", comment: ""))
-                .font(.subheadline)
-                .fontWeight(.medium)
+
+            Button {
+              showingGalleryPicker = true
+            } label: {
+              HStack(spacing: 6) {
+                Image(systemName: "square.grid.2x2")
+                  .font(.body)
+                Text(NSLocalizedString("Items", comment: ""))
+                  .font(.subheadline)
+                  .fontWeight(.medium)
+              }
+              .frame(maxWidth: .infinity)
+              .padding(.vertical, 14)
+              .background(Color.accentColor.opacity(0.1))
+              .foregroundColor(.accentColor)
+              .cornerRadius(10)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(Color.accentColor.opacity(0.1))
-            .foregroundColor(.accentColor)
-            .cornerRadius(10)
           }
         }
         .padding(.horizontal, 16)
@@ -289,7 +335,7 @@ struct UnifiedAddItemsView: View {
     selectedPhotoItems = []
   }
   
-  private func addPendingItem(image: UIImage, suggestedLabel: String) {
+  private func addPendingItem(image: UIImage?, suggestedLabel: String) {
     let newItem = PendingItem(
       image: image,
       label: suggestedLabel.isEmpty ? "" : suggestedLabel
@@ -321,9 +367,15 @@ struct UnifiedAddItemsView: View {
       let finalLabel = item.label.trimmingCharacters(in: .whitespacesAndNewlines)
       guard !finalLabel.isEmpty else { continue }
       
-      galleryStorage.addItem(image: item.image, label: finalLabel)
-      
-      let newChecklistItem = ChecklistItem(title: finalLabel, imageName: finalLabel)
+      let imageName: String
+      if let image = item.image {
+        galleryStorage.addItem(image: image, label: finalLabel)
+        imageName = finalLabel
+      } else {
+        imageName = ""
+      }
+
+      let newChecklistItem = ChecklistItem(title: finalLabel, imageName: imageName)
       checklist.items.append(newChecklistItem)
     }
     

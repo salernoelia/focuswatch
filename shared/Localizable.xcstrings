@@ -3672,6 +3672,12 @@
         }
       }
     },
+    "Text" : {
+
+    },
+    "Text Only" : {
+
+    },
     "The usage data of the watch will be collected to improve the functionality of FokusUhr as it is a scientific project." : {
       "localizations" : {
         "de" : {

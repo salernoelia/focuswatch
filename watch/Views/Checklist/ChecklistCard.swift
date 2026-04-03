@@ -49,7 +49,7 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
             .clipped()
             .brightness(-0.2)
         } else {
-          Color.blue.opacity(0.6)
+          fallbackColor
         }
       }
 
@@ -164,7 +164,27 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
     isProcessing = false
   }
 
+  private var fallbackColor: Color {
+    let palette: [Color] = [
+      Color(red: 0.18, green: 0.45, blue: 0.78),
+      Color(red: 0.12, green: 0.58, blue: 0.49),
+      Color(red: 0.79, green: 0.46, blue: 0.16),
+      Color(red: 0.69, green: 0.28, blue: 0.36),
+      Color(red: 0.41, green: 0.33, blue: 0.74),
+    ]
+
+    let hash = item.title.unicodeScalars.reduce(0) { partialResult, scalar in
+      (partialResult &* 31 &+ Int(scalar.value))
+    }
+
+    return palette[abs(hash) % palette.count].opacity(0.8)
+  }
+
   private func loadImage(named imageName: String) -> UIImage? {
+    guard !imageName.isEmpty else {
+      return nil
+    }
+
     if let bundledImage = UIImage(named: imageName) {
       return bundledImage
     }

@@ -76,4 +76,5 @@ EMA-based accelerometer model in `watch/Views/Writing/`. `EmaModel` processes mo
 - **Logging** — use `AppLogger` for telemetry events, `ErrorLogger` for debug/error logging.
 - **Branching** — `feature/issue-number-description` or `fix/issue-number-description`; no direct commits to `main`; PRs must reference an open issue.
 - All tests must pass before merging.
+- Make sure new features or adjustments dont break backwards compatibility
 - Never use emojis
