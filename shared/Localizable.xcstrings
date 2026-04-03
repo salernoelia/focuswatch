@@ -906,7 +906,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Farne"
+            "value" : "Farben"
           }
         }
       }
@@ -1088,10 +1088,10 @@
       }
     },
     "Debug" : {
-
+      "shouldTranslate" : false
     },
     "Debug Tools" : {
-
+      "shouldTranslate" : false
     },
     "Dein Feedback" : {
       "localizations" : {
@@ -3638,7 +3638,7 @@
       }
     },
     "Test Vibration" : {
-
+      "shouldTranslate" : false
     },
     "Tester: %@" : {
       "localizations" : {
