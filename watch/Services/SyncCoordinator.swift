@@ -31,6 +31,10 @@ final class SyncCoordinator: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private var validationTimer: Timer?
 
+    deinit {
+        validationTimer?.invalidate()
+    }
+
     init(
         transport: SyncTransportProtocol = ConnectivityTransportAdapter(),
         checklistManager: ChecklistViewModel = .shared,
@@ -151,6 +155,8 @@ final class SyncCoordinator: ObservableObject {
                 replyHandler: { [weak self] _ in
                     DispatchQueue.main.async {
                         self?.transport.loadLatestApplicationContext()
+                        self?.validateCurrentSync()
+                        self?.isSyncing = false
                     }
                 },
                 errorHandler: { [weak self] _ in
@@ -161,15 +167,8 @@ final class SyncCoordinator: ObservableObject {
         } else {
             transport.transferUserInfo(message)
             transport.loadLatestApplicationContext()
+            validateCurrentSync()
             isSyncing = false
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10.0) { [weak self] in
-            self?.validateCurrentSync()
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 15.0) { [weak self] in
-            self?.isSyncing = false
         }
     }
 
@@ -192,12 +191,8 @@ final class SyncCoordinator: ObservableObject {
         )
 
         if checklistUpdated {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
-                self?.validateCurrentSync()
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 8.0) { [weak self] in
-                self?.isSyncing = false
-            }
+            validateCurrentSync()
+            isSyncing = false
         } else {
             isSyncing = false
         }
@@ -226,13 +221,11 @@ final class SyncCoordinator: ObservableObject {
 
         switch action {
         case SyncConstants.Actions.updateChecklist:
-            if let dataString = userInfo[SyncConstants.Keys.data] as? String,
-                let data = Data(base64Encoded: dataString)
-            {
+            if let data = userInfo[SyncConstants.Keys.data] as? Data {
                 let forceOverwrite = userInfo[SyncConstants.Keys.forceOverwrite] as? Bool ?? false
                 checklistManager.updateChecklistData(from: data, forceOverwrite: forceOverwrite)
             }
-            if let imageData = userInfo[SyncConstants.Keys.imageData] as? [String: String] {
+            if let imageData = userInfo[SyncConstants.Keys.imageData] as? [String: Data] {
                 galleryManager.saveGalleryImages(imageData)
             }
 
@@ -249,9 +242,7 @@ final class SyncCoordinator: ObservableObject {
             }
 
         case SyncConstants.Actions.updateLevel:
-            if let dataString = userInfo[SyncConstants.Keys.data] as? String,
-                let data = Data(base64Encoded: dataString)
-            {
+            if let data = userInfo[SyncConstants.Keys.data] as? Data {
                 handleLevelUpdate(data: data)
             }
 
@@ -266,13 +257,11 @@ final class SyncCoordinator: ObservableObject {
             currentView = .mainMenu
 
         case SyncConstants.Actions.updateChecklist:
-            if let dataString = context[SyncConstants.Keys.data] as? String,
-                let data = Data(base64Encoded: dataString)
-            {
+            if let data = context[SyncConstants.Keys.data] as? Data {
                 let forceOverwrite = context[SyncConstants.Keys.forceOverwrite] as? Bool ?? false
                 checklistManager.updateChecklistData(from: data, forceOverwrite: forceOverwrite)
             }
-            if let imageData = context[SyncConstants.Keys.imageData] as? [String: String] {
+            if let imageData = context[SyncConstants.Keys.imageData] as? [String: Data] {
                 galleryManager.saveGalleryImages(imageData)
             }
 
@@ -282,9 +271,7 @@ final class SyncCoordinator: ObservableObject {
             }
 
         case SyncConstants.Actions.updateLevel:
-            if let dataString = context[SyncConstants.Keys.data] as? String,
-                let data = Data(base64Encoded: dataString)
-            {
+            if let data = context[SyncConstants.Keys.data] as? Data {
                 handleLevelUpdate(data: data)
             }
 
@@ -356,7 +343,7 @@ final class SyncCoordinator: ObservableObject {
                 let data = try JSONEncoder().encode(levelData)
                 let message: [String: Any] = [
                     SyncConstants.Keys.action: SyncConstants.Actions.syncLevelFromWatch,
-                    SyncConstants.Keys.data: data.base64EncodedString(),
+                    SyncConstants.Keys.data: data,
                     SyncConstants.Keys.timestamp: Date().timeIntervalSince1970,
                 ]
 
@@ -466,13 +453,11 @@ final class IncomingMessageRouter {
             setCurrentView(.mainMenu)
 
         case SyncConstants.Actions.updateChecklist:
-            if let dataString = message[SyncConstants.Keys.data] as? String,
-                let data = Data(base64Encoded: dataString)
-            {
+            if let data = message[SyncConstants.Keys.data] as? Data {
                 let forceOverwrite = message[SyncConstants.Keys.forceOverwrite] as? Bool ?? false
                 checklistManager.updateChecklistData(from: data, forceOverwrite: forceOverwrite)
             }
-            if let imageData = message[SyncConstants.Keys.imageData] as? [String: String] {
+            if let imageData = message[SyncConstants.Keys.imageData] as? [String: Data] {
                 galleryManager.saveGalleryImages(imageData)
             }
 
@@ -495,17 +480,14 @@ final class IncomingMessageRouter {
             }
 
         case SyncConstants.Actions.updateCalendar:
-            if let dataString = message[SyncConstants.Keys.data] as? String,
-                let data = Data(base64Encoded: dataString),
+            if let data = message[SyncConstants.Keys.data] as? Data,
                 let events = try? JSONDecoder().decode([EventTransfer].self, from: data)
             {
                 updateCalendarEvents(events)
             }
 
         case SyncConstants.Actions.updateLevel:
-            if let dataString = message[SyncConstants.Keys.data] as? String,
-                let data = Data(base64Encoded: dataString)
-            {
+            if let data = message[SyncConstants.Keys.data] as? Data {
                 handleLevelUpdate(data)
             }
 

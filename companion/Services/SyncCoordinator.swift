@@ -86,10 +86,13 @@ final class SyncCoordinator: ObservableObject {
             }
             .store(in: &cancellables)
 
-        NotificationCenter.default.publisher(for: NSNotification.Name("AllImagesAcknowledged"))
+        imageSyncService.syncResultPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.syncStatus = SyncConstants.Status.complete
+            .sink { [weak self] result in
+                switch result {
+                case .complete:
+                    self?.syncStatus = SyncConstants.Status.complete
+                }
             }
             .store(in: &cancellables)
     }
@@ -151,8 +154,7 @@ final class SyncCoordinator: ObservableObject {
             }
 
         case SyncConstants.Actions.syncLevelFromWatch:
-            if let dataString = message[SyncConstants.Keys.data] as? String,
-                let data = Data(base64Encoded: dataString),
+            if let data = message[SyncConstants.Keys.data] as? Data,
                 let levelData = try? JSONDecoder().decode(LevelData.self, from: data)
             {
                 levelService.handleIncomingLevelData(levelData)

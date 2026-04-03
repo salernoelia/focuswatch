@@ -2,6 +2,10 @@ import Combine
 import Foundation
 import WatchConnectivity
 
+enum ImageSyncResult {
+    case complete(syncId: String)
+}
+
 final class ImageSyncService: ObservableObject {
     static let shared = ImageSyncService()
 
@@ -16,9 +20,14 @@ final class ImageSyncService: ObservableObject {
     private var pendingHashes: Set<String> = []
     private let syncedHashesKey = "syncedImageHashes"
     private var retryQueue: [(URL, [String: Any])] = []
+    private var queuedRetryImages: Set<String> = []
     private var isProcessingRetry = false
-    private var verificationTimer: Timer?
     private var currentSyncId: String?
+    private let syncResultSubject = PassthroughSubject<ImageSyncResult, Never>()
+
+    var syncResultPublisher: AnyPublisher<ImageSyncResult, Never> {
+        syncResultSubject.eraseToAnyPublisher()
+    }
 
     init(
         transport: ConnectivityTransport = .shared,
@@ -28,7 +37,6 @@ final class ImageSyncService: ObservableObject {
         self.stateManager = stateManager
         loadSyncedHashes()
         setupObservers()
-        startVerificationTimer()
     }
 
     private func setupObservers() {
@@ -45,30 +53,6 @@ final class ImageSyncService: ObservableObject {
                 self?.handleMessage(message, replyHandler: replyHandler)
             }
             .store(in: &cancellables)
-    }
-
-    private func startVerificationTimer() {
-        verificationTimer?.invalidate()
-        verificationTimer = Timer.scheduledTimer(
-            withTimeInterval: SyncConstants.Timing.verificationInterval,
-            repeats: true
-        ) { [weak self] _ in
-            self?.checkSyncState()
-        }
-    }
-
-    private func checkSyncState() {
-        guard let state = stateManager.getCurrentState(), !state.isComplete else { return }
-
-        if state.needsRetry {
-            #if DEBUG
-                print(
-                    "iOS ImageSync: Sync state needs retry - missing images: \(state.missingImages)"
-                )
-            #endif
-            stateManager.updateState { $0.incrementRetry() }
-            retryMissingImages(state.missingImages)
-        }
     }
 
     func syncImages(
@@ -114,6 +98,9 @@ final class ImageSyncService: ObservableObject {
                 state.markChecklistSynced()
             }
             stateManager.completeCurrentSync()
+            isSyncing = false
+            syncProgress = 1.0
+            syncResultSubject.send(.complete(syncId: id))
             return
         }
 
@@ -190,7 +177,7 @@ final class ImageSyncService: ObservableObject {
                     #if DEBUG
                         print("iOS ImageSync: Failed to queue transfer: \(imageName)")
                     #endif
-                    self.retryQueue.append((url, metadata))
+                    self.enqueueRetryTransfer(fileURL: url, metadata: metadata)
                     self.stateManager.updateState { $0.markImageFailed(imageName) }
                 }
             }
@@ -236,7 +223,6 @@ final class ImageSyncService: ObservableObject {
             ).first
         else { return }
 
-        var retryCount = 0
         let syncId = currentSyncId ?? stateManager.getCurrentState()?.id ?? UUID().uuidString
 
         for imageName in imageNames {
@@ -256,18 +242,11 @@ final class ImageSyncService: ObservableObject {
                 SyncConstants.Keys.timestamp: Date().timeIntervalSince1970,
             ]
 
-            if transport.transferFile(url, metadata: metadata) != nil {
-                retryCount += 1
-                stateManager.updateState { $0.markImageTransferred(imageName) }
-                #if DEBUG
-                    print("iOS ImageSync: Retry queued for: \(imageName)")
-                #endif
-            }
-        }
-
-        if retryCount > 0 {
-            pendingTransfers += retryCount
-            isSyncing = true
+            enqueueRetryTransfer(fileURL: url, metadata: metadata)
+            stateManager.updateState { $0.markImageTransferred(imageName) }
+            #if DEBUG
+                print("iOS ImageSync: Retry requested for: \(imageName)")
+            #endif
         }
     }
 
@@ -289,9 +268,7 @@ final class ImageSyncService: ObservableObject {
                 #if DEBUG
                     print("iOS ImageSync: Watch requests missing images: \(missingImages)")
                 #endif
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
-                    self?.retryMissingImages(Set(missingImages))
-                }
+                retryMissingImages(Set(missingImages))
             }
             replyHandler?([SyncConstants.Keys.status: SyncConstants.Status.success])
 
@@ -323,13 +300,11 @@ final class ImageSyncService: ObservableObject {
             #if DEBUG
                 print("iOS ImageSync: All images acknowledged - sync complete")
             #endif
+            let syncId = state.id
             stateManager.completeCurrentSync()
             isSyncing = false
             syncProgress = 1.0
-            NotificationCenter.default.post(
-                name: NSNotification.Name("AllImagesAcknowledged"),
-                object: state.id
-            )
+            syncResultSubject.send(.complete(syncId: syncId))
         }
     }
 
@@ -345,10 +320,7 @@ final class ImageSyncService: ObservableObject {
                 #if DEBUG
                     print("iOS ImageSync: Watch missing images: \(missingImages)")
                 #endif
-                DispatchQueue.main.asyncAfter(deadline: .now() + SyncConstants.Timing.retryDelay) {
-                    [weak self] in
-                    self?.retryMissingImages(Set(missingImages))
-                }
+                retryMissingImages(Set(missingImages))
             }
         }
     }
@@ -370,6 +342,7 @@ final class ImageSyncService: ObservableObject {
     }
 
     func forceSyncAllImages(for checklistData: ChecklistData, galleryStorage: GalleryStorage) {
+        cancelAllOutstandingTransfers()
         clearSyncedHashes()
         stateManager.clearAll()
         syncImages(for: checklistData, galleryStorage: galleryStorage)
@@ -395,6 +368,9 @@ final class ImageSyncService: ObservableObject {
         pendingTransfers = 0
         pendingHashes.removeAll()
         retryQueue.removeAll()
+        queuedRetryImages.removeAll()
+        isProcessingRetry = false
+        isSyncing = false
         #if DEBUG
             print("iOS ImageSync: Cancelled all outstanding transfers")
         #endif
@@ -429,8 +405,7 @@ final class ImageSyncService: ObservableObject {
             #endif
 
             stateManager.updateState { $0.markImageFailed(imageName) }
-            retryQueue.append((transfer.file.fileURL, metadata))
-            scheduleRetry()
+            enqueueRetryTransfer(fileURL: transfer.file.fileURL, metadata: metadata)
         } else {
             syncedImageHashes.insert(hashKey)
             saveSyncedHashes()
@@ -466,6 +441,9 @@ final class ImageSyncService: ObservableObject {
         }
 
         let (fileURL, metadata) = retryQueue.removeFirst()
+        if let imageName = metadata[SyncConstants.Keys.imageName] as? String {
+            queuedRetryImages.remove(imageName)
+        }
 
         guard FileManager.default.fileExists(atPath: fileURL.path),
             WCSession.default.activationState == .activated
@@ -496,6 +474,15 @@ final class ImageSyncService: ObservableObject {
         }
 
         isProcessingRetry = false
+        scheduleRetry()
+    }
+
+    private func enqueueRetryTransfer(fileURL: URL, metadata: [String: Any]) {
+        guard let imageName = metadata[SyncConstants.Keys.imageName] as? String else { return }
+        guard !queuedRetryImages.contains(imageName) else { return }
+
+        queuedRetryImages.insert(imageName)
+        retryQueue.append((fileURL, metadata))
         scheduleRetry()
     }
 

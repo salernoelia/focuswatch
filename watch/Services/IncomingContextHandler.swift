@@ -30,11 +30,6 @@ final class IncomingContextHandler {
             let events = try? JSONDecoder().decode([EventTransfer].self, from: calendarDataBytes)
         {
             updateCalendarEvents(events)
-        } else if let calendarDataString = context[SyncConstants.Keys.calendarData] as? String,
-            let data = Data(base64Encoded: calendarDataString),
-            let events = try? JSONDecoder().decode([EventTransfer].self, from: data)
-        {
-            updateCalendarEvents(events)
         }
 
         var checklistUpdated = false
@@ -59,7 +54,7 @@ final class IncomingContextHandler {
                 }
             #endif
 
-            if let imageData = context[SyncConstants.Keys.checklistImageData] as? [String: String],
+            if let imageData = context[SyncConstants.Keys.checklistImageData] as? [String: Data],
                 !imageData.isEmpty
             {
                 #if DEBUG
@@ -75,48 +70,14 @@ final class IncomingContextHandler {
             checklistManager.updateChecklistData(
                 from: checklistDataBytes, forceOverwrite: forceOverwrite)
             checklistUpdated = true
-        } else if let checklistDataString = context[SyncConstants.Keys.checklistData] as? String,
-            let data = Data(base64Encoded: checklistDataString)
-        {
-            let forceOverwrite = context[SyncConstants.Keys.forceOverwrite] as? Bool ?? false
-
-            #if DEBUG
-                ErrorLogger.log(
-                    "Watch: Processing base64 checklist data (forceOverwrite: \(forceOverwrite))")
-            #endif
-
-            if let imageData = context[SyncConstants.Keys.checklistImageData] as? [String: String],
-                !imageData.isEmpty
-            {
-                #if DEBUG
-                    ErrorLogger.log(
-                        "Watch: Saving \(imageData.count) gallery images from base64 context")
-                #endif
-                galleryManager.saveGalleryImages(imageData)
-            } else {
-                #if DEBUG
-                    ErrorLogger.log("Watch: No images in base64 context payload")
-                #endif
-            }
-
-            checklistManager.updateChecklistData(from: data, forceOverwrite: forceOverwrite)
-            checklistUpdated = true
         }
 
         if let levelDataBytes = context[SyncConstants.Keys.levelData] as? Data {
             handleLevelUpdate(levelDataBytes)
-        } else if let levelDataString = context[SyncConstants.Keys.levelData] as? String,
-            let data = Data(base64Encoded: levelDataString)
-        {
-            handleLevelUpdate(data)
         }
 
         if let configDataBytes = context[SyncConstants.Keys.appConfigurations] as? Data {
             handleConfigurationsUpdate(configDataBytes)
-        } else if let configDataString = context[SyncConstants.Keys.appConfigurations] as? String,
-            let data = Data(base64Encoded: configDataString)
-        {
-            handleConfigurationsUpdate(data)
         }
 
         if let action = context[SyncConstants.Keys.action] as? String {

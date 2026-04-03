@@ -57,7 +57,7 @@ class GalleryManager: ObservableObject {
         saveReceivedImages()
     }
 
-    func saveGalleryImages(_ imageData: [String: String]) {
+    func saveGalleryImages(_ imageData: [String: Data]) {
         #if DEBUG
             print("Watch GalleryManager: Received \(imageData.count) images via applicationContext: \(imageData.keys.sorted())")
         #endif
@@ -93,14 +93,8 @@ class GalleryManager: ObservableObject {
         var skippedCount = 0
         var savedImageNames: [String] = []
 
-        for (imageName, base64String) in imageData {
-            guard let data = Data(base64Encoded: base64String) else {
-                #if DEBUG
-                    print("Watch GalleryManager: Failed to decode base64 for \(imageName)")
-                    ErrorLogger.log(AppError.decodingFailed(type: "base64 image", underlying: NSError(domain: "GalleryManager", code: -1)))
-                #endif
-                continue
-            }
+        for (imageName, imageBytes) in imageData {
+            let data = imageBytes
 
             let imageURL = documentsPath.appendingPathComponent("\(imageName).jpg")
 
@@ -141,7 +135,7 @@ class GalleryManager: ObservableObject {
         }
     }
 
-    private func computeImageDataHash(_ imageData: [String: String]) -> Int {
+    private func computeImageDataHash(_ imageData: [String: Data]) -> Int {
         var hasher = Hasher()
         for key in imageData.keys.sorted() {
             hasher.combine(key)
