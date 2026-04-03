@@ -3883,6 +3883,7 @@
       }
     },
     "Tutorial Done!" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
