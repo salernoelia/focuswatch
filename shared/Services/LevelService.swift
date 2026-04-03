@@ -27,7 +27,8 @@ class LevelService: ObservableObject {
         loadMilestones: (() -> [LevelMilestone])? = nil,
         notifyLevelChange: (() -> Void)? = nil
     ) {
-        self.loadMilestones = loadMilestones
+        self.loadMilestones =
+            loadMilestones
             ?? {
                 #if os(watchOS)
                     return SyncCoordinator.shared.loadLevelMilestones()
@@ -36,7 +37,8 @@ class LevelService: ObservableObject {
                 #endif
             }
         #if os(watchOS)
-            self.notifyLevelChange = notifyLevelChange
+            self.notifyLevelChange =
+                notifyLevelChange
                 ?? {
                     SyncCoordinator.shared.syncLevelToiOS()
                 }
@@ -74,7 +76,8 @@ class LevelService: ObservableObject {
         } catch {
             #if DEBUG
                 ErrorLogger.log(
-                    AppError.databaseQueryFailed(operation: "fetch LevelProgress", underlying: error))
+                    AppError.databaseQueryFailed(
+                        operation: "fetch LevelProgress", underlying: error))
             #endif
         }
     }
@@ -148,7 +151,8 @@ class LevelService: ObservableObject {
                 content.title = String(localized: "🏆 \(milestones[0].title)")
                 content.body = String(localized: "Level \(level) reached!")
             } else {
-                content.title = String(localized: "🏆 Level \(level) - \(milestones.count) Milestones!")
+                content.title = String(
+                    localized: "🏆 Level \(level) - \(milestones.count) Milestones!")
                 let milestoneNames = milestones.map { $0.title }.joined(separator: ", ")
                 content.body = milestoneNames
             }
@@ -181,7 +185,8 @@ class LevelService: ObservableObject {
         } catch {
             #if DEBUG
                 ErrorLogger.log(
-                    AppError.databaseQueryFailed(operation: "save LevelProgress", underlying: error))
+                    AppError.databaseQueryFailed(operation: "save LevelProgress", underlying: error)
+                )
             #endif
         }
     }
