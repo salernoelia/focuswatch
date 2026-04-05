@@ -93,16 +93,6 @@ struct AccelerometerVector: Codable {
   }
 }
 
-// MARK: - GoogleDB Struct
-/// A container for static string constants representing Google Drive folder IDs.
-struct GoogleDB {
-  // Config folder not used anymore
-  // static let config_folder: String = "1voOQiyndC5VEGhpbRgXrzszt7t_gzM9d"
-  static let data_folder: String = "1fzd0ibjS4wpKxlNU62MZNwKA5DjtLZMk"
-  static let config_log_folder: String = "1g_uEvDzQuN7xIBvXqdy0e2F00QjQoNJk"
-  static let statehistory_folder: String = "1mC2HiVRhur-Txt9MY-Ph4ToeS8-YCHvl"
-}
-
 // MARK: - UserConfigs Class
 
 // MARK: - UserConfigs Class

@@ -7,17 +7,6 @@
 import CoreMotion
 import Foundation
 
-// MARK: - Upload Service Protocol
-/// Protocol to abstract upload functionality for easier testing.
-protocol UploadService {
-  func uploadDataToGoogleDrive(
-    binaryData: Data,
-    filename: String,
-    folderid: String,
-    completion: @escaping (Result<URL, Error>) -> Void
-  )
-}
-
 // MARK: - AccelerometerRecord Struct
 /// Represents a single record of accelerometer data with a timestamp delta.
 struct AccelerometerRecord {
@@ -33,38 +22,12 @@ struct AccelerometerRecord {
 
 // MARK: - DataStorageManager Class
 /// Manages all data persistence, including creating and updating local JSON files,
-/// fetching recorded accelerometer data, and uploading data to external services like Google Drive and a custom webhook.
+/// fetching recorded accelerometer data, and uploading data to external services (webhook).
 /// It also handles a retry mechanism for failed uploads.
-class DataStorageManager: UploadService {
+class DataStorageManager {
 
   /// A `CMSensorRecorder` instance used for fetching historical accelerometer data.
   private var sensorRecorder = CMSensorRecorder()
-
-  /// Service used to handle file uploads.
-  ///
-  /// - By default, this is set to `self`, so the class uses its built-in
-  ///   `uploadDataToGoogleDrive` implementation.
-  /// - In **unit tests**, you can assign a custom `UploadService` (e.g., `MockUploadService`)
-  ///   to test upload and error handling **without real Google Drive uploads**.
-  /// - The property is declared as `internal private(set)`:
-  ///   - It can be **overridden in the same module or in tests** (via `@testable import`)
-  ///   - It cannot be modified from outside the module in normal usage
-  internal var uploadService: UploadService!
-
-  /// Initializes the DataStorageManager.
-  ///
-  /// - Sets `uploadService` to `self` so that the default implementation is used.
-  /// - In **unit tests**, you can override `uploadService` after initialization
-  ///   to inject a mock service for testing.
-  init() {
-    self.uploadService = self  // Jetzt geht es
-  }
-
-  // MARK: - Constants for Folder IDs
-  /// The Google Drive folder ID for storing binary (.bin) sensor data files.
-  private let folderIDBin = GoogleDB.data_folder
-  /// The Google Drive folder ID for storing JSON session log and configuration files.
-  private let folderIDJSON = GoogleDB.config_log_folder
 
   // MARK: - FailedUpload Struct
   /// A struct to represent a file that failed to upload, allowing it to be retried later.
@@ -257,17 +220,22 @@ class DataStorageManager: UploadService {
     return .success(binaryData)
   }
 
-  /// Uploads binary accelerometer data to Google Drive.
+  /// Stores binary accelerometer data locally.
   /// - Parameters:
-  ///   - binaryData: The binary accelerometer data to upload.
+  ///   - binaryData: The binary accelerometer data to store.
   ///   - sessionFilename: The original session JSON filename (used to derive the .bin filename).
-  ///   - completion: A result handler with the uploaded file URL or an error.
+  ///   - completion: A result handler with the stored file URL or an error.
   internal func uploadBinaryData(
     _ binaryData: Data, sessionFilename: String, completion: @escaping (Result<URL, Error>) -> Void
   ) {
     let filename = (sessionFilename as NSString).deletingPathExtension + ".bin"
-    uploadService.uploadDataToGoogleDrive(
-      binaryData: binaryData, filename: filename, folderid: folderIDBin, completion: completion)
+    let result = storeDataToFile(data: binaryData, filename: filename)
+    switch result {
+    case .success(let url):
+      completion(.success(url))
+    case .failure(let error):
+      completion(.failure(error))
+    }
   }
 
   // MARK: - Data Uploading
@@ -346,45 +314,6 @@ class DataStorageManager: UploadService {
         }
       }
     }
-  }
-
-  /// Uploads data to a specific Google Drive folder. Handles both success and failure by logging the attempt.
-  internal func uploadDataToGoogleDrive(
-    binaryData: Data, filename: String, folderid: String,
-    completion: @escaping (Result<URL, Error>) -> Void
-  ) {
-    self.uploadToGoogleDrive(
-      data: binaryData,
-      filename: filename,
-      folderID: folderid
-    ) { result in
-      switch result {
-      case .success:
-        print("Binary data uploaded successfully to Google Drive.")
-        self.storeSuccessUpload(data: binaryData, filename: filename)
-        // Create a placeholder URL for success.
-        if let url = URL(string: "https://drive.google.com/file/d/\(filename)") {
-          completion(.success(url))
-        } else {
-          completion(.failure(self.error(with: "Failed to create URL for uploaded file.")))
-        }
-      case .failure(let error):
-        print("Failed to upload binary data to Google Drive: \(error.localizedDescription)")
-        self.storeFailedUpload(data: binaryData, filename: filename)
-        completion(.failure(error))
-      }
-    }
-  }
-
-  /// Performs the multipart form upload request to the Google Drive API.
-  /// Note: Google Drive upload has been disabled. Data is stored locally only.
-  func uploadToGoogleDrive(
-    data: Data, filename: String, folderID: String,
-    completion: @escaping (Result<Void, Error>) -> Void
-  ) {
-    print("Google Drive upload disabled - storing locally only: \(filename)")
-    storeSuccessUpload(data: data, filename: filename)
-    completion(.success(()))
   }
 
   /// Uploads JSON data to a specified webhook endpoint.
@@ -478,17 +407,10 @@ class DataStorageManager: UploadService {
 
   // MARK: - Failed Uploads Management
 
-  /// Attempts to retry all uploads in the failed uploads list.
+  /// Processes all entries in the failed uploads list, verifying they exist locally.
+  /// Entries that no longer exist on disk are removed from the list.
   ///
-  /// - Iterates through all files stored in `FailedUploads` in UserDefaults.
-  /// - For each file:
-  ///   1. Checks if the file still exists in the documents directory.
-  ///   2. Retries the upload to Google Drive in a background thread.
-  ///   3. Removes the file from the failed list if the upload succeeds.
-  /// - Supports `.json` and `.bin` files only; unsupported types are skipped.
-  /// - Calls the completion handler with all successfully uploaded URLs or the first error encountered.
-  ///
-  /// - Parameter completion: A result handler with `[URL]` for all successfully re-uploaded files, or an `Error` if any upload failed.
+  /// - Parameter completion: A result handler with `[URL]` for all confirmed local files, or an `Error`.
   func tryUploads(completion: @escaping (Result<[URL], Error>) -> Void) {
     let failedUploads = getFailedUploads()
     guard !failedUploads.isEmpty else {
@@ -497,12 +419,9 @@ class DataStorageManager: UploadService {
       return
     }
 
-    print("Retrying \(failedUploads.count) failed uploads.")
+    print("Processing \(failedUploads.count) pending uploads.")
 
-    let dispatchGroup = DispatchGroup()
-    var retryError: Error?
-    var retryUploadedURLs: [URL] = []
-    let syncQueue = DispatchQueue(label: "com.yourapp.retrySyncQueue")  // For thread-safe access to shared variables
+    var confirmedURLs: [URL] = []
 
     for upload in failedUploads {
       guard let fileURL = URL(string: upload.fileURLString) else {
@@ -510,73 +429,16 @@ class DataStorageManager: UploadService {
         continue
       }
 
-      guard FileManager.default.fileExists(atPath: fileURL.path) else {
-        print("File does not exist at path: \(fileURL.path)")
+      if FileManager.default.fileExists(atPath: fileURL.path) {
+        confirmedURLs.append(fileURL)
         self.removeFailedUpload(fileURL: fileURL)
-        continue
-      }
-
-      dispatchGroup.enter()
-
-      do {
-        let data = try Data(contentsOf: fileURL)
-        let filename = fileURL.lastPathComponent
-        let fileExtension = fileURL.pathExtension.lowercased()
-
-        // Determine where to upload based on file extension.
-        switch fileExtension {
-        case "bin":
-          self.uploadDataToGoogleDrive(
-            binaryData: data, filename: filename, folderid: self.folderIDBin
-          ) { result in
-            syncQueue.async {
-              switch result {
-              case .success(let url):
-                retryUploadedURLs.append(url)
-                print("Successfully re-uploaded .bin file to Google Drive: \(filename)")
-                self.removeFailedUpload(fileURL: fileURL)
-              case .failure(let error):
-                print("Failed to re-upload .bin file to Google Drive: \(filename), error: \(error)")
-                if retryError == nil { retryError = error }
-              }
-              dispatchGroup.leave()
-            }
-          }
-        case "json":
-          self.uploadDataToGoogleDrive(
-            binaryData: data, filename: filename, folderid: self.folderIDJSON
-          ) { result in
-            syncQueue.async {
-              switch result {
-              case .success(let url):
-                retryUploadedURLs.append(url)
-                print("Successfully re-uploaded .json file to Google Drive: \(filename)")
-                self.removeFailedUpload(fileURL: fileURL)
-              case .failure(let error):
-                print(
-                  "Failed to re-upload .json file to Google Drive: \(filename), error: \(error)")
-                if retryError == nil { retryError = error }
-              }
-              dispatchGroup.leave()
-            }
-          }
-        default:
-          print("Unsupported file type for file: \(filename). Skipping.")
-          dispatchGroup.leave()
-        }
-      } catch {
-        print("Failed to read data for re-upload from file: \(fileURL.path), error: \(error)")
-        dispatchGroup.leave()
-      }
-    }
-
-    dispatchGroup.notify(queue: .main) {
-      if let error = retryError {
-        completion(.failure(error))
       } else {
-        completion(.success(retryUploadedURLs))
+        print("File does not exist at path: \(fileURL.path). Removing from list.")
+        self.removeFailedUpload(fileURL: fileURL)
       }
     }
+
+    completion(.success(confirmedURLs))
   }
 
   /// Retrieves the current list of failed uploads stored in UserDefaults.

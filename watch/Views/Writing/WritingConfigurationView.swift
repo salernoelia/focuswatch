@@ -488,7 +488,7 @@ struct FileUploadView: View {
     }
   }
 
-  /// Initiates the upload process for a given file URL.
+  /// Uploads a file to the webhook endpoint.
   private func uploadFile(_ fileURL: URL) {
     isLoading = true
     do {
@@ -496,22 +496,13 @@ struct FileUploadView: View {
       let filename = fileURL.lastPathComponent
       let fileExtension = fileURL.pathExtension.lowercased()
 
-      // Upload to the correct Google Drive folder based on file type.
       switch fileExtension {
-      case "bin":
-        dbManager.uploadToGoogleDrive(
-          data: data, filename: filename, folderID: GoogleDB.data_folder
-        ) { result in
-          handleUploadResult(result, filename: filename)
-        }
       case "json":
-        dbManager.uploadToGoogleDrive(
-          data: data, filename: filename, folderID: GoogleDB.config_log_folder
-        ) { result in
+        dbManager.uploadDataToWebhook(jsonData: data) { result in
           handleUploadResult(result, filename: filename)
         }
       default:
-        print("Unsupported file type: \(filename)")
+        print("Unsupported file type for webhook upload: \(filename)")
         isLoading = false
       }
     } catch {
