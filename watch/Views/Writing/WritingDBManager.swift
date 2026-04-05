@@ -7,6 +7,44 @@
 import CoreMotion
 import Foundation
 
+// MARK: - CloudUploadProvider Protocol
+/// Abstracts the remote upload destination so it can be swapped without changing DataStorageManager.
+protocol CloudUploadProvider {
+  func upload(data: Data, filename: String, completion: @escaping (Result<Void, Error>) -> Void)
+}
+
+// MARK: - WebhookUploadProvider
+/// Uploads JSON data to the focuswatch webhook endpoint.
+class WebhookUploadProvider: CloudUploadProvider {
+  private let endpointURL = URL(
+    string: "https://europe-west6-schlautech001.cloudfunctions.net/focuswatch2doc")!
+
+  func upload(data: Data, filename: String, completion: @escaping (Result<Void, Error>) -> Void) {
+    var request = URLRequest(url: endpointURL)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.httpBody = data
+
+    URLSession.shared.dataTask(with: request) { _, response, error in
+      if let error = error {
+        completion(.failure(error))
+        return
+      }
+      if let httpResponse = response as? HTTPURLResponse,
+        (200...299).contains(httpResponse.statusCode)
+      {
+        completion(.success(()))
+      } else {
+        completion(
+          .failure(
+            NSError(
+              domain: "WebhookUploadError", code: -1,
+              userInfo: [NSLocalizedDescriptionKey: "Webhook returned a non-2xx status code"])))
+      }
+    }.resume()
+  }
+}
+
 // MARK: - AccelerometerRecord Struct
 /// Represents a single record of accelerometer data with a timestamp delta.
 struct AccelerometerRecord {
@@ -18,16 +56,33 @@ struct AccelerometerRecord {
   let y: Int16
   /// The acceleration value on the z-axis, scaled.
   let z: Int16
+
+  /// Encodes the record into raw binary `Data`.
+  func encode() -> Data {
+    var data = Data()
+    withUnsafeBytes(of: deltaTimestamp) { data.append(contentsOf: $0) }
+    withUnsafeBytes(of: x) { data.append(contentsOf: $0) }
+    withUnsafeBytes(of: y) { data.append(contentsOf: $0) }
+    withUnsafeBytes(of: z) { data.append(contentsOf: $0) }
+    return data
+  }
 }
 
 // MARK: - DataStorageManager Class
 /// Manages all data persistence, including creating and updating local JSON files,
-/// fetching recorded accelerometer data, and uploading data to external services (webhook).
+/// fetching recorded accelerometer data, and uploading data via the configured `CloudUploadProvider`.
 /// It also handles a retry mechanism for failed uploads.
 class DataStorageManager {
 
   /// A `CMSensorRecorder` instance used for fetching historical accelerometer data.
   private var sensorRecorder = CMSensorRecorder()
+
+  /// The upload backend. Defaults to `WebhookUploadProvider`. Swap for testing or future providers.
+  private let uploadProvider: CloudUploadProvider
+
+  init(uploadProvider: CloudUploadProvider = WebhookUploadProvider()) {
+    self.uploadProvider = uploadProvider
+  }
 
   // MARK: - FailedUpload Struct
   /// A struct to represent a file that failed to upload, allowing it to be retried later.
@@ -316,43 +371,9 @@ class DataStorageManager {
     }
   }
 
-  /// Uploads JSON data to a specified webhook endpoint.
+  /// Uploads JSON data via the configured `CloudUploadProvider`.
   func uploadDataToWebhook(jsonData: Data, completion: @escaping (Result<Void, Error>) -> Void) {
-    guard
-      let uploadURL = URL(
-        string: "https://europe-west6-schlautech001.cloudfunctions.net/focuswatch2doc")
-    else {
-      completion(
-        .failure(
-          NSError(
-            domain: "WebhookUploadError", code: -1,
-            userInfo: [NSLocalizedDescriptionKey: "Invalid webhook URL"])))
-      return
-    }
-
-    var request = URLRequest(url: uploadURL)
-    request.httpMethod = "POST"
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.httpBody = jsonData
-
-    let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-      if let error = error {
-        completion(.failure(error))
-        return
-      }
-
-      if let httpResponse = response as? HTTPURLResponse,
-        (200...299).contains(httpResponse.statusCode)
-      {
-        completion(.success(()))
-      } else {
-        let error = NSError(
-          domain: "WebhookUploadError", code: -1,
-          userInfo: [NSLocalizedDescriptionKey: "Failed to upload JSON payload to webhook"])
-        completion(.failure(error))
-      }
-    }
-    task.resume()
+    uploadProvider.upload(data: jsonData, filename: "", completion: completion)
   }
 
   /// Uploads a live state update to the webhook for real-time tracking.
@@ -598,38 +619,20 @@ class DataStorageManager {
     for interval in intervals {
       if let dataList = sensorRecorder.accelerometerData(from: interval.start, to: interval.end) {
         for case let data as CMRecordedAccelerometerData in dataList {
-          let deltaTimestamp = self.calculateDeltaTimestamp(for: data, start: interval.start)
+          let startTimestamp = interval.start.timeIntervalSince1970 * 1000
+          let deltaTime = max(0, data.startDate.timeIntervalSince1970 * 1000 - startTimestamp)
           let record = AccelerometerRecord(
-            deltaTimestamp: deltaTimestamp,
+            deltaTimestamp: UInt32(deltaTime),
             x: Int16(data.acceleration.x * 4096),
             y: Int16(data.acceleration.y * 4096),
             z: Int16(data.acceleration.z * 4096)
           )
-          binaryData.append(self.encodeRecord(record))
+          binaryData.append(record.encode())
         }
       }
     }
 
     return binaryData
-  }
-
-  /// Calculates the time difference in milliseconds between a data point and the session start time.
-  private func calculateDeltaTimestamp(for data: CMRecordedAccelerometerData, start: Date) -> UInt32
-  {
-    let timestamp = data.startDate.timeIntervalSince1970 * 1000  // milliseconds
-    let startTimestamp = start.timeIntervalSince1970 * 1000
-    let deltaTime = max(0, timestamp - startTimestamp)
-    return UInt32(deltaTime)
-  }
-
-  /// Encodes an `AccelerometerRecord` struct into raw `Data`.
-  private func encodeRecord(_ record: AccelerometerRecord) -> Data {
-    var data = Data()
-    withUnsafeBytes(of: record.deltaTimestamp) { data.append(contentsOf: $0) }
-    withUnsafeBytes(of: record.x) { data.append(contentsOf: $0) }
-    withUnsafeBytes(of: record.y) { data.append(contentsOf: $0) }
-    withUnsafeBytes(of: record.z) { data.append(contentsOf: $0) }
-    return data
   }
 
   /// Writes raw `Data` to a file in the documents directory.

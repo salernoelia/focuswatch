@@ -277,49 +277,29 @@ class WritingManager {
   private func storeFeatureDataToBinary(featureDataArray: [[Float]]) {
     var binaryData = Data()
 
-    // Encode each [x, y, z] vector into a binary format.
     featureDataArray.forEach { feature in
-      // Scale and convert to Int16 to save space.
-      let x = Int16(feature[0] * 4096)
-      let y = Int16(feature[1] * 4096)
-      let z = Int16(feature[2] * 4096)
-      let record = AccelerometerRecord(deltaTimestamp: 0, x: x, y: y, z: z)
-      binaryData.append(self.encodeRecord(record))
+      let record = AccelerometerRecord(
+        deltaTimestamp: 0,
+        x: Int16(feature[0] * 4096),
+        y: Int16(feature[1] * 4096),
+        z: Int16(feature[2] * 4096)
+      )
+      binaryData.append(record.encode())
     }
 
-    // Use the session filename to create a corresponding .bin filename.
     guard let sessionFilename = self.exerciseManager?.sessionFilename else {
       print("Session filename is not available")
       return
     }
     let binaryFilename = sessionFilename.replacingOccurrences(of: ".json", with: ".bin")
-    
-    // Write the binary data to the file.
+
     do {
-      let docsDir = try self.getDocumentsDirectory()
-      let binaryFileURL = docsDir.appendingPathComponent(binaryFilename)
-      try binaryData.write(to: binaryFileURL)
+      guard let docsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        throw AppError.documentsDirectoryUnavailable
+      }
+      try binaryData.write(to: docsDir.appendingPathComponent(binaryFilename))
     } catch {
       print("Failed to write binary data: \(error)")
-    }
-  }
-
-  /// Encodes a single `AccelerometerRecord` into raw `Data`.
-  private func encodeRecord(_ record: AccelerometerRecord) -> Data {
-    var data = Data()
-    withUnsafeBytes(of: record.deltaTimestamp) { data.append(contentsOf: $0) }
-    withUnsafeBytes(of: record.x) { data.append(contentsOf: $0) }
-    withUnsafeBytes(of: record.y) { data.append(contentsOf: $0) }
-    withUnsafeBytes(of: record.z) { data.append(contentsOf: $0) }
-    return data
-  }
-
-  /// A helper function to get the app's documents directory URL.
-  private func getDocumentsDirectory() throws -> URL {
-    if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-        return dir
-    } else {
-        throw AppError.documentsDirectoryUnavailable
     }
   }
 }

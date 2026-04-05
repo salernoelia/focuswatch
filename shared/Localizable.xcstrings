@@ -1097,12 +1097,6 @@
         }
       }
     },
-    "Debug" : {
-
-    },
-    "Debug Tools" : {
-
-    },
     "Dein Feedback" : {
       "localizations" : {
         "de" : {
@@ -3676,9 +3670,6 @@
           }
         }
       }
-    },
-    "Test Vibration" : {
-
     },
     "Tester: %@" : {
       "localizations" : {
