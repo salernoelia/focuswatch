@@ -38,39 +38,40 @@ class AppsManager: ObservableObject {
         var appsList: [AppInfo] = []
         var currentIndex = 0
 
-        let builtInApps = [
+        let builtInApps: [(String, String, Color, String)] = [
             (
                 String(localized: "Fokus Meter"), String(localized: "How do you feel right now?"),
-                Color.yellow
+                Color.yellow, "gauge.medium"
             ),
             (
                 String(localized: "Writing"), String(localized: "Focus aid for writing."),
-                Color.orange
+                Color.orange, "pencil"
             ),
             (
                 String(localized: "Pomodoro"), String(localized: "Timer for time management"),
-                Color.red
+                Color.red, "timer"
             ),
             (
                 String(localized: "Fidget Toy"), String(localized: "Interactive vibration toy"),
-                Color.gray
+                Color.gray, "hand.tap"
             ),
             (
                 String(localized: "Color Breathing"),
                 String(localized: "Calming breathing exercises"),
-                Color.green
+                Color.green, "wind"
             ),
         ]
 
         builtInAppCount = builtInApps.count
 
-        for (title, description, color) in builtInApps {
+        for (title, description, color, symbol) in builtInApps {
             appsList.append(
                 AppInfo(
                     title: title,
                     description: description,
                     color: color,
-                    index: currentIndex
+                    index: currentIndex,
+                    symbol: symbol
                 ))
             currentIndex += 1
         }

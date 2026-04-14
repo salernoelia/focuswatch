@@ -9,17 +9,19 @@ struct AppInfo: Identifiable, Codable {
     let description: String
     let color: Color
     let index: Int
+    let symbol: String
 
     enum CodingKeys: String, CodingKey {
         case title, emoji, description, index
     }
 
-    init(title: String, emoji: String = "", description: String, color: Color, index: Int = 0) {
+    init(title: String, emoji: String = "", description: String, color: Color, index: Int = 0, symbol: String = "") {
         self.title = title
         self.emoji = emoji
         self.description = description
         self.color = color
         self.index = index
+        self.symbol = symbol
     }
 
     init(from decoder: Decoder) throws {
@@ -29,6 +31,7 @@ struct AppInfo: Identifiable, Codable {
         description = try container.decode(String.self, forKey: .description)
         index = try container.decodeIfPresent(Int.self, forKey: .index) ?? 0
         color = .blue
+        symbol = ""
     }
 
     func encode(to encoder: Encoder) throws {

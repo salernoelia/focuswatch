@@ -47,8 +47,6 @@ struct SettingsView: View {
                         CalendarDebugView()
                     } label: {
                         HStack {
-                            Image(systemName: "calendar.badge.clock")
-                                .foregroundColor(.accentColor)
                             Text("Calendar Debug")
                                 .font(.body)
                             Spacer()

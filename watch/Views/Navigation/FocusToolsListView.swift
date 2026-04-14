@@ -10,7 +10,7 @@ struct FocusToolsListView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: 12) {
+            LazyVStack(spacing: 8) {
                 ForEach(Array(focusTools.enumerated()), id: \.offset) { index, app in
                     NavigationLink(value: app.index) {
                         AppCardView(app: app)

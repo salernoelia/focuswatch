@@ -1097,12 +1097,6 @@
         }
       }
     },
-    "Debug" : {
-
-    },
-    "Debug Tools" : {
-
-    },
     "Dein Feedback" : {
       "localizations" : {
         "de" : {
@@ -1870,6 +1864,7 @@
       }
     },
     "Heute" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2094,6 +2089,7 @@
       }
     },
     "Keine Events" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2407,6 +2403,9 @@
         }
       }
     },
+    "Meter" : {
+
+    },
     "Milestone" : {
       "localizations" : {
         "de" : {
@@ -2572,6 +2571,9 @@
           }
         }
       }
+    },
+    "No events" : {
+
     },
     "No events scheduled" : {
       "localizations" : {
@@ -3677,9 +3679,6 @@
         }
       }
     },
-    "Test Vibration" : {
-
-    },
     "Tester: %@" : {
       "localizations" : {
         "de" : {
@@ -3815,6 +3814,12 @@
           }
         }
       }
+    },
+    "Today" : {
+
+    },
+    "Tools" : {
+
     },
     "Total Points" : {
       "localizations" : {
@@ -4062,6 +4067,9 @@
         }
       }
     },
+    "Week" : {
+
+    },
     "Weekdays" : {
       "localizations" : {
         "de" : {
@@ -4147,6 +4155,7 @@
       }
     },
     "Woche" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

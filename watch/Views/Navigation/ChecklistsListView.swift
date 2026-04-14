@@ -72,7 +72,7 @@ struct ChecklistsListView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: 14) {
+            LazyVStack(spacing: 10) {
                 if groupedChecklistApps.isEmpty {
                     Text(String(localized: "No checklists available"))
                         .foregroundStyle(.secondary)

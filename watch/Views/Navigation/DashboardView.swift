@@ -11,7 +11,8 @@ struct DashboardView: View {
 
         Spacer()
       }
-      .padding()
+      .padding(.horizontal, 8)
+      .padding(.top, 8)
     }
     .navigationTitle(String(localized: "Overview"))
 
