@@ -133,13 +133,6 @@ struct WizardView: View {
                     }
                 }
 
-                Section("Navigation") {
-                    Button("Return to Dashboard") {
-                        CommandSyncService.shared.returnToMainMenu()
-                    }
-                    .disabled(connectionStatus != .connected)
-                }
-
                 Section("Focus Tools") {
                     ForEach(
                         appsManager.apps.filter { $0.index < appsManager.builtInAppCount }, id: \.id

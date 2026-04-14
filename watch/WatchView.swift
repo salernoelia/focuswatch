@@ -24,9 +24,9 @@ struct WatchView: View {
         let app = appsManager.apps[index]
         let localizedTachometer = String(localized: "Meter")
         let localizedSchreiben = String(localized: "Writing")
-        let localizedFarbatmung = String(localized: "Color Breathing")
+        let localizedFarbatmung = String(localized: "Breathing")
         let localizedPomodoro = String(localized: "Pomodoro")
-        let localizedFidget = String(localized: "Fidget Toy")
+        let localizedFidget = String(localized: "Fidget")
         let localizedAnneBeta = String(localized: "Anne (Beta)")
         let localizedKalender = String(localized: "Calendar")
 
@@ -103,9 +103,12 @@ struct WatchView: View {
 }
 
 private struct HomeView: View {
+    @StateObject private var appsManager = AppsManager.shared
+
     var body: some View {
         GeometryReader { geo in
             let tileSize = (geo.size.width - 6) / 2
+            let minHeight = tileSize * 0.75
             ScrollView {
                 VStack(spacing: 4) {
                     LazyVGrid(
@@ -117,27 +120,25 @@ private struct HomeView: View {
                     ) {
                         HomeTile(
                             label: String(localized: "Checklists"), symbol: "checklist",
-                            color: .blue, minHeight: tileSize * 0.75
+                            color: .blue, minHeight: minHeight
                         ) {
                             ChecklistsListView()
                         }
                         HomeTile(
-                            label: String(localized: "Tools"), symbol: "bolt.fill",
-                            color: .orange, minHeight: tileSize * 0.75
-                        ) {
-                            FocusToolsListView()
-                        }
-                        HomeTile(
                             label: String(localized: "Calendar"), symbol: "calendar",
-                            color: .red, minHeight: tileSize * 0.75
+                            color: .red, minHeight: minHeight
                         ) {
                             CalendarView()
                         }
                         HomeTile(
                             label: String(localized: "Level"), symbol: "chart.bar.fill",
-                            color: .purple, minHeight: tileSize * 0.75
+                            color: .purple, minHeight: minHeight
                         ) {
                             DashboardView()
+                        }
+                        ForEach(appsManager.apps.filter { $0.index < appsManager.builtInAppCount })
+                        { app in
+                            AppHomeTile(app: app, minHeight: minHeight)
                         }
                     }
                     NavigationLink {
@@ -184,6 +185,37 @@ private struct HomeTile<Destination: View>: View {
             .frame(maxWidth: .infinity, minHeight: minHeight)
             .padding(.vertical, 6)
             .background(color.opacity(0.18))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct AppHomeTile: View {
+    let app: AppInfo
+    let minHeight: CGFloat
+
+    var body: some View {
+        NavigationLink(value: app.index) {
+            VStack(spacing: 8) {
+                if !app.symbol.isEmpty {
+                    Image(systemName: app.symbol)
+                        .font(.system(size: 26, weight: .semibold))
+                        .foregroundColor(app.color)
+                } else if !app.emoji.isEmpty {
+                    Text(app.emoji)
+                        .font(.system(size: 24))
+                }
+                Text(app.title)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, minHeight: minHeight)
+            .padding(.vertical, 6)
+            .background(app.color.opacity(0.18))
             .clipShape(RoundedRectangle(cornerRadius: 16))
         }
         .buttonStyle(.plain)

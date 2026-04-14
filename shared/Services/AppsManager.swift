@@ -40,7 +40,7 @@ class AppsManager: ObservableObject {
 
         let builtInApps: [(String, String, Color, String)] = [
             (
-                String(localized: "Fokus Meter"), String(localized: "How do you feel right now?"),
+                String(localized: "Meter"), String(localized: "How do you feel right now?"),
                 Color.yellow, "gauge.medium"
             ),
             (
@@ -52,11 +52,11 @@ class AppsManager: ObservableObject {
                 Color.red, "timer"
             ),
             (
-                String(localized: "Fidget Toy"), String(localized: "Interactive vibration toy"),
+                String(localized: "Fidget"), String(localized: "Interactive vibration toy"),
                 Color.gray, "hand.tap"
             ),
             (
-                String(localized: "Color Breathing"),
+                String(localized: "Breathing"),
                 String(localized: "Calming breathing exercises"),
                 Color.green, "wind"
             ),

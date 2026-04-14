@@ -4,7 +4,7 @@ struct AppCardView: View {
     let app: AppInfo
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 4) {
             if !app.symbol.isEmpty {
                 Image(systemName: app.symbol)
                     .font(.system(size: 18, weight: .semibold))
@@ -28,7 +28,7 @@ struct AppCardView: View {
 
             Spacer(minLength: 0)
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, 4)
         .padding(.vertical, 11)
         .background(app.color.opacity(0.14))
         .clipShape(RoundedRectangle(cornerRadius: 14))

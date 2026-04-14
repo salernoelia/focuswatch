@@ -6,8 +6,8 @@ struct PomodoroTimerView: View {
     @ObservedObject var viewModel: PomodoroViewModel
 
     var body: some View {
-        VStack(spacing: 8) {
-            Spacer(minLength: 24)
+        VStack(spacing: 4) {
+            Spacer(minLength: 20)
 
             Text(viewModel.currentPhaseTitle)
                 .font(.caption2)
@@ -39,7 +39,6 @@ struct PomodoroTimerView: View {
                 .buttonStyle(.borderedProminent)
                 .tint(viewModel.phaseColor)
             }
-            .padding(.top, 4)
         }
         .padding()
     }

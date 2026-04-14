@@ -737,6 +737,16 @@
         }
       }
     },
+    "Breathing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbatmung"
+          }
+        }
+      }
+    },
     "Breathing Pattern" : {
       "localizations" : {
         "de" : {
@@ -917,16 +927,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Farben"
-          }
-        }
-      }
-    },
-    "Color Breathing" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Farbatmung"
           }
         }
       }
@@ -1625,12 +1625,12 @@
         }
       }
     },
-    "Fidget Toy" : {
+    "Fidget" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fidget Toy"
+            "value" : "Fidget"
           }
         }
       }
@@ -1707,16 +1707,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fokuslehrling"
-          }
-        }
-      }
-    },
-    "Fokus Meter" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fokusmeter"
           }
         }
       }
@@ -2404,7 +2394,14 @@
       }
     },
     "Meter" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fokusmeter"
+          }
+        }
+      }
     },
     "Milestone" : {
       "localizations" : {
@@ -2437,6 +2434,7 @@
       }
     },
     "Navigation" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3158,6 +3156,7 @@
       }
     },
     "Return to Dashboard" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3816,9 +3815,6 @@
       }
     },
     "Today" : {
-
-    },
-    "Tools" : {
 
     },
     "Total Points" : {

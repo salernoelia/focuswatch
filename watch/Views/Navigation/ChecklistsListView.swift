@@ -96,7 +96,7 @@ struct ChecklistsListView: View {
                     }
                 }
             }
-            .padding(.horizontal, 8)
+            .padding(.horizontal, 4)
             .padding(.top, 8)
         }
         .navigationTitle(String(localized: "Checklists"))
