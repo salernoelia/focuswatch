@@ -4,7 +4,7 @@ import SwiftUI
 struct ChecklistItemEditRow: View {
     @State var item: ChecklistItem
     @Binding var checklist: Checklist
-    @ObservedObject var checklistService: ChecklistSyncService
+    @ObservedObject var checklistDataStore: ChecklistDataStore
     @ObservedObject var galleryStorage: GalleryStorage
     @State private var showingImageSelector = false
 
@@ -57,7 +57,8 @@ struct ChecklistItemEditRow: View {
     private var availableImages: [String] {
         let watchImages = [
             "Schere", "Lineal", "Bleistift", "Leimstift", "Buntes Papier", "Wolle", "Wackelaugen",
-            "Locher", "Zucker", "Ei", "Haselnüsse", "Schokoladenpulver", "Maizena", "Schüssel", "Kelle",
+            "Locher", "Zucker", "Ei", "Haselnüsse", "Schokoladenpulver", "Maizena", "Schüssel",
+            "Kelle",
             "Backblech", "Backpapier", "Waage", "Messlöffel", "Topflappen",
         ]
         let galleryImages = galleryStorage.items.map { $0.label }
@@ -74,10 +75,10 @@ struct ChecklistItemEditRow: View {
     private func updateItem() {
         if let index = checklist.items.firstIndex(where: { $0.id == item.id }) {
             checklist.items[index] = item
-            var data = checklistService.checklistData
+            var data = checklistDataStore.checklistData
             if let checklistIndex = data.checklists.firstIndex(where: { $0.id == checklist.id }) {
                 data.checklists[checklistIndex] = checklist
-                checklistService.updateChecklistData(data)
+                checklistDataStore.updateChecklistData(data)
             }
         }
     }

@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ChecklistDetailView: View {
     @State var checklist: Checklist
-    @ObservedObject var checklistService: ChecklistSyncService
+    @ObservedObject var checklistDataStore: ChecklistDataStore
     @ObservedObject var galleryStorage: GalleryStorage
     @State private var showingAddItems = false
     private let progressManager = ChecklistProgressManager.shared
@@ -13,7 +13,7 @@ struct ChecklistDetailView: View {
         let currentTag = checklist.tag.trimmingCharacters(in: .whitespacesAndNewlines)
 
         var uniqueTags = Set<String>()
-        for existingChecklist in checklistService.checklistData.checklists {
+        for existingChecklist in checklistDataStore.checklistData.checklists {
             let trimmedTag = existingChecklist.tag.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !trimmedTag.isEmpty else { continue }
             guard trimmedTag != currentTag else { continue }
@@ -199,7 +199,7 @@ struct ChecklistDetailView: View {
             Section {
                 ForEach(checklist.items) { item in
                     ChecklistItemEditRow(
-                        item: item, checklist: $checklist, checklistService: checklistService,
+                        item: item, checklist: $checklist, checklistDataStore: checklistDataStore,
                         galleryStorage: galleryStorage)
                 }
                 .onDelete(perform: deleteItems)
@@ -226,16 +226,16 @@ struct ChecklistDetailView: View {
         }
         .sheet(isPresented: $showingAddItems) {
             UnifiedAddItemsView(
-                checklist: $checklist, checklistService: checklistService,
+                checklist: $checklist, checklistDataStore: checklistDataStore,
                 galleryStorage: galleryStorage)
         }
     }
 
     private func updateChecklist() {
-        var data = checklistService.checklistData
+        var data = checklistDataStore.checklistData
         if let index = data.checklists.firstIndex(where: { $0.id == checklist.id }) {
             data.checklists[index] = checklist
-            checklistService.updateChecklistData(data)
+            checklistDataStore.updateChecklistData(data)
         }
     }
 
