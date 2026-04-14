@@ -21,14 +21,14 @@
 		0E257CB42F749B26000D1CBF /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E257CB32F749B26000D1CBF /* XCTest.framework */; platformFilter = ios; };
 		0E257CC52F749B81000D1CBF /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E257CC42F749B81000D1CBF /* XCTest.framework */; };
 		0E3AFF112EB518BD008B1321 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 0E3AFF102EB518BD008B1321 /* KeychainAccess */; };
-		0E43798F2E9804C9000B2941 /* watch-notification.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0E4379882E9804C9000B2941 /* watch-notification.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0E43798F2E9804C9000B2941 /* focuswatch-watch-notification.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0E4379882E9804C9000B2941 /* focuswatch-watch-notification.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0E43799C2E9804D3000B2941 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E43799B2E9804D3000B2941 /* WidgetKit.framework */; };
 		0E43799E2E9804D3000B2941 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E43799D2E9804D3000B2941 /* SwiftUI.framework */; };
-		0E4379A92E9804D4000B2941 /* watch-version-complication.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0E4379992E9804D2000B2941 /* watch-version-complication.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0E4379A92E9804D4000B2941 /* focuswatch-watch-version-complication.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0E4379992E9804D2000B2941 /* focuswatch-watch-version-complication.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0E437A892E981ABC000B2941 /* StatKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0E437A882E981ABC000B2941 /* StatKit */; };
 		0E437AA32E981D24000B2941 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 0E437AA22E981D24000B2941 /* KeychainAccess */; };
 		0E93F04C2EE4ECB6005D4332 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 0E93F04B2EE4ECB6005D4332 /* KeychainAccess */; };
-		0E9D8CD02E0D6C24002B7989 /* watch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0E9D8CCF2E0D6C24002B7989 /* watch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0E9D8CD02E0D6C24002B7989 /* focuswatch-watch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0E9D8CCF2E0D6C24002B7989 /* focuswatch-watch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,8 +76,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				0E4379A92E9804D4000B2941 /* watch-version-complication.appex in Embed Foundation Extensions */,
-				0E43798F2E9804C9000B2941 /* watch-notification.appex in Embed Foundation Extensions */,
+				0E4379A92E9804D4000B2941 /* focuswatch-watch-version-complication.appex in Embed Foundation Extensions */,
+				0E43798F2E9804C9000B2941 /* focuswatch-watch-notification.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -88,7 +88,7 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				0E9D8CD02E0D6C24002B7989 /* watch.app in Embed Watch Content */,
+				0E9D8CD02E0D6C24002B7989 /* focuswatch-watch.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -99,46 +99,46 @@
 		0E195BFF2E917A2500DC7E4B /* Production.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Production.xcconfig; sourceTree = "<group>"; };
 		0E195C042E917BAF00DC7E4B /* Development.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Development.xcconfig; sourceTree = "<group>"; };
 		0E195C072E917D2A00DC7E4B /* Example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Example.xcconfig; sourceTree = "<group>"; };
-		0E257CAA2F749AF9000D1CBF /* companion-testing.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "companion-testing.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E257CAA2F749AF9000D1CBF /* focuswatch-companion-testing.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "focuswatch-companion-testing.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E257CB32F749B26000D1CBF /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		0E257CBB2F749B76000D1CBF /* watch-testing.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "watch-testing.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E257CBB2F749B76000D1CBF /* focuswatch-watch-testing.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "focuswatch-watch-testing.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E257CC42F749B81000D1CBF /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/WatchOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		0E4379882E9804C9000B2941 /* watch-notification.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "watch-notification.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		0E4379992E9804D2000B2941 /* watch-version-complication.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "watch-version-complication.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E4379882E9804C9000B2941 /* focuswatch-watch-notification.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "focuswatch-watch-notification.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E4379992E9804D2000B2941 /* focuswatch-watch-version-complication.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "focuswatch-watch-version-complication.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E43799B2E9804D3000B2941 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0E43799D2E9804D3000B2941 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		0E9D8CBF2E0D6C23002B7989 /* companion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = companion.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		0E9D8CCF2E0D6C24002B7989 /* watch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = watch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E9D8CBF2E0D6C23002B7989 /* focuswatch-companion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "focuswatch-companion.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E9D8CCF2E0D6C24002B7989 /* focuswatch-watch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "focuswatch-watch.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		0E12535B2E840AEB005F5FB4 /* Exceptions for "Companion" folder in "companion" target */ = {
+		0E12535B2E840AEB005F5FB4 /* Exceptions for "companion" folder in "focuswatch-companion" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 0E9D8CBE2E0D6C23002B7989 /* companion */;
+			target = 0E9D8CBE2E0D6C23002B7989 /* focuswatch-companion */;
 		};
-		0E4379932E9804C9000B2941 /* Exceptions for "Watch-notification" folder in "watch-notification" target */ = {
+		0E4379932E9804C9000B2941 /* Exceptions for "watch-notification" folder in "focuswatch-watch-notification" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 0E4379872E9804C9000B2941 /* watch-notification */;
+			target = 0E4379872E9804C9000B2941 /* focuswatch-watch-notification */;
 		};
-		0E4379AD2E9804D4000B2941 /* Exceptions for "Watch-version-complication" folder in "watch-version-complication" target */ = {
+		0E4379AD2E9804D4000B2941 /* Exceptions for "watch-version-complication" folder in "focuswatch-watch-version-complication" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 0E4379982E9804D2000B2941 /* watch-version-complication */;
+			target = 0E4379982E9804D2000B2941 /* focuswatch-watch-version-complication */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		0E195C0A2E917F6800DC7E4B /* Shared */ = {
+		0E195C0A2E917F6800DC7E4B /* shared */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Shared;
+			path = shared;
 			sourceTree = "<group>";
 		};
 		0E257CAB2F749AF9000D1CBF /* companion-testing */ = {
@@ -151,33 +151,33 @@
 			path = "watch-testing";
 			sourceTree = "<group>";
 		};
-		0E4379892E9804C9000B2941 /* Watch-notification */ = {
+		0E4379892E9804C9000B2941 /* watch-notification */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				0E4379932E9804C9000B2941 /* Exceptions for "Watch-notification" folder in "watch-notification" target */,
+				0E4379932E9804C9000B2941 /* Exceptions for "watch-notification" folder in "focuswatch-watch-notification" target */,
 			);
-			path = "Watch-notification";
+			path = "watch-notification";
 			sourceTree = "<group>";
 		};
-		0E43799F2E9804D3000B2941 /* Watch-version-complication */ = {
+		0E43799F2E9804D3000B2941 /* watch-version-complication */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				0E4379AD2E9804D4000B2941 /* Exceptions for "Watch-version-complication" folder in "watch-version-complication" target */,
+				0E4379AD2E9804D4000B2941 /* Exceptions for "watch-version-complication" folder in "focuswatch-watch-version-complication" target */,
 			);
-			path = "Watch-version-complication";
+			path = "watch-version-complication";
 			sourceTree = "<group>";
 		};
-		0E9D8CC12E0D6C23002B7989 /* Companion */ = {
+		0E9D8CC12E0D6C23002B7989 /* companion */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				0E12535B2E840AEB005F5FB4 /* Exceptions for "Companion" folder in "companion" target */,
+				0E12535B2E840AEB005F5FB4 /* Exceptions for "companion" folder in "focuswatch-companion" target */,
 			);
-			path = Companion;
+			path = companion;
 			sourceTree = "<group>";
 		};
-		0E9D8CD32E0D6C24002B7989 /* Watch */ = {
+		0E9D8CD32E0D6C24002B7989 /* watch */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Watch;
+			path = watch;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -261,14 +261,14 @@
 		0E9D8CB62E0D6C22002B7989 = {
 			isa = PBXGroup;
 			children = (
-				0E195C0A2E917F6800DC7E4B /* Shared */,
+				0E195C0A2E917F6800DC7E4B /* shared */,
 				0E195C072E917D2A00DC7E4B /* Example.xcconfig */,
 				0E195BFF2E917A2500DC7E4B /* Production.xcconfig */,
 				0E195C042E917BAF00DC7E4B /* Development.xcconfig */,
-				0E9D8CC12E0D6C23002B7989 /* Companion */,
-				0E9D8CD32E0D6C24002B7989 /* Watch */,
-				0E4379892E9804C9000B2941 /* Watch-notification */,
-				0E43799F2E9804D3000B2941 /* Watch-version-complication */,
+				0E9D8CC12E0D6C23002B7989 /* companion */,
+				0E9D8CD32E0D6C24002B7989 /* watch */,
+				0E4379892E9804C9000B2941 /* watch-notification */,
+				0E43799F2E9804D3000B2941 /* watch-version-complication */,
 				0E257CAB2F749AF9000D1CBF /* companion-testing */,
 				0E257CBC2F749B76000D1CBF /* watch-testing */,
 				0E43799A2E9804D2000B2941 /* Frameworks */,
@@ -279,12 +279,12 @@
 		0E9D8CC02E0D6C23002B7989 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0E9D8CBF2E0D6C23002B7989 /* companion.app */,
-				0E9D8CCF2E0D6C24002B7989 /* watch.app */,
-				0E4379882E9804C9000B2941 /* watch-notification.appex */,
-				0E4379992E9804D2000B2941 /* watch-version-complication.appex */,
-				0E257CAA2F749AF9000D1CBF /* companion-testing.xctest */,
-				0E257CBB2F749B76000D1CBF /* watch-testing.xctest */,
+				0E9D8CBF2E0D6C23002B7989 /* focuswatch-companion.app */,
+				0E9D8CCF2E0D6C24002B7989 /* focuswatch-watch.app */,
+				0E4379882E9804C9000B2941 /* focuswatch-watch-notification.appex */,
+				0E4379992E9804D2000B2941 /* focuswatch-watch-version-complication.appex */,
+				0E257CAA2F749AF9000D1CBF /* focuswatch-companion-testing.xctest */,
+				0E257CBB2F749B76000D1CBF /* focuswatch-watch-testing.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -292,9 +292,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0E257CA92F749AF9000D1CBF /* companion-testing */ = {
+		0E257CA92F749AF9000D1CBF /* focuswatch-companion-testing */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0E257CB22F749AF9000D1CBF /* Build configuration list for PBXNativeTarget "companion-testing" */;
+			buildConfigurationList = 0E257CB22F749AF9000D1CBF /* Build configuration list for PBXNativeTarget "focuswatch-companion-testing" */;
 			buildPhases = (
 				0E257CA62F749AF9000D1CBF /* Sources */,
 				0E257CA72F749AF9000D1CBF /* Frameworks */,
@@ -308,16 +308,16 @@
 			fileSystemSynchronizedGroups = (
 				0E257CAB2F749AF9000D1CBF /* companion-testing */,
 			);
-			name = "companion-testing";
+			name = "focuswatch-companion-testing";
 			packageProductDependencies = (
 			);
 			productName = "companion-testing";
-			productReference = 0E257CAA2F749AF9000D1CBF /* companion-testing.xctest */;
+			productReference = 0E257CAA2F749AF9000D1CBF /* focuswatch-companion-testing.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		0E257CBA2F749B76000D1CBF /* watch-testing */ = {
+		0E257CBA2F749B76000D1CBF /* focuswatch-watch-testing */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0E257CC12F749B76000D1CBF /* Build configuration list for PBXNativeTarget "watch-testing" */;
+			buildConfigurationList = 0E257CC12F749B76000D1CBF /* Build configuration list for PBXNativeTarget "focuswatch-watch-testing" */;
 			buildPhases = (
 				0E257CB72F749B76000D1CBF /* Sources */,
 				0E257CB82F749B76000D1CBF /* Frameworks */,
@@ -331,16 +331,16 @@
 			fileSystemSynchronizedGroups = (
 				0E257CBC2F749B76000D1CBF /* watch-testing */,
 			);
-			name = "watch-testing";
+			name = "focuswatch-watch-testing";
 			packageProductDependencies = (
 			);
 			productName = "watch-testing";
-			productReference = 0E257CBB2F749B76000D1CBF /* watch-testing.xctest */;
+			productReference = 0E257CBB2F749B76000D1CBF /* focuswatch-watch-testing.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		0E4379872E9804C9000B2941 /* watch-notification */ = {
+		0E4379872E9804C9000B2941 /* focuswatch-watch-notification */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0E4379902E9804C9000B2941 /* Build configuration list for PBXNativeTarget "watch-notification" */;
+			buildConfigurationList = 0E4379902E9804C9000B2941 /* Build configuration list for PBXNativeTarget "focuswatch-watch-notification" */;
 			buildPhases = (
 				0E4379842E9804C9000B2941 /* Sources */,
 				0E4379852E9804C9000B2941 /* Frameworks */,
@@ -351,18 +351,18 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				0E4379892E9804C9000B2941 /* Watch-notification */,
+				0E4379892E9804C9000B2941 /* watch-notification */,
 			);
-			name = "watch-notification";
+			name = "focuswatch-watch-notification";
 			packageProductDependencies = (
 			);
 			productName = notification;
-			productReference = 0E4379882E9804C9000B2941 /* watch-notification.appex */;
+			productReference = 0E4379882E9804C9000B2941 /* focuswatch-watch-notification.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		0E4379982E9804D2000B2941 /* watch-version-complication */ = {
+		0E4379982E9804D2000B2941 /* focuswatch-watch-version-complication */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0E4379AA2E9804D4000B2941 /* Build configuration list for PBXNativeTarget "watch-version-complication" */;
+			buildConfigurationList = 0E4379AA2E9804D4000B2941 /* Build configuration list for PBXNativeTarget "focuswatch-watch-version-complication" */;
 			buildPhases = (
 				0E4379952E9804D2000B2941 /* Sources */,
 				0E4379962E9804D2000B2941 /* Frameworks */,
@@ -373,19 +373,19 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				0E43799F2E9804D3000B2941 /* Watch-version-complication */,
+				0E43799F2E9804D3000B2941 /* watch-version-complication */,
 			);
-			name = "watch-version-complication";
+			name = "focuswatch-watch-version-complication";
 			packageProductDependencies = (
 				0E93F04B2EE4ECB6005D4332 /* KeychainAccess */,
 			);
 			productName = widgetExtension;
-			productReference = 0E4379992E9804D2000B2941 /* watch-version-complication.appex */;
+			productReference = 0E4379992E9804D2000B2941 /* focuswatch-watch-version-complication.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		0E9D8CBE2E0D6C23002B7989 /* companion */ = {
+		0E9D8CBE2E0D6C23002B7989 /* focuswatch-companion */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0E9D8CE32E0D6C25002B7989 /* Build configuration list for PBXNativeTarget "companion" */;
+			buildConfigurationList = 0E9D8CE32E0D6C25002B7989 /* Build configuration list for PBXNativeTarget "focuswatch-companion" */;
 			buildPhases = (
 				0E9D8CBB2E0D6C23002B7989 /* Sources */,
 				0E9D8CBC2E0D6C23002B7989 /* Frameworks */,
@@ -398,10 +398,10 @@
 				0E9D8CD22E0D6C24002B7989 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				0E195C0A2E917F6800DC7E4B /* Shared */,
-				0E9D8CC12E0D6C23002B7989 /* Companion */,
+				0E195C0A2E917F6800DC7E4B /* shared */,
+				0E9D8CC12E0D6C23002B7989 /* companion */,
 			);
-			name = companion;
+			name = "focuswatch-companion";
 			packageProductDependencies = (
 				0E078DF22E6E2C3100D74BDA /* Auth */,
 				0E078DF42E6E2C3100D74BDA /* Functions */,
@@ -412,12 +412,12 @@
 				0E3AFF102EB518BD008B1321 /* KeychainAccess */,
 			);
 			productName = companion;
-			productReference = 0E9D8CBF2E0D6C23002B7989 /* companion.app */;
+			productReference = 0E9D8CBF2E0D6C23002B7989 /* focuswatch-companion.app */;
 			productType = "com.apple.product-type.application";
 		};
-		0E9D8CCE2E0D6C24002B7989 /* watch */ = {
+		0E9D8CCE2E0D6C24002B7989 /* focuswatch-watch */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0E9D8CDF2E0D6C25002B7989 /* Build configuration list for PBXNativeTarget "watch" */;
+			buildConfigurationList = 0E9D8CDF2E0D6C25002B7989 /* Build configuration list for PBXNativeTarget "focuswatch-watch" */;
 			buildPhases = (
 				0E9D8CCB2E0D6C24002B7989 /* Sources */,
 				0E9D8CCC2E0D6C24002B7989 /* Frameworks */,
@@ -431,10 +431,10 @@
 				0E4379A82E9804D4000B2941 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				0E195C0A2E917F6800DC7E4B /* Shared */,
-				0E9D8CD32E0D6C24002B7989 /* Watch */,
+				0E195C0A2E917F6800DC7E4B /* shared */,
+				0E9D8CD32E0D6C24002B7989 /* watch */,
 			);
-			name = watch;
+			name = "focuswatch-watch";
 			packageProductDependencies = (
 				0E078DFE2E6E2C5100D74BDA /* Auth */,
 				0E078E002E6E2C5100D74BDA /* Functions */,
@@ -445,7 +445,7 @@
 				0E437AA22E981D24000B2941 /* KeychainAccess */,
 			);
 			productName = watch;
-			productReference = 0E9D8CCF2E0D6C24002B7989 /* watch.app */;
+			productReference = 0E9D8CCF2E0D6C24002B7989 /* focuswatch-watch.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -500,12 +500,12 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				0E9D8CBE2E0D6C23002B7989 /* companion */,
-				0E9D8CCE2E0D6C24002B7989 /* watch */,
-				0E4379872E9804C9000B2941 /* watch-notification */,
-				0E4379982E9804D2000B2941 /* watch-version-complication */,
-				0E257CA92F749AF9000D1CBF /* companion-testing */,
-				0E257CBA2F749B76000D1CBF /* watch-testing */,
+				0E9D8CBE2E0D6C23002B7989 /* focuswatch-companion */,
+				0E9D8CCE2E0D6C24002B7989 /* focuswatch-watch */,
+				0E4379872E9804C9000B2941 /* focuswatch-watch-notification */,
+				0E4379982E9804D2000B2941 /* focuswatch-watch-version-complication */,
+				0E257CA92F749AF9000D1CBF /* focuswatch-companion-testing */,
+				0E257CBA2F749B76000D1CBF /* focuswatch-watch-testing */,
 			);
 		};
 /* End PBXProject section */
@@ -603,27 +603,27 @@
 /* Begin PBXTargetDependency section */
 		0E257CAF2F749AF9000D1CBF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0E9D8CBE2E0D6C23002B7989 /* companion */;
+			target = 0E9D8CBE2E0D6C23002B7989 /* focuswatch-companion */;
 			targetProxy = 0E257CAE2F749AF9000D1CBF /* PBXContainerItemProxy */;
 		};
 		0E257CC02F749B76000D1CBF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0E9D8CCE2E0D6C24002B7989 /* watch */;
+			target = 0E9D8CCE2E0D6C24002B7989 /* focuswatch-watch */;
 			targetProxy = 0E257CBF2F749B76000D1CBF /* PBXContainerItemProxy */;
 		};
 		0E43798E2E9804C9000B2941 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0E4379872E9804C9000B2941 /* watch-notification */;
+			target = 0E4379872E9804C9000B2941 /* focuswatch-watch-notification */;
 			targetProxy = 0E43798D2E9804C9000B2941 /* PBXContainerItemProxy */;
 		};
 		0E4379A82E9804D4000B2941 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0E4379982E9804D2000B2941 /* watch-version-complication */;
+			target = 0E4379982E9804D2000B2941 /* focuswatch-watch-version-complication */;
 			targetProxy = 0E4379A72E9804D4000B2941 /* PBXContainerItemProxy */;
 		};
 		0E9D8CD22E0D6C24002B7989 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0E9D8CCE2E0D6C24002B7989 /* watch */;
+			target = 0E9D8CCE2E0D6C24002B7989 /* focuswatch-watch */;
 			targetProxy = 0E9D8CD12E0D6C24002B7989 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -643,11 +643,15 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/companion.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/companion";
 			};
 			name = Debug;
@@ -666,11 +670,15 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/companion.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/companion";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -728,10 +736,10 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "watch-notification/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "FocusWatch App Notifications";
+				INFOPLIST_KEY_CFBundleDisplayName = FocusWatch;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -757,10 +765,10 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "watch-notification/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "FocusWatch App Notifications";
+				INFOPLIST_KEY_CFBundleDisplayName = FocusWatch;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -790,10 +798,10 @@
 				CODE_SIGN_ENTITLEMENTS = "watch-version-complication/widgetExtension.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "watch-version-complication/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "FocusWatch App Shortcut";
+				INFOPLIST_KEY_CFBundleDisplayName = FocusWatch;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -822,10 +830,10 @@
 				CODE_SIGN_ENTITLEMENTS = "watch-version-complication/widgetExtension.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "watch-version-complication/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "FocusWatch App Shortcut";
+				INFOPLIST_KEY_CFBundleDisplayName = FocusWatch;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -982,13 +990,13 @@
 				CODE_SIGN_ENTITLEMENTS = watch/watch.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "\"watch/Preview Content\"";
 				DEVELOPMENT_TEAM = 9LKY7MBW4C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "focuswatch-Watch-App-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "FocusWatch App";
+				INFOPLIST_KEY_CFBundleDisplayName = FocusWatch;
 				INFOPLIST_KEY_CLKComplicationPrincipalClass = fokusuhr_testing_platform_Watch_App.ComplicationsManager;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We require HealthKit to access clinical records for features that support ADHD assistance.";
@@ -1024,12 +1032,12 @@
 				CODE_SIGN_ENTITLEMENTS = watch/watch.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "\"watch/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "focuswatch-Watch-App-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "FocusWatch App";
+				INFOPLIST_KEY_CFBundleDisplayName = FocusWatch;
 				INFOPLIST_KEY_CLKComplicationPrincipalClass = fokusuhr_testing_platform_Watch_App.ComplicationsManager;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We require HealthKit to access clinical records for features that support ADHD assistance.";
@@ -1066,12 +1074,12 @@
 				CODE_SIGN_ENTITLEMENTS = companion/companion.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "\"companion/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = companion/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "FocusWatch App";
+				INFOPLIST_KEY_CFBundleDisplayName = FocusWatch;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to take photos.";
@@ -1091,9 +1099,13 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1106,12 +1118,12 @@
 				CODE_SIGN_ENTITLEMENTS = companion/companion.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "\"companion/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = companion/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "FocusWatch App";
+				INFOPLIST_KEY_CFBundleDisplayName = FocusWatch;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to take photos.";
@@ -1131,9 +1143,13 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -1141,7 +1157,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0E257CB22F749AF9000D1CBF /* Build configuration list for PBXNativeTarget "companion-testing" */ = {
+		0E257CB22F749AF9000D1CBF /* Build configuration list for PBXNativeTarget "focuswatch-companion-testing" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0E257CB02F749AF9000D1CBF /* Debug */,
@@ -1150,7 +1166,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0E257CC12F749B76000D1CBF /* Build configuration list for PBXNativeTarget "watch-testing" */ = {
+		0E257CC12F749B76000D1CBF /* Build configuration list for PBXNativeTarget "focuswatch-watch-testing" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0E257CC22F749B76000D1CBF /* Debug */,
@@ -1159,7 +1175,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0E4379902E9804C9000B2941 /* Build configuration list for PBXNativeTarget "watch-notification" */ = {
+		0E4379902E9804C9000B2941 /* Build configuration list for PBXNativeTarget "focuswatch-watch-notification" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0E4379912E9804C9000B2941 /* Debug */,
@@ -1168,7 +1184,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0E4379AA2E9804D4000B2941 /* Build configuration list for PBXNativeTarget "watch-version-complication" */ = {
+		0E4379AA2E9804D4000B2941 /* Build configuration list for PBXNativeTarget "focuswatch-watch-version-complication" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0E4379AB2E9804D4000B2941 /* Debug */,
@@ -1186,7 +1202,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0E9D8CDF2E0D6C25002B7989 /* Build configuration list for PBXNativeTarget "watch" */ = {
+		0E9D8CDF2E0D6C25002B7989 /* Build configuration list for PBXNativeTarget "focuswatch-watch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0E9D8CE02E0D6C25002B7989 /* Debug */,
@@ -1195,7 +1211,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0E9D8CE32E0D6C25002B7989 /* Build configuration list for PBXNativeTarget "companion" */ = {
+		0E9D8CE32E0D6C25002B7989 /* Build configuration list for PBXNativeTarget "focuswatch-companion" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0E9D8CE42E0D6C25002B7989 /* Debug */,
