@@ -55,3 +55,4 @@ EMA-based accelerometer model in `watch/Views/Writing/`. `EmaModel` processes mo
 - All tests must pass before merging.
 - Make sure new features or adjustments dont break backwards compatibility
 - Never use emojis
+- Do not do any code comments
