@@ -1,6 +1,9 @@
 # Releases
 
 ## [1.2.9] - 03.04.2026
+
+### EN
+
 - Checklist items can now be added without an image (text-only items)
 - Improved no-image checklist cards on watch with clear colored backgrounds
 - Added checklist categories/tags and grouped checklists by tag on companion and watch
@@ -11,6 +14,19 @@
 - Improved checklist sync hashing so tag/description/emoji changes reliably sync to watch
 - Updated default checklist demo data to better reflect tag/emoji features
 - A lot of internal technical changes, please report anything that does not work as expected
+
+### DE
+
+- Checklistenelemente können nun ohne Bild hinzugefügt werden (reine Textelemente)
+- Verbesserte Darstellung von Checklistenkarten ohne Bild auf der Uhr mit klar abgegrenzten farbigen Hintergründen
+- Checklistenkategorien/-tags hinzugefügt und Checklisten nach Tags auf der Begleit-App und der Uhr gruppiert
+- Layout des Checklisten-Editors optimiert mit klareren Abschnitten und verbessertem Zeilenabstand
+- Emoji-Option für Checklisten im Editor hinzugefügt
+- Checklisten-Emoji wird in der Vorschau der Checkliste auf der Uhr (links) angezeigt, das Rechtspfeil-Symbol wurde entfernt
+- Checklisten-Emojis werden auch in der Vorschau der Checklisten auf der Begleit-App angezeigt
+- Verbesserte Hash-Synchronisierung der Checklisten, sodass Änderungen an Tags, Beschreibungen und Emojis zuverlässig auf die Uhr synchronisiert werden
+- Aktualisierung der Standard-Demo-Daten für Checklisten, um die Tag-/Emoji-Funktionen besser widerzuspiegeln
+- Zahlreiche interne technische Änderungen; bitte meldet alles, was nicht wie erwartet funktioniert
 
 ## [1.2.8] - 16.03.2026
 - Configuration options for the Fokusmeter (Title, Colors, Emojis) (ISSUE-217)

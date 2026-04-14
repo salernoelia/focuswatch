@@ -5,12 +5,13 @@ import WatchConnectivity
 final class ChecklistSyncService: ObservableObject {
     static let shared = ChecklistSyncService()
 
-    @Published var checklistData = ChecklistData.default
+    @Published private(set) var checklistData = ChecklistData.default
     @Published var lastError: AppError?
     @Published private(set) var isSyncing = false
     @Published private(set) var syncProgress: Double = 0
 
     private let transport: ConnectivityTransport
+    private let checklistDataStore: ChecklistDataStore
     private let imageSyncService: ImageSyncService
     private var lastSyncedHash: Int?
     private let syncQueue = DispatchQueue(label: "com.fokusuhr.checklist.sync", qos: .userInitiated)
@@ -18,16 +19,31 @@ final class ChecklistSyncService: ObservableObject {
     private var pendingSync = false
     private var retryCount = 0
     private var retryTimer: Timer?
+    private var activeSyncId: String?
     private var cancellables = Set<AnyCancellable>()
 
-    init(transport: ConnectivityTransport = .shared, imageSyncService: ImageSyncService = .shared) {
+    init(
+        transport: ConnectivityTransport = .shared,
+        checklistDataStore: ChecklistDataStore = .shared,
+        imageSyncService: ImageSyncService = .shared
+    ) {
         self.transport = transport
+        self.checklistDataStore = checklistDataStore
         self.imageSyncService = imageSyncService
-        loadChecklistData()
+        self.checklistData = checklistDataStore.checklistData
         setupObservers()
     }
 
     private func setupObservers() {
+        checklistDataStore.$checklistData
+            .dropFirst()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] data in
+                self?.checklistData = data
+                self?.debouncedSync()
+            }
+            .store(in: &cancellables)
+
         transport.messageReceived
             .receive(on: DispatchQueue.main)
             .sink { [weak self] message, replyHandler in
@@ -46,6 +62,19 @@ final class ChecklistSyncService: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] progress in
                 self?.syncProgress = progress
+            }
+            .store(in: &cancellables)
+
+        imageSyncService.syncResultPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .complete(let syncId):
+                    guard self.activeSyncId == syncId else { return }
+                    self.isSyncing = false
+                    self.activeSyncId = nil
+                }
             }
             .store(in: &cancellables)
     }
@@ -81,12 +110,6 @@ final class ChecklistSyncService: ObservableObject {
         }
     }
 
-    func updateChecklistData(_ data: ChecklistData) {
-        self.checklistData = data
-        saveChecklistData()
-        debouncedSync()
-    }
-
     func forceSync() {
         debounceTimer?.invalidate()
         retryCount = 0
@@ -101,6 +124,7 @@ final class ChecklistSyncService: ObservableObject {
         debounceTimer?.invalidate()
         retryCount = 0
         lastSyncedHash = nil
+        activeSyncId = nil
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -171,6 +195,7 @@ final class ChecklistSyncService: ObservableObject {
         do {
             let data = try JSONEncoder().encode(checklistData)
             let syncId = UUID().uuidString
+            activeSyncId = syncId
             let imageData = collectImageDataForContext()
 
             #if DEBUG
@@ -229,33 +254,21 @@ final class ChecklistSyncService: ObservableObject {
                 )
             }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            try transport.updateApplicationContext(context)
+
+            DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
-                do {
-                    try self.transport.updateApplicationContext(context)
-
-                    DispatchQueue.main.async {
-                        self.lastSyncedHash = hashToSet
-                        self.pendingSync = false
-                        self.retryCount = 0
-                        self.retryTimer?.invalidate()
-                    }
-
-                    #if DEBUG
-                        print(
-                            "iOS ChecklistSync: Synced - \(self.checklistData.checklists.count) checklists, syncId: \(syncId)"
-                        )
-                    #endif
-                } catch {
-                    self.handleSyncFailure(error: error, hashToSet: hashToSet)
-                }
+                self.lastSyncedHash = hashToSet
+                self.pendingSync = false
+                self.retryCount = 0
+                self.retryTimer?.invalidate()
             }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 10.0) { [weak self] in
-                if self?.imageSyncService.isSyncing == false {
-                    self?.isSyncing = false
-                }
-            }
+            #if DEBUG
+                print(
+                    "iOS ChecklistSync: Synced - \(checklistData.checklists.count) checklists, syncId: \(syncId)"
+                )
+            #endif
         } catch {
             handleSyncFailure(error: error, hashToSet: hashToSet)
         }
@@ -265,6 +278,7 @@ final class ChecklistSyncService: ObservableObject {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.isSyncing = false
+            self.activeSyncId = nil
             self.lastError = AppError.encodingFailed(type: "checklist", underlying: error)
 
             if self.retryCount < SyncConstants.Timing.maxRetries {
@@ -314,8 +328,8 @@ final class ChecklistSyncService: ObservableObject {
         }
     }
 
-    private func collectImageDataForContext() -> [String: String] {
-        var imageData: [String: String] = [:]
+    private func collectImageDataForContext() -> [String: Data] {
+        var imageData: [String: Data] = [:]
 
         let galleryStorage = GalleryStorage.shared
         let usedImageNames = Set(
@@ -362,8 +376,7 @@ final class ChecklistSyncService: ObservableObject {
                 continue
             }
 
-            let base64String = fileData.base64EncodedString()
-            let estimatedSize = base64String.count
+            let estimatedSize = fileData.count
 
             if totalSize + estimatedSize
                 > Int(AppConstants.Network.maxPayloadSizeKB * AppConstants.Network.bytesToKBDivisor)
@@ -379,7 +392,7 @@ final class ChecklistSyncService: ObservableObject {
                 break
             }
 
-            imageData[item.label] = base64String
+            imageData[item.label] = fileData
             totalSize += estimatedSize
             #if DEBUG
                 print(
@@ -434,35 +447,4 @@ final class ChecklistSyncService: ObservableObject {
         return hasher.finalize()
     }
 
-    func saveChecklistData() {
-        do {
-            let data = try JSONEncoder().encode(checklistData)
-            UserDefaults.standard.set(data, forKey: AppConstants.StorageKeys.checklistData)
-        } catch {
-            #if DEBUG
-                ErrorLogger.log(AppError.encodingFailed(type: "checklist data", underlying: error))
-            #endif
-            lastError = AppError.encodingFailed(type: "checklist data", underlying: error)
-        }
-    }
-
-    func loadChecklistData() {
-        guard let data = UserDefaults.standard.data(forKey: AppConstants.StorageKeys.checklistData)
-        else {
-            checklistData = ChecklistData.default
-            saveChecklistData()
-            return
-        }
-
-        do {
-            checklistData = try JSONDecoder().decode(ChecklistData.self, from: data)
-        } catch {
-            #if DEBUG
-                ErrorLogger.log(AppError.decodingFailed(type: "checklist data", underlying: error))
-            #endif
-            lastError = AppError.decodingFailed(type: "checklist data", underlying: error)
-            checklistData = ChecklistData.default
-            saveChecklistData()
-        }
-    }
 }

@@ -25,6 +25,8 @@ Watch App  ──WatchConnectivity──  Companion App
                Supabase API (telemetry, auth, feedback)
 ```
 
+- The project uses folder-based references (no individual .swift entries in the pbxproj), so new files are picked up automatically. 
+
 ### Data Persistence
 
 - **`ChecklistDataStore`** (`companion/Services/ChecklistDataStore.swift`) — UserDefaults persistence for checklists, zero sync logic, debounced 0.5s saves. The UI binds here; `SyncCoordinator` reads from here when pushing to watch.

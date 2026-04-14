@@ -2,7 +2,7 @@ import SwiftUI
 
 struct CompanionView: View {
     @EnvironmentObject private var syncCoordinator: SyncCoordinator
-    @StateObject private var checklistService = ChecklistSyncService.shared
+    @StateObject private var checklistDataStore = ChecklistDataStore.shared
 
     var body: some View {
         TabView {
@@ -13,7 +13,7 @@ struct CompanionView: View {
                     Text("Wizard")
                 }
 
-            ChecklistEditorView(checklistService: checklistService)
+            ChecklistEditorView(checklistDataStore: checklistDataStore)
                 .tabItem {
                     Image(systemName: "checklist")
                     Text("Checklists")
