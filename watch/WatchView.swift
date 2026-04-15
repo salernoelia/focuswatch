@@ -131,7 +131,7 @@ private struct HomeView: View {
                             CalendarView()
                         }
                         HomeTile(
-                            label: String(localized: "Level"), symbol: "chart.bar.fill",
+                            label: String(localized: "Level"), symbol: "trophy.fill",
                             color: .purple, minHeight: minHeight
                         ) {
                             DashboardView()
