@@ -66,8 +66,8 @@ struct CalendarEventFormView: View {
 
           Picker("Launch App", selection: $selectedAppIndex) {
             Text("None").tag(nil as Int?)
-            ForEach(appsManager.apps, id: \.index) { app in
-              Text(app.title).tag(app.index as Int?)
+            ForEach(appsManager.apps, id: \.legacyIndex) { app in
+              Text(app.title).tag(app.legacyIndex as Int?)
             }
           }
         }

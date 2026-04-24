@@ -583,6 +583,7 @@
       }
     },
     "Anne (Beta)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3844,6 +3845,7 @@
       }
     },
     "Track your achievements" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

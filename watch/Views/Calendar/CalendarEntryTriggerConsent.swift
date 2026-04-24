@@ -11,12 +11,13 @@ struct CalendarEntryTriggerConsent: View {
     @ObservedObject var syncCoordinator: SyncCoordinator
     @State private var isLaunching = false
 
+    private var appInfo: AppInfo? {
+        guard let appIndex = event.appIndex else { return nil }
+        return appsManager.app(forLegacyIndex: appIndex)
+    }
+
     private var appTitle: String {
-        if let appIndex = event.appIndex,
-           let app = appsManager.apps.first(where: { $0.index == appIndex }) {
-            return app.title
-        }
-        return "this activity"
+        appInfo?.title ?? "this activity"
     }
 
     var body: some View {
@@ -36,11 +37,11 @@ struct CalendarEntryTriggerConsent: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            if let appIndex = event.appIndex {
+            if let app = appInfo {
                 Button {
                     guard !isLaunching else { return }
                     isLaunching = true
-                    syncCoordinator.currentView = .app(appIndex)
+                    syncCoordinator.currentView = .app(app.id)
                     dismiss()
                 } label: {
                     Text("Starten")
@@ -60,9 +61,9 @@ struct CalendarEntryTriggerConsent: View {
             .disabled(isLaunching)
         }
         .onAppear {
-            if shouldAutoLaunch, let appIndex = event.appIndex {
+            if shouldAutoLaunch, let app = appInfo {
                 isLaunching = true
-                syncCoordinator.currentView = .app(appIndex)
+                syncCoordinator.currentView = .app(app.id)
                 dismiss()
             }
         }

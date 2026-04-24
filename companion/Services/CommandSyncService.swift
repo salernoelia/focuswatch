@@ -12,7 +12,7 @@ final class CommandSyncService: ObservableObject {
         self.transport = transport
     }
 
-    func switchToApp(index: Int) {
+    func switchToApp(id: String) {
         guard WCSession.default.activationState == .activated else { return }
 
         guard WCSession.default.isReachable else {
@@ -22,7 +22,7 @@ final class CommandSyncService: ObservableObject {
 
         let message: [String: Any] = [
             SyncConstants.Keys.action: SyncConstants.Actions.switchToApp,
-            SyncConstants.Keys.appIndex: index
+            SyncConstants.Keys.appIndex: id
         ]
 
         transport.sendMessage(message, replyHandler: nil) { [weak self] error in

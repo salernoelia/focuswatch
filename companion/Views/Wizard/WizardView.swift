@@ -135,11 +135,11 @@ struct WizardView: View {
 
                 Section("Focus Tools") {
                     ForEach(
-                        appsManager.apps.filter { $0.index < appsManager.builtInAppCount }, id: \.id
+                        appsManager.apps.filter { $0.appID != nil && $0.appID != .checklists && $0.appID != .calendar && $0.appID != .level && $0.appID != .settings }, id: \.id
                     ) { app in
                         HStack(spacing: 12) {
                             Button {
-                                CommandSyncService.shared.switchToApp(index: app.index)
+                                CommandSyncService.shared.switchToApp(id: app.id)
                             } label: {
                                 HStack(spacing: 12) {
                                     Circle()
@@ -160,7 +160,7 @@ struct WizardView: View {
                             .disabled(connectionStatus != .connected)
 
                             Button {
-                                showingConfig = focusToolType(for: app.index)
+                                showingConfig = focusToolType(for: app.appID)
                             } label: {
                                 Image(systemName: "gear")
                                     .foregroundColor(.secondary)
@@ -170,14 +170,14 @@ struct WizardView: View {
                     }
                 }
 
-                if appsManager.apps.count > appsManager.builtInAppCount {
+                if !appsManager.checklistApps().isEmpty {
                     Section("Checklists") {
                         ForEach(
-                            appsManager.apps.filter { $0.index >= appsManager.builtInAppCount },
+                            appsManager.apps.filter { $0.appID == nil },
                             id: \.id
                         ) { app in
                             Button {
-                                CommandSyncService.shared.switchToApp(index: app.index)
+                                CommandSyncService.shared.switchToApp(id: app.id)
                             } label: {
                                 HStack(spacing: 12) {
                                     Circle()
@@ -200,7 +200,7 @@ struct WizardView: View {
 
                 Section("Progress") {
                     Button {
-                        CommandSyncService.shared.switchToApp(index: -1)
+                        CommandSyncService.shared.switchToApp(id: WatchAppID.level.rawValue)
                     } label: {
                         HStack(spacing: 12) {
                             Circle()
@@ -218,24 +218,7 @@ struct WizardView: View {
                     }
                     .disabled(connectionStatus != .connected)
 
-                    Button {
-                        CommandSyncService.shared.switchToApp(index: -2)
-                    } label: {
-                        HStack(spacing: 12) {
-                            Circle()
-                                .fill(Color.teal)
-                                .frame(width: 10, height: 10)
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(String(localized: "Milestones"))
-                                    .foregroundColor(.primary)
-                                Text(String(localized: "Track your achievements"))
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                    }
-                    .disabled(connectionStatus != .connected)
+                  
                 }
 
                 // Section("Advanced") {
@@ -288,13 +271,13 @@ struct WizardView: View {
         }
     }
 
-    private func focusToolType(for index: Int) -> FocusToolType? {
-        switch index {
-        case 0: return .fokusMeter
-        case 1: return .writing
-        case 2: return .pomodoro
-        case 3: return .fidgetToy
-        case 4: return .colorBreathing
+    private func focusToolType(for appID: WatchAppID?) -> FocusToolType? {
+        switch appID {
+        case .meter: return .fokusMeter
+        case .writing: return .writing
+        case .pomodoro: return .pomodoro
+        case .fidget: return .fidgetToy
+        case .breathing: return .colorBreathing
         default: return nil
         }
     }

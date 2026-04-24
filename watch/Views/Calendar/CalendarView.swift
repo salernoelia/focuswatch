@@ -168,7 +168,7 @@ struct CalendarView: View {
 
     private func colorForApp(_ appIndex: Int?) -> Color {
         guard let appIndex = appIndex,
-              let app = appsManager.apps.first(where: { $0.index == appIndex })
+              let app = appsManager.app(forLegacyIndex: appIndex)
         else { return .gray }
         return app.color
     }

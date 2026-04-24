@@ -18,7 +18,7 @@ struct ChecklistsListView: View {
     }
 
     private var checklistApps: [AppInfo] {
-        appsManager.apps.filter { $0.index >= appsManager.builtInAppCount }
+        appsManager.checklistApps()
     }
 
     private var groupedChecklistApps: [ChecklistGroup] {
@@ -28,15 +28,11 @@ struct ChecklistsListView: View {
     }
 
     private func buildGroupedChecklistItems(uncategorizedTitle: String) -> [GroupedChecklistItem] {
-        var appByIndex: [Int: AppInfo] = [:]
-        for app in checklistApps {
-            appByIndex[app.index] = app
-        }
+        let appsByID = Dictionary(uniqueKeysWithValues: checklistApps.map { ($0.id, $0) })
 
         var items: [GroupedChecklistItem] = []
-        for (offset, checklist) in checklistManager.checklistData.checklists.enumerated() {
-            let appIndex = appsManager.builtInAppCount + offset
-            guard let app = appByIndex[appIndex] else { continue }
+        for checklist in checklistManager.checklistData.checklists {
+            guard let app = appsByID[checklist.id.uuidString] else { continue }
 
             let trimmedTag = checklist.tag.trimmingCharacters(in: .whitespacesAndNewlines)
             let tag = trimmedTag.isEmpty ? uncategorizedTitle : trimmedTag
@@ -72,9 +68,7 @@ struct ChecklistsListView: View {
 
     @ViewBuilder
     private func checklistDestination(for item: GroupedChecklistItem) -> some View {
-        let checklistIndex = item.app.index - appsManager.builtInAppCount
-        if checklistIndex >= 0 && checklistIndex < checklistManager.checklistData.checklists.count {
-            let checklist = checklistManager.checklistData.checklists[checklistIndex]
+        if let checklist = checklistManager.checklistData.checklists.first(where: { $0.id == item.id }) {
             UniversalChecklistView(
                 title: checklist.name,
                 description: checklist.description,

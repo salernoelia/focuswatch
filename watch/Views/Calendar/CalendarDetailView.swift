@@ -9,7 +9,7 @@ struct CalendarDetailView: View {
 
     private var appInfo: AppInfo? {
         guard let appIndex = event.appIndex else { return nil }
-        return appsManager.apps.first(where: { $0.index == appIndex })
+        return appsManager.app(forLegacyIndex: appIndex)
     }
 
     private var appTitle: String {
@@ -103,9 +103,9 @@ struct CalendarDetailView: View {
                         .padding(.leading, 16)
 
                         Button {
-                            guard !isLaunching, let appIndex = event.appIndex else { return }
+                            guard !isLaunching, let info = appInfo else { return }
                             isLaunching = true
-                            syncCoordinator.currentView = .app(appIndex)
+                            syncCoordinator.currentView = .app(info.id)
                             dismiss()
                         } label: {
                             Text(String(localized: "Start App"))

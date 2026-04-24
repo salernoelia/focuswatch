@@ -2,9 +2,9 @@ import Combine
 import Foundation
 import WatchConnectivity
 
-enum WatchViewState {
+enum WatchViewState: Equatable {
     case mainMenu
-    case app(Int)
+    case app(String)
 }
 
 @MainActor
@@ -451,8 +451,12 @@ final class IncomingMessageRouter {
         switch action {
         case SyncConstants.Actions.switchToApp:
             setCurrentView(.mainMenu)
-            if let appIndex = message[SyncConstants.Keys.appIndex] as? Int {
-                setCurrentView(.app(appIndex))
+            if let appID = message[SyncConstants.Keys.appIndex] as? String {
+                setCurrentView(.app(appID))
+            } else if let appIndex = message[SyncConstants.Keys.appIndex] as? Int {
+                if let app = AppsManager.shared.app(forLegacyIndex: appIndex) {
+                    setCurrentView(.app(app.id))
+                }
             }
 
         case SyncConstants.Actions.returnToDashboard, SyncConstants.Actions.wakeUp:
