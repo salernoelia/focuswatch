@@ -1,6 +1,7 @@
+import Combine
 import Foundation
 import PostgREST
-import Combine
+import Supabase
 import SwiftUI
 
 typealias TestUser = PublicSchema.TestUsersSelect

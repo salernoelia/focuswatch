@@ -1,4 +1,4 @@
-PROJECT := focuswatch.xcodeproj
+PROJECT := FocusWatch App.xcodeproj
 IOS_SCHEME := companion
 WATCH_SCHEME := watch
 
