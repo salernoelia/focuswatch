@@ -6,7 +6,7 @@ struct ProgressListView: View {
   var body: some View {
     ScrollView {
       LazyVStack(spacing: 12) {
-        NavigationLink(value: -1) {
+        NavigationLink { LevelView() } label: {
           progressCard(
             title: String(localized: "Level"),
             subtitle: String(localized: "Level") + " \(levelViewModel.currentLevel)",
@@ -15,7 +15,7 @@ struct ProgressListView: View {
         }
         .buttonStyle(PlainButtonStyle())
 
-        NavigationLink(value: -2) {
+        NavigationLink { MilestonesView() } label: {
           progressCard(
             title: String(localized: "Milestones"),
             subtitle: nextMilestoneText,

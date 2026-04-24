@@ -15,9 +15,10 @@ struct AppCardView: View {
                     .font(.system(size: 20))
                     .frame(width: 26, height: 26)
             } else {
-                RoundedRectangle(cornerRadius: 3)
+                Circle()
                     .fill(app.color)
-                    .frame(width: 4, height: 30)
+                    .frame(width: 10, height: 10)
+                    .padding(.horizontal, 8)
             }
 
             Text(app.title)

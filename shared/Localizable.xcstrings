@@ -176,6 +176,9 @@
     "+ 500 Points" : {
       "shouldTranslate" : false
     },
+    "+%lld" : {
+
+    },
     "+%lld Points" : {
       "shouldTranslate" : false
     },
@@ -854,6 +857,9 @@
           }
         }
       }
+    },
+    "Checklist not found" : {
+
     },
     "Checklist Settings" : {
       "localizations" : {
@@ -4196,6 +4202,9 @@
           }
         }
       }
+    },
+    "XP" : {
+
     },
     "You have unlocked a new Level!" : {
       "localizations" : {

@@ -37,13 +37,19 @@ final class SyncCoordinator: ObservableObject {
 
     init(
         transport: SyncTransportProtocol = ConnectivityTransportAdapter(),
-        checklistManager: ChecklistViewModel = .shared,
-        galleryManager: GalleryManager = .shared,
-        calendarManager: CalendarViewModel = .shared,
-        authManager: AuthManager = .shared,
-        telemetryManager: TelemetryManager = .shared,
-        checklistProgressManager: ChecklistProgressManager = .shared
+        checklistManager: ChecklistViewModel? = nil,
+        galleryManager: GalleryManager? = nil,
+        calendarManager: CalendarViewModel? = nil,
+        authManager: AuthManager? = nil,
+        telemetryManager: TelemetryManager? = nil,
+        checklistProgressManager: ChecklistProgressManager? = nil
     ) {
+        let checklistManager = checklistManager ?? .shared
+        let galleryManager = galleryManager ?? .shared
+        let calendarManager = calendarManager ?? .shared
+        let authManager = authManager ?? .shared
+        let telemetryManager = telemetryManager ?? .shared
+        let checklistProgressManager = checklistProgressManager ?? .shared
         self.transport = transport
         self.checklistManager = checklistManager
         self.galleryManager = galleryManager

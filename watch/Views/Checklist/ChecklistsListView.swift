@@ -70,6 +70,26 @@ struct ChecklistsListView: View {
         }
     }
 
+    @ViewBuilder
+    private func checklistDestination(for item: GroupedChecklistItem) -> some View {
+        let checklistIndex = item.app.index - appsManager.builtInAppCount
+        if checklistIndex >= 0 && checklistIndex < checklistManager.checklistData.checklists.count {
+            let checklist = checklistManager.checklistData.checklists[checklistIndex]
+            UniversalChecklistView(
+                title: checklist.name,
+                description: checklist.description,
+                instructionTitle: checklist.name,
+                items: checklist.items,
+                checklistId: checklist.id,
+                xpReward: checklist.xpReward,
+                resetConfiguration: checklist.resetConfiguration
+            )
+        } else {
+            Text(String(localized: "Checklist not found"))
+                .foregroundStyle(.secondary)
+        }
+    }
+
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 10) {
@@ -87,7 +107,9 @@ struct ChecklistsListView: View {
                                 .padding(.horizontal, 4)
 
                             ForEach(group.items) { item in
-                                NavigationLink(value: item.app.index) {
+                                NavigationLink {
+                                    checklistDestination(for: item)
+                                } label: {
                                     AppCardView(app: item.app)
                                 }
                                 .buttonStyle(PlainButtonStyle())

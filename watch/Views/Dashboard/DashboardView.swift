@@ -2,12 +2,20 @@ import SwiftUI
 
 struct DashboardView: View {
   @StateObject private var levelViewModel = LevelViewModel.shared
+  @State private var appeared = false
 
   var body: some View {
     ScrollView {
       VStack(spacing: 16) {
         levelSection
+          .scaleEffect(appeared ? 1 : 0.7)
+          .opacity(appeared ? 1 : 0)
+          .animation(.spring(response: 0.5, dampingFraction: 0.55), value: appeared)
+
         milestonesSection
+          .scaleEffect(appeared ? 1 : 0.7)
+          .opacity(appeared ? 1 : 0)
+          .animation(.spring(response: 0.5, dampingFraction: 0.55).delay(0.1), value: appeared)
 
         Spacer()
       }
@@ -15,11 +23,16 @@ struct DashboardView: View {
       .padding(.top, 8)
     }
     .navigationTitle(String(localized: "Overview"))
-
+    .onAppear {
+      appeared = true
+    }
+    .onDisappear {
+      appeared = false
+    }
   }
 
   private var levelSection: some View {
-    NavigationLink(value: -1) {
+    NavigationLink { LevelView() } label: {
       VStack(spacing: 12) {
         HStack {
           Text(String(localized: "Level"))
@@ -29,15 +42,18 @@ struct DashboardView: View {
           Text("\(levelViewModel.currentLevel)")
             .font(.title2)
             .fontWeight(.bold)
+            .contentTransition(.numericText())
         }
 
         ProgressView(value: min(max(levelViewModel.progress, 0), 1))
           .tint(.blue)
+          .animation(.spring(response: 0.6, dampingFraction: 0.65), value: levelViewModel.progress)
 
         HStack {
           Text("\(levelViewModel.currentXP)")
             .font(.caption2)
             .foregroundStyle(.secondary)
+            .contentTransition(.numericText())
           Spacer()
           Text("\(levelViewModel.xpNeeded)")
             .font(.caption2)
@@ -48,11 +64,11 @@ struct DashboardView: View {
       .background(Color.white.opacity(0.05))
       .clipShape(RoundedRectangle(cornerRadius: 12))
     }
-    .buttonStyle(PlainButtonStyle())
+    .buttonStyle(BounceButtonStyle())
   }
 
   private var milestonesSection: some View {
-    NavigationLink(value: -2) {
+    NavigationLink { MilestonesView() } label: {
       VStack(spacing: 12) {
         HStack {
           Text(String(localized: "Milestones"))
@@ -85,7 +101,15 @@ struct DashboardView: View {
       .background(Color.white.opacity(0.05))
       .clipShape(RoundedRectangle(cornerRadius: 12))
     }
-    .buttonStyle(PlainButtonStyle())
+    .buttonStyle(BounceButtonStyle())
+  }
+}
+
+struct BounceButtonStyle: ButtonStyle {
+  func makeBody(configuration: Configuration) -> some View {
+    configuration.label
+      .scaleEffect(configuration.isPressed ? 0.92 : 1.0)
+      .animation(.spring(response: 0.25, dampingFraction: 0.5), value: configuration.isPressed)
   }
 }
 
