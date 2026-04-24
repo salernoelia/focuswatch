@@ -23,7 +23,6 @@ class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDel
   private var extendedRuntimeSession: WKExtendedRuntimeSession?
   private var totalTime: Int = 1500
   private var endDate: Date?
-  private var lastTickDate: Date?
 
   private var isLoadingSettings = false
 
@@ -253,7 +252,6 @@ class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDel
 
   private func startTimer() {
     endDate = Date().addingTimeInterval(TimeInterval(timeRemaining))
-    lastTickDate = Date()
 
     scheduleTimerNotification()
 
@@ -283,14 +281,19 @@ class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDel
     #endif
 
     timerTask = Task {
+      guard let deadline = endDate else { return }
       while !Task.isCancelled {
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
+        let now = Date()
+        let remaining = deadline.timeIntervalSince(now)
+        if remaining <= 0 {
+          timeRemaining = 0
+          break
+        }
+        let nextTick = remaining.truncatingRemainder(dividingBy: 1.0)
+        let sleepDuration = nextTick < 0.05 ? 1.0 : nextTick
+        try? await Task.sleep(nanoseconds: UInt64(sleepDuration * 1_000_000_000))
         if !Task.isCancelled {
           await tick()
-        }
-
-        if timeRemaining <= 0 {
-          break
         }
       }
       if !Task.isCancelled && timeRemaining <= 0 {
@@ -303,7 +306,6 @@ class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDel
     timerTask?.cancel()
     timerTask = nil
     endDate = nil
-    lastTickDate = nil
 
     // Always stop vibrations when timer stops
     VibrationManager.shared.stopPomodoroRandomVibrations()
@@ -324,23 +326,9 @@ class PomodoroViewModel: NSObject, ObservableObject, WKExtendedRuntimeSessionDel
   }
 
   private func tick() async {
-    let now = Date()
-
-    if let lastTick = lastTickDate {
-      let timeSinceLastTick = now.timeIntervalSince(lastTick)
-      if timeSinceLastTick < 0.9 {
-        return
-      }
-    }
-
-    lastTickDate = now
-
-    if let endDate = endDate {
-      let remaining = Int(ceil(endDate.timeIntervalSince(now)))
-      timeRemaining = max(0, remaining)
-    } else {
-      timeRemaining = max(0, timeRemaining - 1)
-    }
+    guard let endDate = endDate else { return }
+    let remaining = Int(ceil(endDate.timeIntervalSince(Date())))
+    timeRemaining = max(0, remaining)
 
     if timeRemaining % 10 == 0 {
       saveState()
