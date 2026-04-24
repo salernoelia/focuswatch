@@ -177,7 +177,7 @@
       "shouldTranslate" : false
     },
     "+%lld" : {
-
+      "shouldTranslate" : false
     },
     "+%lld Points" : {
       "shouldTranslate" : false
@@ -578,23 +578,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Allow Telemetry"
-          }
-        }
-      }
-    },
-    "Anne (Beta)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anne (Beta)"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anne (Beta)"
           }
         }
       }
@@ -1877,23 +1860,6 @@
         }
       }
     },
-    "Heute" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Heute"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Today"
-          }
-        }
-      }
-    },
     "History" : {
       "localizations" : {
         "de" : {
@@ -2098,23 +2064,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Calendar"
-          }
-        }
-      }
-    },
-    "Keine Events" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine Events"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No events"
           }
         }
       }
@@ -2453,17 +2402,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "minimum"
-          }
-        }
-      }
-    },
-    "Navigation" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Navigation"
           }
         }
       }
@@ -3186,17 +3124,6 @@
         }
       }
     },
-    "Return to Dashboard" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zurück zur Übersicht"
-          }
-        }
-      }
-    },
     "Reward" : {
       "localizations" : {
         "de" : {
@@ -3329,17 +3256,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sekunden"
-          }
-        }
-      }
-    },
-    "See your focus points" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sehe deine Fokuspunkte"
           }
         }
       }
@@ -3876,17 +3792,6 @@
         }
       }
     },
-    "Track your achievements" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verfolge deine Errungenschaften"
-          }
-        }
-      }
-    },
     "Try again later" : {
       "localizations" : {
         "de" : {
@@ -3919,17 +3824,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Übung"
-          }
-        }
-      }
-    },
-    "Tutorial Done!" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Übung bestanden!"
           }
         }
       }
@@ -4193,23 +4087,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wizard"
-          }
-        }
-      }
-    },
-    "Woche" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Woche"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Week"
           }
         }
       }
