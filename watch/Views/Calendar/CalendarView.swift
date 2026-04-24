@@ -35,40 +35,7 @@ struct CalendarView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            VStack(spacing: 4) {
-                HStack(spacing: 0) {
-                    Button {
-                        viewMode = .today
-                    } label: {
-                        Text("Heute")
-                            .font(.caption)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 6)
-                            .background(viewMode == .today ? Color.accentColor : Color.clear)
-                            .foregroundColor(viewMode == .today ? .white : .primary)
-                    }
-                    .buttonStyle(.plain)
-
-                    Button {
-                        viewMode = .week
-                    } label: {
-                        Text("Woche")
-                            .font(.caption)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 6)
-                            .background(viewMode == .week ? Color.accentColor : Color.clear)
-                            .foregroundColor(viewMode == .week ? .white : .primary)
-                    }
-                    .buttonStyle(.plain)
-                }
-                .background(Color(.darkGray).opacity(0.3))
-                .cornerRadius(8)
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-
-            ScrollView {
+        ScrollView {
                 VStack(spacing: 8) {
                     if viewMode == .today {
                         todayView
@@ -77,11 +44,20 @@ struct CalendarView: View {
                     }
                 }
                 .padding(.horizontal, 8)
-                .padding(.vertical, 4)
+                .padding(.top, 6)
+                .padding(.bottom, 8)
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    viewMode = viewMode == .today ? .week : .today
+                } label: {
+                    Text(viewMode == .today ? String(localized: "Week") : String(localized: "Today"))
+                        .font(.caption)
+                }
             }
         }
-        .navigationTitle("Kalender")
-        .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $selectedEvent) { event in
             NavigationStack {
                 CalendarDetailView(event: event, syncCoordinator: syncCoordinator)
@@ -98,15 +74,10 @@ struct CalendarView: View {
     private var todayView: some View {
         Group {
             if todayEvents.isEmpty {
-                VStack(spacing: 8) {
-                    Image(systemName: "calendar")
-                        .font(.largeTitle)
-                        .foregroundColor(.secondary)
-                    Text("Keine Events")
-                        .foregroundColor(.secondary)
-                        .font(.caption)
-                }
-                .padding()
+                Text(String(localized: "No events"))
+                    .foregroundColor(.secondary)
+                    .font(.caption)
+                    .padding()
             } else {
                 ForEach(todayEvents, id: \.id) { event in
                     eventCard(event)
@@ -118,15 +89,10 @@ struct CalendarView: View {
     private var weekView: some View {
         Group {
             if weekEvents.isEmpty {
-                VStack(spacing: 8) {
-                    Image(systemName: "calendar")
-                        .font(.largeTitle)
-                        .foregroundColor(.secondary)
-                    Text("Keine Events")
-                        .foregroundColor(.secondary)
-                        .font(.caption)
-                }
-                .padding()
+                Text(String(localized: "No events"))
+                    .foregroundColor(.secondary)
+                    .font(.caption)
+                    .padding()
             } else {
                 ForEach(weekEvents, id: \.date) { dayData in
                     VStack(alignment: .leading, spacing: 4) {
@@ -191,10 +157,7 @@ struct CalendarView: View {
     }
 
     private func dateHeaderString(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE, d. MMM"
-        formatter.locale = Locale(identifier: "de_DE")
-        return formatter.string(from: date)
+        date.formatted(.dateTime.weekday(.wide).day().month(.abbreviated))
     }
 
     private func timeString(_ date: Date) -> String {
@@ -205,7 +168,7 @@ struct CalendarView: View {
 
     private func colorForApp(_ appIndex: Int?) -> Color {
         guard let appIndex = appIndex,
-              let app = appsManager.apps.first(where: { $0.index == appIndex })
+              let app = appsManager.app(forLegacyIndex: appIndex)
         else { return .gray }
         return app.color
     }

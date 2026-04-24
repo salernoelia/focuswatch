@@ -40,6 +40,7 @@ enum SyncConstants {
         static let requiredImages = "requiredImages"
         static let syncStatus = "syncStatus"
         static let checklistId = "checklistId"
+        static let tileOrder = "tileOrder"
     }
 
     enum Actions {

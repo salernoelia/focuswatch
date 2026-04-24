@@ -1,0 +1,3867 @@
+{
+  "repo": "salernoelia/focuswatch",
+  "since": {
+    "issue": 6,
+    "created_at": "2026-03-26T07:31:55Z"
+  },
+  "generated_at": "2026-04-19T12:50:41.665293Z",
+  "counts": {
+    "issues": 36,
+    "pull_requests": 11,
+    "commits_origin_main": 12,
+    "timeline_events": 108
+  },
+  "issues": [
+    {
+      "number": 6,
+      "title": "Initial State of Codebase",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-03-26T07:31:55Z",
+      "updated_at": "2026-04-19T12:35:33Z",
+      "closed_at": null,
+      "labels": [
+        "DSaaP",
+        "Optional"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/6",
+      "comments_count": 0,
+      "body": "This issue documents the initial state of the FocusWatch codebase prior to our refactoring efforts for the DSaaP project. It serves as a baseline to measure our architectural and testing improvements.\n\nCurrently, the application suffers from multiple architectural bottlenecks. \n\nThe WritingExerciseManager.swift acts as a God Class, spanning roughly 700 lines and mixing timer logic, motion detection, haptics, data upload, and state logging. Similarly, DataStorageManager.swift handles multiple unrelated responsibilities including Google Drive uploads, webhook communications, binary encoding, and retry logic over 600 lines. As this is legacy code that was quickly copied and pasted into the project months ago, we now must address the accumulated technical debt and split it up according to the rest of the project's structure.\n\nHardcoded values and raw UserDefaults keys are scattered throughout the codebase rather than being centralized.\n\nThe application heavily overuses the Singleton pattern. Instances like AuthManager.shared, LevelService.shared, and ChecklistSyncService.shared make unit testing very difficult due to their tight coupling. \n\nConcurrency is handled inconsistently, with a mix of DispatchQueue.main.async and async/await throughout the synchronization services. The entire synchronization layer itself has become a tangled system, which must be simplified, properly separated, and transitioned to use deterministic messaging. Establishing the companion app as the main source of truth will solve the current issues with local synchronization getting out of hand.\n\nThe repository also overuses the singleton pattern, we think its a good idea to re-evaluate for each part what pattern is the most optimal for the scenario.\n\nTesting coverage is so far non-existent. The goal is to build a comprehensive suite of unit tests and some UI tests.",
+      "comments": []
+    },
+    {
+      "number": 10,
+      "title": "Overhaul the Synchronisation System",
+      "state": "closed",
+      "state_reason": "completed",
+      "author": "salernoelia",
+      "created_at": "2026-03-29T15:05:55Z",
+      "updated_at": "2026-04-19T11:34:59Z",
+      "closed_at": "2026-04-19T11:34:59Z",
+      "labels": [
+        "enhancement"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/10",
+      "comments_count": 0,
+      "body": "Remove hardcoded singletons in the sync layer to allow mocking of ConnectivityTransport during unit testing.",
+      "comments": []
+    },
+    {
+      "number": 11,
+      "title": "Centralize Magic Strings and Layout Constants in Constants",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-03-29T15:08:56Z",
+      "updated_at": "2026-04-19T12:35:21Z",
+      "closed_at": null,
+      "labels": [
+        "refactor",
+        "Important"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/11",
+      "comments_count": 0,
+      "body": "Make sure the constants are all within AppConstants.",
+      "comments": []
+    },
+    {
+      "number": 12,
+      "title": "Rework and Refactor the watch \"Writing\" microapplication",
+      "state": "closed",
+      "state_reason": "completed",
+      "author": "salernoelia",
+      "created_at": "2026-03-29T16:00:22Z",
+      "updated_at": "2026-04-19T11:35:43Z",
+      "closed_at": "2026-04-19T11:35:43Z",
+      "labels": [
+        "bug",
+        "enhancement"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/12",
+      "comments_count": 1,
+      "body": "- Implement configuration flow between watch and phone \n- Encapsulate logic factored out from the god-object \"WritingManager\"\n- Prepare for the W.I.P ML Model used for classification\n- Remove unused functionality\n- Remove configurations being stored and fetched in google drive\n- Split Base64 packing and google drive upload so the upload provider can be exchanged in the future\n- Allow configurations of EMA model parameters to be done in companion app\n- Add a switcher between EMA and ML Mode on watch app\n",
+      "comments": [
+        {
+          "id": 4275810512,
+          "body": "Update: Task has been moved to TM2",
+          "html_url": "https://github.com/salernoelia/focuswatch/issues/12#issuecomment-4275810512",
+          "user": {
+            "login": "salernoelia"
+          },
+          "author_association": "OWNER",
+          "created_at": "2026-04-19T11:35:39Z",
+          "updated_at": "2026-04-19T11:35:39Z"
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "title": "Integration Tests and Documentation for Telemetry",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-03-29T16:02:26Z",
+      "updated_at": "2026-04-19T12:35:12Z",
+      "closed_at": null,
+      "labels": [
+        "Critical"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/13",
+      "comments_count": 0,
+      "body": "Automated tests for AppLogger to verify that view lifecycle events and telemetry data correctly format and POST to the Supabase app_logs table.",
+      "comments": []
+    },
+    {
+      "number": 14,
+      "title": "Messy navigation interface on the watch",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-03-29T16:04:48Z",
+      "updated_at": "2026-04-19T12:35:12Z",
+      "closed_at": null,
+      "labels": [
+        "enhancement",
+        "Critical"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/14",
+      "comments_count": 1,
+      "body": "- Reduce number of clicks needed\n- Group items in a more child friendly way\n- Integrate Icons and more colors\n- Enhance UX writing and localization\n- Move from tabbed view to list view",
+      "comments": [
+        {
+          "id": 4275823515,
+          "body": "Design thinking workshop has yielded nice results\n\n<img width=\"1585\" height=\"615\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/67fca6b8-201e-4aa5-b3dd-7fe268fbd72e\" />",
+          "html_url": "https://github.com/salernoelia/focuswatch/issues/14#issuecomment-4275823515",
+          "user": {
+            "login": "salernoelia"
+          },
+          "author_association": "OWNER",
+          "created_at": "2026-04-19T11:43:49Z",
+          "updated_at": "2026-04-19T11:43:49Z"
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "title": "Implement historical progression charts",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-03-29T16:06:21Z",
+      "updated_at": "2026-04-19T12:35:50Z",
+      "closed_at": null,
+      "labels": [
+        "feature",
+        "Optional"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/15",
+      "comments_count": 0,
+      "body": "Expand the LevelView dashboard to visualize ActivityStats over time using Swift Charts.",
+      "comments": []
+    },
+    {
+      "number": 16,
+      "title": "Integrate native EventKit permissions and fix the unreliability of long-term event reminders",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-03-29T16:08:20Z",
+      "updated_at": "2026-04-19T12:35:12Z",
+      "closed_at": null,
+      "labels": [
+        "bug",
+        "enhancement",
+        "Critical"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/16",
+      "comments_count": 0,
+      "body": "Update CalendarViewModel to gracefully request and handle native iOS calendar permissions alongside internal App notifications.\nRework data transimission of events between the devices and simplify current implementation.\nIf possible, write tests.",
+      "comments": []
+    },
+    {
+      "number": 17,
+      "title": "Current image transfer logic is not very robust",
+      "state": "closed",
+      "state_reason": "completed",
+      "author": "salernoelia",
+      "created_at": "2026-03-29T16:10:08Z",
+      "updated_at": "2026-04-19T11:38:21Z",
+      "closed_at": "2026-04-19T11:38:21Z",
+      "labels": [],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/17",
+      "comments_count": 0,
+      "body": "Implement Resumable Image File Transfers -> detect and automatically resume interrupted .jpg checklist file transfers via WCSessionFileTransfer.",
+      "comments": []
+    },
+    {
+      "number": 18,
+      "title": "Combine Pomodoro-like micro applications",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-03-29T16:11:59Z",
+      "updated_at": "2026-04-19T12:35:33Z",
+      "closed_at": null,
+      "labels": [
+        "enhancement",
+        "feature",
+        "Optional"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/18",
+      "comments_count": 1,
+      "body": "Merge the two pomodor-using micro applications \"Writing\" and \"Pomodoro\", investigate if more micro applications could benefit from a pomodoro mode or even globalize it.",
+      "comments": [
+        {
+          "id": 4275817708,
+          "body": "Design thinking workshop has yielded some nice ideas\n\n<img width=\"1548\" height=\"461\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/274f2439-3281-4190-864c-d26caacda4b3\" />",
+          "html_url": "https://github.com/salernoelia/focuswatch/issues/18#issuecomment-4275817708",
+          "user": {
+            "login": "salernoelia"
+          },
+          "author_association": "OWNER",
+          "created_at": "2026-04-19T11:40:05Z",
+          "updated_at": "2026-04-19T11:40:05Z"
+        }
+      ]
+    },
+    {
+      "number": 19,
+      "title": "SyncCoordinator God-Object",
+      "state": "closed",
+      "state_reason": "completed",
+      "author": "salernoelia",
+      "created_at": "2026-03-29T21:24:42Z",
+      "updated_at": "2026-04-19T11:36:16Z",
+      "closed_at": "2026-04-19T11:36:16Z",
+      "labels": [],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/19",
+      "comments_count": 1,
+      "body": "God-object on watch side which mixes UI state with sync logic",
+      "comments": [
+        {
+          "id": 4151124514,
+          "body": "Replace with a SyncCoordinator which Orchestrates outbound syncs and routes inbound messages without domain logic.",
+          "html_url": "https://github.com/salernoelia/focuswatch/issues/19#issuecomment-4151124514",
+          "user": {
+            "login": "salernoelia"
+          },
+          "author_association": "OWNER",
+          "created_at": "2026-03-29T21:27:03Z",
+          "updated_at": "2026-03-29T21:28:25Z"
+        }
+      ]
+    },
+    {
+      "number": 20,
+      "title": "SyncStateManager and SyncState",
+      "state": "closed",
+      "state_reason": "completed",
+      "author": "salernoelia",
+      "created_at": "2026-03-29T21:25:26Z",
+      "updated_at": "2026-04-19T11:36:17Z",
+      "closed_at": "2026-04-19T11:36:17Z",
+      "labels": [],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/20",
+      "comments_count": 0,
+      "body": "Complex and overcomplicated image-tracking state machine, persisted to UserDefaults",
+      "comments": []
+    },
+    {
+      "number": 21,
+      "title": "GalleryManager functionality encapsulation",
+      "state": "closed",
+      "state_reason": "completed",
+      "author": "salernoelia",
+      "created_at": "2026-03-29T21:26:04Z",
+      "updated_at": "2026-04-03T22:03:39Z",
+      "closed_at": "2026-04-03T22:03:39Z",
+      "labels": [],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/21",
+      "comments_count": 0,
+      "body": "Mixes file management with WCSession acknowledgment messaging",
+      "comments": []
+    },
+    {
+      "number": 22,
+      "title": "ChecklistSyncService is deeply integrated into the companion UI",
+      "state": "closed",
+      "state_reason": "completed",
+      "author": "salernoelia",
+      "created_at": "2026-03-29T21:29:38Z",
+      "updated_at": "2026-04-19T11:36:17Z",
+      "closed_at": "2026-04-19T11:36:17Z",
+      "labels": [],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/22",
+      "comments_count": 0,
+      "body": "Multiple views (CompanionView, ChecklistEditorView, WizardView, ChecklistDetailView, ChecklistItemEditRow, UnifiedAddItemsView) use ChecklistSyncService not just for syncing but as the primary checklist data source, this must be split up",
+      "comments": []
+    },
+    {
+      "number": 23,
+      "title": "Add Checklist Items without Image",
+      "state": "closed",
+      "state_reason": "completed",
+      "author": "salernoelia",
+      "created_at": "2026-04-03T12:32:07Z",
+      "updated_at": "2026-04-03T13:30:30Z",
+      "closed_at": "2026-04-03T13:30:30Z",
+      "labels": [
+        "feature"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/23",
+      "comments_count": 0,
+      "body": "Feedback Entry 15\n\"Schritte ohne Foto auswählen können (z.B. leere Farbflächen auswählen können, auf der dann der geschriebene Titel erscheint)\"",
+      "comments": []
+    },
+    {
+      "number": 24,
+      "title": "Checklist Categories/Tags",
+      "state": "closed",
+      "state_reason": "completed",
+      "author": "salernoelia",
+      "created_at": "2026-04-03T12:33:02Z",
+      "updated_at": "2026-04-03T13:30:30Z",
+      "closed_at": "2026-04-03T13:30:30Z",
+      "labels": [],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/24",
+      "comments_count": 0,
+      "body": "Feedback Entry 15\n\"Kategorien von Checklisten als oberste Ebene, z.B. Schulroutinen, Morgenroutinen, Sport, etc.\"",
+      "comments": []
+    },
+    {
+      "number": 26,
+      "title": "Set Emoji for a Checklist",
+      "state": "closed",
+      "state_reason": "completed",
+      "author": "salernoelia",
+      "created_at": "2026-04-03T13:08:12Z",
+      "updated_at": "2026-04-03T13:30:30Z",
+      "closed_at": "2026-04-03T13:30:30Z",
+      "labels": [],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/26",
+      "comments_count": 0,
+      "body": "To help kids better Differentiate between checklists, add the ability to set an emoji",
+      "comments": []
+    },
+    {
+      "number": 27,
+      "title": "Improve the checklist editor input fields organizations into sections",
+      "state": "closed",
+      "state_reason": "completed",
+      "author": "salernoelia",
+      "created_at": "2026-04-03T13:13:57Z",
+      "updated_at": "2026-04-03T13:30:31Z",
+      "closed_at": "2026-04-03T13:30:31Z",
+      "labels": [],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/27",
+      "comments_count": 0,
+      "body": "Make sure they are separated well, add descriptive captions if fitting",
+      "comments": []
+    },
+    {
+      "number": 28,
+      "title": "90129: The bundle uses a bundle name or display name that is already taken.",
+      "state": "closed",
+      "state_reason": "completed",
+      "author": "salernoelia",
+      "created_at": "2026-04-03T14:28:49Z",
+      "updated_at": "2026-04-19T11:37:43Z",
+      "closed_at": "2026-04-19T11:37:43Z",
+      "labels": [],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/28",
+      "comments_count": 1,
+      "body": "Resolve App Store rejection",
+      "comments": [
+        {
+          "id": 4275813721,
+          "body": "Apple has helped fix it, the bug was within a Build Phase setting overwriting the Bundle Name",
+          "html_url": "https://github.com/salernoelia/focuswatch/issues/28#issuecomment-4275813721",
+          "user": {
+            "login": "salernoelia"
+          },
+          "author_association": "OWNER",
+          "created_at": "2026-04-19T11:37:43Z",
+          "updated_at": "2026-04-19T11:37:43Z"
+        }
+      ]
+    },
+    {
+      "number": 31,
+      "title": "Always-on display for various apps",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-04-03T22:33:59Z",
+      "updated_at": "2026-04-19T12:35:33Z",
+      "closed_at": null,
+      "labels": [
+        "enhancement",
+        "Optional"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/31",
+      "comments_count": 0,
+      "body": "- pomodoro\n- writing\n- checklists",
+      "comments": []
+    },
+    {
+      "number": 35,
+      "title": "Improve configuration flow between watch and phone",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-04-05T18:56:19Z",
+      "updated_at": "2026-04-19T12:35:21Z",
+      "closed_at": null,
+      "labels": [
+        "enhancement",
+        "feature",
+        "Important"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/35",
+      "comments_count": 1,
+      "body": "Help the user define\n- which apps are relevant\n- edit configurations with a better UX\n- initial setup on first download flow",
+      "comments": [
+        {
+          "id": 4275857419,
+          "body": "Design thinking workshop has yielded good results\n\n<img width=\"4534\" height=\"882\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/e77995b0-9e3c-4e4a-bb69-f11ec8c9799c\" />",
+          "html_url": "https://github.com/salernoelia/focuswatch/issues/35#issuecomment-4275857419",
+          "user": {
+            "login": "salernoelia"
+          },
+          "author_association": "OWNER",
+          "created_at": "2026-04-19T12:04:29Z",
+          "updated_at": "2026-04-19T12:04:29Z"
+        }
+      ]
+    },
+    {
+      "number": 36,
+      "title": "Factor out logic from the god-object \"WritingManager\"",
+      "state": "closed",
+      "state_reason": "duplicate",
+      "author": "salernoelia",
+      "created_at": "2026-04-05T18:56:41Z",
+      "updated_at": "2026-04-19T11:36:34Z",
+      "closed_at": "2026-04-19T11:36:34Z",
+      "labels": [],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/36",
+      "comments_count": 0,
+      "body": "",
+      "comments": []
+    },
+    {
+      "number": 37,
+      "title": "Move writing configurations to be stored in Supabase",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-04-05T18:57:44Z",
+      "updated_at": "2026-04-19T12:35:34Z",
+      "closed_at": null,
+      "labels": [
+        "TM2",
+        "Optional"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/37",
+      "comments_count": 1,
+      "body": "Instead make them stored on watch.",
+      "comments": [
+        {
+          "id": 4275821140,
+          "body": "Moved to TM2",
+          "html_url": "https://github.com/salernoelia/focuswatch/issues/37#issuecomment-4275821140",
+          "user": {
+            "login": "salernoelia"
+          },
+          "author_association": "OWNER",
+          "created_at": "2026-04-19T11:42:16Z",
+          "updated_at": "2026-04-19T11:42:16Z"
+        }
+      ]
+    },
+    {
+      "number": 38,
+      "title": "Split up Writing Data to Base64 logic and google drive upload so the upload provider can be exchanged in the future",
+      "state": "closed",
+      "state_reason": "completed",
+      "author": "salernoelia",
+      "created_at": "2026-04-05T18:58:27Z",
+      "updated_at": "2026-04-19T11:41:44Z",
+      "closed_at": "2026-04-19T11:41:36Z",
+      "labels": [
+        "TM2"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/38",
+      "comments_count": 1,
+      "body": "",
+      "comments": [
+        {
+          "id": 4275820182,
+          "body": "Moved to TM2 where Google Drive and Firebase Endpoint will *FINALLY* be removed",
+          "html_url": "https://github.com/salernoelia/focuswatch/issues/38#issuecomment-4275820182",
+          "user": {
+            "login": "salernoelia"
+          },
+          "author_association": "OWNER",
+          "created_at": "2026-04-19T11:41:36Z",
+          "updated_at": "2026-04-19T11:41:36Z"
+        }
+      ]
+    },
+    {
+      "number": 39,
+      "title": "Allow configurations of EMA model parameters to be done in companion app",
+      "state": "closed",
+      "state_reason": "completed",
+      "author": "salernoelia",
+      "created_at": "2026-04-05T18:58:34Z",
+      "updated_at": "2026-04-19T11:40:55Z",
+      "closed_at": "2026-04-19T11:40:55Z",
+      "labels": [],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/39",
+      "comments_count": 1,
+      "body": "",
+      "comments": [
+        {
+          "id": 4275819100,
+          "body": "EMA model will be phased out in TM2",
+          "html_url": "https://github.com/salernoelia/focuswatch/issues/39#issuecomment-4275819100",
+          "user": {
+            "login": "salernoelia"
+          },
+          "author_association": "OWNER",
+          "created_at": "2026-04-19T11:40:55Z",
+          "updated_at": "2026-04-19T11:40:55Z"
+        }
+      ]
+    },
+    {
+      "number": 40,
+      "title": "Add a switcher between EMA and ML Model Mode on watch app",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-04-05T18:58:50Z",
+      "updated_at": "2026-04-19T12:35:33Z",
+      "closed_at": null,
+      "labels": [
+        "TM2",
+        "Optional"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/40",
+      "comments_count": 1,
+      "body": "Also allow changing it from companion app",
+      "comments": [
+        {
+          "id": 4275818029,
+          "body": "Moved to TM2",
+          "html_url": "https://github.com/salernoelia/focuswatch/issues/40#issuecomment-4275818029",
+          "user": {
+            "login": "salernoelia"
+          },
+          "author_association": "OWNER",
+          "created_at": "2026-04-19T11:40:17Z",
+          "updated_at": "2026-04-19T11:40:17Z"
+        }
+      ]
+    },
+    {
+      "number": 43,
+      "title": "Critical Notification Service",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-04-19T11:47:03Z",
+      "updated_at": "2026-04-19T12:35:12Z",
+      "closed_at": null,
+      "labels": [
+        "bug",
+        "enhancement",
+        "Critical"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/43",
+      "comments_count": 0,
+      "body": "Current notifications are handled with normal priority, resulting in no trigger in certain scenarios. A solution would be to use \"high-priority\" notifications.",
+      "comments": []
+    },
+    {
+      "number": 44,
+      "title": "Store Supabase auth tokens in Keychain instead of UserDefaults",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-04-19T12:28:59Z",
+      "updated_at": "2026-04-19T12:35:04Z",
+      "closed_at": null,
+      "labels": [
+        "bug",
+        "Critical"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/44",
+      "comments_count": 0,
+      "body": "Supabase access and refresh tokens should not be persisted in UserDefaults. Move session token storage to KeychainAccess, keep only non-sensitive preferences in defaults, and make sure login/logout flows still restore and clear sessions correctly.",
+      "comments": []
+    },
+    {
+      "number": 45,
+      "title": "Move large persisted app data out of UserDefaults",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-04-19T12:29:08Z",
+      "updated_at": "2026-04-19T12:35:21Z",
+      "closed_at": null,
+      "labels": [
+        "enhancement",
+        "Important"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/45",
+      "comments_count": 0,
+      "body": "ChecklistData, gallery metadata, milestones, and similar structured payloads are too large and relational for UserDefaults. Migrate these stores to SwiftData or file-based Codable persistence, and centralize the remaining defaults keys in AppConstants.StorageKeys.",
+      "comments": []
+    },
+    {
+      "number": 46,
+      "title": "Load gallery images asynchronously with caching",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-04-19T12:29:15Z",
+      "updated_at": "2026-04-19T12:35:12Z",
+      "closed_at": null,
+      "labels": [
+        "enhancement",
+        "Critical"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/46",
+      "comments_count": 0,
+      "body": "GalleryItem image access should not synchronously read JPEGs from disk on the main thread. Add an async image loader with caching so gallery and checklist screens stay responsive during scrolling and rendering.",
+      "comments": []
+    },
+    {
+      "number": 47,
+      "title": "Standardize sync and app flow concurrency on async/await",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-04-19T12:29:19Z",
+      "updated_at": "2026-04-19T12:35:21Z",
+      "closed_at": null,
+      "labels": [
+        "enhancement",
+        "Important"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/47",
+      "comments_count": 0,
+      "body": "The codebase mixes Combine, DispatchQueue, and Swift Concurrency in the same sync paths. Refactor the coordinator/services layer toward async/await, reduce DispatchQueue usage where possible, and wrap WCSession operations in async-friendly APIs.",
+      "comments": []
+    },
+    {
+      "number": 48,
+      "title": "Replace core singletons with injected dependencies",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-04-19T12:29:26Z",
+      "updated_at": "2026-04-19T12:35:27Z",
+      "closed_at": null,
+      "labels": [
+        "enhancement",
+        "Important"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/48",
+      "comments_count": 0,
+      "body": "AuthManager, AppsManager, TelemetryManager, ChecklistDataStore, LevelService, and related managers are too tightly coupled through .shared access. Introduce dependency injection and environment-based wiring so views and view models can be tested with mocks.",
+      "comments": []
+    },
+    {
+      "number": 49,
+      "title": "Reuse a single SwiftData container and model context",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-04-19T12:29:31Z",
+      "updated_at": "2026-04-19T12:35:12Z",
+      "closed_at": null,
+      "labels": [
+        "bug",
+        "enhancement",
+        "Critical"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/49",
+      "comments_count": 0,
+      "body": "The app should not create multiple ModelContainer instances for the same store. Consolidate SwiftData setup behind one shared container/context provider and inject it into services that currently build their own container.",
+      "comments": []
+    },
+    {
+      "number": 50,
+      "title": "Make Pomodoro timers drift-free",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-04-19T12:29:54Z",
+      "updated_at": "2026-04-19T12:35:13Z",
+      "closed_at": null,
+      "labels": [
+        "enhancement",
+        "Critical"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/50",
+      "comments_count": 0,
+      "body": "Pomodoro countdowns should be based on a target Date instead of repeated Task.sleep ticks. Recompute remaining time from the deadline so long-running timers do not drift over the session.",
+      "comments": []
+    },
+    {
+      "number": 51,
+      "title": "Centralize storage keys and remove hardcoded defaults strings",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-04-19T12:30:10Z",
+      "updated_at": "2026-04-19T12:35:21Z",
+      "closed_at": null,
+      "labels": [
+        "enhancement",
+        "Important"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/51",
+      "comments_count": 0,
+      "body": "Several UserDefaults keys are currently hardcoded in multiple places. Move the remaining storage key strings into AppConstants.StorageKeys so persistence code stays consistent and easier to refactor.",
+      "comments": []
+    },
+    {
+      "number": 52,
+      "title": "Modernize gallery image downscaling",
+      "state": "open",
+      "state_reason": null,
+      "author": "salernoelia",
+      "created_at": "2026-04-19T12:30:17Z",
+      "updated_at": "2026-04-19T12:35:27Z",
+      "closed_at": null,
+      "labels": [
+        "enhancement",
+        "Important"
+      ],
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/52",
+      "comments_count": 0,
+      "body": "GalleryStorage currently uses older image-context APIs for resizing. Replace them with UIGraphicsImageRenderer or ImageIO thumbnail generation to reduce memory pressure and improve watch-side stability.",
+      "comments": []
+    }
+  ],
+  "pull_requests": [
+    {
+      "number": 7,
+      "title": "Readme and contribution guidelines",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "mergeable_state": "unknown",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/7",
+      "user": {
+        "login": "salernoelia"
+      },
+      "merged_by": "salernoelia",
+      "head": {
+        "ref": "readme-and-contribution-guidelines",
+        "sha": "c71b67980715f8a25e4e2b0e1846668f6f2519d7"
+      },
+      "base": {
+        "ref": "main",
+        "sha": "7489efa4886c18df3014cb33fbd879211723b495"
+      },
+      "additions": 92,
+      "deletions": 20,
+      "changed_files": 4,
+      "commits": 6,
+      "created_at": "2026-03-26T07:48:58Z",
+      "updated_at": "2026-03-26T07:50:32Z",
+      "closed_at": "2026-03-26T07:50:26Z",
+      "merged_at": "2026-03-26T07:50:26Z",
+      "files": [
+        {
+          "filename": ".github/workflows/ios_and_watch.yml",
+          "status": "modified",
+          "additions": 18,
+          "deletions": 18,
+          "changes": 36
+        },
+        {
+          "filename": ".gitignore",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0,
+          "changes": 1
+        },
+        {
+          "filename": "README.md",
+          "status": "modified",
+          "additions": 44,
+          "deletions": 2,
+          "changes": 46
+        },
+        {
+          "filename": "contributing.md",
+          "status": "added",
+          "additions": 29,
+          "deletions": 0,
+          "changes": 29
+        }
+      ],
+      "issue_comments": []
+    },
+    {
+      "number": 8,
+      "title": "Foundational refactoring",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "mergeable_state": "unknown",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/8",
+      "user": {
+        "login": "salernoelia"
+      },
+      "merged_by": "salernoelia",
+      "head": {
+        "ref": "foundational-refactoring",
+        "sha": "a2e13a32e25c1c8ef7a38d792959cfe18fc83496"
+      },
+      "base": {
+        "ref": "main",
+        "sha": "b0ca1ead2af9f920f3f44a70aa91570a59af4e49"
+      },
+      "additions": 165,
+      "deletions": 18,
+      "changed_files": 4,
+      "commits": 20,
+      "created_at": "2026-03-26T08:00:50Z",
+      "updated_at": "2026-03-26T08:06:55Z",
+      "closed_at": "2026-03-26T08:06:50Z",
+      "merged_at": "2026-03-26T08:06:50Z",
+      "files": [
+        {
+          "filename": ".github/workflows/ios_and_watch.yml",
+          "status": "modified",
+          "additions": 18,
+          "deletions": 18,
+          "changes": 36
+        },
+        {
+          "filename": "Makefile",
+          "status": "added",
+          "additions": 147,
+          "changes": 147
+        },
+        {
+          "filename": "watch-notification/Info.plist",
+          "status": "renamed",
+          "previous_filename": "Watch-notification/Info.plist"
+        },
+        {
+          "filename": "watch-notification/NotificationService.swift",
+          "status": "renamed",
+          "previous_filename": "Watch-notification/NotificationService.swift"
+        }
+      ],
+      "issue_comments": []
+    },
+    {
+      "number": 9,
+      "title": "Move supabase data from admin repo to the focuswatch application repo",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "mergeable_state": "unknown",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/9",
+      "user": {
+        "login": "salernoelia"
+      },
+      "merged_by": "salernoelia",
+      "head": {
+        "ref": "supabase-copyover",
+        "sha": "404c7bc25e1ecac519bed932ceb4cd413767b886"
+      },
+      "base": {
+        "ref": "main",
+        "sha": "8e15084bf5f0272cf51188a0e0b5e3276e1020ee"
+      },
+      "additions": 4210,
+      "deletions": 33,
+      "changed_files": 83,
+      "commits": 1,
+      "created_at": "2026-03-29T14:46:01Z",
+      "updated_at": "2026-03-29T14:51:26Z",
+      "closed_at": "2026-03-29T14:51:22Z",
+      "merged_at": "2026-03-29T14:51:22Z",
+      "files": [
+        {
+          "filename": "supabase/.branches/_current_branch",
+          "status": "added",
+          "additions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "supabase/.gitignore",
+          "status": "removed",
+          "deletions": 8,
+          "changes": 8
+        },
+        {
+          "filename": "supabase/.temp/cli-latest",
+          "status": "added",
+          "additions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "supabase/.temp/gotrue-version",
+          "status": "added",
+          "additions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "supabase/.temp/pooler-url",
+          "status": "added",
+          "additions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "supabase/.temp/postgres-version",
+          "status": "added",
+          "additions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "supabase/.temp/project-ref",
+          "status": "added",
+          "additions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "supabase/.temp/rest-version",
+          "status": "added",
+          "additions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "supabase/.temp/storage-migration",
+          "status": "added",
+          "additions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "supabase/.temp/storage-version",
+          "status": "added",
+          "additions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "supabase/config.toml",
+          "status": "modified",
+          "additions": 37,
+          "deletions": 25,
+          "changes": 62
+        },
+        {
+          "filename": "supabase/functions/delete_supervisor/.npmrc",
+          "status": "added",
+          "additions": 3,
+          "changes": 3
+        },
+        {
+          "filename": "supabase/functions/delete_supervisor/README.md",
+          "status": "added",
+          "additions": 43,
+          "changes": 43
+        },
+        {
+          "filename": "supabase/functions/delete_supervisor/deno.json",
+          "status": "added",
+          "additions": 3,
+          "changes": 3
+        },
+        {
+          "filename": "supabase/functions/delete_supervisor/index.ts",
+          "status": "added",
+          "additions": 85,
+          "changes": 85
+        },
+        {
+          "filename": "supabase/functions/invite_supervisor/.npmrc",
+          "status": "added",
+          "additions": 3,
+          "changes": 3
+        },
+        {
+          "filename": "supabase/functions/invite_supervisor/deno.json",
+          "status": "added",
+          "additions": 3,
+          "changes": 3
+        },
+        {
+          "filename": "supabase/functions/invite_supervisor/deno.lock",
+          "status": "added",
+          "additions": 297,
+          "changes": 297
+        },
+        {
+          "filename": "supabase/functions/invite_supervisor/index.ts",
+          "status": "added",
+          "additions": 211,
+          "changes": 211
+        },
+        {
+          "filename": "supabase/functions/send_test_email/deno.json",
+          "status": "added",
+          "additions": 13,
+          "changes": 13
+        },
+        {
+          "filename": "supabase/functions/send_test_email/index.ts",
+          "status": "added",
+          "additions": 277,
+          "changes": 277
+        },
+        {
+          "filename": "supabase/migrations/20250902224853_init.sql",
+          "status": "added",
+          "additions": 55,
+          "changes": 55
+        },
+        {
+          "filename": "supabase/migrations/20250903221741_add_rls.sql",
+          "status": "added",
+          "additions": 9,
+          "changes": 9
+        },
+        {
+          "filename": "supabase/migrations/20250903221928_add_policies.sql",
+          "status": "added",
+          "additions": 35,
+          "changes": 35
+        },
+        {
+          "filename": "supabase/migrations/20250903222153_user_id_to_test_user_id.sql",
+          "status": "added",
+          "additions": 29,
+          "changes": 29
+        },
+        {
+          "filename": "supabase/migrations/20250903222613_test_user_table_changes.sql",
+          "status": "added",
+          "additions": 9,
+          "changes": 9
+        },
+        {
+          "filename": "supabase/migrations/20250904173029_user_id_col_for_supervisors.sql",
+          "status": "added",
+          "additions": 15,
+          "changes": 15
+        },
+        {
+          "filename": "supabase/migrations/20250904173722_better_intergation_with_auth_uid.sql",
+          "status": "added",
+          "additions": 70,
+          "changes": 70
+        },
+        {
+          "filename": "supabase/migrations/20250904174106_journals_for_your_own_id_only.sql",
+          "status": "added",
+          "additions": 3,
+          "changes": 3
+        },
+        {
+          "filename": "supabase/migrations/20250904174538_apps_table.sql",
+          "status": "added",
+          "additions": 59,
+          "changes": 59
+        },
+        {
+          "filename": "supabase/migrations/20250923195343_apps_table.sql",
+          "status": "added",
+          "additions": 11,
+          "changes": 11
+        },
+        {
+          "filename": "supabase/migrations/20250923200855_rm_experiences_table.sql",
+          "status": "added",
+          "additions": 63,
+          "changes": 63
+        },
+        {
+          "filename": "supabase/migrations/20250923200922_add_pgvector.sql",
+          "status": "added",
+          "additions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "supabase/migrations/20250923201429_add_app_logs_table_and_rls.sql",
+          "status": "added",
+          "additions": 39,
+          "changes": 39
+        },
+        {
+          "filename": "supabase/migrations/20250923215438_function_automatic_supervisor_creation.sql",
+          "status": "added",
+          "additions": 34,
+          "changes": 34
+        },
+        {
+          "filename": "supabase/migrations/20250924102830_change_journal_rls.sql",
+          "status": "added",
+          "additions": 9,
+          "changes": 9
+        },
+        {
+          "filename": "supabase/migrations/20250924103355_return_of_app_name_for_convenience.sql",
+          "status": "added",
+          "additions": 3,
+          "changes": 3
+        },
+        {
+          "filename": "supabase/migrations/20250924120000_fix_supervisor_trigger.sql",
+          "status": "added",
+          "additions": 42,
+          "changes": 42
+        },
+        {
+          "filename": "supabase/migrations/20250924120001_add_email_column_to_supervisors.sql",
+          "status": "added",
+          "additions": 56,
+          "changes": 56
+        },
+        {
+          "filename": "supabase/migrations/20250924120002_fix_supervisor_trigger_with_logging.sql",
+          "status": "added",
+          "additions": 60,
+          "changes": 60
+        },
+        {
+          "filename": "supabase/migrations/20250928202215_add timestamptz col to journals.sql",
+          "status": "added",
+          "additions": 3,
+          "changes": 3
+        },
+        {
+          "filename": "supabase/migrations/20251024133238_add_feedback_table.sql",
+          "status": "added",
+          "additions": 83,
+          "changes": 83
+        },
+        {
+          "filename": "supabase/migrations/20251024134448_add_implemented_bool_to_feedback_table.sql",
+          "status": "added",
+          "additions": 3,
+          "changes": 3
+        },
+        {
+          "filename": "supabase/migrations/20251024140110_fix_rls_for_inserting_feedback_as_anon.sql",
+          "status": "added",
+          "additions": 11,
+          "changes": 11
+        },
+        {
+          "filename": "supabase/migrations/20251024141330_fix_rls_updateable.sql",
+          "status": "added",
+          "additions": 10,
+          "changes": 10
+        },
+        {
+          "filename": "supabase/migrations/20251029112446_add_watch_id.sql",
+          "status": "added",
+          "additions": 14,
+          "changes": 14
+        },
+        {
+          "filename": "supabase/migrations/20251029124805_remote_schema.sql",
+          "status": "added",
+          "additions": 14,
+          "changes": 14
+        },
+        {
+          "filename": "supabase/migrations/20251029124945_rm_app_id_ref.sql",
+          "status": "added",
+          "additions": 16,
+          "changes": 16
+        },
+        {
+          "filename": "supabase/migrations/20251128082049_role_permissions.sql",
+          "status": "added",
+          "additions": 18,
+          "changes": 18
+        },
+        {
+          "filename": "supabase/migrations/20251128083029_custom_access_hook.sql",
+          "status": "added",
+          "additions": 84,
+          "changes": 84
+        },
+        {
+          "filename": "supabase/migrations/20251128083322_revoking_old_roles.sql",
+          "status": "added",
+          "additions": 33,
+          "changes": 33
+        },
+        {
+          "filename": "supabase/migrations/20251128083401_authorization_function.sql",
+          "status": "added",
+          "additions": 57,
+          "changes": 57
+        },
+        {
+          "filename": "supabase/migrations/20251128084416_role_permissions_insert.sql",
+          "status": "added",
+          "additions": 16,
+          "changes": 16
+        },
+        {
+          "filename": "supabase/migrations/20251128085617_logs_rls_update.sql",
+          "status": "added",
+          "additions": 79,
+          "changes": 79
+        },
+        {
+          "filename": "supabase/migrations/20251128095427_app_logs_rls_for_anon_insert.sql",
+          "status": "added",
+          "additions": 34,
+          "changes": 34
+        },
+        {
+          "filename": "supabase/migrations/20251128112002_watches_table.sql",
+          "status": "added",
+          "additions": 93,
+          "changes": 93
+        },
+        {
+          "filename": "supabase/migrations/20251128112957_admin_can_read_add_roles.sql",
+          "status": "added",
+          "additions": 37,
+          "changes": 37
+        },
+        {
+          "filename": "supabase/migrations/20251128114454_rls_users_can_read_own_profile.sql",
+          "status": "added",
+          "additions": 24,
+          "changes": 24
+        },
+        {
+          "filename": "supabase/migrations/20251130002602_update_user_id_on_test_users_profiles.sql",
+          "status": "added",
+          "additions": 147,
+          "changes": 147
+        },
+        {
+          "filename": "supabase/migrations/20251130002924_rename_user_profiles_table.sql",
+          "status": "added",
+          "additions": 181,
+          "changes": 181
+        },
+        {
+          "filename": "supabase/migrations/20251130003954_fix_test_user_supervisor.sql",
+          "status": "added",
+          "additions": 227,
+          "changes": 227
+        },
+        {
+          "filename": "supabase/migrations/20251130022134_merge_supervisors_and_user_profiles.sql",
+          "status": "added",
+          "additions": 143,
+          "changes": 143
+        },
+        {
+          "filename": "supabase/migrations/20251201120000_admin_test_processes_permissions.sql",
+          "status": "added",
+          "additions": 17,
+          "changes": 17
+        },
+        {
+          "filename": "supabase/migrations/20251201120100_fix_role_permissions_type.sql",
+          "status": "added",
+          "additions": 21,
+          "changes": 21
+        },
+        {
+          "filename": "supabase/migrations/20251203102233_fix_admin_permissions_comprehensive.sql",
+          "status": "added",
+          "additions": 248,
+          "changes": 248
+        },
+        {
+          "filename": "supabase/migrations/20251203161109_remote_schema.sql",
+          "status": "added",
+          "additions": 7,
+          "changes": 7
+        },
+        {
+          "filename": "supabase/migrations/20251205105205_add_apple_id_to_profile.sql",
+          "status": "added",
+          "additions": 112,
+          "changes": 112
+        },
+        {
+          "filename": "supabase/migrations/20251205110632_add_research_agreement_bool.sql",
+          "status": "added",
+          "additions": 3,
+          "changes": 3
+        },
+        {
+          "filename": "supabase/migrations/20251205120915_auto_create_user_profile_on_signup.sql",
+          "status": "added",
+          "additions": 54,
+          "changes": 54
+        },
+        {
+          "filename": "supabase/migrations/20251205121757_fix_user_roles_rls_and_default_role.sql",
+          "status": "added",
+          "additions": 106,
+          "changes": 106
+        },
+        {
+          "filename": "supabase/migrations/20251205122000_fix_trigger_and_rls_recursion.sql",
+          "status": "added",
+          "additions": 92,
+          "changes": 92
+        },
+        {
+          "filename": "supabase/migrations/20251205122325_fix_tester_signup_flow.sql",
+          "status": "added",
+          "additions": 52,
+          "changes": 52
+        },
+        {
+          "filename": "supabase/migrations/20251205122949_fix_user_roles_table_grants.sql",
+          "status": "added",
+          "additions": 6,
+          "changes": 6
+        },
+        {
+          "filename": "supabase/migrations/20251205123911_fix_profile_creation_for_all_users.sql",
+          "status": "added",
+          "additions": 73,
+          "changes": 73
+        },
+        {
+          "filename": "supabase/migrations/20251205130000_fix_empty_emails_in_profiles.sql",
+          "status": "added",
+          "additions": 9,
+          "changes": 9
+        },
+        {
+          "filename": "supabase/migrations/20251219103330_allow_testers_delete_own_test_processes.sql",
+          "status": "added",
+          "additions": 18,
+          "changes": 18
+        },
+        {
+          "filename": "supabase/migrations/20251219120242_document_versioned.sql",
+          "status": "added",
+          "additions": 141,
+          "changes": 141
+        },
+        {
+          "filename": "supabase/seed.sql",
+          "status": "added",
+          "additions": 32,
+          "changes": 32
+        },
+        {
+          "filename": "supabase/templates/confirmation.html",
+          "status": "added",
+          "additions": 81,
+          "changes": 81
+        },
+        {
+          "filename": "supabase/templates/email_change.html",
+          "status": "added",
+          "additions": 47,
+          "changes": 47
+        },
+        {
+          "filename": "supabase/templates/invite.html",
+          "status": "added",
+          "additions": 84,
+          "changes": 84
+        },
+        {
+          "filename": "supabase/templates/magic_link.html",
+          "status": "added",
+          "additions": 47,
+          "changes": 47
+        },
+        {
+          "filename": "supabase/templates/recovery.html",
+          "status": "added",
+          "additions": 47,
+          "changes": 47
+        }
+      ],
+      "issue_comments": []
+    },
+    {
+      "number": 25,
+      "title": "Checklist enhancements",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "mergeable_state": "unknown",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/25",
+      "user": {
+        "login": "salernoelia"
+      },
+      "merged_by": "salernoelia",
+      "head": {
+        "ref": "checklist-enhancements",
+        "sha": "1f4005d79532f56b4c5c7317a7c283ffa0c252d9"
+      },
+      "base": {
+        "ref": "main",
+        "sha": "6c8bdab414069f2f936c3eeb88b953297897df3a"
+      },
+      "additions": 1566,
+      "deletions": 1194,
+      "changed_files": 18,
+      "commits": 6,
+      "created_at": "2026-04-03T13:03:13Z",
+      "updated_at": "2026-04-03T13:30:33Z",
+      "closed_at": "2026-04-03T13:30:28Z",
+      "merged_at": "2026-04-03T13:30:28Z",
+      "files": [
+        {
+          "filename": "CHANGELOG.MD",
+          "status": "modified",
+          "additions": 11,
+          "changes": 11
+        },
+        {
+          "filename": "CLAUDE.md",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 26,
+          "changes": 28
+        },
+        {
+          "filename": "companion/Services/Sync/ChecklistSyncService.swift",
+          "status": "modified",
+          "additions": 70,
+          "deletions": 29,
+          "changes": 99
+        },
+        {
+          "filename": "companion/Views/Checklist/ChecklistDetailView.swift",
+          "status": "modified",
+          "additions": 231,
+          "deletions": 132,
+          "changes": 363
+        },
+        {
+          "filename": "companion/Views/Checklist/ChecklistEditorView.swift",
+          "status": "modified",
+          "additions": 140,
+          "deletions": 96,
+          "changes": 236
+        },
+        {
+          "filename": "companion/Views/Checklist/UnifiedAddItemsView.swift",
+          "status": "modified",
+          "additions": 451,
+          "deletions": 387,
+          "changes": 838
+        },
+        {
+          "filename": "focuswatch.xcodeproj/project.pbxproj",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 16,
+          "changes": 32
+        },
+        {
+          "filename": "focuswatch.xcodeproj/xcuserdata/eliasalerno.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist",
+          "status": "modified",
+          "additions": 38,
+          "deletions": 38,
+          "changes": 76
+        },
+        {
+          "filename": "shared/Localizable.xcstrings",
+          "status": "modified",
+          "additions": 18,
+          "changes": 18
+        },
+        {
+          "filename": "shared/Models/AppInfo.swift",
+          "status": "modified",
+          "additions": 31,
+          "deletions": 27,
+          "changes": 58
+        },
+        {
+          "filename": "shared/Models/Checklist.swift",
+          "status": "modified",
+          "additions": 121,
+          "deletions": 117,
+          "changes": 238
+        },
+        {
+          "filename": "shared/Services/AppsManager.swift",
+          "status": "modified",
+          "additions": 100,
+          "deletions": 89,
+          "changes": 189
+        },
+        {
+          "filename": "watch/Views/AppCardView.swift",
+          "status": "modified",
+          "additions": 30,
+          "deletions": 30,
+          "changes": 60
+        },
+        {
+          "filename": "watch/Views/Checklist/ChecklistCard.swift",
+          "status": "modified",
+          "additions": 177,
+          "deletions": 155,
+          "changes": 332
+        },
+        {
+          "filename": "watch/Views/Checklist/ChecklistMainView.swift",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 5,
+          "changes": 8
+        },
+        {
+          "filename": "watch/Views/Checklist/ChecklistViewModel.swift",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 7,
+          "changes": 23
+        },
+        {
+          "filename": "watch/Views/Checklist/ChecklistsListView.swift",
+          "status": "added",
+          "additions": 111,
+          "changes": 111
+        },
+        {
+          "filename": "watch/Views/Checklists/ChecklistsListView.swift",
+          "status": "removed",
+          "deletions": 40,
+          "changes": 40
+        }
+      ],
+      "issue_comments": []
+    },
+    {
+      "number": 29,
+      "title": "App store connect bundle name issues",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "mergeable_state": "dirty",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/29",
+      "user": {
+        "login": "salernoelia"
+      },
+      "merged_by": "salernoelia",
+      "head": {
+        "ref": "app-store-connect-bundle-name-issues",
+        "sha": "d69f1ac8b652ca6dda4e227f76100f71cde267e4"
+      },
+      "base": {
+        "ref": "dev",
+        "sha": "478652ddc67f0eba39b1c7cbeb7801164aadb70c"
+      },
+      "additions": 52,
+      "deletions": 36,
+      "changed_files": 11,
+      "commits": 3,
+      "created_at": "2026-04-03T21:49:20Z",
+      "updated_at": "2026-04-03T21:49:41Z",
+      "closed_at": "2026-04-03T21:49:29Z",
+      "merged_at": "2026-04-03T21:49:29Z",
+      "files": [
+        {
+          "filename": ".github/workflows/ios_and_watch.yml",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2,
+          "changes": 4
+        },
+        {
+          "filename": "CHANGELOG.MD",
+          "status": "modified",
+          "additions": 16,
+          "changes": 16
+        },
+        {
+          "filename": "FocusWatch App.xcodeproj/project.pbxproj",
+          "status": "renamed",
+          "additions": 24,
+          "deletions": 20,
+          "changes": 44,
+          "previous_filename": "focuswatch.xcodeproj/project.pbxproj"
+        },
+        {
+          "filename": "FocusWatch App.xcodeproj/xcshareddata/xcschemes/companion.xcscheme",
+          "status": "renamed",
+          "additions": 4,
+          "deletions": 4,
+          "changes": 8,
+          "previous_filename": "focuswatch.xcodeproj/xcshareddata/xcschemes/companion.xcscheme"
+        },
+        {
+          "filename": "FocusWatch App.xcodeproj/xcshareddata/xcschemes/watch.xcscheme",
+          "status": "renamed",
+          "additions": 6,
+          "deletions": 6,
+          "changes": 12,
+          "previous_filename": "focuswatch.xcodeproj/xcshareddata/xcschemes/watch.xcscheme"
+        },
+        {
+          "filename": "FocusWatch App.xcodeproj/xcuserdata/eliasalerno.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist",
+          "status": "renamed",
+          "previous_filename": "focuswatch.xcodeproj/xcuserdata/eliasalerno.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist"
+        },
+        {
+          "filename": "FocusWatch App.xcodeproj/xcuserdata/eliasalerno.xcuserdatad/xcschemes/xcschememanagement.plist",
+          "status": "renamed",
+          "previous_filename": "focuswatch.xcodeproj/xcuserdata/eliasalerno.xcuserdatad/xcschemes/xcschememanagement.plist"
+        },
+        {
+          "filename": "companion/Assets.xcassets/Haselnüsse.imageset/Contents.json",
+          "status": "modified",
+          "deletions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "watch/Assets.xcassets/Haselnüsse.imageset/Contents.json",
+          "status": "modified",
+          "deletions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "watch/Assets.xcassets/Messlöffel.imageset/Contents.json",
+          "status": "modified",
+          "deletions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "watch/Assets.xcassets/Schüssel.imageset/Contents.json",
+          "status": "modified",
+          "deletions": 1,
+          "changes": 1
+        }
+      ],
+      "issue_comments": []
+    },
+    {
+      "number": 30,
+      "title": "Refactor GalleryManager and add GallerySessionMessenger for improved image sync handling",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "mergeable_state": "dirty",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/30",
+      "user": {
+        "login": "salernoelia"
+      },
+      "merged_by": "salernoelia",
+      "head": {
+        "ref": "gallery-manager-refactor",
+        "sha": "e2c3ef756440d3c1a3f5fd28ea20e6e701a0c993"
+      },
+      "base": {
+        "ref": "dev",
+        "sha": "5218ab8f9921f0173c2555b58f83f7c63bae6fe0"
+      },
+      "additions": 183,
+      "deletions": 111,
+      "changed_files": 4,
+      "commits": 1,
+      "created_at": "2026-04-03T22:01:59Z",
+      "updated_at": "2026-04-03T22:03:15Z",
+      "closed_at": "2026-04-03T22:03:09Z",
+      "merged_at": "2026-04-03T22:03:09Z",
+      "files": [
+        {
+          "filename": "CLAUDE.md",
+          "status": "modified",
+          "additions": 2,
+          "changes": 2
+        },
+        {
+          "filename": "shared/Localizable.xcstrings",
+          "status": "modified",
+          "additions": 9,
+          "changes": 9
+        },
+        {
+          "filename": "watch/Services/GalleryManager.swift",
+          "status": "modified",
+          "additions": 74,
+          "deletions": 111,
+          "changes": 185
+        },
+        {
+          "filename": "watch/Services/GallerySessionMessenger.swift",
+          "status": "added",
+          "additions": 98,
+          "changes": 98
+        }
+      ],
+      "issue_comments": []
+    },
+    {
+      "number": 32,
+      "title": "Refactor sync handling and transport protocols",
+      "body": "Enhance the structure and clarity of sync handling by introducing new classes and improving existing ones. This includes better management of connectivity, message routing, and validation logic.",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "mergeable_state": "dirty",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/32",
+      "user": {
+        "login": "salernoelia"
+      },
+      "merged_by": "salernoelia",
+      "head": {
+        "ref": "sync-refactor",
+        "sha": "61962d0349cfd6b04f6f970e1e49f64ec1a9ab08"
+      },
+      "base": {
+        "ref": "dev",
+        "sha": "8c699724c82df67340d9b3754ca69ec0fe4dba01"
+      },
+      "additions": 1717,
+      "deletions": 984,
+      "changed_files": 32,
+      "commits": 12,
+      "created_at": "2026-04-03T23:19:03Z",
+      "updated_at": "2026-04-03T23:42:26Z",
+      "closed_at": "2026-04-03T23:42:26Z",
+      "merged_at": "2026-04-03T23:42:26Z",
+      "files": [
+        {
+          "filename": ".gitignore",
+          "status": "modified",
+          "additions": 2,
+          "changes": 2
+        },
+        {
+          "filename": "companion-testing/SyncImageRegressionTests.swift",
+          "status": "added",
+          "additions": 76,
+          "changes": 76
+        },
+        {
+          "filename": "companion/CompanionApp.swift",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 1,
+          "changes": 8
+        },
+        {
+          "filename": "companion/Services/AuthSyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/AuthSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/CalendarSyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/CalendarSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/ChecklistSyncService.swift",
+          "status": "renamed",
+          "additions": 33,
+          "deletions": 29,
+          "changes": 62,
+          "previous_filename": "companion/Services/Sync/ChecklistSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/CommandSyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/CommandSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/ConfigSyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/ConfigSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/ConnectivityTransport.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/ConnectivityTransport.swift"
+        },
+        {
+          "filename": "companion/Services/ConnectivityTransportAdapter.swift",
+          "status": "added",
+          "additions": 106,
+          "changes": 106
+        },
+        {
+          "filename": "companion/Services/ImageSyncService.swift",
+          "status": "renamed",
+          "additions": 93,
+          "deletions": 73,
+          "changes": 166,
+          "previous_filename": "companion/Services/Sync/ImageSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/LevelSyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/LevelSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/Sync/SyncStateManager.swift",
+          "status": "removed",
+          "deletions": 174,
+          "changes": 174
+        },
+        {
+          "filename": "companion/Services/SyncCoordinator.swift",
+          "status": "renamed",
+          "additions": 47,
+          "deletions": 45,
+          "changes": 92,
+          "previous_filename": "companion/Services/Sync/SyncCoordinator.swift"
+        },
+        {
+          "filename": "companion/Services/SyncStateManager.swift",
+          "status": "added",
+          "additions": 148,
+          "changes": 148
+        },
+        {
+          "filename": "companion/Services/TelemetrySyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/TelemetrySyncService.swift"
+        },
+        {
+          "filename": "companion/Views/Checklist/ChecklistEditorView.swift",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1,
+          "changes": 2
+        },
+        {
+          "filename": "shared/Connectivity/SyncCommandRouter.swift",
+          "status": "added",
+          "additions": 30,
+          "changes": 30
+        },
+        {
+          "filename": "shared/Connectivity/SyncSessionTracker.swift",
+          "status": "added",
+          "additions": 105,
+          "changes": 105
+        },
+        {
+          "filename": "shared/Connectivity/SyncTransportProtocol.swift",
+          "status": "added",
+          "additions": 68,
+          "changes": 68
+        },
+        {
+          "filename": "shared/Services/LevelService.swift",
+          "status": "modified",
+          "additions": 33,
+          "deletions": 10,
+          "changes": 43
+        },
+        {
+          "filename": "watch-testing/SyncValidationServiceTests.swift",
+          "status": "added",
+          "additions": 81,
+          "changes": 81
+        },
+        {
+          "filename": "watch/Services/ConnectivityTransport.swift",
+          "status": "renamed",
+          "previous_filename": "watch/Services/Sync/ConnectivityTransport.swift"
+        },
+        {
+          "filename": "watch/Services/ConnectivityTransportAdapter.swift",
+          "status": "added",
+          "additions": 66,
+          "changes": 66
+        },
+        {
+          "filename": "watch/Services/GalleryManager.swift",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 13,
+          "changes": 17
+        },
+        {
+          "filename": "watch/Services/GallerySessionMessenger.swift",
+          "status": "modified",
+          "additions": 43,
+          "deletions": 36,
+          "changes": 79
+        },
+        {
+          "filename": "watch/Services/IncomingContextHandler.swift",
+          "status": "added",
+          "additions": 89,
+          "changes": 89
+        },
+        {
+          "filename": "watch/Services/IncomingFileHandler.swift",
+          "status": "added",
+          "additions": 47,
+          "changes": 47
+        },
+        {
+          "filename": "watch/Services/Sync/SyncCoordinator.swift",
+          "status": "removed",
+          "deletions": 589,
+          "changes": 589
+        },
+        {
+          "filename": "watch/Services/SyncCoordinator.swift",
+          "status": "added",
+          "additions": 512,
+          "changes": 512
+        },
+        {
+          "filename": "watch/Services/SyncValidationService.swift",
+          "status": "added",
+          "additions": 102,
+          "changes": 102
+        },
+        {
+          "filename": "watch/WatchApp.swift",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 13,
+          "changes": 37
+        }
+      ],
+      "issue_comments": []
+    },
+    {
+      "number": 33,
+      "title": "Refactor checklist synchronization and improve code readability",
+      "body": "Introduce ChecklistDataStore for better management of checklist data, enhancing synchronization across views.",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "mergeable_state": "dirty",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/33",
+      "user": {
+        "login": "salernoelia"
+      },
+      "merged_by": "salernoelia",
+      "head": {
+        "ref": "decouple-checklist-sync-service",
+        "sha": "ba0dd454373dfedb30f1a7854e4b7a5bfe029240"
+      },
+      "base": {
+        "ref": "dev",
+        "sha": "ac36c20c029b17c2b554afed97511b5f48c45c0f"
+      },
+      "additions": 120,
+      "deletions": 70,
+      "changed_files": 9,
+      "commits": 4,
+      "created_at": "2026-04-03T23:43:17Z",
+      "updated_at": "2026-04-03T23:44:37Z",
+      "closed_at": "2026-04-03T23:44:30Z",
+      "merged_at": "2026-04-03T23:44:30Z",
+      "files": [
+        {
+          "filename": "FocusWatch App.xcodeproj/xcuserdata/eliasalerno.xcuserdatad/xcschemes/xcschememanagement.plist",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2,
+          "changes": 4
+        },
+        {
+          "filename": "companion/CompanionView.swift",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2,
+          "changes": 4
+        },
+        {
+          "filename": "companion/Services/ChecklistDataStore.swift",
+          "status": "added",
+          "additions": 67,
+          "changes": 67
+        },
+        {
+          "filename": "companion/Services/ChecklistSyncService.swift",
+          "status": "modified",
+          "additions": 18,
+          "deletions": 40,
+          "changes": 58
+        },
+        {
+          "filename": "companion/Views/Checklist/ChecklistDetailView.swift",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 6,
+          "changes": 12
+        },
+        {
+          "filename": "companion/Views/Checklist/ChecklistEditorView.swift",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 9,
+          "changes": 19
+        },
+        {
+          "filename": "companion/Views/Checklist/ChecklistItemEditRow.swift",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 4,
+          "changes": 9
+        },
+        {
+          "filename": "companion/Views/Checklist/UnifiedAddItemsView.swift",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3,
+          "changes": 6
+        },
+        {
+          "filename": "companion/Views/Wizard/WizardView.swift",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 4,
+          "changes": 11
+        }
+      ],
+      "issue_comments": []
+    },
+    {
+      "number": 34,
+      "title": "Refactor sync handling and improve code readability in FocusWatch",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "mergeable_state": "unknown",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/34",
+      "user": {
+        "login": "salernoelia"
+      },
+      "merged_by": "salernoelia",
+      "head": {
+        "ref": "dev",
+        "sha": "e836a578126c0f57de9e82c3bd785e042103d2b8"
+      },
+      "base": {
+        "ref": "main",
+        "sha": "478652ddc67f0eba39b1c7cbeb7801164aadb70c"
+      },
+      "additions": 2094,
+      "deletions": 1234,
+      "changed_files": 52,
+      "commits": 27,
+      "created_at": "2026-04-03T23:48:36Z",
+      "updated_at": "2026-04-14T13:14:28Z",
+      "closed_at": "2026-04-14T13:14:28Z",
+      "merged_at": "2026-04-14T13:14:28Z",
+      "files": [
+        {
+          "filename": ".github/workflows/ios_and_watch.yml",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2,
+          "changes": 4
+        },
+        {
+          "filename": ".gitignore",
+          "status": "modified",
+          "additions": 2,
+          "changes": 2
+        },
+        {
+          "filename": "CHANGELOG.MD",
+          "status": "modified",
+          "additions": 16,
+          "changes": 16
+        },
+        {
+          "filename": "CLAUDE.md",
+          "status": "modified",
+          "additions": 2,
+          "changes": 2
+        },
+        {
+          "filename": "FocusWatch App.xcodeproj/project.pbxproj",
+          "status": "renamed",
+          "additions": 24,
+          "deletions": 20,
+          "changes": 44,
+          "previous_filename": "focuswatch.xcodeproj/project.pbxproj"
+        },
+        {
+          "filename": "FocusWatch App.xcodeproj/xcshareddata/xcschemes/companion.xcscheme",
+          "status": "renamed",
+          "additions": 4,
+          "deletions": 4,
+          "changes": 8,
+          "previous_filename": "focuswatch.xcodeproj/xcshareddata/xcschemes/companion.xcscheme"
+        },
+        {
+          "filename": "FocusWatch App.xcodeproj/xcshareddata/xcschemes/watch.xcscheme",
+          "status": "renamed",
+          "additions": 6,
+          "deletions": 6,
+          "changes": 12,
+          "previous_filename": "focuswatch.xcodeproj/xcshareddata/xcschemes/watch.xcscheme"
+        },
+        {
+          "filename": "FocusWatch App.xcodeproj/xcuserdata/eliasalerno.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist",
+          "status": "renamed",
+          "previous_filename": "focuswatch.xcodeproj/xcuserdata/eliasalerno.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist"
+        },
+        {
+          "filename": "FocusWatch App.xcodeproj/xcuserdata/eliasalerno.xcuserdatad/xcschemes/xcschememanagement.plist",
+          "status": "renamed",
+          "additions": 2,
+          "deletions": 2,
+          "changes": 4,
+          "previous_filename": "focuswatch.xcodeproj/xcuserdata/eliasalerno.xcuserdatad/xcschemes/xcschememanagement.plist"
+        },
+        {
+          "filename": "companion-testing/SyncImageRegressionTests.swift",
+          "status": "added",
+          "additions": 76,
+          "changes": 76
+        },
+        {
+          "filename": "companion/Assets.xcassets/Haselnüsse.imageset/Contents.json",
+          "status": "modified",
+          "deletions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "companion/CompanionApp.swift",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 1,
+          "changes": 8
+        },
+        {
+          "filename": "companion/CompanionView.swift",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2,
+          "changes": 4
+        },
+        {
+          "filename": "companion/Services/AuthSyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/AuthSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/CalendarSyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/CalendarSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/ChecklistDataStore.swift",
+          "status": "added",
+          "additions": 67,
+          "changes": 67
+        },
+        {
+          "filename": "companion/Services/ChecklistSyncService.swift",
+          "status": "renamed",
+          "additions": 51,
+          "deletions": 69,
+          "changes": 120,
+          "previous_filename": "companion/Services/Sync/ChecklistSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/CommandSyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/CommandSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/ConfigSyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/ConfigSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/ConnectivityTransport.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/ConnectivityTransport.swift"
+        },
+        {
+          "filename": "companion/Services/ConnectivityTransportAdapter.swift",
+          "status": "added",
+          "additions": 106,
+          "changes": 106
+        },
+        {
+          "filename": "companion/Services/ImageSyncService.swift",
+          "status": "renamed",
+          "additions": 93,
+          "deletions": 73,
+          "changes": 166,
+          "previous_filename": "companion/Services/Sync/ImageSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/LevelSyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/LevelSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/Sync/SyncStateManager.swift",
+          "status": "removed",
+          "deletions": 174,
+          "changes": 174
+        },
+        {
+          "filename": "companion/Services/SyncCoordinator.swift",
+          "status": "renamed",
+          "additions": 47,
+          "deletions": 45,
+          "changes": 92,
+          "previous_filename": "companion/Services/Sync/SyncCoordinator.swift"
+        },
+        {
+          "filename": "companion/Services/SyncStateManager.swift",
+          "status": "added",
+          "additions": 148,
+          "changes": 148
+        },
+        {
+          "filename": "companion/Services/TelemetrySyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/TelemetrySyncService.swift"
+        },
+        {
+          "filename": "companion/Views/Checklist/ChecklistDetailView.swift",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 6,
+          "changes": 12
+        },
+        {
+          "filename": "companion/Views/Checklist/ChecklistEditorView.swift",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 10,
+          "changes": 21
+        },
+        {
+          "filename": "companion/Views/Checklist/ChecklistItemEditRow.swift",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 4,
+          "changes": 9
+        },
+        {
+          "filename": "companion/Views/Checklist/UnifiedAddItemsView.swift",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3,
+          "changes": 6
+        },
+        {
+          "filename": "companion/Views/Wizard/WizardView.swift",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 4,
+          "changes": 11
+        },
+        {
+          "filename": "shared/Connectivity/SyncCommandRouter.swift",
+          "status": "added",
+          "additions": 30,
+          "changes": 30
+        },
+        {
+          "filename": "shared/Connectivity/SyncSessionTracker.swift",
+          "status": "added",
+          "additions": 105,
+          "changes": 105
+        },
+        {
+          "filename": "shared/Connectivity/SyncTransportProtocol.swift",
+          "status": "added",
+          "additions": 68,
+          "changes": 68
+        },
+        {
+          "filename": "shared/Localizable.xcstrings",
+          "status": "modified",
+          "additions": 10,
+          "changes": 10
+        },
+        {
+          "filename": "shared/Services/LevelService.swift",
+          "status": "modified",
+          "additions": 33,
+          "deletions": 10,
+          "changes": 43
+        },
+        {
+          "filename": "watch-testing/SyncValidationServiceTests.swift",
+          "status": "added",
+          "additions": 81,
+          "changes": 81
+        },
+        {
+          "filename": "watch/Assets.xcassets/Haselnüsse.imageset/Contents.json",
+          "status": "modified",
+          "deletions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "watch/Assets.xcassets/Messlöffel.imageset/Contents.json",
+          "status": "modified",
+          "deletions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "watch/Assets.xcassets/Schüssel.imageset/Contents.json",
+          "status": "modified",
+          "deletions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "watch/Services/ConnectivityTransport.swift",
+          "status": "renamed",
+          "previous_filename": "watch/Services/Sync/ConnectivityTransport.swift"
+        },
+        {
+          "filename": "watch/Services/ConnectivityTransportAdapter.swift",
+          "status": "added",
+          "additions": 66,
+          "changes": 66
+        },
+        {
+          "filename": "watch/Services/GalleryManager.swift",
+          "status": "modified",
+          "additions": 74,
+          "deletions": 120,
+          "changes": 194
+        },
+        {
+          "filename": "watch/Services/GallerySessionMessenger.swift",
+          "status": "added",
+          "additions": 105,
+          "changes": 105
+        },
+        {
+          "filename": "watch/Services/IncomingContextHandler.swift",
+          "status": "added",
+          "additions": 89,
+          "changes": 89
+        },
+        {
+          "filename": "watch/Services/IncomingFileHandler.swift",
+          "status": "added",
+          "additions": 47,
+          "changes": 47
+        },
+        {
+          "filename": "watch/Services/Sync/SyncCoordinator.swift",
+          "status": "removed",
+          "deletions": 589,
+          "changes": 589
+        },
+        {
+          "filename": "watch/Services/SyncCoordinator.swift",
+          "status": "added",
+          "additions": 512,
+          "changes": 512
+        },
+        {
+          "filename": "watch/Services/SyncValidationService.swift",
+          "status": "added",
+          "additions": 102,
+          "changes": 102
+        },
+        {
+          "filename": "watch/Views/Checklist/ChecklistInstructionsView.swift",
+          "status": "modified",
+          "additions": 63,
+          "deletions": 73,
+          "changes": 136
+        },
+        {
+          "filename": "watch/WatchApp.swift",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 13,
+          "changes": 35
+        }
+      ],
+      "issue_comments": [],
+      "review_threads": {
+        "totalCount": 6,
+        "review_threads": [
+          {
+            "is_resolved": true,
+            "comments": [
+              {
+                "author": "copilot-pull-request-reviewer",
+                "created_at": "2026-04-03T23:53:57Z",
+                "path": "watch/WatchApp.swift",
+                "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034780750",
+                "body": "WatchApp creates its own SyncCoordinator instance but other code references SyncCoordinator.shared; risk of two coordinators and duplicated subscriptions. Suggest unify lifecycle (shared or injected)."
+              },
+              {
+                "author": "salernoelia",
+                "created_at": "2026-04-03T23:55:19Z",
+                "path": "watch/WatchApp.swift",
+                "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034782660",
+                "body": "@copilot apply changes based on this feedback"
+              },
+              {
+                "author": "copilot-swe-agent",
+                "created_at": "2026-04-03T23:57:41Z",
+                "path": "watch/WatchApp.swift",
+                "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034786312",
+                "body": "Fixed in e836a57: WatchApp + CompanionApp use SyncCoordinator.shared as StateObject. Also SyncStateManager.shared uses UserDefaults-backed store for persistence."
+              }
+            ]
+          },
+          {
+            "is_resolved": true,
+            "comments": [
+              {
+                "author": "copilot-pull-request-reviewer",
+                "created_at": "2026-04-03T23:53:58Z",
+                "path": "watch/Services/SyncCoordinator.swift",
+                "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034780763",
+                "body": "SyncCoordinator has static shared while app also instantiates SyncCoordinator; risk duplicate WCSession observers. Suggest remove singleton or use singleton everywhere."
+              },
+              {
+                "author": "salernoelia",
+                "created_at": "2026-04-04T00:01:01Z",
+                "path": "watch/Services/SyncCoordinator.swift",
+                "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034790801",
+                "body": "@copilot apply changes based on this feedback"
+              },
+              {
+                "author": "copilot-swe-agent",
+                "created_at": "2026-04-04T00:03:14Z",
+                "path": "watch/Services/SyncCoordinator.swift",
+                "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034793779",
+                "body": "Addressed: app uses SyncCoordinator.shared; no second instance is created. Singleton becomes single source of truth."
+              }
+            ]
+          },
+          {
+            "is_resolved": true,
+            "comments": [
+              {
+                "author": "copilot-pull-request-reviewer",
+                "created_at": "2026-04-03T23:53:58Z",
+                "path": "companion/CompanionApp.swift",
+                "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034780769",
+                "body": "CompanionApp constructs new SyncCoordinator even though shared exists; risk multiple coordinators. Suggest use shared as StateObject."
+              }
+            ]
+          },
+          {
+            "is_resolved": true,
+            "comments": [
+              {
+                "author": "copilot-pull-request-reviewer",
+                "created_at": "2026-04-03T23:53:59Z",
+                "path": "companion/Services/SyncStateManager.swift",
+                "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034780779",
+                "body": "SyncStateManager.shared init leaves store nil, disabling persistence; suggest default to UserDefaults-backed store."
+              },
+              {
+                "author": "salernoelia",
+                "created_at": "2026-04-03T23:56:52Z",
+                "path": "companion/Services/SyncStateManager.swift",
+                "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034784760",
+                "body": "@copilot apply changes based on this feedback"
+              },
+              {
+                "author": "copilot-swe-agent",
+                "created_at": "2026-04-04T00:03:16Z",
+                "path": "companion/Services/SyncStateManager.swift",
+                "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034793826",
+                "body": "Fixed: SyncStateManager.shared uses UserDefaultsSyncSessionStateStore() to restore persistence."
+              }
+            ]
+          },
+          {
+            "is_resolved": true,
+            "comments": [
+              {
+                "author": "copilot-pull-request-reviewer",
+                "created_at": "2026-04-03T23:53:59Z",
+                "path": "shared/Localizable.xcstrings",
+                "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034780788",
+                "body": "New localization keys are empty (missing localizations blocks); could break localization build. Add base localizations or remove keys."
+              }
+            ]
+          },
+          {
+            "is_resolved": true,
+            "comments": [
+              {
+                "author": "copilot-pull-request-reviewer",
+                "created_at": "2026-04-03T23:53:59Z",
+                "path": "shared/Localizable.xcstrings",
+                "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034780792",
+                "body": "Key added without localizations; may cause build/runtime issues. Populate localizations or remove."
+              }
+            ]
+          }
+        ]
+      },
+      "reviews": [
+        {
+          "id": 4057695066,
+          "state": "COMMENTED",
+          "user": "copilot-pull-request-reviewer[bot]",
+          "submitted_at": "2026-04-03T23:53:59Z",
+          "html_url": "https://github.com/salernoelia/focuswatch/pull/34#pullrequestreview-4057695066",
+          "commit_id": "d98d729fbf188ea46e21632c07867d55722df6e6",
+          "body_summary": "## Pull request overview"
+        },
+        {
+          "id": 4057697997,
+          "state": "COMMENTED",
+          "user": "salernoelia",
+          "submitted_at": "2026-04-03T23:55:19Z",
+          "html_url": "https://github.com/salernoelia/focuswatch/pull/34#pullrequestreview-4057697997",
+          "commit_id": "d98d729fbf188ea46e21632c07867d55722df6e6",
+          "body_summary": ""
+        },
+        {
+          "id": 4057700947,
+          "state": "COMMENTED",
+          "user": "salernoelia",
+          "submitted_at": "2026-04-03T23:56:52Z",
+          "html_url": "https://github.com/salernoelia/focuswatch/pull/34#pullrequestreview-4057700947",
+          "commit_id": "d98d729fbf188ea46e21632c07867d55722df6e6",
+          "body_summary": ""
+        },
+        {
+          "id": 4057702778,
+          "state": "COMMENTED",
+          "user": "copilot-swe-agent[bot]",
+          "submitted_at": "2026-04-03T23:57:41Z",
+          "html_url": "https://github.com/salernoelia/focuswatch/pull/34#pullrequestreview-4057702778",
+          "commit_id": "e836a578126c0f57de9e82c3bd785e042103d2b8",
+          "body_summary": ""
+        },
+        {
+          "id": 4057709233,
+          "state": "COMMENTED",
+          "user": "salernoelia",
+          "submitted_at": "2026-04-04T00:01:01Z",
+          "html_url": "https://github.com/salernoelia/focuswatch/pull/34#pullrequestreview-4057709233",
+          "commit_id": "d98d729fbf188ea46e21632c07867d55722df6e6",
+          "body_summary": ""
+        },
+        {
+          "id": 4057713638,
+          "state": "COMMENTED",
+          "user": "copilot-swe-agent[bot]",
+          "submitted_at": "2026-04-04T00:03:14Z",
+          "html_url": "https://github.com/salernoelia/focuswatch/pull/34#pullrequestreview-4057713638",
+          "commit_id": "e836a578126c0f57de9e82c3bd785e042103d2b8",
+          "body_summary": ""
+        },
+        {
+          "id": 4057713698,
+          "state": "COMMENTED",
+          "user": "copilot-swe-agent[bot]",
+          "submitted_at": "2026-04-04T00:03:16Z",
+          "html_url": "https://github.com/salernoelia/focuswatch/pull/34#pullrequestreview-4057713698",
+          "commit_id": "e836a578126c0f57de9e82c3bd785e042103d2b8",
+          "body_summary": ""
+        }
+      ]
+    },
+    {
+      "number": 41,
+      "title": "12 rework and refactor the watch writing microapplication",
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "mergeable_state": "unknown",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/41",
+      "user": {
+        "login": "salernoelia"
+      },
+      "head": {
+        "ref": "12-rework-and-refactor-the-watch-writing-microapplication",
+        "sha": "e877b155234c97d3df931d791bce5a3c083924fb"
+      },
+      "base": {
+        "ref": "main",
+        "sha": "478652ddc67f0eba39b1c7cbeb7801164aadb70c"
+      },
+      "additions": 3015,
+      "deletions": 2328,
+      "changed_files": 57,
+      "commits": 31,
+      "created_at": "2026-04-14T13:13:42Z",
+      "updated_at": "2026-04-14T13:13:42Z",
+      "files": [
+        {
+          "filename": ".github/workflows/ios_and_watch.yml",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2,
+          "changes": 4
+        },
+        {
+          "filename": ".gitignore",
+          "status": "modified",
+          "additions": 2,
+          "changes": 2
+        },
+        {
+          "filename": "CHANGELOG.MD",
+          "status": "modified",
+          "additions": 16,
+          "changes": 16
+        },
+        {
+          "filename": "CLAUDE.md",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 1,
+          "changes": 5
+        },
+        {
+          "filename": "FocusWatch App.xcodeproj/project.pbxproj",
+          "status": "renamed",
+          "additions": 51,
+          "deletions": 47,
+          "changes": 98,
+          "previous_filename": "focuswatch.xcodeproj/project.pbxproj"
+        },
+        {
+          "filename": "FocusWatch App.xcodeproj/xcshareddata/xcschemes/companion.xcscheme",
+          "status": "renamed",
+          "additions": 4,
+          "deletions": 4,
+          "changes": 8,
+          "previous_filename": "focuswatch.xcodeproj/xcshareddata/xcschemes/companion.xcscheme"
+        },
+        {
+          "filename": "FocusWatch App.xcodeproj/xcshareddata/xcschemes/watch.xcscheme",
+          "status": "renamed",
+          "additions": 6,
+          "deletions": 6,
+          "changes": 12,
+          "previous_filename": "focuswatch.xcodeproj/xcshareddata/xcschemes/watch.xcscheme"
+        },
+        {
+          "filename": "FocusWatch App.xcodeproj/xcuserdata/eliasalerno.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist",
+          "status": "renamed",
+          "previous_filename": "focuswatch.xcodeproj/xcuserdata/eliasalerno.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist"
+        },
+        {
+          "filename": "FocusWatch App.xcodeproj/xcuserdata/eliasalerno.xcuserdatad/xcschemes/xcschememanagement.plist",
+          "status": "renamed",
+          "additions": 2,
+          "deletions": 2,
+          "changes": 4,
+          "previous_filename": "focuswatch.xcodeproj/xcuserdata/eliasalerno.xcuserdatad/xcschemes/xcschememanagement.plist"
+        },
+        {
+          "filename": "companion-testing/SyncImageRegressionTests.swift",
+          "status": "added",
+          "additions": 76,
+          "changes": 76
+        },
+        {
+          "filename": "companion/Assets.xcassets/Haselnüsse.imageset/Contents.json",
+          "status": "modified",
+          "deletions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "companion/CompanionApp.swift",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 1,
+          "changes": 8
+        },
+        {
+          "filename": "companion/CompanionView.swift",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2,
+          "changes": 4
+        },
+        {
+          "filename": "companion/Services/AuthSyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/AuthSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/CalendarSyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/CalendarSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/ChecklistDataStore.swift",
+          "status": "added",
+          "additions": 67,
+          "changes": 67
+        },
+        {
+          "filename": "companion/Services/ChecklistSyncService.swift",
+          "status": "renamed",
+          "additions": 51,
+          "deletions": 69,
+          "changes": 120,
+          "previous_filename": "companion/Services/Sync/ChecklistSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/CommandSyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/CommandSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/ConfigSyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/ConfigSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/ConnectivityTransport.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/ConnectivityTransport.swift"
+        },
+        {
+          "filename": "companion/Services/ConnectivityTransportAdapter.swift",
+          "status": "added",
+          "additions": 106,
+          "changes": 106
+        },
+        {
+          "filename": "companion/Services/ImageSyncService.swift",
+          "status": "renamed",
+          "additions": 93,
+          "deletions": 73,
+          "changes": 166,
+          "previous_filename": "companion/Services/Sync/ImageSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/LevelSyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/LevelSyncService.swift"
+        },
+        {
+          "filename": "companion/Services/Sync/SyncStateManager.swift",
+          "status": "removed",
+          "deletions": 174,
+          "changes": 174
+        },
+        {
+          "filename": "companion/Services/SyncCoordinator.swift",
+          "status": "renamed",
+          "additions": 47,
+          "deletions": 45,
+          "changes": 92,
+          "previous_filename": "companion/Services/Sync/SyncCoordinator.swift"
+        },
+        {
+          "filename": "companion/Services/SyncStateManager.swift",
+          "status": "added",
+          "additions": 148,
+          "changes": 148
+        },
+        {
+          "filename": "companion/Services/TelemetrySyncService.swift",
+          "status": "renamed",
+          "previous_filename": "companion/Services/Sync/TelemetrySyncService.swift"
+        },
+        {
+          "filename": "companion/Views/Checklist/ChecklistDetailView.swift",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 6,
+          "changes": 12
+        },
+        {
+          "filename": "companion/Views/Checklist/ChecklistEditorView.swift",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 10,
+          "changes": 21
+        },
+        {
+          "filename": "companion/Views/Checklist/ChecklistItemEditRow.swift",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 4,
+          "changes": 9
+        },
+        {
+          "filename": "companion/Views/Checklist/UnifiedAddItemsView.swift",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3,
+          "changes": 6
+        },
+        {
+          "filename": "companion/Views/Wizard/WizardView.swift",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 4,
+          "changes": 11
+        },
+        {
+          "filename": "shared/Connectivity/SyncCommandRouter.swift",
+          "status": "added",
+          "additions": 30,
+          "changes": 30
+        },
+        {
+          "filename": "shared/Connectivity/SyncSessionTracker.swift",
+          "status": "added",
+          "additions": 105,
+          "changes": 105
+        },
+        {
+          "filename": "shared/Connectivity/SyncTransportProtocol.swift",
+          "status": "added",
+          "additions": 68,
+          "changes": 68
+        },
+        {
+          "filename": "shared/Localizable.xcstrings",
+          "status": "modified",
+          "additions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "shared/Services/LevelService.swift",
+          "status": "modified",
+          "additions": 33,
+          "deletions": 10,
+          "changes": 43
+        },
+        {
+          "filename": "watch-testing/SyncValidationServiceTests.swift",
+          "status": "added",
+          "additions": 81,
+          "changes": 81
+        },
+        {
+          "filename": "watch/Assets.xcassets/Haselnüsse.imageset/Contents.json",
+          "status": "modified",
+          "deletions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "watch/Assets.xcassets/Messlöffel.imageset/Contents.json",
+          "status": "modified",
+          "deletions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "watch/Assets.xcassets/Schüssel.imageset/Contents.json",
+          "status": "modified",
+          "deletions": 1,
+          "changes": 1
+        },
+        {
+          "filename": "watch/Services/ConnectivityTransport.swift",
+          "status": "renamed",
+          "previous_filename": "watch/Services/Sync/ConnectivityTransport.swift"
+        },
+        {
+          "filename": "watch/Services/ConnectivityTransportAdapter.swift",
+          "status": "added",
+          "additions": 66,
+          "changes": 66
+        },
+        {
+          "filename": "watch/Services/GalleryManager.swift",
+          "status": "modified",
+          "additions": 74,
+          "deletions": 120,
+          "changes": 194
+        },
+        {
+          "filename": "watch/Services/GallerySessionMessenger.swift",
+          "status": "added",
+          "additions": 105,
+          "changes": 105
+        },
+        {
+          "filename": "watch/Services/IncomingContextHandler.swift",
+          "status": "added",
+          "additions": 89,
+          "changes": 89
+        },
+        {
+          "filename": "watch/Services/IncomingFileHandler.swift",
+          "status": "added",
+          "additions": 47,
+          "changes": 47
+        },
+        {
+          "filename": "watch/Services/Sync/SyncCoordinator.swift",
+          "status": "removed",
+          "deletions": 589,
+          "changes": 589
+        },
+        {
+          "filename": "watch/Services/SyncCoordinator.swift",
+          "status": "added",
+          "additions": 512,
+          "changes": 512
+        },
+        {
+          "filename": "watch/Services/SyncValidationService.swift",
+          "status": "added",
+          "additions": 102,
+          "changes": 102
+        },
+        {
+          "filename": "watch/Views/Checklist/ChecklistInstructionsView.swift",
+          "status": "modified",
+          "additions": 63,
+          "deletions": 73,
+          "changes": 136
+        },
+        {
+          "filename": "watch/Views/Writing/WritingConfigManager.swift",
+          "status": "modified",
+          "deletions": 10,
+          "changes": 10
+        },
+        {
+          "filename": "watch/Views/Writing/WritingConfigurationView.swift",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 12,
+          "changes": 15
+        },
+        {
+          "filename": "watch/Views/Writing/WritingDBManager.swift",
+          "status": "modified",
+          "additions": 80,
+          "deletions": 215,
+          "changes": 295
+        },
+        {
+          "filename": "watch/Views/Writing/WritingExerciseManager.swift",
+          "status": "modified",
+          "additions": 806,
+          "deletions": 797,
+          "changes": 1603
+        },
+        {
+          "filename": "watch/Views/Writing/WritingManager.swift",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 32,
+          "changes": 44
+        },
+        {
+          "filename": "watch/WatchApp.swift",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 13,
+          "changes": 35
+        }
+      ],
+      "issue_comments": []
+    },
+    {
+      "number": 42,
+      "title": "Dev",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "mergeable_state": "unknown",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/42",
+      "user": {
+        "login": "salernoelia"
+      },
+      "merged_by": "salernoelia",
+      "head": {
+        "ref": "dev",
+        "sha": "0d33d7dad5223fe7b5cf933c5bbd9effad4fc87f"
+      },
+      "base": {
+        "ref": "main",
+        "sha": "c613064487c0b4da6867551ad6fd0fa0601e2243"
+      },
+      "additions": 819,
+      "deletions": 800,
+      "changed_files": 4,
+      "commits": 29,
+      "comments": 2,
+      "created_at": "2026-04-14T15:35:12Z",
+      "updated_at": "2026-04-14T15:43:09Z",
+      "closed_at": "2026-04-14T15:40:06Z",
+      "merged_at": "2026-04-14T15:40:05Z",
+      "files": [
+        {
+          "filename": "CLAUDE.md",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1,
+          "changes": 3
+        },
+        {
+          "filename": "FocusWatch App.xcodeproj/xcuserdata/eliasalerno.xcuserdatad/xcschemes/xcschememanagement.plist",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2,
+          "changes": 4
+        },
+        {
+          "filename": "shared/Localizable.xcstrings",
+          "status": "modified",
+          "additions": 9,
+          "changes": 9
+        },
+        {
+          "filename": "watch/Views/Writing/WritingExerciseManager.swift",
+          "status": "modified",
+          "additions": 806,
+          "deletions": 797,
+          "changes": 1603
+        }
+      ],
+      "issue_comments": [
+        {
+          "id": 4245189317,
+          "body": "@copilot resolve the merge conflicts in this pull request, use the main branch as the source of truth for the project files",
+          "html_url": "https://github.com/salernoelia/focuswatch/pull/42#issuecomment-4245189317",
+          "user": {
+            "login": "salernoelia"
+          },
+          "author_association": "OWNER",
+          "created_at": "2026-04-14T15:37:10Z"
+        },
+        {
+          "id": 4245205289,
+          "body": "\n> @copilot resolve the merge conflicts in this pull request, use the main branch as the source of truth for the project files\n\nResolved the merge conflicts in commit `0d33d7d`. The conflicts were in `project.pbxproj`, `companion.xcscheme`, and `watch.xcscheme` — all `.xcodeproj` files where main's version was accepted as the source of truth.",
+          "html_url": "https://github.com/salernoelia/focuswatch/pull/42#issuecomment-4245205289",
+          "user": {
+            "login": "Copilot"
+          },
+          "author_association": "CONTRIBUTOR",
+          "created_at": "2026-04-14T15:39:12Z"
+        }
+      ]
+    }
+  ],
+  "commits_origin_main": [
+    {
+      "sha": "2c8eefc53999720bca48caedc38f55f8eeedfc36",
+      "date": "2026-03-26T08:50:26+01:00",
+      "author": "Elia Salerno",
+      "subject": "Readme and contribution guidelines (#7)"
+    },
+    {
+      "sha": "b0ca1ead2af9f920f3f44a70aa91570a59af4e49",
+      "date": "2026-03-26T08:52:13+01:00",
+      "author": "Elia Salerno",
+      "subject": "Remove .DS_Store files and update .gitignore"
+    },
+    {
+      "sha": "8e15084bf5f0272cf51188a0e0b5e3276e1020ee",
+      "date": "2026-03-26T09:06:50+01:00",
+      "author": "Elia Salerno",
+      "subject": "Foundational refactoring (#8)"
+    },
+    {
+      "sha": "25e59bbbd190407ce2953619a77ebb574e3ccd3f",
+      "date": "2026-03-29T16:51:22+02:00",
+      "author": "Elia Salerno",
+      "subject": "move supabase data from admin repo (#9)"
+    },
+    {
+      "sha": "6c8bdab414069f2f936c3eeb88b953297897df3a",
+      "date": "2026-04-03T14:24:01+02:00",
+      "author": "Elia Salerno",
+      "subject": "fix: Feedback Entry #19 typo in fokusmeter config"
+    },
+    {
+      "sha": "8975a045614fbb9960b82dc435187256bd16f17e",
+      "date": "2026-04-03T15:30:27+02:00",
+      "author": "Elia Salerno",
+      "subject": "Checklist enhancements (#25)"
+    },
+    {
+      "sha": "478652ddc67f0eba39b1c7cbeb7801164aadb70c",
+      "date": "2026-04-03T15:36:20+02:00",
+      "author": "Elia Salerno",
+      "subject": "German localizations update"
+    },
+    {
+      "sha": "5a392ea44af41c87593266c94ecd49326b48afa6",
+      "date": "2026-04-14T15:14:27+02:00",
+      "author": "Elia Salerno",
+      "subject": "Refactor sync handling and improve code readability in FocusWatch (#34)"
+    },
+    {
+      "sha": "882041fabd7950b168a053b50484af94716f1962",
+      "date": "2026-04-14T17:18:52+02:00",
+      "author": "Elia Salerno",
+      "subject": "hotfix: bundle name issue"
+    },
+    {
+      "sha": "e68e6eeb56582de13b63284ab2ebd0cd1e839a49",
+      "date": "2026-04-14T17:23:08+02:00",
+      "author": "Elia Salerno",
+      "subject": "hotfix: workflow scheme"
+    },
+    {
+      "sha": "c613064487c0b4da6867551ad6fd0fa0601e2243",
+      "date": "2026-04-14T17:32:12+02:00",
+      "author": "Elia Salerno",
+      "subject": "Update test host paths for iOS and watchOS schemes in project configuration"
+    },
+    {
+      "sha": "065124c8d9b289afea6b1a6d6511b7d6bca7eb59",
+      "date": "2026-04-14T17:40:05+02:00",
+      "author": "Elia Salerno",
+      "subject": "Dev (#42)"
+    }
+  ],
+  "timeline": [
+    {
+      "ts": "2026-03-26T07:31:55Z",
+      "kind": "issue.created",
+      "issue": 6,
+      "title": "Initial State of Codebase"
+    },
+    {
+      "ts": "2026-03-26T07:48:58Z",
+      "kind": "pr.opened",
+      "pr": 7,
+      "title": "Readme and contribution guidelines",
+      "state": "closed"
+    },
+    {
+      "ts": "2026-03-26T07:50:26Z",
+      "kind": "pr.merged",
+      "pr": 7,
+      "title": "Readme and contribution guidelines"
+    },
+    {
+      "ts": "2026-03-26T08:00:50Z",
+      "kind": "pr.opened",
+      "pr": 8,
+      "title": "Foundational refactoring",
+      "state": "closed"
+    },
+    {
+      "ts": "2026-03-26T08:06:50Z",
+      "kind": "pr.merged",
+      "pr": 8,
+      "title": "Foundational refactoring"
+    },
+    {
+      "ts": "2026-03-26T08:50:26+01:00",
+      "kind": "commit",
+      "sha": "2c8eefc53999720bca48caedc38f55f8eeedfc36",
+      "author": "Elia Salerno",
+      "subject": "Readme and contribution guidelines (#7)"
+    },
+    {
+      "ts": "2026-03-26T08:52:13+01:00",
+      "kind": "commit",
+      "sha": "b0ca1ead2af9f920f3f44a70aa91570a59af4e49",
+      "author": "Elia Salerno",
+      "subject": "Remove .DS_Store files and update .gitignore"
+    },
+    {
+      "ts": "2026-03-26T09:06:50+01:00",
+      "kind": "commit",
+      "sha": "8e15084bf5f0272cf51188a0e0b5e3276e1020ee",
+      "author": "Elia Salerno",
+      "subject": "Foundational refactoring (#8)"
+    },
+    {
+      "ts": "2026-03-29T14:46:01Z",
+      "kind": "pr.opened",
+      "pr": 9,
+      "title": "Move supabase data from admin repo to the focuswatch application repo",
+      "state": "closed"
+    },
+    {
+      "ts": "2026-03-29T14:51:22Z",
+      "kind": "pr.merged",
+      "pr": 9,
+      "title": "Move supabase data from admin repo to the focuswatch application repo"
+    },
+    {
+      "ts": "2026-03-29T15:05:55Z",
+      "kind": "issue.created",
+      "issue": 10,
+      "title": "Overhaul the Synchronisation System"
+    },
+    {
+      "ts": "2026-03-29T15:08:56Z",
+      "kind": "issue.created",
+      "issue": 11,
+      "title": "Centralize Magic Strings and Layout Constants in Constants"
+    },
+    {
+      "ts": "2026-03-29T16:00:22Z",
+      "kind": "issue.created",
+      "issue": 12,
+      "title": "Rework and Refactor the watch \"Writing\" microapplication"
+    },
+    {
+      "ts": "2026-03-29T16:02:26Z",
+      "kind": "issue.created",
+      "issue": 13,
+      "title": "Integration Tests and Documentation for Telemetry"
+    },
+    {
+      "ts": "2026-03-29T16:04:48Z",
+      "kind": "issue.created",
+      "issue": 14,
+      "title": "Messy navigation interface on the watch"
+    },
+    {
+      "ts": "2026-03-29T16:06:21Z",
+      "kind": "issue.created",
+      "issue": 15,
+      "title": "Implement historical progression charts"
+    },
+    {
+      "ts": "2026-03-29T16:08:20Z",
+      "kind": "issue.created",
+      "issue": 16,
+      "title": "Integrate native EventKit permissions and fix the unreliability of long-term event reminders"
+    },
+    {
+      "ts": "2026-03-29T16:10:08Z",
+      "kind": "issue.created",
+      "issue": 17,
+      "title": "Current image transfer logic is not very robust"
+    },
+    {
+      "ts": "2026-03-29T16:11:59Z",
+      "kind": "issue.created",
+      "issue": 18,
+      "title": "Combine Pomodoro-like micro applications"
+    },
+    {
+      "ts": "2026-03-29T16:51:22+02:00",
+      "kind": "commit",
+      "sha": "25e59bbbd190407ce2953619a77ebb574e3ccd3f",
+      "author": "Elia Salerno",
+      "subject": "move supabase data from admin repo (#9)"
+    },
+    {
+      "ts": "2026-03-29T21:24:42Z",
+      "kind": "issue.created",
+      "issue": 19,
+      "title": "SyncCoordinator God-Object"
+    },
+    {
+      "ts": "2026-03-29T21:25:26Z",
+      "kind": "issue.created",
+      "issue": 20,
+      "title": "SyncStateManager and SyncState"
+    },
+    {
+      "ts": "2026-03-29T21:26:04Z",
+      "kind": "issue.created",
+      "issue": 21,
+      "title": "GalleryManager functionality encapsulation"
+    },
+    {
+      "ts": "2026-03-29T21:27:03Z",
+      "kind": "issue.comment",
+      "issue": 19,
+      "comment_id": 4151124514,
+      "author": "salernoelia",
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/19#issuecomment-4151124514"
+    },
+    {
+      "ts": "2026-03-29T21:29:38Z",
+      "kind": "issue.created",
+      "issue": 22,
+      "title": "ChecklistSyncService is deeply integrated into the companion UI"
+    },
+    {
+      "ts": "2026-04-03T12:32:07Z",
+      "kind": "issue.created",
+      "issue": 23,
+      "title": "Add Checklist Items without Image"
+    },
+    {
+      "ts": "2026-04-03T12:33:02Z",
+      "kind": "issue.created",
+      "issue": 24,
+      "title": "Checklist Categories/Tags"
+    },
+    {
+      "ts": "2026-04-03T13:03:13Z",
+      "kind": "pr.opened",
+      "pr": 25,
+      "title": "Checklist enhancements",
+      "state": "closed"
+    },
+    {
+      "ts": "2026-04-03T13:08:12Z",
+      "kind": "issue.created",
+      "issue": 26,
+      "title": "Set Emoji for a Checklist"
+    },
+    {
+      "ts": "2026-04-03T13:13:57Z",
+      "kind": "issue.created",
+      "issue": 27,
+      "title": "Improve the checklist editor input fields organizations into sections"
+    },
+    {
+      "ts": "2026-04-03T13:30:28Z",
+      "kind": "pr.merged",
+      "pr": 25,
+      "title": "Checklist enhancements"
+    },
+    {
+      "ts": "2026-04-03T13:30:30Z",
+      "kind": "issue.closed",
+      "issue": 23,
+      "title": "Add Checklist Items without Image",
+      "state_reason": "completed"
+    },
+    {
+      "ts": "2026-04-03T13:30:30Z",
+      "kind": "issue.closed",
+      "issue": 24,
+      "title": "Checklist Categories/Tags",
+      "state_reason": "completed"
+    },
+    {
+      "ts": "2026-04-03T13:30:30Z",
+      "kind": "issue.closed",
+      "issue": 26,
+      "title": "Set Emoji for a Checklist",
+      "state_reason": "completed"
+    },
+    {
+      "ts": "2026-04-03T13:30:31Z",
+      "kind": "issue.closed",
+      "issue": 27,
+      "title": "Improve the checklist editor input fields organizations into sections",
+      "state_reason": "completed"
+    },
+    {
+      "ts": "2026-04-03T14:24:01+02:00",
+      "kind": "commit",
+      "sha": "6c8bdab414069f2f936c3eeb88b953297897df3a",
+      "author": "Elia Salerno",
+      "subject": "fix: Feedback Entry #19 typo in fokusmeter config"
+    },
+    {
+      "ts": "2026-04-03T14:28:49Z",
+      "kind": "issue.created",
+      "issue": 28,
+      "title": "90129: The bundle uses a bundle name or display name that is already taken."
+    },
+    {
+      "ts": "2026-04-03T15:30:27+02:00",
+      "kind": "commit",
+      "sha": "8975a045614fbb9960b82dc435187256bd16f17e",
+      "author": "Elia Salerno",
+      "subject": "Checklist enhancements (#25)"
+    },
+    {
+      "ts": "2026-04-03T15:36:20+02:00",
+      "kind": "commit",
+      "sha": "478652ddc67f0eba39b1c7cbeb7801164aadb70c",
+      "author": "Elia Salerno",
+      "subject": "German localizations update"
+    },
+    {
+      "ts": "2026-04-03T21:49:20Z",
+      "kind": "pr.opened",
+      "pr": 29,
+      "title": "App store connect bundle name issues",
+      "state": "closed"
+    },
+    {
+      "ts": "2026-04-03T21:49:29Z",
+      "kind": "pr.merged",
+      "pr": 29,
+      "title": "App store connect bundle name issues"
+    },
+    {
+      "ts": "2026-04-03T22:01:59Z",
+      "kind": "pr.opened",
+      "pr": 30,
+      "title": "Refactor GalleryManager and add GallerySessionMessenger for improved image sync handling",
+      "state": "closed"
+    },
+    {
+      "ts": "2026-04-03T22:03:09Z",
+      "kind": "pr.merged",
+      "pr": 30,
+      "title": "Refactor GalleryManager and add GallerySessionMessenger for improved image sync handling"
+    },
+    {
+      "ts": "2026-04-03T22:03:39Z",
+      "kind": "issue.closed",
+      "issue": 21,
+      "title": "GalleryManager functionality encapsulation",
+      "state_reason": "completed"
+    },
+    {
+      "ts": "2026-04-03T22:33:59Z",
+      "kind": "issue.created",
+      "issue": 31,
+      "title": "Always-on display for various apps"
+    },
+    {
+      "ts": "2026-04-03T23:19:03Z",
+      "kind": "pr.opened",
+      "pr": 32,
+      "title": "Refactor sync handling and transport protocols",
+      "state": "closed"
+    },
+    {
+      "ts": "2026-04-03T23:42:26Z",
+      "kind": "pr.merged",
+      "pr": 32,
+      "title": "Refactor sync handling and transport protocols"
+    },
+    {
+      "ts": "2026-04-03T23:43:17Z",
+      "kind": "pr.opened",
+      "pr": 33,
+      "title": "Refactor checklist synchronization and improve code readability",
+      "state": "closed"
+    },
+    {
+      "ts": "2026-04-03T23:44:30Z",
+      "kind": "pr.merged",
+      "pr": 33,
+      "title": "Refactor checklist synchronization and improve code readability"
+    },
+    {
+      "ts": "2026-04-03T23:48:36Z",
+      "kind": "pr.opened",
+      "pr": 34,
+      "title": "Refactor sync handling and improve code readability in FocusWatch",
+      "state": "closed"
+    },
+    {
+      "ts": "2026-04-03T23:53:57Z",
+      "kind": "pr.review_thread_comment",
+      "pr": 34,
+      "author": "copilot-pull-request-reviewer",
+      "path": "watch/WatchApp.swift",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034780750"
+    },
+    {
+      "ts": "2026-04-03T23:53:58Z",
+      "kind": "pr.review_thread_comment",
+      "pr": 34,
+      "author": "copilot-pull-request-reviewer",
+      "path": "watch/Services/SyncCoordinator.swift",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034780763"
+    },
+    {
+      "ts": "2026-04-03T23:53:58Z",
+      "kind": "pr.review_thread_comment",
+      "pr": 34,
+      "author": "copilot-pull-request-reviewer",
+      "path": "companion/CompanionApp.swift",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034780769"
+    },
+    {
+      "ts": "2026-04-03T23:53:59Z",
+      "kind": "pr.review_thread_comment",
+      "pr": 34,
+      "author": "copilot-pull-request-reviewer",
+      "path": "companion/Services/SyncStateManager.swift",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034780779"
+    },
+    {
+      "ts": "2026-04-03T23:53:59Z",
+      "kind": "pr.review_thread_comment",
+      "pr": 34,
+      "author": "copilot-pull-request-reviewer",
+      "path": "shared/Localizable.xcstrings",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034780788"
+    },
+    {
+      "ts": "2026-04-03T23:53:59Z",
+      "kind": "pr.review_thread_comment",
+      "pr": 34,
+      "author": "copilot-pull-request-reviewer",
+      "path": "shared/Localizable.xcstrings",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034780792"
+    },
+    {
+      "ts": "2026-04-03T23:55:19Z",
+      "kind": "pr.review_thread_comment",
+      "pr": 34,
+      "author": "salernoelia",
+      "path": "watch/WatchApp.swift",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034782660"
+    },
+    {
+      "ts": "2026-04-03T23:56:52Z",
+      "kind": "pr.review_thread_comment",
+      "pr": 34,
+      "author": "salernoelia",
+      "path": "companion/Services/SyncStateManager.swift",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034784760"
+    },
+    {
+      "ts": "2026-04-03T23:57:41Z",
+      "kind": "pr.review_thread_comment",
+      "pr": 34,
+      "author": "copilot-swe-agent",
+      "path": "watch/WatchApp.swift",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034786312"
+    },
+    {
+      "ts": "2026-04-04T00:01:01Z",
+      "kind": "pr.review_thread_comment",
+      "pr": 34,
+      "author": "salernoelia",
+      "path": "watch/Services/SyncCoordinator.swift",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034790801"
+    },
+    {
+      "ts": "2026-04-04T00:03:14Z",
+      "kind": "pr.review_thread_comment",
+      "pr": 34,
+      "author": "copilot-swe-agent",
+      "path": "watch/Services/SyncCoordinator.swift",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034793779"
+    },
+    {
+      "ts": "2026-04-04T00:03:16Z",
+      "kind": "pr.review_thread_comment",
+      "pr": 34,
+      "author": "copilot-swe-agent",
+      "path": "companion/Services/SyncStateManager.swift",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/34#discussion_r3034793826"
+    },
+    {
+      "ts": "2026-04-05T18:56:19Z",
+      "kind": "issue.created",
+      "issue": 35,
+      "title": "Improve configuration flow between watch and phone"
+    },
+    {
+      "ts": "2026-04-05T18:56:41Z",
+      "kind": "issue.created",
+      "issue": 36,
+      "title": "Factor out logic from the god-object \"WritingManager\""
+    },
+    {
+      "ts": "2026-04-05T18:57:44Z",
+      "kind": "issue.created",
+      "issue": 37,
+      "title": "Move writing configurations to be stored in Supabase"
+    },
+    {
+      "ts": "2026-04-05T18:58:27Z",
+      "kind": "issue.created",
+      "issue": 38,
+      "title": "Split up Writing Data to Base64 logic and google drive upload so the upload provider can be exchanged in the future"
+    },
+    {
+      "ts": "2026-04-05T18:58:34Z",
+      "kind": "issue.created",
+      "issue": 39,
+      "title": "Allow configurations of EMA model parameters to be done in companion app"
+    },
+    {
+      "ts": "2026-04-05T18:58:50Z",
+      "kind": "issue.created",
+      "issue": 40,
+      "title": "Add a switcher between EMA and ML Model Mode on watch app"
+    },
+    {
+      "ts": "2026-04-14T13:13:42Z",
+      "kind": "pr.opened",
+      "pr": 41,
+      "title": "12 rework and refactor the watch writing microapplication",
+      "state": "open"
+    },
+    {
+      "ts": "2026-04-14T13:14:28Z",
+      "kind": "pr.merged",
+      "pr": 34,
+      "title": "Refactor sync handling and improve code readability in FocusWatch"
+    },
+    {
+      "ts": "2026-04-14T15:14:27+02:00",
+      "kind": "commit",
+      "sha": "5a392ea44af41c87593266c94ecd49326b48afa6",
+      "author": "Elia Salerno",
+      "subject": "Refactor sync handling and improve code readability in FocusWatch (#34)"
+    },
+    {
+      "ts": "2026-04-14T15:35:12Z",
+      "kind": "pr.opened",
+      "pr": 42,
+      "title": "Dev",
+      "state": "closed"
+    },
+    {
+      "ts": "2026-04-14T15:37:10Z",
+      "kind": "pr.comment",
+      "pr": 42,
+      "comment_id": 4245189317,
+      "author": "salernoelia",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/42#issuecomment-4245189317"
+    },
+    {
+      "ts": "2026-04-14T15:39:12Z",
+      "kind": "pr.comment",
+      "pr": 42,
+      "comment_id": 4245205289,
+      "author": "Copilot",
+      "html_url": "https://github.com/salernoelia/focuswatch/pull/42#issuecomment-4245205289"
+    },
+    {
+      "ts": "2026-04-14T15:40:05Z",
+      "kind": "pr.merged",
+      "pr": 42,
+      "title": "Dev"
+    },
+    {
+      "ts": "2026-04-14T17:18:52+02:00",
+      "kind": "commit",
+      "sha": "882041fabd7950b168a053b50484af94716f1962",
+      "author": "Elia Salerno",
+      "subject": "hotfix: bundle name issue"
+    },
+    {
+      "ts": "2026-04-14T17:23:08+02:00",
+      "kind": "commit",
+      "sha": "e68e6eeb56582de13b63284ab2ebd0cd1e839a49",
+      "author": "Elia Salerno",
+      "subject": "hotfix: workflow scheme"
+    },
+    {
+      "ts": "2026-04-14T17:32:12+02:00",
+      "kind": "commit",
+      "sha": "c613064487c0b4da6867551ad6fd0fa0601e2243",
+      "author": "Elia Salerno",
+      "subject": "Update test host paths for iOS and watchOS schemes in project configuration"
+    },
+    {
+      "ts": "2026-04-14T17:40:05+02:00",
+      "kind": "commit",
+      "sha": "065124c8d9b289afea6b1a6d6511b7d6bca7eb59",
+      "author": "Elia Salerno",
+      "subject": "Dev (#42)"
+    },
+    {
+      "ts": "2026-04-19T11:34:59Z",
+      "kind": "issue.closed",
+      "issue": 10,
+      "title": "Overhaul the Synchronisation System",
+      "state_reason": "completed"
+    },
+    {
+      "ts": "2026-04-19T11:35:39Z",
+      "kind": "issue.comment",
+      "issue": 12,
+      "comment_id": 4275810512,
+      "author": "salernoelia",
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/12#issuecomment-4275810512"
+    },
+    {
+      "ts": "2026-04-19T11:35:43Z",
+      "kind": "issue.closed",
+      "issue": 12,
+      "title": "Rework and Refactor the watch \"Writing\" microapplication",
+      "state_reason": "completed"
+    },
+    {
+      "ts": "2026-04-19T11:36:16Z",
+      "kind": "issue.closed",
+      "issue": 19,
+      "title": "SyncCoordinator God-Object",
+      "state_reason": "completed"
+    },
+    {
+      "ts": "2026-04-19T11:36:17Z",
+      "kind": "issue.closed",
+      "issue": 20,
+      "title": "SyncStateManager and SyncState",
+      "state_reason": "completed"
+    },
+    {
+      "ts": "2026-04-19T11:36:17Z",
+      "kind": "issue.closed",
+      "issue": 22,
+      "title": "ChecklistSyncService is deeply integrated into the companion UI",
+      "state_reason": "completed"
+    },
+    {
+      "ts": "2026-04-19T11:36:34Z",
+      "kind": "issue.closed",
+      "issue": 36,
+      "title": "Factor out logic from the god-object \"WritingManager\"",
+      "state_reason": "duplicate"
+    },
+    {
+      "ts": "2026-04-19T11:37:43Z",
+      "kind": "issue.closed",
+      "issue": 28,
+      "title": "90129: The bundle uses a bundle name or display name that is already taken.",
+      "state_reason": "completed"
+    },
+    {
+      "ts": "2026-04-19T11:37:43Z",
+      "kind": "issue.comment",
+      "issue": 28,
+      "comment_id": 4275813721,
+      "author": "salernoelia",
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/28#issuecomment-4275813721"
+    },
+    {
+      "ts": "2026-04-19T11:38:21Z",
+      "kind": "issue.closed",
+      "issue": 17,
+      "title": "Current image transfer logic is not very robust",
+      "state_reason": "completed"
+    },
+    {
+      "ts": "2026-04-19T11:40:05Z",
+      "kind": "issue.comment",
+      "issue": 18,
+      "comment_id": 4275817708,
+      "author": "salernoelia",
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/18#issuecomment-4275817708"
+    },
+    {
+      "ts": "2026-04-19T11:40:17Z",
+      "kind": "issue.comment",
+      "issue": 40,
+      "comment_id": 4275818029,
+      "author": "salernoelia",
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/40#issuecomment-4275818029"
+    },
+    {
+      "ts": "2026-04-19T11:40:55Z",
+      "kind": "issue.closed",
+      "issue": 39,
+      "title": "Allow configurations of EMA model parameters to be done in companion app",
+      "state_reason": "completed"
+    },
+    {
+      "ts": "2026-04-19T11:40:55Z",
+      "kind": "issue.comment",
+      "issue": 39,
+      "comment_id": 4275819100,
+      "author": "salernoelia",
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/39#issuecomment-4275819100"
+    },
+    {
+      "ts": "2026-04-19T11:41:36Z",
+      "kind": "issue.closed",
+      "issue": 38,
+      "title": "Split up Writing Data to Base64 logic and google drive upload so the upload provider can be exchanged in the future",
+      "state_reason": "completed"
+    },
+    {
+      "ts": "2026-04-19T11:41:36Z",
+      "kind": "issue.comment",
+      "issue": 38,
+      "comment_id": 4275820182,
+      "author": "salernoelia",
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/38#issuecomment-4275820182"
+    },
+    {
+      "ts": "2026-04-19T11:42:16Z",
+      "kind": "issue.comment",
+      "issue": 37,
+      "comment_id": 4275821140,
+      "author": "salernoelia",
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/37#issuecomment-4275821140"
+    },
+    {
+      "ts": "2026-04-19T11:43:49Z",
+      "kind": "issue.comment",
+      "issue": 14,
+      "comment_id": 4275823515,
+      "author": "salernoelia",
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/14#issuecomment-4275823515"
+    },
+    {
+      "ts": "2026-04-19T11:47:03Z",
+      "kind": "issue.created",
+      "issue": 43,
+      "title": "Critical Notification Service"
+    },
+    {
+      "ts": "2026-04-19T12:04:29Z",
+      "kind": "issue.comment",
+      "issue": 35,
+      "comment_id": 4275857419,
+      "author": "salernoelia",
+      "html_url": "https://github.com/salernoelia/focuswatch/issues/35#issuecomment-4275857419"
+    },
+    {
+      "ts": "2026-04-19T12:28:59Z",
+      "kind": "issue.created",
+      "issue": 44,
+      "title": "Store Supabase auth tokens in Keychain instead of UserDefaults"
+    },
+    {
+      "ts": "2026-04-19T12:29:08Z",
+      "kind": "issue.created",
+      "issue": 45,
+      "title": "Move large persisted app data out of UserDefaults"
+    },
+    {
+      "ts": "2026-04-19T12:29:15Z",
+      "kind": "issue.created",
+      "issue": 46,
+      "title": "Load gallery images asynchronously with caching"
+    },
+    {
+      "ts": "2026-04-19T12:29:19Z",
+      "kind": "issue.created",
+      "issue": 47,
+      "title": "Standardize sync and app flow concurrency on async/await"
+    },
+    {
+      "ts": "2026-04-19T12:29:26Z",
+      "kind": "issue.created",
+      "issue": 48,
+      "title": "Replace core singletons with injected dependencies"
+    },
+    {
+      "ts": "2026-04-19T12:29:31Z",
+      "kind": "issue.created",
+      "issue": 49,
+      "title": "Reuse a single SwiftData container and model context"
+    },
+    {
+      "ts": "2026-04-19T12:29:54Z",
+      "kind": "issue.created",
+      "issue": 50,
+      "title": "Make Pomodoro timers drift-free"
+    },
+    {
+      "ts": "2026-04-19T12:30:10Z",
+      "kind": "issue.created",
+      "issue": 51,
+      "title": "Centralize storage keys and remove hardcoded defaults strings"
+    },
+    {
+      "ts": "2026-04-19T12:30:17Z",
+      "kind": "issue.created",
+      "issue": 52,
+      "title": "Modernize gallery image downscaling"
+    }
+  ]
+}

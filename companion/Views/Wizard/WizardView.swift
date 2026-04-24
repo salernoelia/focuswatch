@@ -133,116 +133,72 @@ struct WizardView: View {
                     }
                 }
 
-                Section("Navigation") {
-                    Button("Return to Dashboard") {
-                        CommandSyncService.shared.returnToMainMenu()
-                    }
-                    .disabled(connectionStatus != .connected)
-                }
-
-                Section("Focus Tools") {
-                    ForEach(
-                        appsManager.apps.filter { $0.index < appsManager.builtInAppCount }, id: \.id
-                    ) { app in
+                Section {
+                    ForEach(appsManager.homeTiles) { tile in
                         HStack(spacing: 12) {
                             Button {
-                                CommandSyncService.shared.switchToApp(index: app.index)
+                                CommandSyncService.shared.switchToApp(id: tile.id)
                             } label: {
                                 HStack(spacing: 12) {
-                                    Circle()
-                                        .fill(app.color)
-                                        .frame(width: 10, height: 10)
-
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(app.title)
-                                            .foregroundColor(.primary)
-                                        Text(app.description)
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
+                                    if !tile.symbol.isEmpty {
+                                        Image(systemName: tile.symbol)
+                                            .foregroundColor(tile.color)
+                                            .frame(width: 20)
                                     }
+
+                                    Text(tile.title)
+                                        .foregroundColor(.primary)
 
                                     Spacer()
                                 }
                             }
                             .disabled(connectionStatus != .connected)
 
-                            Button {
-                                showingConfig = focusToolType(for: app.index)
-                            } label: {
-                                Image(systemName: "gear")
-                                    .foregroundColor(.secondary)
+                            if let toolType = focusToolType(for: tile.appID) {
+                                Button {
+                                    showingConfig = toolType
+                                } label: {
+                                    Image(systemName: "gear")
+                                        .foregroundColor(.secondary)
+                                }
+                                .buttonStyle(.borderless)
                             }
-                            .buttonStyle(.borderless)
                         }
                     }
+                    .onMove { source, destination in
+                        appsManager.moveTiles(fromOffsets: source, toOffset: destination)
+                    }
+                } header: {
+                    Text("Focus Tools")
+                } footer: {
+                    Text("Drag to reorder. This changes the layout on your Apple Watch.")
                 }
 
-                if appsManager.apps.count > appsManager.builtInAppCount {
+                if !appsManager.checklistApps().isEmpty {
                     Section("Checklists") {
-                        ForEach(
-                            appsManager.apps.filter { $0.index >= appsManager.builtInAppCount },
-                            id: \.id
-                        ) { app in
+                        ForEach(appsManager.checklistApps()) { app in
                             Button {
-                                CommandSyncService.shared.switchToApp(index: app.index)
+                                CommandSyncService.shared.switchToApp(id: app.id)
                             } label: {
                                 HStack(spacing: 12) {
-                                    Circle()
-                                        .fill(app.color)
-                                        .frame(width: 10, height: 10)
-
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(app.title)
-                                            .foregroundColor(.primary)
-                                        Text(app.description)
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
+                                    if !app.emoji.isEmpty {
+                                        Text(app.emoji)
+                                            .frame(width: 20)
+                                    } else {
+                                        Image(systemName: "checklist")
+                                            .foregroundColor(app.color)
+                                            .frame(width: 20)
                                     }
+
+                                    Text(app.title)
+                                        .foregroundColor(.primary)
+
+                                    Spacer()
                                 }
                             }
                             .disabled(connectionStatus != .connected)
                         }
                     }
-                }
-
-                Section("Progress") {
-                    Button {
-                        CommandSyncService.shared.switchToApp(index: -1)
-                    } label: {
-                        HStack(spacing: 12) {
-                            Circle()
-                                .fill(Color.blue)
-                                .frame(width: 10, height: 10)
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(String(localized: "Level"))
-                                    .foregroundColor(.primary)
-                                Text(String(localized: "See your focus points"))
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                    }
-                    .disabled(connectionStatus != .connected)
-
-                    Button {
-                        CommandSyncService.shared.switchToApp(index: -2)
-                    } label: {
-                        HStack(spacing: 12) {
-                            Circle()
-                                .fill(Color.teal)
-                                .frame(width: 10, height: 10)
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(String(localized: "Milestones"))
-                                    .foregroundColor(.primary)
-                                Text(String(localized: "Track your achievements"))
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                    }
-                    .disabled(connectionStatus != .connected)
                 }
 
                 // Section("Advanced") {
@@ -295,13 +251,13 @@ struct WizardView: View {
         }
     }
 
-    private func focusToolType(for index: Int) -> FocusToolType? {
-        switch index {
-        case 0: return .fokusMeter
-        case 1: return .writing
-        case 2: return .pomodoro
-        case 3: return .fidgetToy
-        case 4: return .colorBreathing
+    private func focusToolType(for appID: WatchAppID?) -> FocusToolType? {
+        switch appID {
+        case .meter: return .fokusMeter
+        case .writing: return .writing
+        case .pomodoro: return .pomodoro
+        case .fidget: return .fidgetToy
+        case .breathing: return .colorBreathing
         default: return nil
         }
     }

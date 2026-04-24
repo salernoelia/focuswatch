@@ -6,23 +6,32 @@ struct PomodoroTimerView: View {
     @ObservedObject var viewModel: PomodoroViewModel
 
     var body: some View {
-        VStack(spacing: 8) {
-            Spacer(minLength: 24)
+        VStack(spacing: 2) {
+            ZStack {
+                Circle()
+                    .stroke(viewModel.phaseColor.opacity(0.2), lineWidth: 8)
 
-            Text(viewModel.currentPhaseTitle)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+                Circle()
+                    .trim(from: 0, to: 1.0 - viewModel.progress)
+                    .stroke(viewModel.phaseColor, style: StrokeStyle(lineWidth: 8, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                    .animation(.linear(duration: 0.3), value: viewModel.progress)
 
-            Text(viewModel.timeString)
-                .font(.system(size: 44, weight: .bold, design: .rounded))
-                .monospacedDigit()
+                VStack(spacing: 0) {
+                    Text(viewModel.currentPhaseTitle)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
 
-            ProgressView(value: viewModel.progress)
-                .tint(viewModel.phaseColor)
-                .padding(.horizontal, 8)
+                    Text(viewModel.timeString)
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                }
+            }
+            .frame(width: 130, height: 130)
 
-            HStack(spacing: 12) {
+            Spacer(minLength: 4)
 
+            HStack(spacing: 4) {
                 Button(action: viewModel.reset) {
                     Image(systemName: "arrow.clockwise")
                         .font(.title3)
@@ -39,8 +48,11 @@ struct PomodoroTimerView: View {
                 .buttonStyle(.borderedProminent)
                 .tint(viewModel.phaseColor)
             }
-            .padding(.top, 4)
         }
         .padding()
     }
+}
+
+#Preview {
+    PomodoroTimerView(viewModel: PomodoroViewModel.shared)
 }

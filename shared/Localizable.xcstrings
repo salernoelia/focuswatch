@@ -176,6 +176,9 @@
     "+ 500 Points" : {
       "shouldTranslate" : false
     },
+    "+%lld" : {
+      "shouldTranslate" : false
+    },
     "+%lld Points" : {
       "shouldTranslate" : false
     },
@@ -579,22 +582,6 @@
         }
       }
     },
-    "Anne (Beta)" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anne (Beta)"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anne (Beta)"
-          }
-        }
-      }
-    },
     "App" : {
       "localizations" : {
         "de" : {
@@ -737,6 +724,16 @@
         }
       }
     },
+    "Breathing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbatmung"
+          }
+        }
+      }
+    },
     "Breathing Pattern" : {
       "localizations" : {
         "de" : {
@@ -845,6 +842,16 @@
         }
       }
     },
+    "Checklist not found" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checkliste nicht gefunden"
+          }
+        }
+      }
+    },
     "Checklist Settings" : {
       "localizations" : {
         "de" : {
@@ -917,16 +924,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Farben"
-          }
-        }
-      }
-    },
-    "Color Breathing" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Farbatmung"
           }
         }
       }
@@ -1097,12 +1094,6 @@
         }
       }
     },
-    "Debug" : {
-
-    },
-    "Debug Tools" : {
-
-    },
     "Dein Feedback" : {
       "localizations" : {
         "de" : {
@@ -1247,6 +1238,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Done"
+          }
+        }
+      }
+    },
+    "Drag to reorder. This changes the layout on your Apple Watch." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um das Layout der Apps auf der Uhr anzupassen, halte Elemente für einen Moment und ziehe sie an die gewünschte Stelle."
           }
         }
       }
@@ -1631,12 +1632,12 @@
         }
       }
     },
-    "Fidget Toy" : {
+    "Fidget" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fidget Toy"
+            "value" : "Fidget"
           }
         }
       }
@@ -1713,16 +1714,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fokuslehrling"
-          }
-        }
-      }
-    },
-    "Fokus Meter" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fokusmeter"
           }
         }
       }
@@ -1865,22 +1856,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Frequency"
-          }
-        }
-      }
-    },
-    "Heute" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Heute"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Today"
           }
         }
       }
@@ -2089,22 +2064,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Calendar"
-          }
-        }
-      }
-    },
-    "Keine Events" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine Events"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No events"
           }
         }
       }
@@ -2407,6 +2366,16 @@
         }
       }
     },
+    "Meter" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fokusmeter"
+          }
+        }
+      }
+    },
     "Milestone" : {
       "localizations" : {
         "de" : {
@@ -2433,16 +2402,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "minimum"
-          }
-        }
-      }
-    },
-    "Navigation" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Navigation"
           }
         }
       }
@@ -2569,6 +2528,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No Entries"
+          }
+        }
+      }
+    },
+    "No events" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Events"
           }
         }
       }
@@ -3155,16 +3124,6 @@
         }
       }
     },
-    "Return to Dashboard" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zurück zur Übersicht"
-          }
-        }
-      }
-    },
     "Reward" : {
       "localizations" : {
         "de" : {
@@ -3297,16 +3256,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sekunden"
-          }
-        }
-      }
-    },
-    "See your focus points" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sehe deine Fokuspunkte"
           }
         }
       }
@@ -3677,9 +3626,6 @@
         }
       }
     },
-    "Test Vibration" : {
-
-    },
     "Tester: %@" : {
       "localizations" : {
         "de" : {
@@ -3816,6 +3762,16 @@
         }
       }
     },
+    "Today" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heute"
+          }
+        }
+      }
+    },
     "Total Points" : {
       "localizations" : {
         "de" : {
@@ -3832,16 +3788,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Total: %lld Points"
-          }
-        }
-      }
-    },
-    "Track your achievements" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verfolge deine Errungenschaften"
           }
         }
       }
@@ -3878,17 +3824,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Übung"
-          }
-        }
-      }
-    },
-    "Tutorial Done!" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Übung bestanden!"
           }
         }
       }
@@ -4062,6 +3997,16 @@
         }
       }
     },
+    "Week" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Woche"
+          }
+        }
+      }
+    },
     "Weekdays" : {
       "localizations" : {
         "de" : {
@@ -4146,22 +4091,6 @@
         }
       }
     },
-    "Woche" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Woche"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Week"
-          }
-        }
-      }
-    },
     "Work" : {
       "localizations" : {
         "de" : {
@@ -4188,6 +4117,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Schreiben"
+          }
+        }
+      }
+    },
+    "XP" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Punkte"
           }
         }
       }

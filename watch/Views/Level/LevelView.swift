@@ -36,6 +36,7 @@ struct LevelView: View {
     Text("\(viewModel.currentLevel)")
       .font(.system(size: 48, weight: .bold, design: .rounded))
       .contentTransition(.numericText())
+      .animation(.spring(response: 0.4, dampingFraction: 0.45), value: viewModel.currentLevel)
   }
 
   private var progressBar: some View {
@@ -49,14 +50,16 @@ struct LevelView: View {
           RoundedRectangle(cornerRadius: 8)
             .fill(
               LinearGradient(
-                colors: [.blue, .cyan],
+                colors: [.blue, .cyan, .teal],
                 startPoint: .leading,
                 endPoint: .trailing
               )
             )
             .frame(width: geometry.size.width * viewModel.progress)
+            .shadow(color: .blue.opacity(0.5), radius: 4)
         }
         .frame(height: 16)
+        .animation(.spring(response: 0.6, dampingFraction: 0.65), value: viewModel.progress)
       }
 
       Text(viewModel.progressPercentage)

@@ -10,8 +10,10 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
     @State private var dragOffset: CGFloat = 0
     @State private var scale: CGFloat = 1.0
     @State private var opacity: Double = 1.0
+    @State private var rotation: Double = 0
     @State private var isProcessing = false
     @State private var cachedImage: UIImage?
+    @State private var hitThreshold = false
 
     private let dragThreshold: CGFloat = 40
     private let animationDuration: Double = 0.3
@@ -62,6 +64,7 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
         .scaleEffect(scale)
         .opacity(opacity)
         .offset(x: dragOffset)
+        .rotationEffect(.degrees(rotation))
         .disabled(isProcessing)
         .gesture(
             DragGesture(minimumDistance: 5)
@@ -93,9 +96,20 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
         let translation = value.translation.width
 
         if abs(translation) > abs(value.translation.height) {
-            dragOffset = translation * 0.8
+            dragOffset = translation * 0.85
             let progress = min(abs(translation) / 100, 1.0)
-            scale = 1.0 - (progress * 0.05)
+            scale = 1.0 + (progress * 0.03) - (progress * progress * 0.08)
+            rotation = max(-4, min(4, Double(translation / 8)))
+
+            let crossed = abs(translation) > dragThreshold
+            if crossed && !hitThreshold {
+                hitThreshold = true
+                #if os(watchOS)
+                VibrationManager.shared.playHaptic(.click)
+                #endif
+            } else if !crossed {
+                hitThreshold = false
+            }
         }
     }
 
@@ -125,10 +139,11 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
         let targetOffset: CGFloat = direction == .right ? 200 : -200
         let shouldCollect = direction == swipeMapping.collectDirection
 
-        withAnimation(.easeInOut(duration: animationDuration)) {
+        withAnimation(.spring(response: 0.35, dampingFraction: 0.72)) {
             dragOffset = targetOffset
-            scale = 0.8
+            scale = 0.85
             opacity = 0.0
+            rotation = direction == .right ? 5 : -5
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [self] in
@@ -140,8 +155,10 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
 
             DispatchQueue.main.async {
                 dragOffset = 0
+                rotation = 0
                 scale = 1.0
                 opacity = 1.0
+                hitThreshold = false
                 isProcessing = false
             }
         }
@@ -150,17 +167,21 @@ struct ChecklistCard<Item: ChecklistItemProtocol>: View {
     private func resetCard() {
         guard !isProcessing else { return }
 
-        withAnimation(.easeOut(duration: 0.2)) {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.45)) {
             dragOffset = 0
             scale = 1.0
             opacity = 1.0
+            rotation = 0
         }
+        hitThreshold = false
     }
 
     private func resetState() {
         dragOffset = 0
         scale = 1.0
         opacity = 1.0
+        rotation = 0
+        hitThreshold = false
         isProcessing = false
     }
 

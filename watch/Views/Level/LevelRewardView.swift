@@ -12,21 +12,56 @@ struct LevelRewardView: View {
   @State private var startXP: Int = 0
   @State private var startLevel: Int = 1
   @State private var willLevelUp = false
+  @State private var xpScale: CGFloat = 0.3
+  @State private var xpOpacity: Double = 0
+  @State private var starsVisible = false
+  @State private var pulseScale: CGFloat = 1.0
+  @State private var levelBumpScale: CGFloat = 1.0
+
+  private let starPositions: [(CGFloat, CGFloat)] = [
+    (-38, -18), (40, -14), (-28, 10), (36, 12), (0, -26)
+  ]
 
   var body: some View {
-    VStack(spacing: 4) {
+    VStack(spacing: 6) {
       ZStack {
-        Text("Level \(displayLevel)")
-          .font(.title3)
-          .fontWeight(.bold)
-          .foregroundColor(.white)
-      }
-      .frame(height: 20)
+        ForEach(starPositions.indices, id: \.self) { i in
+          let (x, y) = starPositions[i]
+          Image(systemName: "star.fill")
+            .font(.system(size: 9))
+            .foregroundColor(.yellow.opacity(0.85))
+            .offset(x: starsVisible ? x : 0, y: starsVisible ? y : 0)
+            .scaleEffect(starsVisible ? 1 : 0)
+            .opacity(starsVisible ? 1 : 0)
+            .animation(
+              .spring(response: 0.4, dampingFraction: 0.5)
+                .delay(Double(i) * 0.06),
+              value: starsVisible
+            )
+        }
 
-      Text("+\(animatedXP) Points")
-        .font(.title2)
-        .fontWeight(.bold)
-        .foregroundColor(.yellow)
+        VStack(spacing: 2) {
+          Text("Level \(displayLevel)")
+            .font(.caption)
+            .foregroundColor(.white.opacity(0.8))
+            .scaleEffect(levelBumpScale)
+            .animation(.spring(response: 0.3, dampingFraction: 0.45), value: displayLevel)
+
+          Text("+\(animatedXP)")
+            .font(.title2)
+            .fontWeight(.bold)
+            .foregroundColor(.yellow)
+            .scaleEffect(xpScale * pulseScale)
+            .opacity(xpOpacity)
+
+          Text("XP")
+            .font(.caption2)
+            .fontWeight(.semibold)
+            .foregroundColor(.yellow.opacity(0.8))
+            .opacity(xpOpacity)
+        }
+      }
+      .frame(height: 70)
 
       progressBar
     }
@@ -40,22 +75,23 @@ struct LevelRewardView: View {
     VStack(spacing: 4) {
       GeometryReader { geometry in
         ZStack(alignment: .leading) {
-          RoundedRectangle(cornerRadius: 4)
-            .fill(Color.gray.opacity(0.3))
-            .frame(height: 8)
+          RoundedRectangle(cornerRadius: 6)
+            .fill(Color.gray.opacity(0.25))
+            .frame(height: 10)
 
-          RoundedRectangle(cornerRadius: 4)
+          RoundedRectangle(cornerRadius: 6)
             .fill(
               LinearGradient(
-                colors: [.green, .blue],
+                colors: [.green, .teal, .blue],
                 startPoint: .leading,
                 endPoint: .trailing
               )
             )
-            .frame(width: geometry.size.width * animatedProgress, height: 8)
+            .frame(width: geometry.size.width * animatedProgress, height: 10)
+            .shadow(color: .green.opacity(0.5), radius: 4)
         }
       }
-      .frame(height: 8)
+      .frame(height: 10)
 
       if let progress = levelService.currentProgress {
         HStack {
@@ -94,24 +130,45 @@ struct LevelRewardView: View {
     let startLevelXPNeeded = LevelProgress.xpForLevel(startLevel + 1)
     animatedProgress = Double(startXP) / Double(startLevelXPNeeded)
   }
-  private func startAnimation() {
-    guard let progress = levelService.currentProgress else { return }
 
-    let currentXP = progress.currentXP
-    let xpNeeded = progress.xpNeededForNextLevel
-    let finalProgress = Double(currentXP) / Double(xpNeeded)
+  private func startAnimation() {
+    withAnimation(.spring(response: 0.5, dampingFraction: 0.5)) {
+      xpScale = 1.0
+      xpOpacity = 1.0
+    }
+
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+      withAnimation(.spring(response: 0.35, dampingFraction: 0.4)) {
+        starsVisible = true
+      }
+    }
+
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+      withAnimation(.easeInOut(duration: 0.18).repeatCount(3, autoreverses: true)) {
+        pulseScale = 1.12
+      }
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.54) {
+        withAnimation(.spring()) {
+          pulseScale = 1.0
+        }
+      }
+    }
+
+    guard let _ = levelService.currentProgress else { return }
 
     if willLevelUp {
       animateLevelUp()
     } else {
-      animateNormalProgress(to: finalProgress)
+      animateNormalProgress()
     }
 
     animateXPCounter()
   }
 
-  private func animateNormalProgress(to finalProgress: Double) {
-    withAnimation(.easeOut(duration: 1.2)) {
+  private func animateNormalProgress() {
+    guard let progress = levelService.currentProgress else { return }
+    let finalProgress = Double(progress.currentXP) / Double(progress.xpNeededForNextLevel)
+    withAnimation(.spring(response: 1.0, dampingFraction: 0.7).delay(0.3)) {
       animatedProgress = finalProgress
     }
   }
@@ -124,16 +181,13 @@ struct LevelRewardView: View {
 
     var currentAnimationLevel = startLevel
     var currentAnimationXP = startXP
-    var delay: Double = 0
+    var delay: Double = 0.3
 
     while currentAnimationLevel < finalLevel {
-      let xpNeeded = LevelProgress.xpForLevel(currentAnimationLevel + 1)
-        _ = xpNeeded - currentAnimationXP
-
-      let fillDuration = 0.8
+      let fillDuration = 0.7
 
       DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-        withAnimation(.easeOut(duration: fillDuration)) {
+        withAnimation(.spring(response: 0.8, dampingFraction: 0.75)) {
           self.animatedProgress = 1.0
         }
       }
@@ -142,9 +196,15 @@ struct LevelRewardView: View {
 
       let levelToShow = currentAnimationLevel + 1
       DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-        withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.38)) {
           self.displayLevel = levelToShow
+          self.levelBumpScale = 1.4
           self.showLevelUpBadge = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+          withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
+            self.levelBumpScale = 1.0
+          }
         }
 
         #if os(watchOS)
@@ -161,7 +221,6 @@ struct LevelRewardView: View {
       }
 
       delay += 0.3
-
       currentAnimationLevel += 1
       currentAnimationXP = 0
     }
@@ -170,21 +229,22 @@ struct LevelRewardView: View {
     let finalProgress = Double(finalXP) / Double(finalLevelXPNeeded)
 
     DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-      withAnimation(.easeOut(duration: 0.6)) {
+      withAnimation(.spring(response: 0.7, dampingFraction: 0.7)) {
         self.animatedProgress = finalProgress
       }
     }
   }
 
   private func animateXPCounter() {
-    let duration: Double = 1.2
-    let steps = 60
+    let duration: Double = 1.0
+    let steps = 50
     let stepDuration = duration / Double(steps)
 
     for i in 0...steps {
-      DispatchQueue.main.asyncAfter(deadline: .now() + stepDuration * Double(i)) {
-        let progress = Double(i) / Double(steps)
-        animatedXP = Int(Double(xpAmount) * progress)
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2 + stepDuration * Double(i)) {
+        let t = Double(i) / Double(steps)
+        let eased = 1 - pow(1 - t, 3)
+        animatedXP = Int(Double(xpAmount) * eased)
       }
     }
   }

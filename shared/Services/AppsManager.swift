@@ -4,12 +4,15 @@ import SwiftUI
 
 class AppsManager: ObservableObject {
     @Published var apps: [AppInfo] = []
+    @Published var homeTiles: [AppInfo] = []
     @Published var isLoading = false
     @Published var lastError: AppError?
 
     private(set) var builtInAppCount: Int = 0
 
     static let shared = AppsManager()
+
+    private static let tileOrderKey = "homeTileOrder"
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -30,7 +33,9 @@ class AppsManager: ObservableObject {
         isLoading = true
         lastError = nil
 
-        apps = buildAppsList()
+        let allApps = buildAppsList()
+        apps = allApps
+        homeTiles = applySavedOrder(to: allApps.filter { $0.appID != nil })
         isLoading = false
     }
 
@@ -38,39 +43,34 @@ class AppsManager: ObservableObject {
         var appsList: [AppInfo] = []
         var currentIndex = 0
 
-        let builtInApps = [
-            (
-                String(localized: "Fokus Meter"), String(localized: "How do you feel right now?"),
-                Color.yellow
-            ),
-            (
-                String(localized: "Writing"), String(localized: "Focus aid for writing."),
-                Color.orange
-            ),
-            (
-                String(localized: "Pomodoro"), String(localized: "Timer for time management"),
-                Color.red
-            ),
-            (
-                String(localized: "Fidget Toy"), String(localized: "Interactive vibration toy"),
-                Color.gray
-            ),
-            (
-                String(localized: "Color Breathing"),
-                String(localized: "Calming breathing exercises"),
-                Color.green
-            ),
+        let builtInDefinitions: [(WatchAppID, String, String, Color, String)] = [
+            (.checklists, String(localized: "Checklists"), "checklist", .blue, ""),
+
+            (.meter, String(localized: "Meter"), "gauge.medium", .yellow,
+             String(localized: "How do you feel right now?")),
+            (.writing, String(localized: "Writing"), "pencil", .orange,
+             String(localized: "Focus aid for writing.")),
+            (.pomodoro, String(localized: "Pomodoro"), "timer", .red,
+             String(localized: "Timer for time management")),
+            (.calendar, String(localized: "Calendar"), "calendar", .red, ""),
+            (.level, String(localized: "Level"), "trophy.fill", .purple, ""),
+            (.fidget, String(localized: "Fidget"), "hand.tap", .gray,
+             String(localized: "Interactive vibration toy")),
+            (.breathing, String(localized: "Breathing"), "wind", .green,
+             String(localized: "Calming breathing exercises")),
         ]
 
-        builtInAppCount = builtInApps.count
+        builtInAppCount = builtInDefinitions.count
 
-        for (title, description, color) in builtInApps {
+        for (appID, title, symbol, color, description) in builtInDefinitions {
             appsList.append(
                 AppInfo(
+                    appID: appID,
                     title: title,
                     description: description,
                     color: color,
-                    index: currentIndex
+                    legacyIndex: currentIndex,
+                    symbol: symbol
                 ))
             currentIndex += 1
         }
@@ -79,11 +79,10 @@ class AppsManager: ObservableObject {
         for checklist in checklistData.checklists {
             appsList.append(
                 AppInfo(
+                    checklistID: checklist.id,
                     title: checklist.name,
                     emoji: checklist.emoji,
-                    description: String(localized: "Interaktive Checkliste"),
-                    color: .blue,
-                    index: currentIndex
+                    legacyIndex: currentIndex
                 ))
             currentIndex += 1
         }
@@ -91,8 +90,105 @@ class AppsManager: ObservableObject {
         return appsList
     }
 
+    private func applySavedOrder(to allApps: [AppInfo]) -> [AppInfo] {
+        guard let savedOrder = UserDefaults.standard.stringArray(forKey: Self.tileOrderKey) else {
+            return allApps
+        }
+
+        let appsByID = Dictionary(uniqueKeysWithValues: allApps.map { ($0.id, $0) })
+        var ordered: [AppInfo] = []
+
+        for id in savedOrder {
+            if let app = appsByID[id] {
+                ordered.append(app)
+            }
+        }
+
+        for app in allApps where !savedOrder.contains(app.id) {
+            ordered.append(app)
+        }
+
+        return ordered
+    }
+
+    private func persistOrder() {
+        let ids = homeTiles.map(\.id)
+        UserDefaults.standard.set(ids, forKey: Self.tileOrderKey)
+        NotificationCenter.default.post(name: .tileOrderChanged, object: ids)
+    }
+
+    func applyTileOrder(_ orderedIDs: [String]) {
+        UserDefaults.standard.set(orderedIDs, forKey: Self.tileOrderKey)
+        let builtInTiles = apps.filter { $0.appID != nil }
+        homeTiles = applySavedOrder(to: builtInTiles)
+    }
+
+
+    func moveTiles(fromOffsets source: IndexSet, toOffset destination: Int) {
+        homeTiles.move(fromOffsets: source, toOffset: destination)
+        persistOrder()
+    }
+
+    func moveTile(from sourceIndex: Int, to destinationIndex: Int) {
+        guard sourceIndex != destinationIndex,
+              sourceIndex >= 0, sourceIndex < homeTiles.count,
+              destinationIndex >= 0, destinationIndex < homeTiles.count
+        else { return }
+
+        let tile = homeTiles.remove(at: sourceIndex)
+        homeTiles.insert(tile, at: destinationIndex)
+        persistOrder()
+    }
+
+    func moveTile(id: String, to destinationIndex: Int) {
+        guard let sourceIndex = homeTiles.firstIndex(where: { $0.id == id }) else { return }
+        moveTile(from: sourceIndex, to: destinationIndex)
+    }
+
+    func setTileOrder(_ orderedIDs: [String]) {
+        let appsByID = Dictionary(uniqueKeysWithValues: homeTiles.map { ($0.id, $0) })
+        var reordered: [AppInfo] = []
+
+        for id in orderedIDs {
+            if let app = appsByID[id] {
+                reordered.append(app)
+            }
+        }
+
+        for tile in homeTiles where !orderedIDs.contains(tile.id) {
+            reordered.append(tile)
+        }
+
+        homeTiles = reordered
+        persistOrder()
+    }
+
+    func resetTileOrder() {
+        UserDefaults.standard.removeObject(forKey: Self.tileOrderKey)
+        homeTiles = apps
+    }
+
+
+    func app(for appID: WatchAppID) -> AppInfo? {
+        apps.first { $0.appID == appID }
+    }
+
+    func app(forLegacyIndex index: Int) -> AppInfo? {
+        apps.first { $0.legacyIndex == index }
+    }
+
+    func builtInApps() -> [AppInfo] {
+        apps.filter { $0.appID != nil && $0.appID != .checklists && $0.appID != .calendar && $0.appID != .level && $0.appID != .settings }
+    }
+
+    func checklistApps() -> [AppInfo] {
+        apps.filter { $0.appID == nil }
+    }
+
+    // MARK: - Data Loading
+
     private func loadChecklistData() -> ChecklistData {
-        guard let data = UserDefaults.standard.data(forKey: "checklistData") else {
+        guard let data = UserDefaults.standard.data(forKey: AppConstants.StorageKeys.checklistData) else {
             return ChecklistData.default
         }
 
@@ -115,4 +211,5 @@ class AppsManager: ObservableObject {
 
 extension Notification.Name {
     static let checklistDataChanged = Notification.Name("checklistDataChanged")
+    static let tileOrderChanged = Notification.Name("tileOrderChanged")
 }

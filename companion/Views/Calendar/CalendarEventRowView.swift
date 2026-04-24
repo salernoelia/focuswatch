@@ -6,7 +6,7 @@ struct CalendarEventRowView: View {
 
   private var appColor: Color {
     if let appIndex = event.appIndex,
-      let app = appsManager.apps.first(where: { $0.index == appIndex })
+      let app = appsManager.apps.first(where: { $0.legacyIndex == appIndex })
     {
       return app.color
     }
@@ -15,7 +15,7 @@ struct CalendarEventRowView: View {
 
   private var appTitle: String? {
     if let appIndex = event.appIndex,
-      let app = appsManager.apps.first(where: { $0.index == appIndex })
+      let app = appsManager.apps.first(where: { $0.legacyIndex == appIndex })
     {
       return app.title
     }

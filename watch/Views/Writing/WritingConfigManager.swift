@@ -148,7 +148,6 @@ class UserConfigs: ObservableObject {
       // If a config is found locally, load it.
       DispatchQueue.main.async {
         self.configs = config
-        print("Configs loaded from UserDefaults: \(self.configs)")
         completion?()
       }
     } else {
