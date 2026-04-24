@@ -26,7 +26,7 @@ jobs:
 
       - name: Build & Test (iOS)
         run: |
-            device=$(xcrun simctl list devices available | grep "iPhone 16" | grep -v "Plus\|Pro\|Max" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+            device=$(xcrun simctl list devices available | grep "iPhone 17 Pro" | grep -v "Max" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
             xcodebuild test \
             -scheme "companion" \
             -project "FocusWatch App.xcodeproj" \
@@ -34,7 +34,7 @@ jobs:
 
   build-and-test-watchos:
     name: Build & Test watchOS
-    runs-on: macos-15
+    runs-on: macos-26
 
     steps:
       - uses: actions/checkout@v4
@@ -51,7 +51,7 @@ jobs:
 
       - name: Build & Test (watchOS)
         run: |
-            device=$(xcrun simctl list devices available | grep "Apple Watch Series 11 (46mm)" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+            device=$(xcrun simctl list devices available | grep "Apple Watch Series 11 (42mm)" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
             xcodebuild test \
             -scheme "watch" \
             -project "FocusWatch App.xcodeproj" \

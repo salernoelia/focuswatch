@@ -10,9 +10,26 @@ FocusWatch is a watchOS + iOS Swift app for users with focus difficulties. It ha
 - **`shared`** — Swift framework shared between both apps (data models, WatchConnectivity sync, Supabase)
 - **`watch-notification`** / **`watch-version-complication`** — watchOS extensions
 
+## Setup
+
+1. `supabase start` in project root (requires Docker Desktop + Supabase CLI)
+2. Copy `Example.xcconfig` to `Development.xcconfig`, populate `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `GOOGLE_DRIVE_USERNAME`, `GOOGLE_DRIVE_PASSWORD`
+3. Configure valid Developer Team in Xcode Signing & Capabilities for all targets
+
 ## Build & Run Commands
 
-Don't trigger builds yourself.
+Don't trigger builds yourself. Makefile targets for reference:
+
+```
+make ios-build        # Build iOS scheme for simulator
+make ios-test         # Run iOS tests (iPhone 17 sim)
+make watch-build      # Build watchOS scheme for simulator
+make watch-test       # Run watchOS tests (Apple Watch Series 11 46mm sim)
+make dev              # Launch iOS + watch apps concurrently
+make all-test         # Run both test suites
+```
+
+Simulator name overrides: `IOS_SIM_NAME`, `WATCH_SIM_NAME`, `IOS_TEST_SIM_NAME`, `WATCH_TEST_SIM_NAME`.
 
 ## Architecture
 
@@ -41,6 +58,16 @@ Watch App  ──WatchConnectivity──  Companion App
 - `companion/Services/GalleryStorage.swift` — Image resizing, compression, debounced persistence
 - `watch/Services/GalleryManager.swift` — Receives transferred files from iOS
 
+### Sync Architecture
+
+`SyncCoordinator` (companion) owns a `SyncCommandRouter` and all per-domain sync services (`CalendarSyncService`, `ChecklistSyncService`, `LevelSyncService`, `ConfigSyncService`, `AuthSyncService`, `TelemetrySyncService`, `CommandSyncService`, `ImageSyncService`). Each service registers its action handlers on the router. Messages cross the WatchConnectivity boundary as `SyncPacket` (typed, JSON-encoded) using `SyncTransportProtocol` — the production impl is `ConnectivityTransportAdapter`.
+
+Watch-side receives via `shared/Connectivity/` and routes through the same router pattern. New sync domains must: add a key to `SyncConstants.Keys`, an action to `SyncConstants.Actions`, register a handler on `SyncCommandRouter`, and handle both send and receive sides.
+
+### Watch Feature Views
+
+`watch/Views/` contains standalone focus tools: `Writing/` (EMA writing detection), `Pomodoro/`, `ColorBreathing/`, `FidgetToy/`, `Speedometer/`, `Level/`, `Checklist/`, `Calendar/`, `Progress/`, `Settings/`, `Dashboard/`.
+
 ### Writing Detection (Watch)
 
 EMA-based accelerometer model in `watch/Views/Writing/`. `EmaModel` processes motion samples; `WritingMotionManager`, `WritingTimeManager`, and `WritingHapticFeedbackManager` handle the subsystems.
@@ -51,6 +78,7 @@ EMA-based accelerometer model in `watch/Views/Writing/`. `EmaModel` processes mo
 - **async/await over GCD** — use Swift Structured Concurrency; avoid `DispatchQueue` for new code.
 - **No magic strings** — all storage keys and hardcoded values belong in `AppConstants` or `SyncConstants`.
 - **Logging** — use `AppLogger` for telemetry events, `ErrorLogger` for debug/error logging.
+- **Tests** — use Swift Testing (`@Suite`, `@Test`, `#expect`), not XCTest. Test targets: `watch-testing`, `companion-testing`.
 - **Branching** — `feature/issue-number-description` or `fix/issue-number-description`; no direct commits to `main`; PRs must reference an open issue.
 - All tests must pass before merging.
 - Make sure new features or adjustments dont break backwards compatibility

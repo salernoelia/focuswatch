@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import SwiftData
 import UserNotifications
@@ -15,17 +16,18 @@ class LevelService: ObservableObject {
     private let container: ModelContainer
     internal let context: ModelContext
 
-    #if os(watchOS)
-        private let vibrationManager = VibrationManager.shared
-    #endif
     private let loadMilestones: () -> [LevelMilestone]
     #if os(watchOS)
         private let notifyLevelChange: () -> Void
+        private let hapticForXP: () -> Void
+        private let hapticForLevelUp: () -> Void
     #endif
 
     private init(
         loadMilestones: (() -> [LevelMilestone])? = nil,
-        notifyLevelChange: (() -> Void)? = nil
+        notifyLevelChange: (() -> Void)? = nil,
+        hapticForXP: (() -> Void)? = nil,
+        hapticForLevelUp: (() -> Void)? = nil
     ) {
         self.loadMilestones =
             loadMilestones
@@ -42,6 +44,8 @@ class LevelService: ObservableObject {
                 ?? {
                     SyncCoordinator.shared.syncLevelToiOS()
                 }
+            self.hapticForXP = hapticForXP ?? { WKInterfaceDevice.current().play(.click) }
+            self.hapticForLevelUp = hapticForLevelUp ?? { WKInterfaceDevice.current().play(.success) }
         #endif
 
         let schema = Schema([
@@ -91,7 +95,7 @@ class LevelService: ObservableObject {
         progress.lastUpdated = Date()
 
         #if os(watchOS)
-            vibrationManager.playHaptic(.click)
+            hapticForXP()
         #endif
 
         while progress.currentXP >= progress.xpNeededForNextLevel {
@@ -126,10 +130,10 @@ class LevelService: ObservableObject {
 
     private func handleLevelUp(newLevel: Int) {
         #if os(watchOS)
-            vibrationManager.playHaptic(.success)
+            hapticForLevelUp()
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                self?.vibrationManager.playHaptic(.success)
+                self?.hapticForLevelUp()
             }
         #endif
 

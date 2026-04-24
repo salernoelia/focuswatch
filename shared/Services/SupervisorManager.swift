@@ -1,5 +1,8 @@
+import Auth
 import Combine
 import Foundation
+import PostgREST
+import Supabase
 import SwiftUI
 
 typealias Supervisor = PublicSchema.UserProfilesSelect
