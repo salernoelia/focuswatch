@@ -114,8 +114,20 @@ class AppsManager: ObservableObject {
     private func persistOrder() {
         let ids = homeTiles.map(\.id)
         UserDefaults.standard.set(ids, forKey: Self.tileOrderKey)
+        NotificationCenter.default.post(name: .tileOrderChanged, object: ids)
     }
 
+    func applyTileOrder(_ orderedIDs: [String]) {
+        UserDefaults.standard.set(orderedIDs, forKey: Self.tileOrderKey)
+        let builtInTiles = apps.filter { $0.appID != nil }
+        homeTiles = applySavedOrder(to: builtInTiles)
+    }
+
+
+    func moveTiles(fromOffsets source: IndexSet, toOffset destination: Int) {
+        homeTiles.move(fromOffsets: source, toOffset: destination)
+        persistOrder()
+    }
 
     func moveTile(from sourceIndex: Int, to destinationIndex: Int) {
         guard sourceIndex != destinationIndex,
@@ -199,4 +211,5 @@ class AppsManager: ObservableObject {
 
 extension Notification.Name {
     static let checklistDataChanged = Notification.Name("checklistDataChanged")
+    static let tileOrderChanged = Notification.Name("tileOrderChanged")
 }

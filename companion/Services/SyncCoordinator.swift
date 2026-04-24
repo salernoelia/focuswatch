@@ -46,6 +46,21 @@ final class SyncCoordinator: ObservableObject {
         loadWatchUUIDFromContext()
     }
 
+    private func syncTileOrder(_ ids: [String]) {
+        let context: [String: Any] = [
+            SyncConstants.Keys.tileOrder: ids,
+            SyncConstants.Keys.timestamp: Date().timeIntervalSince1970
+        ]
+
+        do {
+            try transport.updateApplicationContext(context)
+        } catch {
+            #if DEBUG
+                ErrorLogger.log(AppError.encodingFailed(type: "tile order", underlying: error))
+            #endif
+        }
+    }
+
     private func setupObservers() {
         transport.isConnectedPublisher
             .receive(on: DispatchQueue.main)
@@ -95,6 +110,14 @@ final class SyncCoordinator: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: .tileOrderChanged)
+            .compactMap { $0.object as? [String] }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] ids in
+                self?.syncTileOrder(ids)
+            }
+            .store(in: &cancellables)
     }
 
     private func loadWatchUUIDFromContext() {
@@ -115,6 +138,10 @@ final class SyncCoordinator: ObservableObject {
             let configurations = try? JSONDecoder().decode(AppConfigurations.self, from: data)
         {
             configService.sync(configurations)
+        }
+
+        if let savedOrder = UserDefaults.standard.stringArray(forKey: "homeTileOrder") {
+            syncTileOrder(savedOrder)
         }
     }
 

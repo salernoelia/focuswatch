@@ -860,7 +860,14 @@
       }
     },
     "Checklist not found" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checkliste nicht gefunden"
+          }
+        }
+      }
     },
     "Checklist Settings" : {
       "localizations" : {
@@ -1248,6 +1255,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Done"
+          }
+        }
+      }
+    },
+    "Drag to reorder. This changes the layout on your Apple Watch." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um das Layout der Apps auf der Uhr anzupassen, halte Elemente für einen Moment und ziehe sie an die gewünschte Stelle."
           }
         }
       }
@@ -2578,7 +2595,14 @@
       }
     },
     "No events" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Events"
+          }
+        }
+      }
     },
     "No events scheduled" : {
       "localizations" : {
@@ -3310,6 +3334,7 @@
       }
     },
     "See your focus points" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3822,7 +3847,14 @@
       }
     },
     "Today" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heute"
+          }
+        }
+      }
     },
     "Total Points" : {
       "localizations" : {
@@ -4072,7 +4104,14 @@
       }
     },
     "Week" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Woche"
+          }
+        }
+      }
     },
     "Weekdays" : {
       "localizations" : {
@@ -4206,7 +4245,14 @@
       }
     },
     "XP" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Punkte"
+          }
+        }
+      }
     },
     "You have unlocked a new Level!" : {
       "localizations" : {

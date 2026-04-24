@@ -80,6 +80,10 @@ final class IncomingContextHandler {
             handleConfigurationsUpdate(configDataBytes)
         }
 
+        if let tileOrder = context[SyncConstants.Keys.tileOrder] as? [String] {
+            AppsManager.shared.applyTileOrder(tileOrder)
+        }
+
         if let action = context[SyncConstants.Keys.action] as? String {
             handleLegacyAction(action, context)
         }
